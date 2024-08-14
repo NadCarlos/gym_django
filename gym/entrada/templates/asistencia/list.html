@@ -1,0 +1,25 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Lista de Asistencias</h2>
+    <div class="card p-4 shadow-sm">
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistencia in asistencias %}
+                <tr>
+                    <td>{{ asistencia.fecha }}</td>
+                    <td>{{ asistencia.hora }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

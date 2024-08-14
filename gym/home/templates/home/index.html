@@ -1,0 +1,17 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{% url 'pacientes_list' %}" class="btn btn-primary btn-lg btn-block mb-3">Pacientes</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'obras_sociales' %}" class="btn btn-secondary btn-lg btn-block mb-3">Obras Sociales</a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'prestaciones' %}" class="btn btn-success btn-lg btn-block mb-3">Prestaciones</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Obras Sociales</h2>
+    {% if user.is_staff %}
+    <a href="{% url 'obra_social_create' %}" class="btn btn-success mb-4">
+        <i class="bi bi-plus-circle"></i> Nueva Obra Social
+    </a>
+    {% endif %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obra_social in obras_sociales %}
+                <tr>
+                    <td>{{ obra_social.nombre }}</td>
+                    <td>{{ obra_social.descripcion }}</td>
+                    <td>
+                        {% if user.is_staff %}
+                        <a href="#" class="btn btn-danger btn-sm me-2">
+                            <i class="bi bi-trash"></i> Borrar
+                        </a>
+                        <a href="#" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
