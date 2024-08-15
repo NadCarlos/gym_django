@@ -14,5 +14,5 @@ urlpatterns = [
     path(route='<int:id>/historial_aistencias_paciente/',view=AsistenciaPacienteList.as_view(), name='historial_aistencias_paciente'),
     path(route='check_in/',view=CheckIn.as_view(), name='check_in'),
     path(route='<int:id>/check_in_confirm/',view=CheckInConfirm.as_view(), name='check_in_confirm'),
-    path(route='check_in_success/',view=CheckInSuccess.as_view(), name='check_in_success'),
+    path(route='<int:id>/check_in_success/',view=CheckInSuccess.as_view(), name='check_in_success'),
 ]

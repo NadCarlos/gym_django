@@ -99,8 +99,6 @@ class CheckInConfirm(View):
     @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
     @method_decorator(login_required(login_url='error'))
     def get(self, request, id, *args, **kwargs):
-        date = datetime.datetime.now()
-        date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
         form = AsistenciaCreateForm(initial = {'id_prestacion_paciente': prestacion_paciente.id})
@@ -110,7 +108,6 @@ class CheckInConfirm(View):
             dict(
                 form=form,
                 paciente=paciente,
-                date=date,
             )
         )
     
@@ -118,13 +115,17 @@ class CheckInConfirm(View):
     @method_decorator(login_required(login_url='error'))
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
+        paciente = pacienteRepo.get_by_id(id=id)
+        print("POST Check in confirm")
+        print(form)
         try:
             if form.is_valid():
                 nueva_asistencia = asistenciaRepo.create(
                     prestacionPaciente=form.cleaned_data['id_prestacion_paciente'],
                     )
-                return redirect('check_in_success')
+                return redirect('check_in_success', paciente.id)
         except:
+            print("check in confirm post")
             return redirect('error')
         
 
@@ -132,8 +133,16 @@ class CheckInSuccess(View):
 
     @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
     @method_decorator(login_required(login_url='error'))
-    def get(self, request):
+    def get(self, request, id, *args, **kwargs):
+        print("CheckInSuccess get")
+        date = datetime.datetime.now()
+        date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
+        paciente = pacienteRepo.get_by_id(id=id)
         return render(
             request,
             'asistencia/check_in_success.html',
+            dict(
+                paciente=paciente,
+                date=date,
+            )
         )

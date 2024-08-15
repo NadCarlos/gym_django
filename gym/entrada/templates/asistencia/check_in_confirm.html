@@ -12,17 +12,33 @@
 <body>
     {% block content %}
     <div class="container mt-3">
-        <h2>Nueva Asistencia</h2>
-        <h4>{{ paciente.nombre }}, {{paciente.apellido}}</h4>
         <form method="post">
             {% csrf_token %}
-            {{form.as_p}}
-            <h5>{{ date }}</h5>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+            {{form.id_prestacion_paciente}}
+            <button hidden id="clickButton" type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>
     {% endblock %}
 
 </body>
+
+<script>
+    window.onload = function () {
+        var button = document.getElementById('clickButton'),
+            form = button.form;
+
+        form.addEventListener('submit', function () {
+            return false;
+        })
+
+        var times = 1;   //Here put the number of times you want to auto submit
+        (function submit() {
+            if (times == 0) return;
+            form.submit();
+            times--;
+            setTimeout(submit, 2000);   //Each second
+        })();
+    }
+</script>
 
 </html>

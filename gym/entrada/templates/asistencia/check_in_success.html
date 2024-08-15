@@ -14,7 +14,13 @@
         <div class="row">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Asistencia Cargada</h3>
+                    <h2 class="card-title">Asistencia Cargada</h2>
+                </div>
+                <div class="card-body">
+                    <h4>{{ paciente.nombre }}, {{paciente.apellido}}</h4>
+                </div>
+                <div class="card-body">
+                    <h5>{{ date }}</h5>
                 </div>
                 <div class="card-body">
                     <p>Redireccionando</p>
@@ -24,10 +30,11 @@
     </div>
 </body>
 
-</html>
-
 <script>
     setTimeout(function() {
         window.location.href = "{% url 'check_in' %}";
     }, 4000);
 </script>
+
+</html>
+

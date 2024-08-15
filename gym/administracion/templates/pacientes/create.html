@@ -7,85 +7,107 @@
         <form method="post">
             {% csrf_token %}
             
-            <div class="mb-3 row">
-                <label for="id_nombre" class="col-sm-3 col-form-label">Nombre:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_nombre" class="d-flex justify-content-end col-sm-2 col-form-label">Nombre:</label>
+                <div class="col-sm-6">
                     {{ form.nombre }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_apellido" class="col-sm-3 col-form-label">Apellido:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_apellido" class="d-flex justify-content-end col-sm-2 col-form-label">Apellido:</label>
+                <div class="col-sm-6">
                     {{ form.apellido }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_numero_dni" class="col-sm-3 col-form-label">DNI:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_numero_dni" class="d-flex justify-content-end col-sm-2 col-form-label">DNI:</label>
+                <div class="col-sm-6">
                     {{ form.numero_dni }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_direccion" class="col-sm-3 col-form-label">Dirección:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_direccion" class="d-flex justify-content-end col-sm-2 col-form-label">Dirección:</label>
+                <div class="col-sm-6">
                     {{ form.direccion }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_telefono" class="col-sm-3 col-form-label">Teléfono:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_telefono" class="d-flex justify-content-end col-sm-2 col-form-label">Teléfono:</label>
+                <div class="col-sm-6">
                     {{ form.telefono }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_celular" class="col-sm-3 col-form-label">Celular:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_celular" class="d-flex justify-content-end col-sm-2 col-form-label">Celular:</label>
+                <div class="col-sm-6">
                     {{ form.celular }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_fecha_nacimiento" class="col-sm-3 col-form-label">Fecha de Nacimiento:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_fecha_nacimiento" class="d-flex justify-content-end col-sm-2 col-form-label">F. de Nacimiento:</label>
+                <div class="col-sm-6">
                     {{ form.fecha_nacimiento }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_id_obra_social" class="col-sm-3 col-form-label">Obra Social:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_id_obra_social" class="d-flex justify-content-end col-sm-2 col-form-label">Obra Social:</label>
+                <div class="col-sm-6">
                     {{ form.id_obra_social }}
                 </div>
+                <div class="col-sm-4">
+                </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_id_estado_civil" class="col-sm-3 col-form-label">Estado Civil:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_id_estado_civil" class="d-flex justify-content-end col-sm-2 col-form-label">Estado Civil:</label>
+                <div class="col-sm-6">
                     {{ form.id_estado_civil }}
                 </div>
-            </div>
-            
-            <div class="mb-3 row">
-                <label for="id_id_sexo" class="col-sm-3 col-form-label">Sexo:</label>
-                <div class="col-sm-9">
-                    {{ form.id_sexo }}
+                <div class="col-sm-4">
                 </div>
             </div>
             
-            <div class="mb-3 row">
-                <label for="id_id_localidad" class="col-sm-3 col-form-label">Localidad:</label>
-                <div class="col-sm-9">
+            <div class="mb-2 row">
+                <label for="id_id_sexo" class="d-flex justify-content-end col-sm-2 col-form-label">Sexo:</label>
+                <div class="col-sm-6">
+                    {{ form.id_sexo }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label for="id_id_localidad" class="d-flex justify-content-end col-sm-2 col-form-label">Localidad:</label>
+                <div class="col-sm-6">
                     {{ form.id_localidad }}
+                </div>
+                <div class="col-sm-4">
                 </div>
             </div>
 
-            <div class="text-end">
-                <button type="submit" class="btn btn-success">
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
                     <i class="bi bi-save"></i> Guardar
                 </button>
             </div>

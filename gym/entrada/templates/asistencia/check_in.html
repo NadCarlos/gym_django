@@ -9,23 +9,87 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-{% block content %}
-<div class="container d-flex justify-content-center aling-items-center">
-    <div class="row">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Check In</h3>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="#">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary m-0">Ingresar</button>
-                </form>
+<body>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="row">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3 class="card-title">Check In</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="numero_dni" class="col-sm-3 col-form-label">DNI:</label>
+                            {{ form.numero_dni }}
+                        </div>
+                        
+                        <div class="container text-center">
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">1</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">2</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">3</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">4</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">5</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">6</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">7</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">8</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">9</button>
+                                </div>
+                                <div class="col-4 offset-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">0</button>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete w-100">Borrar</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                        </div>
+                        
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dniInput = document.querySelector('input[name="numero_dni"]');
+            const botones = document.querySelectorAll('.num');
+            const borrar = document.querySelector('.delete');
+
+            botones.forEach(boton => {
+                boton.addEventListener('click', () => {
+                    dniInput.value += boton.textContent;
+                });
+            });
+
+            borrar.addEventListener('click', () => {
+                dniInput.value = dniInput.value.slice(0, -1);
+            });
+        });
+    </script>
+</body>
 
 </html>
