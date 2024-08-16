@@ -1,12 +1,56 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-<div class="container mt-3">
-    <h2>Nueva Prestacion Paciente</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button type="submit" class="btn btn-primary">Guardar</button>
-    </form>
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">Nueva Prestacion Paciente</h2>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+
+            {{ form.id_paciente }}
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">F. Inicio:</label>
+                <div class="col-sm-6">
+                    {{ form.fecha_inicio }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label  class="d-flex justify-content-end col-sm-2 col-form-label">F. Fin:</label>
+                <div class="col-sm-6">
+                    {{ form.fecha_fin }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label  class="d-flex justify-content-end col-sm-2 col-form-label">Prestacion:</label>
+                <div class="col-sm-6">
+                    {{ form.id_prestacion }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label  class="d-flex justify-content-end col-sm-2 col-form-label">Obra Social:</label>
+                <div class="col-sm-6">
+                    {{ form.id_obra_social }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

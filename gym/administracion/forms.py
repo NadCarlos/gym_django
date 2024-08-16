@@ -74,8 +74,8 @@ class ObraSocialForm(forms.ModelForm):
             ]
         
         widgets = {
-            'fecha': forms.TextInput(attrs={'class': 'form-control custom-class'}),
-            'hora': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }
 
 
@@ -91,6 +91,6 @@ class PrestacionForm(forms.ModelForm):
             ]
         
         widgets = {
-            'fecha': forms.TextInput(attrs={'class': 'form-control custom-class'}),
-            'hora': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }

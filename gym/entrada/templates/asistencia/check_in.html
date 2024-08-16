@@ -7,9 +7,68 @@
     <title>Check In</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .body{
+            background-image: url('https://etenonfitness.com/wp-content/uploads/2023/05/cabecera-diseno-integral-gimnasio_s.jpg');
+        }
+
+        .card {
+            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 15px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .num {
+            font-size: 1.5rem;
+            padding: 15px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .num:hover {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+
+        .delete {
+            background-color: #dc3545;
+            color: white;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 
-<body>
+<body class="body" >
     <div class="container d-flex justify-content-center align-items-center vh-100">
         <div class="row">
             <div class="card">
@@ -20,12 +79,12 @@
                     <form method="POST" action="#">
                         {% csrf_token %}
 
-                        <div class="mb-3">
-                            <label for="numero_dni" class="col-sm-3 col-form-label">DNI:</label>
+                        <div class="mb-4">
+                            <label for="numero_dni" class="form-label">DNI:</label>
                             {{ form.numero_dni }}
                         </div>
                         
-                        <div class="container text-center">
+                        <div class="container text-center mb-4">
                             <div class="row g-2">
                                 <div class="col-4">
                                     <button type="button" class="btn btn-outline-primary btn-lg num">1</button>
@@ -57,8 +116,8 @@
                                 <div class="col-4 offset-4">
                                     <button type="button" class="btn btn-outline-primary btn-lg num">0</button>
                                 </div>
-                                <div class="col-12">
-                                    <button type="button" class="btn btn-outline-danger btn-lg delete w-100">Borrar</button>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete">⌫</button>
                                 </div>
                             </div>
                         </div>

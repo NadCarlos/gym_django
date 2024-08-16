@@ -2,13 +2,13 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Nuevo Paciente</h2>
+    <h2 class="d-flex justify-content-center mb-4">Nuevo Paciente</h2>
     <div class="card p-4 shadow-sm">
         <form method="post">
             {% csrf_token %}
-            
+            {{ form.id_usuario }}            
             <div class="mb-2 row">
-                <label for="id_nombre" class="d-flex justify-content-end col-sm-2 col-form-label">Nombre:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Nombre:</label>
                 <div class="col-sm-6">
                     {{ form.nombre }}
                 </div>
@@ -17,7 +17,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_apellido" class="d-flex justify-content-end col-sm-2 col-form-label">Apellido:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Apellido:</label>
                 <div class="col-sm-6">
                     {{ form.apellido }}
                 </div>
@@ -26,7 +26,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_numero_dni" class="d-flex justify-content-end col-sm-2 col-form-label">DNI:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">DNI:</label>
                 <div class="col-sm-6">
                     {{ form.numero_dni }}
                 </div>
@@ -35,7 +35,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_direccion" class="d-flex justify-content-end col-sm-2 col-form-label">Dirección:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Dirección:</label>
                 <div class="col-sm-6">
                     {{ form.direccion }}
                 </div>
@@ -44,7 +44,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_telefono" class="d-flex justify-content-end col-sm-2 col-form-label">Teléfono:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Teléfono:</label>
                 <div class="col-sm-6">
                     {{ form.telefono }}
                 </div>
@@ -53,7 +53,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_celular" class="d-flex justify-content-end col-sm-2 col-form-label">Celular:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Celular:</label>
                 <div class="col-sm-6">
                     {{ form.celular }}
                 </div>
@@ -62,7 +62,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_fecha_nacimiento" class="d-flex justify-content-end col-sm-2 col-form-label">F. de Nacimiento:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">F. de Nacimiento:</label>
                 <div class="col-sm-6">
                     {{ form.fecha_nacimiento }}
                 </div>
@@ -71,7 +71,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_id_obra_social" class="d-flex justify-content-end col-sm-2 col-form-label">Obra Social:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Obra Social:</label>
                 <div class="col-sm-6">
                     {{ form.id_obra_social }}
                 </div>
@@ -80,7 +80,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_id_estado_civil" class="d-flex justify-content-end col-sm-2 col-form-label">Estado Civil:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Estado Civil:</label>
                 <div class="col-sm-6">
                     {{ form.id_estado_civil }}
                 </div>
@@ -89,7 +89,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_id_sexo" class="d-flex justify-content-end col-sm-2 col-form-label">Sexo:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Sexo:</label>
                 <div class="col-sm-6">
                     {{ form.id_sexo }}
                 </div>
@@ -98,7 +98,7 @@
             </div>
             
             <div class="mb-2 row">
-                <label for="id_id_localidad" class="d-flex justify-content-end col-sm-2 col-form-label">Localidad:</label>
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Localidad:</label>
                 <div class="col-sm-6">
                     {{ form.id_localidad }}
                 </div>
