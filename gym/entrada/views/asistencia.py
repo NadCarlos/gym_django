@@ -2,8 +2,8 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
-import datetime
 
+import datetime
 
 from entrada.forms import (
     AsistenciaCreateForm,
@@ -14,7 +14,6 @@ from entrada.forms import (
 from entrada.repositories.asistencia import AsistenciaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente import PacienteRepository
-
 
 pacienteRepo = PacienteRepository()
 asistenciaRepo = AsistenciaRepository()
@@ -134,7 +133,6 @@ class CheckInSuccess(View):
     @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
     @method_decorator(login_required(login_url='error'))
     def get(self, request, id, *args, **kwargs):
-        print("CheckInSuccess get")
         date = datetime.datetime.now()
         date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
         paciente = pacienteRepo.get_by_id(id=id)
