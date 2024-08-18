@@ -6,6 +6,7 @@ from entrada.views.asistencia import (
     CheckIn,
     CheckInConfirm,
     CheckInSuccess,
+    CheckInError,
 )
 
 
@@ -15,4 +16,5 @@ urlpatterns = [
     path(route='check_in/',view=CheckIn.as_view(), name='check_in'),
     path(route='<int:id>/check_in_confirm/',view=CheckInConfirm.as_view(), name='check_in_confirm'),
     path(route='<int:id>/check_in_success/',view=CheckInSuccess.as_view(), name='check_in_success'),
+    path(route='check_in_error/',view=CheckInError.as_view(), name='check_in_error'),
 ]

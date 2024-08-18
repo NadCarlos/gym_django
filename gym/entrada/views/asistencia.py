@@ -90,7 +90,7 @@ class CheckIn(View):
                 paciente = pacienteRepo.get_by_dni(numero_dni=dni)
                 return redirect ('check_in_confirm', paciente.id)
         except:
-            return redirect('error')
+            return redirect('check_in_error')
 
 
 class CheckInConfirm(View):
@@ -115,8 +115,6 @@ class CheckInConfirm(View):
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
         paciente = pacienteRepo.get_by_id(id=id)
-        print("POST Check in confirm")
-        print(form)
         try:
             if form.is_valid():
                 nueva_asistencia = asistenciaRepo.create(
@@ -124,8 +122,7 @@ class CheckInConfirm(View):
                     )
                 return redirect('check_in_success', paciente.id)
         except:
-            print("check in confirm post")
-            return redirect('error')
+            return redirect('check_in_error')
         
 
 class CheckInSuccess(View):
@@ -144,3 +141,13 @@ class CheckInSuccess(View):
                 date=date,
             )
         )
+    
+
+class CheckInError(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'asistencia/check_in_error.html'
+        )
+    
