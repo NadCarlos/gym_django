@@ -99,16 +99,22 @@ class CheckInConfirm(View):
     @method_decorator(login_required(login_url='error'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
-        prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
-        form = AsistenciaCreateForm(initial = {'id_prestacion_paciente': prestacion_paciente.id})
-        return render(
-            request,
-            'asistencia/check_in_confirm.html',
-            dict(
-                form=form,
-                paciente=paciente,
-            )
-        )
+        try:
+            if paciente.activo == False:
+                return redirect('check_in_error')
+            else:
+                prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
+                form = AsistenciaCreateForm(initial = {'id_prestacion_paciente': prestacion_paciente.id})
+                return render(
+                    request,
+                    'asistencia/check_in_confirm.html',
+                    dict(
+                        form=form,
+                        paciente=paciente,
+                    )
+                )
+        except:
+            return redirect('check_in_not_found')
     
     @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
     @method_decorator(login_required(login_url='error'))
@@ -151,3 +157,10 @@ class CheckInError(View):
             'asistencia/check_in_error.html'
         )
     
+class CheckInNotFound(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'asistencia/check_in_not_found.html'
+        )
