@@ -12,12 +12,17 @@ class PacienteRepository:
     def filter_by_id(self) -> Optional[Paciente]:
         return Paciente.objects.filter(id=id).first()
     
+    def filter_by_activo(self) -> List[Paciente]:
+        return Paciente.objects.filter(
+            activo=True
+        )
+
     def get_by_id(self, id: int) -> Optional[Paciente]:
         try:
             paciente = Paciente.objects.get(id=id)
         except:
             paciente = None
-        return paciente
+        return paciente 
     
     def get_by_dni(self, numero_dni: int) -> Optional[Paciente]:
         try:
@@ -29,6 +34,10 @@ class PacienteRepository:
     def delete(self, paciente: Paciente):
         return paciente.delete()
     
+    def delete_by_activo(self, paciente: Paciente):
+        paciente.activo=False
+        paciente.save()
+
     def create(
         self,
         nombre: str,
@@ -58,3 +67,4 @@ class PacienteRepository:
             id_usuario=usuario,
             telefono=telefono,
         )
+    

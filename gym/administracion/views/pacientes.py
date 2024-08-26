@@ -18,7 +18,7 @@ class PacientesList(View):
     @method_decorator(permission_required(perm='gym.pacientes_list', login_url='error', raise_exception=True))
     @method_decorator(login_required(login_url='error'))
     def get(self, request):
-        pacientes = pacienteRepo.get_all()
+        pacientes = pacienteRepo.filter_by_activo()
         return render(
             request,
             'pacientes/list.html',
@@ -88,6 +88,7 @@ class PacienteDelete(View):
     @method_decorator(login_required(login_url='error'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
-        pacienteRepo.delete(paciente=paciente)
+        #No elimino, cambio el campo activo a False
+        pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
     
