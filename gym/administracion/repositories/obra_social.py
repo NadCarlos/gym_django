@@ -31,3 +31,15 @@ class ObraSocialRepository:
             nombre=nombre,
             descripcion=descripcion,
         )
+    
+    def update(
+        self, 
+        obra_social: ObraSocial,
+        nombre: str,
+        descripcion: str,
+    ) -> ObraSocial:
+
+        obra_social.nombre = nombre
+        obra_social.descripcion = descripcion
+
+        obra_social.save()

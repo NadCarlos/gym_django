@@ -11,15 +11,18 @@ from administracion.views.prestacion_paciente import (
     NuevaPrestacionPaciente,
 )
 
-
 from administracion.views.obra_social import (
     ObraSocialList,
     ObraSocialCreate,
+    ObraSocialUpdate,
+    ObraSocialDelete,
 )
 
 from administracion.views.prestacion import (
     PrestacionList,
     PrestacionCreate,
+    PrestacionUpdate,
+    PrestacionDelete,
 )
 
 
@@ -33,7 +36,11 @@ urlpatterns = [
 
     path(route='obras_sociales/',view=ObraSocialList.as_view(), name='obras_sociales'),
     path(route='obra_social_create/',view=ObraSocialCreate.as_view(), name='obra_social_create'),
+    path(route='<int:id>/obra_social_update/',view=ObraSocialUpdate.as_view(), name='obra_social_update'),
+    path(route='<int:id>/obra_social_delete/',view=ObraSocialDelete.as_view(), name='obra_social_delete'),
 
     path(route='prestaciones/',view=PrestacionList.as_view(), name='prestaciones'),
     path(route='prestacion_create/',view=PrestacionCreate.as_view(), name='prestacion_create'),
+    path(route='<int:id>/prestacion_update/',view=PrestacionUpdate.as_view(), name='prestacion_update'),
+    path(route='<int:id>/prestacion_delete/',view=PrestacionDelete.as_view(), name='prestacion_delete'),
 ]

@@ -1,0 +1,36 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">Actualizar datos de Obra Social</h2>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Nombre:</label>
+                <div class="col-sm-6">
+                    {{ form.nombre }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Descripcion:</label>
+                <div class="col-sm-6">
+                    {{ form.descripcion }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

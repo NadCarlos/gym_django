@@ -55,3 +55,46 @@ class ObraSocialCreate(View):
                 return redirect('obras_sociales')
         except:
             return redirect('error')
+        
+
+class ObraSocialUpdate(View):
+
+    @method_decorator(permission_required(perm='gym.obra_social_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def get(self, request, id, *args, **kwargs):
+
+        obra_social = obraSocialRepo.get_by_id(id=id)
+        form = ObraSocialForm(instance=obra_social)
+        return render(
+            request,
+            'obra_social/update.html',
+            dict(
+                form=form,
+            )
+        )
+    
+    @method_decorator(permission_required(perm='gym.obra_social_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def post(self, request, id):
+        form = ObraSocialForm(request.POST)
+        obra_social = obraSocialRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                obraSocialRepo.update(
+                    obra_social=obra_social,
+                    nombre=form.cleaned_data['nombre'],
+                    descripcion=form.cleaned_data['descripcion'],
+                    )
+                return redirect('obras_sociales')
+        except:
+            return redirect('error')
+        
+
+class ObraSocialDelete(View):
+
+    @method_decorator(permission_required(perm='gym.obra_social_delete', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def get(self, request, id):
+        obra_social = obraSocialRepo.get_by_id(id=id)
+        obraSocialRepo.delete(obra_social=obra_social)
+        return redirect ('obras_sociales')

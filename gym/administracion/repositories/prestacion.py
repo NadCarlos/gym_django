@@ -30,3 +30,15 @@ class PrestacionRepository:
             nombre=nombre,
             descripcion=descripcion,
         )
+    
+    def update(
+        self, 
+        prestacion: Prestacion,
+        nombre: str,
+        descripcion: str,
+    ) -> Prestacion:
+
+        prestacion.nombre = nombre
+        prestacion.descripcion = descripcion
+
+        prestacion.save()

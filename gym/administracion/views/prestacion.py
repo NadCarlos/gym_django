@@ -55,3 +55,46 @@ class PrestacionCreate(View):
                 return redirect('prestaciones')
         except:
             return redirect('error')
+        
+
+class PrestacionUpdate(View):
+
+    @method_decorator(permission_required(perm='gym.prestacion_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def get(self, request, id, *args, **kwargs):
+
+        prestacion = prestacionRepo.get_by_id(id=id)
+        form = PrestacionForm(instance=prestacion)
+        return render(
+            request,
+            'prestacion/update.html',
+            dict(
+                form=form,
+            )
+        )
+    
+    @method_decorator(permission_required(perm='gym.prestacion_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def post(self, request, id):
+        form = PrestacionForm(request.POST)
+        prestacion = prestacionRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                prestacionRepo.update(
+                    prestacion=prestacion,
+                    nombre=form.cleaned_data['nombre'],
+                    descripcion=form.cleaned_data['descripcion'],
+                    )
+                return redirect('prestaciones')
+        except:
+            return redirect('error')
+        
+
+class PrestacionDelete(View):
+
+    @method_decorator(permission_required(perm='gym.prestacion_delete', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def get(self, request, id):
+        prestacion = prestacionRepo.get_by_id(id=id)
+        prestacionRepo.delete(prestacion=prestacion)
+        return redirect ('prestaciones')
