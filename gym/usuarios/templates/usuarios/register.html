@@ -1,0 +1,42 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<h2>Registro Usuario</h2>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="row">
+        <label for="">Nombre de Usuario</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <p style="color:red"> {{ form.username.errors }}</p>
+            {% endif %}
+    </div>
+    <div class="row">
+        <label for="">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <p style="color:red"> {{ form.email.errors }}</p>
+            {% endif %}
+    </div>
+    <div class="row">
+        <label for="">Contraseña</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <p style="color:red"> {{ form.password1.errors }}</p>
+            {% endif %}
+    </div>
+    <div class="row">
+        <label for="">Escribi Nuevamente tu Contraseña</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <p style="color:red"> {{ form.password2.errors }}</p>
+            {% endif %}
+    </div>
+    <label for="">Nombre/s</label>
+    {{ form.first_name }}
+
+    <label for="">Apellido</label>
+    {{ form.last_name }}
+    <button type="submit" class="btn btn-primary">Registro</button>
+</form>
+{% endblock %}
