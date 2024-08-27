@@ -27,7 +27,7 @@ jedi==0.19.1
 Markdown==3.5.2
 matplotlib-inline==0.1.7
 mypy-extensions==1.0.0
-mysqlclient==2.2.0
+mysqlclient==2
 packaging==23.2
 parso==0.8.4
 pathspec==0.11.2
