@@ -1,7 +1,8 @@
 from pathlib import Path
-
+import os
 import sentry_sdk
 
+import environ
 
 sentry_sdk.init(
     dsn="https://a8c704adad13e0007ed22f78b69d4714@o4507817863610368.ingest.us.sentry.io/4507817865445376",
@@ -17,17 +18,56 @@ sentry_sdk.init(
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV_FILE = os.path.join(BASE_DIR, "..", ".env")
+
+env = environ.Env(
+    DJANGO_DEBUG=(bool, False),
+    DJANGO_SECRET_KEY=(str, "django-23-!hk12311x5zi4ktc-)_*6n&wgnBBB#j2&ezh_7"),
+    DJANGO_ALLOWED_HOSTS=(list, []),
+    MYSQL_DATABASE=(str, "gym_db"),
+    MYSQL_USER=(str, "root"),
+    MYSQL_PASSWORD=(str, "root"),
+    MYSQL_HOST=(str, "localhost"),
+    MYSQL_PORT=(str, "3306"),
+    MYSQL_ROOT_PASSWORD=(str, "root_password"),
+    MYSQL_CONTAINER_NAME=(str, "container_name"),
+    SESSION_COOKIE_SECURE=(bool, False),
+    CSRF_COOKIE_SECURE=(bool, False),
+    SECURE_SSL_REDIRECT=(bool, False),
+)
+environ.Env.read_env(ENV_FILE)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+iyabs=c&j)$b_p2$whn503pty(l1#lp#c-rsfki3@kkh-o38i'
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost"])
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
+
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
+    "SECURE_HSTS_INCLUDE_SUBDOMAINS", default=False
+)
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)
+SECURE_BROWSER_XSS_FILTER = env.bool("SECURE_BROWSER_XSS_FILTER", default=False)
+SECURE_CONTENT_TYPE_NOSNIFF = env.bool("SECURE_CONTENT_TYPE_NOSNIFF", default=False)
+USE_X_FORWARDED_HOST = env.bool("USE_X_FORWARDED_HOST", default=False)
+FORCE_SCRIPT_NAME = "/app"
+
+
+SECURE_PROXY_SSL_HEADER = (
+    "HTTP_X_FORWARDED_PROTO",
+    "https",
+)
+
 
 
 # Application definition
@@ -123,7 +163,6 @@ USE_I18N = True
 USE_TZ = True
 
 #Media management
-import os
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
