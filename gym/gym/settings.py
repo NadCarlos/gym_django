@@ -121,13 +121,17 @@ WSGI_APPLICATION = 'gym.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gym_db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("MYSQL_DATABASE"),
+        "USER": env("MYSQL_USER"),
+        "PASSWORD": env("MYSQL_PASSWORD"),
+        "HOST": env("MYSQL_HOST"),
+        "PORT": env("MYSQL_PORT"),
+        "MYSQL_ROOT_PASSWORD": env("MYSQL_ROOT_PASSWORD"),
+        "OPTIONS": {
+            "charset": "utf8mb4",
+        },
     }
 }
 
