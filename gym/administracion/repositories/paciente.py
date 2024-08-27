@@ -68,3 +68,32 @@ class PacienteRepository:
             telefono=telefono,
         )
     
+    def update(
+        self, 
+        paciente: Paciente,
+        nombre: str,
+        apellido: str,
+        numero_dni: str,
+        direccion: str,
+        telefono: str,
+        celular: str,
+        fecha_nacimiento: str,
+        obra_social: ObraSocial,
+        estado_civil: EstadoCivil,
+        sexo: Sexo,
+        localidad: Localidad,
+    ) -> Paciente:
+
+        paciente.nombre = nombre
+        paciente.apellido = apellido
+        paciente.numero_dni = numero_dni
+        paciente.direccion = direccion
+        paciente.telefono = telefono
+        paciente.celular = celular
+        paciente.fecha_nacimiento = fecha_nacimiento
+        paciente.id_obra_social = obra_social
+        paciente.id_estado_civil = estado_civil
+        paciente.id_sexo = sexo
+        paciente.id_localidad = localidad
+
+        paciente.save()

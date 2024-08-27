@@ -4,6 +4,7 @@ from administracion.views.pacientes import (
     PacientesList,
     PacienteDetail,
     PacienteCreate,
+    PacienteUpdate,
     PacienteDelete,
     )
 
@@ -30,6 +31,7 @@ urlpatterns = [
     path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),    
     path(route='paciente_create/',view=PacienteCreate.as_view(), name='paciente_create'),
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),
+    path(route='<int:id>/paciente_update/',view=PacienteUpdate.as_view(), name='paciente_update'),
     path(route='<int:id>/paciente_delete/',view=PacienteDelete.as_view(), name='paciente_delete'),
 
     path(route='<int:id>/nueva_prestacion_paciente/',view=NuevaPrestacionPaciente.as_view(), name='nueva_prestacion_paciente'),

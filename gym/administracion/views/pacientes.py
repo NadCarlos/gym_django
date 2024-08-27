@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 
 from administracion.forms import (
     PacienteCreateForm,
+    PacienteUpdateForm,
     )
 
 from administracion.repositories.paciente import PacienteRepository
@@ -78,6 +79,49 @@ class PacienteCreate(View):
                     usuario=form.cleaned_data['id_usuario'],
                     )
                 return redirect('paciente_detail', paciente_nuevo.id)
+        except:
+            return redirect('error')
+        
+
+class PacienteUpdate(View):
+
+    @method_decorator(permission_required(perm='gym.paciente_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        form = PacienteUpdateForm(instance=paciente)
+        return render(
+            request,
+            'pacientes/update.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
+
+    @method_decorator(permission_required(perm='gym.paciente_update', login_url='error', raise_exception=True))
+    @method_decorator(login_required(login_url='error'))
+    def post(self, request, id):
+        form = PacienteUpdateForm(request.POST)
+        paciente = pacienteRepo.get_by_id(id=id)
+        print(request.POST)
+        try:
+            if form.is_valid():
+                pacienteRepo.update(
+                    paciente=paciente,
+                    nombre=form.cleaned_data['nombre'],
+                    apellido=form.cleaned_data['apellido'],
+                    numero_dni=form.cleaned_data['numero_dni'],
+                    direccion=form.cleaned_data['direccion'],
+                    telefono=form.cleaned_data['telefono'],
+                    celular=form.cleaned_data['celular'],
+                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                    obra_social=form.cleaned_data['id_obra_social'],
+                    estado_civil=form.cleaned_data['id_estado_civil'],
+                    sexo=form.cleaned_data['id_sexo'],
+                    localidad=form.cleaned_data['id_localidad'],
+                    )
+                return redirect('paciente_detail', paciente.id)
         except:
             return redirect('error')
 

@@ -39,6 +39,41 @@ class PacienteCreateForm(forms.ModelForm):
         }
 
 
+class PacienteUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Paciente
+
+        fields = [
+            'nombre',
+            'apellido',
+            'numero_dni',
+            'direccion',
+            'telefono',
+            'celular',
+            'fecha_nacimiento',
+            'id_obra_social',
+            'id_estado_civil',
+            'id_sexo',
+            'id_localidad',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'fecha_nacimiento': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_estado_civil': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }
+
+
 class PrestacionCreateForm(forms.ModelForm):
 
     class Meta:
