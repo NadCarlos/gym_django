@@ -22,6 +22,10 @@ class ObraSocialRepository:
     def delete(self, obra_social: ObraSocial):
         return obra_social.delete()
     
+    def delete_by_activo(self, obra_social: ObraSocial):
+        obra_social.activo=False
+        obra_social.save()
+    
     def create(
         self,
         nombre: str,

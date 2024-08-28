@@ -21,6 +21,10 @@ class PrestacionRepository:
     def delete(self, prestacion: Prestacion):
         return prestacion.delete()
     
+    def delete_by_activo(self, prestacion: Prestacion):
+        prestacion.activo=False
+        prestacion.save()
+    
     def create(
         self,
         nombre: str,
