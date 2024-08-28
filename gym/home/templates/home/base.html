@@ -37,12 +37,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-x-square-fill"></i> Desconectar</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
+                    </li>
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-person-badge"></i> Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
                     </li>
                     {% endif %}
 

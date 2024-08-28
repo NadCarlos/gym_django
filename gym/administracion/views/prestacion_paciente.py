@@ -3,11 +3,9 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
 
-
 from administracion.forms import (
     PrestacionCreateForm,
     )
-
 
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente import PacienteRepository
@@ -21,8 +19,8 @@ prestacionRepo = PrestacionRepository()
 
 class NuevaPrestacionPaciente(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         form = PrestacionCreateForm(initial = {'id_paciente': paciente.id})
@@ -34,8 +32,8 @@ class NuevaPrestacionPaciente(View):
             )
         )
     
-    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = PrestacionCreateForm(request.POST)
         try:

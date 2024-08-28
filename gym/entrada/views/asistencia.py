@@ -22,8 +22,8 @@ prestacionPacienteRepo = PrestacionPacienteRepository()
 
 class AsistenciaPacienteList(View):
 
-    @method_decorator(permission_required(perm='gym.historial_aistencias_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.historial_aistencias_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
@@ -39,8 +39,8 @@ class AsistenciaPacienteList(View):
 
 class NuevaAsistenciaPaciente(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
@@ -53,8 +53,8 @@ class NuevaAsistenciaPaciente(View):
             )
         )
     
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
         try:
@@ -69,8 +69,8 @@ class NuevaAsistenciaPaciente(View):
 
 class CheckIn(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = AsistenciaPublicCreateForm()
         return render(
@@ -81,6 +81,8 @@ class CheckIn(View):
             )
         )
     
+    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request):
         form = AsistenciaPublicCreateForm(request.POST or None)
         try: 
@@ -95,8 +97,8 @@ class CheckIn(View):
 
 class CheckInConfirm(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.check_in_confirm', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         try:
@@ -116,8 +118,8 @@ class CheckInConfirm(View):
         except:
             return redirect('check_in_not_found')
     
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.check_in_confirm', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
         paciente = pacienteRepo.get_by_id(id=id)
@@ -133,8 +135,8 @@ class CheckInConfirm(View):
 
 class CheckInSuccess(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_asistencia_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(permission_required(perm='gym.check_in_success', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         date = datetime.datetime.now()
         date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
@@ -151,6 +153,8 @@ class CheckInSuccess(View):
 
 class CheckInError(View):
 
+    @method_decorator(permission_required(perm='gym.check_in_error', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
             request,
@@ -159,6 +163,8 @@ class CheckInError(View):
     
 class CheckInNotFound(View):
 
+    @method_decorator(permission_required(perm='gym.check_in_not_found', login_url='login', raise_exception=True))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
             request,
