@@ -18,7 +18,7 @@
             <a class="navbar-brand" href="{% url 'inicio' %}">
                 <i class="bi bi-house-door"></i> Gym
             </a>
-            {% if user.is_staff %}
+            {% if user.is_authenticated %}
             <a class="nav-link text-light"><i class="bi bi-person-badge"></i> Usuario: {{ user.username }}</a>
             {% endif %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -37,9 +37,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-x-square-fill"></i> Desconectar</a>
                     </li>
+                    {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
                     </li>
+                    {% endif %}
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-person-badge"></i> Login</a>

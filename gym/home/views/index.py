@@ -5,7 +5,6 @@ from django.shortcuts import render
 
 class IndexView(View):
 
-    @method_decorator(permission_required(perm='gym.inicio', login_url='login'))
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
