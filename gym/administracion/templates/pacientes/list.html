@@ -12,18 +12,22 @@
         <table class="table table-striped table-hover table-bordered">
             <thead class="table-primary">
                 <tr>
-                    <th>Nombre</th>
                     <th>Apellido</th>
+                    <th>Nombre</th>
                     <th>DNI</th>
+                    <th>Obra Social</th>
+                    <th>Sexo</th>
                     <th>Mas...</th>
                 </tr>
             </thead>
             <tbody>
                 {% for paciente in pacientes %}
                 <tr>
-                    <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.apellido }}</td>
+                    <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
+                    <td>{{ paciente.id_obra_social.nombre }}</td>
+                    <td>{{ paciente.id_sexo.nombre }}</td>
                     <td>
                         <a href="{% url 'paciente_detail' paciente.id %}" class="btn btn-info btn-sm">
                             <i class="bi bi-info-circle"></i> Detalles

@@ -161,8 +161,8 @@ class Paciente(models.Model):
 
     celular = models.CharField(
         max_length=50,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         verbose_name="Numero Celular",
         )
 
@@ -176,6 +176,12 @@ class Paciente(models.Model):
         auto_now_add=True,
         null=False,
         blank=False,
+        )
+    
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
         )
 
     id_usuario = models.ForeignKey(
@@ -231,11 +237,13 @@ class PrestacionPaciente(models.Model):
     fecha_inicio = models.DateField(
         null=False,
         blank=False,
+        verbose_name='Inicio de la prestacion'
     )
 
     fecha_fin = models.DateField(
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
+        verbose_name='Fin de la prestacion'
     )
 
     activo = models.BooleanField(

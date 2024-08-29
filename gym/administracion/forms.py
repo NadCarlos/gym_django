@@ -76,6 +76,11 @@ class PacienteUpdateForm(forms.ModelForm):
 
 class PrestacionCreateForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(PrestacionCreateForm, self).__init__(*args, **kwargs)
+        self.fields['id_prestacion'].required = True
+        self.fields['id_obra_social'].required = True
+
     class Meta:
 
         model = PrestacionPaciente

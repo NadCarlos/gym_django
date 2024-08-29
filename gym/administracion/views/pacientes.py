@@ -1,6 +1,6 @@
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from administracion.forms import (
@@ -16,7 +16,6 @@ pacienteRepo = PacienteRepository()
 
 class PacientesList(View):
 
-    @method_decorator(permission_required(perm='gym.pacientes_list', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         pacientes = pacienteRepo.filter_by_activo()
@@ -31,7 +30,6 @@ class PacientesList(View):
 
 class PacienteDetail(View):
 
-    @method_decorator(permission_required(perm='gym.paciente_detail', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
@@ -46,10 +44,9 @@ class PacienteDetail(View):
 
 class PacienteCreate(View):
 
-    @method_decorator(permission_required(perm='gym.paciente_create', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        form = PacienteCreateForm(initial = {'id_usuario': request.user})
+        form = PacienteCreateForm(initial = {'id_usuario': request.user, 'id_obra_social': 4, 'id_sexo': 1, 'id_estado_civil': 1, 'id_localidad': 1})
         return render(
             request,
             'pacientes/create.html',
@@ -58,7 +55,6 @@ class PacienteCreate(View):
             )
         )
 
-    @method_decorator(permission_required(perm='gym.paciente_create', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def post(self, request):
         form = PacienteCreateForm(request.POST)
@@ -85,7 +81,6 @@ class PacienteCreate(View):
 
 class PacienteUpdate(View):
 
-    @method_decorator(permission_required(perm='gym.paciente_update', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
@@ -99,7 +94,6 @@ class PacienteUpdate(View):
             )
         )
 
-    @method_decorator(permission_required(perm='gym.paciente_update', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def post(self, request, id):
         form = PacienteUpdateForm(request.POST)
@@ -128,7 +122,6 @@ class PacienteUpdate(View):
 
 class PacienteDelete(View):
 
-    @method_decorator(permission_required(perm='gym.paciente_delete', login_url='login', raise_exception=True))
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
