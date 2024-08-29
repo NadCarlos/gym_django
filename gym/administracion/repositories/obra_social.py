@@ -12,6 +12,11 @@ class ObraSocialRepository:
     def filter_by_id(self) -> Optional[ObraSocial]:
         return ObraSocial.objects.filter(id=id).first()
     
+    def filter_by_activo(self) -> List[ObraSocial]:
+        return ObraSocial.objects.filter(
+            activo=True
+        )
+    
     def get_by_id(self, id: int) -> Optional[ObraSocial]:
         try:
             obra_social = ObraSocial.objects.get(id=id)
