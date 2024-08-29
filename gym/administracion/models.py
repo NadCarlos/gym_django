@@ -127,14 +127,14 @@ class Paciente(models.Model):
         max_length=150,
         null=False,
         blank=False,
-        verbose_name="Nombre/s Paciente",
+        verbose_name="Nombre",
         )
 
     apellido = models.CharField(
         max_length=150,
         null=False,
         blank=False,
-        verbose_name="Apellido/s Paciente"
+        verbose_name="Apellido"
         )
 
     numero_dni = models.CharField(
@@ -202,6 +202,7 @@ class Paciente(models.Model):
         null=True, 
         on_delete=models.SET_NULL,
         related_name='obra_social',
+        verbose_name='Obra Social',
     )
 
     id_estado_civil = models.ForeignKey(
@@ -210,6 +211,7 @@ class Paciente(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='estado_civil_paciente',
+        verbose_name='Estado Civil',
     )
 
     id_sexo = models.ForeignKey(
@@ -218,6 +220,7 @@ class Paciente(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='sexo',
+        verbose_name='Sexo',
     )
 
     id_localidad = models.ForeignKey(

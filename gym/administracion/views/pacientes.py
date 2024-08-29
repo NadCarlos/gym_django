@@ -1,7 +1,11 @@
+from typing import Any
 from django.views import View
+from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+
+from administracion.filters import PacienteFilter
 
 from administracion.forms import (
     PacienteCreateForm,
@@ -14,18 +18,21 @@ from administracion.repositories.paciente import PacienteRepository
 pacienteRepo = PacienteRepository()
 
 
-class PacientesList(View):
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacientesList(ListView):
+    queryset = pacienteRepo.filter_by_activo()
+    template_name = 'pacientes/list.html'
+    context_object_name = 'pacientes'
 
-    @method_decorator(login_required(login_url='login'))
-    def get(self, request):
-        pacientes = pacienteRepo.filter_by_activo()
-        return render(
-            request,
-            'pacientes/list.html',
-            dict(
-                pacientes=pacientes
-            )
-        )
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PacienteFilter(self.request.GET, queryset=queryset)
+        return self.filterset.qs
+    
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filterset.form
+        return context
 
 
 class PacienteDetail(View):
