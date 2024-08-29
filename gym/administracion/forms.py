@@ -1,8 +1,13 @@
 from django import forms
 from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion
 
+from administracion.models import ObraSocial, Prestacion
 
 class PacienteCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PacienteCreateForm, self).__init__(*args, **kwargs)
+        self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
 
     class Meta:
 
@@ -80,6 +85,8 @@ class PrestacionCreateForm(forms.ModelForm):
         super(PrestacionCreateForm, self).__init__(*args, **kwargs)
         self.fields['id_prestacion'].required = True
         self.fields['id_obra_social'].required = True
+        self.fields['id_prestacion'].queryset = Prestacion.objects.filter(activo=True)
+        self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
 
     class Meta:
 
