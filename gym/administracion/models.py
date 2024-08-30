@@ -79,7 +79,11 @@ class ObraSocial(models.Model):
 
 class EstadoCivil(models.Model):
 
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        )
 
     def __str__(self):
         return  self.nombre
@@ -146,7 +150,7 @@ class Paciente(models.Model):
 
     direccion = models.CharField(
         max_length=150,
-        null=False,
+        null=True,
         blank=True,
         verbose_name="Direccion",
         )
@@ -182,6 +186,7 @@ class Paciente(models.Model):
         max_length=200,
         null=True,
         blank=True,
+        verbose_name="Obseraciones",
         )
 
     id_usuario = models.ForeignKey(
@@ -202,7 +207,6 @@ class Paciente(models.Model):
         null=True, 
         on_delete=models.SET_NULL,
         related_name='obra_social',
-        verbose_name='Obra Social',
     )
 
     id_estado_civil = models.ForeignKey(
@@ -211,7 +215,6 @@ class Paciente(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='estado_civil_paciente',
-        verbose_name='Estado Civil',
     )
 
     id_sexo = models.ForeignKey(
@@ -220,7 +223,6 @@ class Paciente(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='sexo',
-        verbose_name='Sexo',
     )
 
     id_localidad = models.ForeignKey(
@@ -258,8 +260,9 @@ class PrestacionPaciente(models.Model):
     id_prestacion = models.ForeignKey(
         Prestacion,
         blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        null=False,
+        default=1,
+        on_delete=models.SET_DEFAULT,
         related_name='prestacion',
     )
 
@@ -274,8 +277,9 @@ class PrestacionPaciente(models.Model):
     id_obra_social = models.ForeignKey(
         ObraSocial,
         blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        null=False,
+        default=1,
+        on_delete=models.SET_DEFAULT,
         related_name='obra_social_prestacion',
     )
 

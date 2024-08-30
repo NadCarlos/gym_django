@@ -20,6 +20,7 @@ class PacienteCreateForm(forms.ModelForm):
             'direccion',
             'telefono',
             'celular',
+            'observaciones',
             'fecha_nacimiento',
             'id_obra_social',
             'id_estado_civil',
@@ -36,6 +37,7 @@ class PacienteCreateForm(forms.ModelForm):
             'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'fecha_nacimiento': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_estado_civil': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
@@ -45,6 +47,10 @@ class PacienteCreateForm(forms.ModelForm):
 
 
 class PacienteUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PacienteUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
 
     class Meta:
 
@@ -57,6 +63,7 @@ class PacienteUpdateForm(forms.ModelForm):
             'direccion',
             'telefono',
             'celular',
+            'observaciones',
             'fecha_nacimiento',
             'id_obra_social',
             'id_estado_civil',
@@ -71,6 +78,7 @@ class PacienteUpdateForm(forms.ModelForm):
             'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'fecha_nacimiento': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_estado_civil': forms.Select(attrs={'class': 'form-control custom-class'}),

@@ -49,7 +49,7 @@
                     <td>{{ paciente.apellido }}</td>
                     <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
-                    <td>{{ paciente.id_obra_social.nombre }}</td>
+                    <td>{{ paciente.id_obra_social }}</td>
                     <td>{{ paciente.id_sexo.nombre }}</td>
                     <td>
                         <a href="{% url 'paciente_detail' paciente.id %}" class="btn btn-info btn-sm">

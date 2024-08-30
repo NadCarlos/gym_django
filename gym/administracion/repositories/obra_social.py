@@ -15,7 +15,7 @@ class ObraSocialRepository:
     def filter_by_activo(self) -> List[ObraSocial]:
         return ObraSocial.objects.filter(
             activo=True
-        )
+        ).order_by('nombre')
     
     def get_by_id(self, id: int) -> Optional[ObraSocial]:
         try:

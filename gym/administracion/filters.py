@@ -5,6 +5,7 @@ from administracion.models import Paciente
 
 
 class PacienteFilter(django_filters.FilterSet):
+    apellido = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Paciente

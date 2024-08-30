@@ -48,10 +48,9 @@ class PacienteDetail(View):
             )
         )
 
-
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteCreate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = PacienteCreateForm(initial = {'id_usuario': request.user, 'id_obra_social': 4, 'id_sexo': 1, 'id_estado_civil': 1, 'id_localidad': 1})
         return render(
@@ -62,11 +61,10 @@ class PacienteCreate(View):
             )
         )
 
-    @method_decorator(login_required(login_url='login'))
     def post(self, request):
         form = PacienteCreateForm(request.POST)
-        try:
-            if form.is_valid():
+        print(form)
+        if form.is_valid():
                 paciente_nuevo = pacienteRepo.create(
                     nombre=form.cleaned_data['nombre'],
                     apellido=form.cleaned_data['apellido'],
@@ -74,6 +72,7 @@ class PacienteCreate(View):
                     direccion=form.cleaned_data['direccion'],
                     telefono=form.cleaned_data['telefono'],
                     celular=form.cleaned_data['celular'],
+                    observaciones=form.cleaned_data['observaciones'],
                     fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
                     obraSocial=form.cleaned_data['id_obra_social'],
                     estadoCivil=form.cleaned_data['id_estado_civil'],
@@ -82,9 +81,7 @@ class PacienteCreate(View):
                     usuario=form.cleaned_data['id_usuario'],
                     )
                 return redirect('paciente_detail', paciente_nuevo.id)
-        except:
-            return redirect('error')
-        
+
 
 class PacienteUpdate(View):
 
@@ -105,7 +102,6 @@ class PacienteUpdate(View):
     def post(self, request, id):
         form = PacienteUpdateForm(request.POST)
         paciente = pacienteRepo.get_by_id(id=id)
-        print(request.POST)
         try:
             if form.is_valid():
                 pacienteRepo.update(
@@ -116,6 +112,7 @@ class PacienteUpdate(View):
                     direccion=form.cleaned_data['direccion'],
                     telefono=form.cleaned_data['telefono'],
                     celular=form.cleaned_data['celular'],
+                    observaciones=form.cleaned_data['observaciones'],
                     fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
                     obra_social=form.cleaned_data['id_obra_social'],
                     estado_civil=form.cleaned_data['id_estado_civil'],

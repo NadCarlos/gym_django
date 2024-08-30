@@ -31,7 +31,9 @@ class AsistenciaPacienteList(View):
             request,
             'asistencia/list.html',
             dict(
-                asistencias=asistencias
+                paciente=paciente,
+                prestacion_paciente=prestacion_paciente,
+                asistencias=asistencias,
             )
         )
 

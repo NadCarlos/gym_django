@@ -40,8 +40,8 @@
             <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Nueva Prestación
             </a>
-            <a href="#" class="btn btn-primary">
-                <i class="bi bi-list"></i> Detalle Prestación
+            <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-primary">
+                <i class="bi bi-list"></i> Historial Prestaciónes
             </a>
             <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-primary">
                 <i class="bi bi-person-plus"></i> Nueva Asistencia

@@ -7,7 +7,7 @@ from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Local
 class PacienteRepository:
 
     def get_all(self) -> List[Paciente]:
-        return Paciente.objects.all()
+        return Paciente.objects.all().order_by('apellido').values()
     
     def filter_by_id(self) -> Optional[Paciente]:
         return Paciente.objects.filter(id=id).first()
@@ -15,7 +15,7 @@ class PacienteRepository:
     def filter_by_activo(self) -> List[Paciente]:
         return Paciente.objects.filter(
             activo=True
-        )
+        ).order_by('apellido')
 
     def get_by_id(self, id: int) -> Optional[Paciente]:
         try:
@@ -46,6 +46,7 @@ class PacienteRepository:
         direccion: str,
         fecha_nacimiento: str,
         celular: str,
+        observaciones: str,
         obraSocial: ObraSocial,
         estadoCivil: EstadoCivil,
         sexo: Sexo,
@@ -60,6 +61,7 @@ class PacienteRepository:
             direccion=direccion,
             fecha_nacimiento=fecha_nacimiento,
             celular=celular,
+            observaciones=observaciones,
             id_obra_social=obraSocial,
             id_estado_civil=estadoCivil,
             id_sexo=sexo,
@@ -77,6 +79,7 @@ class PacienteRepository:
         direccion: str,
         telefono: str,
         celular: str,
+        observaciones: str,
         fecha_nacimiento: str,
         obra_social: ObraSocial,
         estado_civil: EstadoCivil,
@@ -90,6 +93,7 @@ class PacienteRepository:
         paciente.direccion = direccion
         paciente.telefono = telefono
         paciente.celular = celular
+        paciente.observaciones=observaciones
         paciente.fecha_nacimiento = fecha_nacimiento
         paciente.id_obra_social = obra_social
         paciente.id_estado_civil = estado_civil
