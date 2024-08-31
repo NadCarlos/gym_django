@@ -28,6 +28,10 @@ from administracion.views.prestacion import (
     PrestacionDelete,
 )
 
+from administracion.views.asistencias import (
+    AsistenciasList,
+)
+
 
 urlpatterns = [
     path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),    
@@ -49,4 +53,6 @@ urlpatterns = [
     path(route='prestacion_create/',view=PrestacionCreate.as_view(), name='prestacion_create'),
     path(route='<int:id>/prestacion_update/',view=PrestacionUpdate.as_view(), name='prestacion_update'),
     path(route='<int:id>/prestacion_delete/',view=PrestacionDelete.as_view(), name='prestacion_delete'),
+
+    path(route='asistencias/',view=AsistenciasList.as_view(), name='asistencias'),
 ]

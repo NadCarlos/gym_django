@@ -49,6 +49,7 @@ class NuevaAsistenciaPaciente(View):
             request,
             'asistencia/create.html',
             dict(
+                paciente=paciente,
                 form=form
             )
         )

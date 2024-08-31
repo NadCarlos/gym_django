@@ -1,7 +1,6 @@
 import django_filters
-from django import forms
 
-from administracion.models import Paciente
+from administracion.models import Paciente, Asistencia
 
 
 class PacienteFilter(django_filters.FilterSet):
@@ -17,4 +16,12 @@ class PacienteFilter(django_filters.FilterSet):
             }
         
 
-    
+class AsistenciasFilter(django_filters.FilterSet):
+    fecha = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Asistencia
+        fields = {
+            'fecha',
+            'hora',
+            }
