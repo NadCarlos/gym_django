@@ -2,11 +2,13 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Lista de Asistencias</h2>
+    <h2 class="mb-4">Lista de Asistencias:  {{ paciente.apellido }}, {{ paciente.nombre }}</h2>
     <div class="card p-4 shadow-sm">
         <table class="table table-hover table-bordered">
             <thead class="table-dark">
                 <tr>
+                    <th scope="col">Obra Social</th>
+                    <th scope="col">Prestacion</th>
                     <th scope="col">Fecha</th>
                     <th scope="col">Hora</th>
                 </tr>
@@ -14,6 +16,8 @@
             <tbody>
                 {% for asistencia in asistencias %}
                 <tr>
+                    <td>{{ paciente.id_obra_social.nombre }}</td>
+                    <td>{{ prestacion_paciente.id_prestacion.nombre }}</td>
                     <td>{{ asistencia.fecha }}</td>
                     <td>{{ asistencia.hora }}</td>
                 </tr>

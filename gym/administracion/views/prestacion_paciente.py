@@ -1,13 +1,11 @@
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-
 
 from administracion.forms import (
     PrestacionCreateForm,
     )
-
 
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente import PacienteRepository
@@ -21,21 +19,26 @@ prestacionRepo = PrestacionRepository()
 
 class NuevaPrestacionPaciente(View):
 
-    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
-        form = PrestacionCreateForm(initial = {'id_paciente': paciente.id})
-        return render(
-            request,
-            'prestacion_paciente/create.html',
-            dict(
-                form=form
-            )
-        )
+        paciente_id = paciente.id
+        prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente_id)
+        prestaciones_activas = int(prestacion_paciente.count())
+        if prestaciones_activas == 0:
+            form = PrestacionCreateForm(initial = {'id_paciente': paciente.id})
+            return render(
+                request,
+                'prestacion_paciente/create.html',
+                dict(
+                    form=form
+                    )
+                )
+        else:
+            return redirect('active_error')
+        
     
-    @method_decorator(permission_required(perm='gym.nueva_prestacion_paciente', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = PrestacionCreateForm(request.POST)
         try:
@@ -50,3 +53,31 @@ class NuevaPrestacionPaciente(View):
                 return redirect('paciente_detail', nueva_prestacion_paciente.id_paciente.id)
         except:
             return redirect('error')
+        
+
+class ListPrestacionPaciente(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        paciente_id = paciente.id
+        prestaciones_paciente = prestacionPacienteRepo.filter_by_id_paciente_all(id_paciente=paciente_id)
+        print(paciente)
+        print(prestaciones_paciente)
+        return render(
+            request,
+            'prestacion_paciente/list.html',
+            dict(
+                paciente=paciente,
+                prestaciones_paciente=prestaciones_paciente
+            )
+        )
+    
+
+class ActiveError(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'prestacion_paciente/active_error.html',
+        )

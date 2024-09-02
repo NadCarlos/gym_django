@@ -3,14 +3,45 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-4">
-            <a href="{% url 'pacientes_list' %}" class="btn btn-primary btn-lg btn-block mb-3">Pacientes</a>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Pacientes</h5>
+                    <a href="{% url 'pacientes_list' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-person"></i> Ver Pacientes
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <a href="{% url 'obras_sociales' %}" class="btn btn-secondary btn-lg btn-block mb-3">Obras Sociales</a>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Obras Sociales</h5>
+                    <a href="{% url 'obras_sociales' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-shield"></i> Ver Obras Sociales
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <a href="{% url 'prestaciones' %}" class="btn btn-success btn-lg btn-block mb-3">Prestaciones</a>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Prestaciones</h5>
+                    <a href="{% url 'prestaciones' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-list-check"></i> Ver Prestaciones
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Asistencias</h5>
+                    <a href="{% url 'asistencias' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-calendar-check"></i> Ver Asistencias
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

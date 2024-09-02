@@ -1,6 +1,6 @@
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from administracion.forms import (
@@ -15,10 +15,9 @@ prestacionRepo = PrestacionRepository()
 
 class PrestacionList(View):
 
-    @method_decorator(permission_required(perm='gym.prestaciones', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        prestaciones = prestacionRepo.get_all()
+        prestaciones = prestacionRepo.filter_by_activo()
         return render(
             request,
             'prestacion/list.html',
@@ -30,8 +29,7 @@ class PrestacionList(View):
 
 class PrestacionCreate(View):
 
-    @method_decorator(permission_required(perm='gym.prestacion_create', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = PrestacionForm()
         return render(
@@ -42,8 +40,7 @@ class PrestacionCreate(View):
             )
         )
     
-    @method_decorator(permission_required(perm='gym.prestacion_create', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request):
         form = PrestacionForm(request.POST)
         try:
@@ -59,8 +56,7 @@ class PrestacionCreate(View):
 
 class PrestacionUpdate(View):
 
-    @method_decorator(permission_required(perm='gym.prestacion_update', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
 
         prestacion = prestacionRepo.get_by_id(id=id)
@@ -73,8 +69,7 @@ class PrestacionUpdate(View):
             )
         )
     
-    @method_decorator(permission_required(perm='gym.prestacion_update', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def post(self, request, id):
         form = PrestacionForm(request.POST)
         prestacion = prestacionRepo.get_by_id(id=id)
@@ -92,9 +87,8 @@ class PrestacionUpdate(View):
 
 class PrestacionDelete(View):
 
-    @method_decorator(permission_required(perm='gym.prestacion_delete', login_url='error', raise_exception=True))
-    @method_decorator(login_required(login_url='error'))
+    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         prestacion = prestacionRepo.get_by_id(id=id)
-        prestacionRepo.delete(prestacion=prestacion)
+        prestacionRepo.delete_by_activo(prestacion=prestacion)
         return redirect ('prestaciones')

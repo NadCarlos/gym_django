@@ -6,7 +6,7 @@ from administracion.models import Asistencia, PrestacionPaciente
 class AsistenciaRepository:
 
     def get_all(self) -> List[Asistencia]:
-        return Asistencia.objects.all()
+        return Asistencia.objects.all().order_by('fecha')
     
     def get_all_by_id(self, id_prestacion_paciente) -> List[Asistencia]:
         return Asistencia.objects.filter(id_prestacion_paciente=id_prestacion_paciente)

@@ -15,6 +15,17 @@ class PrestacionPacienteRepository:
     def filter_by_id_paciente(self, id_paciente) -> Optional[PrestacionPaciente]:
         return PrestacionPaciente.objects.filter(id_paciente=id_paciente).first()
     
+    def filter_by_id_paciente_all(self, id_paciente) -> Optional[PrestacionPaciente]:
+        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).all()
+    
+    def filter_by_id_paciente_activo(self, id_paciente) -> Optional[PrestacionPaciente]:
+        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).filter(activo=True)
+    
+    def filter_by_activo(self) -> List[PrestacionPaciente]:
+        return PrestacionPaciente.objects.filter(
+            activo=True
+        )
+    
     def get_by_id(self, id: int) -> Optional[PrestacionPaciente]:
         try:
             prestacion_paciente = PrestacionPaciente.objects.get(id=id)
@@ -31,6 +42,10 @@ class PrestacionPacienteRepository:
     
     def delete(self, prestacion_paciente: PrestacionPaciente):
         return prestacion_paciente.delete()
+    
+    def delete_by_activo(self, prestacion_paciente: PrestacionPaciente):
+        prestacion_paciente.activo=False
+        prestacion_paciente.save()
     
     def create(
         self,

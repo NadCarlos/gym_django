@@ -11,6 +11,11 @@ class PrestacionRepository:
     def filter_by_id(self) -> Optional[Prestacion]:
         return Prestacion.objects.filter(id=id).first()
     
+    def filter_by_activo(self) -> List[Prestacion]:
+        return Prestacion.objects.filter(
+            activo=True
+        ).order_by('nombre')
+    
     def get_by_id(self, id: int) -> Optional[Prestacion]:
         try:
             prestacion = Prestacion.objects.get(id=id)
@@ -20,6 +25,10 @@ class PrestacionRepository:
     
     def delete(self, prestacion: Prestacion):
         return prestacion.delete()
+    
+    def delete_by_activo(self, prestacion: Prestacion):
+        prestacion.activo=False
+        prestacion.save()
     
     def create(
         self,

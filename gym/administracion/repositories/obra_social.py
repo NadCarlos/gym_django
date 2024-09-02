@@ -12,6 +12,11 @@ class ObraSocialRepository:
     def filter_by_id(self) -> Optional[ObraSocial]:
         return ObraSocial.objects.filter(id=id).first()
     
+    def filter_by_activo(self) -> List[ObraSocial]:
+        return ObraSocial.objects.filter(
+            activo=True
+        ).order_by('nombre')
+    
     def get_by_id(self, id: int) -> Optional[ObraSocial]:
         try:
             obra_social = ObraSocial.objects.get(id=id)
@@ -21,6 +26,10 @@ class ObraSocialRepository:
     
     def delete(self, obra_social: ObraSocial):
         return obra_social.delete()
+    
+    def delete_by_activo(self, obra_social: ObraSocial):
+        obra_social.activo=False
+        obra_social.save()
     
     def create(
         self,

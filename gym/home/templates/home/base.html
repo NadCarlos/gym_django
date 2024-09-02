@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym</title>
+    <title>CERMED</title>
     <link rel="icon" type="image/x-icon" href="{% static 'public/cermed_icon.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
@@ -13,12 +13,12 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav style="background-color: #009f95;" class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'inicio' %}">
-                <i class="bi bi-house-door"></i> Gym
+                <img class="imagen" style="width: 30px; height: 30px;" src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="E"> Inicio
             </a>
-            {% if user.is_staff %}
+            {% if user.is_authenticated %}
             <a class="nav-link text-light"><i class="bi bi-person-badge"></i> Usuario: {{ user.username }}</a>
             {% endif %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -29,20 +29,19 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inicio' %}"><i class="bi bi-house"></i> Inicio</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'check_in' %}"><i class="bi bi-clipboard-check"></i> Check In</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-x-square-fill"></i> Desconectar</a>
                     </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
+                    </li>
+                    {% endif %}
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}"><i class="bi bi-person-badge"></i> Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
                     </li>
                     {% endif %}
 
