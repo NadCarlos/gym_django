@@ -16,7 +16,7 @@
     <nav style="background-color: #009f95;" class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'inicio' %}">
-                <img class="imagen" style="width: 30px; height: 30px;" src="{% static 'public/cermed_icon_white.png' %}" alt="E"> Inicio
+                <img class="imagen" style="width: 30px; height: 30px;" src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="E"> Inicio
             </a>
             {% if user.is_authenticated %}
             <a class="nav-link text-light"><i class="bi bi-person-badge"></i> Usuario: {{ user.username }}</a>
