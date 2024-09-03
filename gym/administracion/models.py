@@ -261,7 +261,7 @@ class PrestacionPaciente(models.Model):
         Prestacion,
         blank=True,
         null=False,
-        default=1,
+        default="",
         on_delete=models.SET_DEFAULT,
         related_name='prestacion',
     )
@@ -278,7 +278,7 @@ class PrestacionPaciente(models.Model):
         ObraSocial,
         blank=True,
         null=False,
-        default=1,
+        default="",
         on_delete=models.SET_DEFAULT,
         related_name='obra_social_prestacion',
     )

@@ -18,9 +18,9 @@ class PacienteFilter(django_filters.FilterSet):
         
 
 class AsistenciasFilter(django_filters.FilterSet):
-    fecha = django_filters.DateFilter(
-        widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
-        )
+
+    fecha = django_filters.DateRangeFilter()
+
 
     id_prestacion_paciente__id_paciente__apellido = django_filters.CharFilter(lookup_expr='icontains')
 
@@ -30,3 +30,4 @@ class AsistenciasFilter(django_filters.FilterSet):
             'fecha',
             'id_prestacion_paciente__id_paciente__apellido',
             }
+        

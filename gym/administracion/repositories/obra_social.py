@@ -17,6 +17,11 @@ class ObraSocialRepository:
             activo=True
         ).order_by('nombre')
     
+    def get_by_name(self, nombre: str) -> List[ObraSocial]:
+        return ObraSocial.objects.get(
+            nombre=nombre
+        )
+    
     def get_by_id(self, id: int) -> Optional[ObraSocial]:
         try:
             obra_social = ObraSocial.objects.get(id=id)
