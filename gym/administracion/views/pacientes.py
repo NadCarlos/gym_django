@@ -13,9 +13,19 @@ from administracion.forms import (
     )
 
 from administracion.repositories.paciente import PacienteRepository
+from administracion.repositories.obra_social import ObraSocialRepository
+from administracion.repositories.sexo import SexoRepository
+from administracion.repositories.prestacion import PrestacionRepository
+from administracion.repositories.localidad import LocalidadRepository
+from administracion.repositories.estado_civil import EstadoCivilRepository
 
 
 pacienteRepo = PacienteRepository()
+obraSocialRepo = ObraSocialRepository()
+sexoRepo = SexoRepository()
+prestacionRepo = PrestacionRepository()
+localidadRepo = LocalidadRepository()
+estadoCivilRepo = EstadoCivilRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -52,7 +62,18 @@ class PacienteDetail(View):
 class PacienteCreate(View):
 
     def get(self, request):
-        form = PacienteCreateForm(initial = {'id_usuario': request.user, 'id_obra_social': 4, 'id_sexo': 1, 'id_estado_civil': 1, 'id_localidad': 1})
+        obra_social = obraSocialRepo.get_by_name(nombre="Particular")
+        sexo = sexoRepo.get_by_name(nombre="Masculino")
+        estado_civil = estadoCivilRepo.get_by_name(nombre="Soltero")
+        localidad = localidadRepo.get_by_name(nombre="Rio Cuarto")
+        form = PacienteCreateForm(initial = {
+            'id_usuario': request.user,
+            'id_obra_social': obra_social.id,
+            'id_sexo': sexo.id,
+            'id_estado_civil': estado_civil.id,
+            'id_localidad': localidad.id
+            }
+        )
         return render(
             request,
             'pacientes/create.html',
