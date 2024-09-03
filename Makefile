@@ -16,8 +16,8 @@ prod-up:
 prod-down:
 	docker compose -f docker-compose-prod.yaml down
 
-restart:
-	docker compose restart
+prod-restart:
+	docker compose -f docker-compose-prod.yaml restart
 
 run:
 	docker compose build && docker compose up
