@@ -160,11 +160,12 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "es-AR"
 TIME_ZONE = "America/Argentina/Buenos_Aires"
 USE_I18N = True
-USE_L10N = True
-USE_TZ = True
+USE_L10N = False
+USE_TZ = False
 
-DATE_FORMAT = "d F Y"
-DATETIME_FORMAT = "d F Y H:i:s"
+DATE_FORMAT = "d/m/Y"
+TIME_FORMAT = "H:i"
+DATETIME_FORMAT = "d/m/Y H:i:s"
 DATE_INPUT_FORMATS = [
     "%d/%m/%Y",  # '27/10/2023'
     "%d-%m-%Y %H:%M:%S",  # '27-10-2023 14:30:59'
