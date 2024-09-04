@@ -62,8 +62,6 @@ class ListPrestacionPaciente(View):
         paciente = pacienteRepo.get_by_id(id=id)
         paciente_id = paciente.id
         prestaciones_paciente = prestacionPacienteRepo.filter_by_id_paciente_all(id_paciente=paciente_id)
-        print(paciente)
-        print(prestaciones_paciente)
         return render(
             request,
             'prestacion_paciente/list.html',
@@ -72,6 +70,16 @@ class ListPrestacionPaciente(View):
                 prestaciones_paciente=prestaciones_paciente
             )
         )
+    
+
+class DeletePrestacionPaciente(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, id):
+        prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
+        #No elimino, cambio el campo activo a False
+        prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
+        return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
     
 
 class ActiveError(View):

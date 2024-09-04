@@ -3,11 +3,6 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Lista de Prestaciones Paciente: {{ paciente.apellido }}, {{ paciente.nombre }}</h2>
-    {% if user.is_staff %}
-    <a href="{% url 'prestacion_create' %}" class="btn btn-success mb-4">
-        <i class="bi bi-plus-circle"></i> Nueva Prestación
-    </a>
-    {% endif %}
     <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered">
             <thead class="table-dark">
@@ -30,8 +25,8 @@
                     <td>{{ prestacion_paciente.activo }}</td>
                     <td>
                         {% if user.is_staff %}
-                        <a href="#" class="btn btn-danger btn-sm me-2">
-                            <i class="bi bi-trash"></i> Borrar
+                        <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}" class="btn btn-danger btn-sm me-2">
+                            <i class="bi bi-trash"></i> Finalizar Prestacion
                         </a>
                         <a href="#" class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i> Editar

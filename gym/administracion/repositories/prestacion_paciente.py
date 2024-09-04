@@ -16,7 +16,7 @@ class PrestacionPacienteRepository:
         return PrestacionPaciente.objects.filter(id_paciente=id_paciente).first()
     
     def filter_by_id_paciente_all(self, id_paciente) -> Optional[PrestacionPaciente]:
-        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).all()
+        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).all().order_by('-activo')
     
     def filter_by_id_paciente_activo(self, id_paciente) -> Optional[PrestacionPaciente]:
         return PrestacionPaciente.objects.filter(id_paciente=id_paciente).filter(activo=True)
