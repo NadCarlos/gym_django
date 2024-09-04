@@ -62,3 +62,19 @@ class PrestacionPacienteRepository:
             id_paciente=paciente,
             id_obra_social=obraSocial,
         )
+    
+    def update(
+        self, 
+        prestacionPaciente: PrestacionPaciente,
+        fecha_inicio: str,
+        fecha_fin: str,
+        id_prestacion: Prestacion,
+        id_obra_social: ObraSocial,
+    ) -> Paciente:
+
+        prestacionPaciente.fecha_inicio = fecha_inicio
+        prestacionPaciente.fecha_fin = fecha_fin
+        prestacionPaciente.id_prestacion = id_prestacion
+        prestacionPaciente.id_obra_social = id_obra_social
+
+        prestacionPaciente.save()

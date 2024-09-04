@@ -13,6 +13,7 @@ from administracion.views.prestacion_paciente import (
     ListPrestacionPaciente,
     ActiveError,
     DeletePrestacionPaciente,
+    PrestacionPacienteUpdate,
 )
 
 from administracion.views.obra_social import (
@@ -43,6 +44,7 @@ urlpatterns = [
 
     path(route='<int:id>/nueva_prestacion_paciente/',view=NuevaPrestacionPaciente.as_view(), name='nueva_prestacion_paciente'),
     path(route='<int:id>/list_prestacion_paciente/',view=ListPrestacionPaciente.as_view(), name='list_prestacion_paciente'),
+    path(route='<int:id>/update_prestacion_paciente/',view=PrestacionPacienteUpdate.as_view(), name='update_prestacion_paciente'),
     path(route='<int:id>/delete_prestacion_paciente/',view=DeletePrestacionPaciente.as_view(), name='delete_prestacion_paciente'),
     path(route='active_error/',view=ActiveError.as_view(), name='active_error'),
 

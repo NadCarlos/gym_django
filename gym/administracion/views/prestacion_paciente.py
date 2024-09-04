@@ -72,6 +72,39 @@ class ListPrestacionPaciente(View):
         )
     
 
+class PrestacionPacienteUpdate(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, id):
+        prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
+        form = PrestacionCreateForm(instance=prestacionPaciente)
+        return render(
+            request,
+            'prestacion_paciente/update.html',
+            dict(
+                form=form,
+                prestacionPaciente=prestacionPaciente,
+            )
+        )
+
+    @method_decorator(login_required(login_url='login'))
+    def post(self, request, id):
+        form = PrestacionCreateForm(request.POST)
+        prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                prestacionPacienteRepo.update(
+                    prestacionPaciente=prestacionPaciente,
+                    fecha_inicio=form.cleaned_data['fecha_inicio'],
+                    fecha_fin=form.cleaned_data['fecha_fin'],
+                    id_prestacion=form.cleaned_data['id_prestacion'],
+                    id_obra_social=form.cleaned_data['id_obra_social'],
+                    )
+                return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
+        except:
+            return redirect('error')
+    
+
 class DeletePrestacionPaciente(View):
 
     @method_decorator(login_required(login_url='login'))
