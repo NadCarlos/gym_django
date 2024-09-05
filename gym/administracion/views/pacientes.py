@@ -86,22 +86,22 @@ class PacienteCreate(View):
         form = PacienteCreateForm(request.POST)
         print(form)
         if form.is_valid():
-                paciente_nuevo = pacienteRepo.create(
-                    nombre=form.cleaned_data['nombre'],
-                    apellido=form.cleaned_data['apellido'],
-                    numero_dni=form.cleaned_data['numero_dni'],
-                    direccion=form.cleaned_data['direccion'],
-                    telefono=form.cleaned_data['telefono'],
-                    celular=form.cleaned_data['celular'],
-                    observaciones=form.cleaned_data['observaciones'],
-                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                    obraSocial=form.cleaned_data['id_obra_social'],
-                    estadoCivil=form.cleaned_data['id_estado_civil'],
-                    sexo=form.cleaned_data['id_sexo'],
-                    localidad=form.cleaned_data['id_localidad'],
-                    usuario=form.cleaned_data['id_usuario'],
-                    )
-                return redirect('paciente_detail', paciente_nuevo.id)
+            paciente_nuevo = pacienteRepo.create(
+                id_usuario=form.cleaned_data['id_usuario'],
+                nombre=form.cleaned_data['nombre'],
+                apellido=form.cleaned_data['apellido'],
+                numero_dni=form.cleaned_data['numero_dni'],
+                fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                id_obra_social=form.cleaned_data['id_obra_social'],
+                id_estado_civil=form.cleaned_data['id_estado_civil'],
+                id_sexo=form.cleaned_data['id_sexo'],
+                id_localidad=form.cleaned_data['id_localidad'],
+                direccion=form.cleaned_data['direccion'],
+                telefono=form.cleaned_data['telefono'],
+                celular=form.cleaned_data['celular'],
+                observaciones=form.cleaned_data['observaciones'],
+                )
+            return redirect('paciente_detail', paciente_nuevo.id)
 
 
 class PacienteUpdate(View):

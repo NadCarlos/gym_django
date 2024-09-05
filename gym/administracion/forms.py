@@ -1,14 +1,18 @@
 from django import forms
 from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion
 
+from django.core.exceptions import ValidationError
+
 from administracion.models import ObraSocial, Prestacion
 
 class PacienteCreateForm(forms.ModelForm):
 
+    
+
     def __init__(self, *args, **kwargs):
         super(PacienteCreateForm, self).__init__(*args, **kwargs)
         self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
-
+        
     class Meta:
 
         model = Paciente
@@ -36,7 +40,7 @@ class PacienteCreateForm(forms.ModelForm):
             'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
-            'fecha_nacimiento': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_estado_civil': forms.Select(attrs={'class': 'form-control custom-class'}),
@@ -79,12 +83,18 @@ class PacienteUpdateForm(forms.ModelForm):
             'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
-            'fecha_nacimiento': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_estado_civil': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
         }
+
+    def clean_numero_dni(self):
+        numero_dni = self.cleaned_data.get('numero_dni')
+        if len(str(numero_dni)) > 8:
+            raise ValidationError('El DNI no puede tener más de 8 caracteres.')
+        return numero_dni
 
 
 class PrestacionCreateForm(forms.ModelForm):

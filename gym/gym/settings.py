@@ -166,11 +166,12 @@ USE_TZ = False
 DATE_FORMAT = "d/m/Y"
 TIME_FORMAT = "H:i"
 DATETIME_FORMAT = "d/m/Y H:i:s"
-DATE_INPUT_FORMATS = [
+
+"""DATE_INPUT_FORMATS = [
     "%d/%m/%Y",  # '27/10/2023'
     "%d-%m-%Y %H:%M:%S",  # '27-10-2023 14:30:59'
 ]
-
+"""
 USE_THOUSAND_SEPARATOR = True
 NUMBER_GROUPING = 3
 
