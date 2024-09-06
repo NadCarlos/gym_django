@@ -45,8 +45,10 @@ class ObraSocialCreate(View):
         form = ObraSocialForm(request.POST)
         try:
             if form.is_valid():
+                nombre=form.cleaned_data['nombre']
+                nombre=nombre.upper()
                 obraSocialRepo.create(
-                    nombre=form.cleaned_data['nombre'],
+                    nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
                 return redirect('obras_sociales')
@@ -75,9 +77,11 @@ class ObraSocialUpdate(View):
         obra_social = obraSocialRepo.get_by_id(id=id)
         try:
             if form.is_valid():
+                nombre=form.cleaned_data['nombre']
+                nombre=nombre.upper()
                 obraSocialRepo.update(
                     obra_social=obra_social,
-                    nombre=form.cleaned_data['nombre'],
+                    nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
                 return redirect('obras_sociales')

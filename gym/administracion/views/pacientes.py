@@ -84,12 +84,15 @@ class PacienteCreate(View):
 
     def post(self, request):
         form = PacienteCreateForm(request.POST)
-        print(form)
         if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            nombre = nombre.upper()
+            apellido = form.cleaned_data['apellido']
+            apellido = apellido.upper()
             paciente_nuevo = pacienteRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],
-                nombre=form.cleaned_data['nombre'],
-                apellido=form.cleaned_data['apellido'],
+                nombre=nombre,
+                apellido=apellido,
                 numero_dni=form.cleaned_data['numero_dni'],
                 fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
                 id_obra_social=form.cleaned_data['id_obra_social'],
@@ -125,10 +128,14 @@ class PacienteUpdate(View):
         paciente = pacienteRepo.get_by_id(id=id)
         try:
             if form.is_valid():
+                nombre = form.cleaned_data['nombre']
+                nombre = nombre.upper()
+                apellido = form.cleaned_data['apellido']
+                apellido = apellido.upper()
                 pacienteRepo.update(
                     paciente=paciente,
-                    nombre=form.cleaned_data['nombre'],
-                    apellido=form.cleaned_data['apellido'],
+                    nombre=nombre,
+                    apellido=apellido,
                     numero_dni=form.cleaned_data['numero_dni'],
                     direccion=form.cleaned_data['direccion'],
                     telefono=form.cleaned_data['telefono'],

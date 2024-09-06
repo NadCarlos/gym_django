@@ -45,8 +45,10 @@ class PrestacionCreate(View):
         form = PrestacionForm(request.POST)
         try:
             if form.is_valid():
+                nombre=form.cleaned_data['nombre']
+                nombre=nombre.upper()
                 prestacionRepo.create(
-                    nombre=form.cleaned_data['nombre'],
+                    nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
                 return redirect('prestaciones')
@@ -75,9 +77,11 @@ class PrestacionUpdate(View):
         prestacion = prestacionRepo.get_by_id(id=id)
         try:
             if form.is_valid():
+                nombre=form.cleaned_data['nombre']
+                nombre=nombre.upper()
                 prestacionRepo.update(
                     prestacion=prestacion,
-                    nombre=form.cleaned_data['nombre'],
+                    nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
                 return redirect('prestaciones')
