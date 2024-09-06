@@ -112,6 +112,34 @@ class PrestacionCreateForm(forms.ModelForm):
 
         fields = [
             'fecha_inicio',
+            'id_prestacion',
+            'id_paciente',
+            'id_obra_social',
+            ]
+        
+        widgets = {
+            'fecha_inicio': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_prestacion': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class PrestacionUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PrestacionUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['id_prestacion'].required = True
+        self.fields['id_obra_social'].required = True
+        self.fields['id_prestacion'].queryset = Prestacion.objects.filter(activo=True)
+        self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
+
+    class Meta:
+
+        model = PrestacionPaciente
+
+        fields = [
+            'fecha_inicio',
             'fecha_fin',
             'id_prestacion',
             'id_paciente',

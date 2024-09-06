@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 
 from administracion.forms import (
     PrestacionCreateForm,
+    PrestacionUpdateForm,
     )
 
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
@@ -45,7 +46,6 @@ class NuevaPrestacionPaciente(View):
             if form.is_valid():
                 nueva_prestacion_paciente = prestacionPacienteRepo.create(
                     fecha_inicio=form.cleaned_data['fecha_inicio'],
-                    fecha_fin=form.cleaned_data['fecha_fin'],
                     prestacion=form.cleaned_data['id_prestacion'],
                     paciente=form.cleaned_data['id_paciente'],
                     obraSocial=form.cleaned_data['id_obra_social'],
@@ -77,7 +77,7 @@ class PrestacionPacienteUpdate(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
-        form = PrestacionCreateForm(instance=prestacionPaciente)
+        form = PrestacionUpdateForm(instance=prestacionPaciente)
         return render(
             request,
             'prestacion_paciente/update.html',
@@ -89,7 +89,7 @@ class PrestacionPacienteUpdate(View):
 
     @method_decorator(login_required(login_url='login'))
     def post(self, request, id):
-        form = PrestacionCreateForm(request.POST)
+        form = PrestacionUpdateForm(request.POST)
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
         try:
             if form.is_valid():

@@ -50,14 +50,12 @@ class PrestacionPacienteRepository:
     def create(
         self,
         fecha_inicio: str,
-        fecha_fin: str,
         prestacion: Prestacion,
         paciente: Paciente,
         obraSocial: ObraSocial,
     ):
         return PrestacionPaciente.objects.create(
             fecha_inicio=fecha_inicio,
-            fecha_fin=fecha_fin,
             id_prestacion=prestacion,
             id_paciente=paciente,
             id_obra_social=obraSocial,
