@@ -46,20 +46,3 @@ class AsistenciasList(View):
                 'form': filterset.form,  # Pasamos el formulario del filtro al template
             }
         )
-    
-
-
-"""    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.filterset.form
-        return context"""
-    
-"""
-def post(self, request, *args, **kwargs):
-    armo 1 form que:
-    recibir las 2 fechas
-    retornar:
-    qs.filter(fecha__range(finicio, ffin))
-    qs.filter(fecha__gte=finicio, fecha__lt)
-
-"""

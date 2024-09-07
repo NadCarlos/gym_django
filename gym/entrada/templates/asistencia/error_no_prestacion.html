@@ -1,0 +1,10 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="row">
+    <h1>Este paciente no tiene prestacion activa, para cargar una asistencia primero asigne una prestacion.</h1>
+    <a href="{% url 'paciente_detail' paciente.id %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Volver
+    </a>
+</div>
+{% endblock %}

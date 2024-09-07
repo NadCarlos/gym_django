@@ -44,15 +44,18 @@ class NuevaAsistenciaPaciente(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
-        form = AsistenciaCreateForm(initial = {'id_prestacion_paciente': prestacion_paciente.id})
-        return render(
-            request,
-            'asistencia/create.html',
-            dict(
-                paciente=paciente,
-                form=form
+        try:
+            form = AsistenciaCreateForm(initial = {'id_prestacion_paciente': prestacion_paciente.id})
+            return render(
+                request,
+                'asistencia/create.html',
+                dict(
+                    paciente=paciente,
+                    form=form
+                )
             )
-        )
+        except:
+            return redirect('error_no_prestacion', paciente.id)
     
     @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
@@ -162,4 +165,28 @@ class CheckInNotFound(View):
         return render(
             request,
             'asistencia/check_in_not_found.html'
+        )
+    
+
+class PrestacionNotFound(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, id, *args, **kwargs):
+        paciente = pacienteRepo.get_by_id(id=id)
+        return render(
+            request,
+            'asistencia/error_no_prestacion.html',
+            dict(
+                paciente=paciente,
+            )
+        )
+    
+    def post(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        return render(
+            request,
+            'pacientes/detail.html',
+            dict(
+                paciente=paciente,
+            )
         )
