@@ -6,6 +6,7 @@ from administracion.views.pacientes import (
     PacienteCreate,
     PacienteUpdate,
     PacienteDelete,
+    PacientesToCsv,
     )
 
 from administracion.views.prestacion_paciente import (
@@ -36,7 +37,8 @@ from administracion.views.asistencias import (
 
 
 urlpatterns = [
-    path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),    
+    path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),
+    path(route='pacientes_csv/',view=PacientesToCsv.as_view(), name='pacientes_csv'),
     path(route='paciente_create/',view=PacienteCreate.as_view(), name='paciente_create'),
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),
     path(route='<int:id>/paciente_update/',view=PacienteUpdate.as_view(), name='paciente_update'),

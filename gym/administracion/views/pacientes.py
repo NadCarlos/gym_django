@@ -1,9 +1,11 @@
+import csv
+
 from typing import Any
 from django.views import View
 from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 
 from administracion.filters import PacienteFilter
 
@@ -18,6 +20,8 @@ from administracion.repositories.sexo import SexoRepository
 from administracion.repositories.prestacion import PrestacionRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.estado_civil import EstadoCivilRepository
+
+from administracion.models import Paciente
 
 
 pacienteRepo = PacienteRepository()
@@ -160,3 +164,49 @@ class PacienteDelete(View):
         #No elimino, cambio el campo activo a False
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
+    
+
+class PacientesToCsv(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment;filename=pacientes.csv'
+        writer = csv.writer(response)
+        
+        writer.writerow([
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Direccion',
+            'Telefono',
+            'Celular',
+            'Fecha de nacimiento',
+            'observaciones',
+            'activo',
+            'obra social',
+            'estado civil',
+            'localidad',
+            'sexo',
+            ])
+        
+        pacientes = Paciente.objects.all()
+
+        for paciente in pacientes:
+            writer.writerow([
+                paciente.nombre,
+                paciente.apellido,
+                paciente.numero_dni,
+                paciente.direccion,
+                paciente.telefono,
+                paciente.celular,
+                paciente.fecha_nacimiento,
+                paciente.observaciones,
+                paciente.activo,
+                paciente.id_obra_social.nombre,
+                paciente.id_estado_civil.nombre,
+                paciente.id_localidad.nombre,
+                paciente.id_sexo.nombre,
+                ])
+
+        return response

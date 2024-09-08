@@ -7,6 +7,11 @@
     <a href="{% url 'paciente_create' %}" class="btn btn-primary mb-4">
         <i class="bi bi-person-plus"></i> Nuevo Paciente
     </a>
+
+    <a href="{% url 'pacientes_csv' %}" class="btn btn-primary mb-4">
+        <i class="bi bi-person-plus"></i> Guardar CSV
+    </a>
+
     {% endif %}
     <form method="GET" action="{% url 'pacientes_list' %}" class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center">
