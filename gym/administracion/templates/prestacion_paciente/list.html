@@ -18,21 +18,43 @@
             <tbody>
                 {% for prestacion_paciente in prestaciones_paciente %}
                 <tr>
-                    <td>{{ prestacion_paciente.fecha_inicio }}</td>
-                    <td>{{ prestacion_paciente.id_prestacion.nombre }}</td>
-                    <td>{{ prestacion_paciente.id_obra_social.nombre }}</td>
-                    <td>{{ prestacion_paciente.fecha_fin }}</td>
-                    <td>{{ prestacion_paciente.activo }}</td>
-                    <td>
+                    {% if prestacion_paciente.activo == True %}
+                    <td class="bg-success text-white">{{ prestacion_paciente.fecha_inicio }}</td>
+                    <td class="bg-success text-white">{{ prestacion_paciente.id_prestacion.nombre }}</td>
+                    <td class="bg-success text-white">{{ prestacion_paciente.id_obra_social.nombre }}</td>
+                    <td class="bg-success text-white">{{ prestacion_paciente.fecha_fin }}</td>
+                    <td class="bg-success text-white">{{ prestacion_paciente.activo }}</td>
+                    <td class="bg-success text-white">
                         {% if user.is_staff %}
-                        <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}"
+                            class="btn btn-danger btn-sm me-2">
                             <i class="bi bi-trash"></i> Finalizar Prestacion
                         </a>
-                        <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}" class="btn btn-warning btn-sm">
+                        <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}"
+                            class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="bg-danger text-white">{{ prestacion_paciente.fecha_inicio }}</td>
+                    <td class="bg-danger text-white">{{ prestacion_paciente.id_prestacion.nombre }}</td>
+                    <td class="bg-danger text-white">{{ prestacion_paciente.id_obra_social.nombre }}</td>
+                    <td class="bg-danger text-white">{{ prestacion_paciente.fecha_fin }}</td>
+                    <td class="bg-danger text-white">{{ prestacion_paciente.activo }}</td>
+                    <td class="bg-danger text-white">
+                        {% if user.is_staff %}
+                        <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}"
+                            class="btn btn-secondary btn-sm me-2">
+                            <i class="bi bi-trash"></i> Finalizar Prestacion
+                        </a>
+                        <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}"
+                            class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
