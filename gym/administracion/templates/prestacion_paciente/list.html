@@ -27,7 +27,8 @@
                     <td class="bg-success text-white">
                         {% if user.is_staff %}
                         <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}"
-                            class="btn btn-danger btn-sm me-2">
+                            class="btn btn-danger btn-sm me-2"
+                            onclick="return confirm('¿Estás seguro de que deseas finalizar esta prestación?');">
                             <i class="bi bi-trash"></i> Finalizar Prestacion
                         </a>
                         <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}"
