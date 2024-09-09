@@ -26,17 +26,19 @@ class AsistenciaPacienteList(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
-        asistencias = asistenciaRepo.get_all_by_id(id_prestacion_paciente=prestacion_paciente.id)
-        return render(
-            request,
-            'asistencia/list.html',
-            dict(
-                paciente=paciente,
-                prestacion_paciente=prestacion_paciente,
-                asistencias=asistencias,
+        try:
+            asistencias = asistenciaRepo.get_all_by_id(id_prestacion_paciente=prestacion_paciente.id)
+            return render(
+                request,
+                'asistencia/list.html',
+                dict(
+                    paciente=paciente,
+                    prestacion_paciente=prestacion_paciente,
+                    asistencias=asistencias,
+                )
             )
-        )
-
+        except:
+            return redirect('error_no_prestacion', paciente.id)
 
 class NuevaAsistenciaPaciente(View):
 
