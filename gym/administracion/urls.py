@@ -33,6 +33,7 @@ from administracion.views.prestacion import (
 
 from administracion.views.asistencias import (
     AsistenciasList,
+    AsistenciasToCsv,
 )
 
 
@@ -61,4 +62,5 @@ urlpatterns = [
     path(route='<int:id>/prestacion_delete/',view=PrestacionDelete.as_view(), name='prestacion_delete'),
 
     path(route='asistencias/',view=AsistenciasList.as_view(), name='asistencias'),
+    path(route='asistencias_csv/',view=AsistenciasToCsv.as_view(), name='asistencias_csv'),
 ]

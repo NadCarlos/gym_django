@@ -72,15 +72,15 @@ class PacientesToCsv(View):
             'sexo',
             ])
         
+        apellido = request.GET.get('apellido')
         id_obra_social = request.GET.get('id_obra_social')
         id_estado_civil = request.GET.get('id_estado_civil')
         id_sexo = request.GET.get('id_sexo')
 
-        id_obra_social = request.GET.get('id_obra_social')
-        id_estado_civil = request.GET.get('id_estado_civil')
-        id_sexo = request.GET.get('id_sexo')
+        pacientes = Paciente.objects.filter(activo=True)
 
-        pacientes = Paciente.objects.all()
+        if apellido:
+            pacientes = pacientes.filter(apellido__icontains=apellido)
 
         if id_obra_social:
             pacientes = pacientes.filter(id_obra_social=id_obra_social)

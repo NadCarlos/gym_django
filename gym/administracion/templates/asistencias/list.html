@@ -3,6 +3,9 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Asistencias</h2>
+    <a href="{% url 'asistencias_csv' %}?{{ request.GET.urlencode }}" class="btn btn-primary mb-4">
+        <i class="bi bi-person-plus"></i> Guardar CSV
+    </a>
     <form method="GET" action="{% url 'asistencias' %}" class="d-flex align-items-center gap-3">
         
         <div class="d-flex align-items-center">
