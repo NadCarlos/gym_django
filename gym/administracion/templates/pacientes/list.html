@@ -8,7 +8,7 @@
         <i class="bi bi-person-plus"></i> Nuevo Paciente
     </a>
 
-    <a href="{% url 'pacientes_csv' %}" class="btn btn-primary mb-4">
+    <a href="{% url 'pacientes_csv' %}?{{ request.GET.urlencode }}" class="btn btn-primary mb-4">
         <i class="bi bi-person-plus"></i> Guardar CSV
     </a>
 

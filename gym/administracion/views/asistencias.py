@@ -28,6 +28,8 @@ class AsistenciasList(View):
             )
         )
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class AsistenciasList(View):
     template_name = 'asistencias/list.html'
     context_object_name = 'asistencias'

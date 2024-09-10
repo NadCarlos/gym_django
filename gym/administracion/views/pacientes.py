@@ -48,6 +48,66 @@ class PacientesList(ListView):
         context['form'] = self.filterset.form
         return context
 
+class PacientesToCsv(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment;filename=pacientes.xlsx'
+        writer = csv.writer(response)
+
+        writer.writerow([
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Direccion',
+            'Telefono',
+            'Celular',
+            'Fecha de nacimiento',
+            'observaciones',
+            'activo',
+            'obra social',
+            'estado civil',
+            'localidad',
+            'sexo',
+            ])
+        
+        id_obra_social = request.GET.get('id_obra_social')
+        id_estado_civil = request.GET.get('id_estado_civil')
+        id_sexo = request.GET.get('id_sexo')
+
+        id_obra_social = request.GET.get('id_obra_social')
+        id_estado_civil = request.GET.get('id_estado_civil')
+        id_sexo = request.GET.get('id_sexo')
+
+        pacientes = Paciente.objects.all()
+
+        if id_obra_social:
+            pacientes = pacientes.filter(id_obra_social=id_obra_social)
+
+        if id_estado_civil:
+            pacientes = pacientes.filter(id_estado_civil=id_estado_civil)
+
+        if id_sexo:
+            pacientes = pacientes.filter(id_sexo=id_sexo)
+
+        for paciente in pacientes:
+            writer.writerow([
+                paciente.nombre,
+                paciente.apellido,
+                paciente.numero_dni,
+                paciente.direccion,
+                paciente.telefono,
+                paciente.celular,
+                paciente.fecha_nacimiento,
+                paciente.observaciones,
+                paciente.activo,
+                paciente.id_obra_social.nombre,
+                paciente.id_estado_civil.nombre,
+                paciente.id_localidad.nombre,
+                paciente.id_sexo.nombre,
+                ])
+        return response
 
 class PacienteDetail(View):
 
@@ -165,48 +225,3 @@ class PacienteDelete(View):
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
     
-
-class PacientesToCsv(View):
-
-    @method_decorator(login_required(login_url='login'))
-    def get(self, request):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=pacientes.csv'
-        writer = csv.writer(response)
-        
-        writer.writerow([
-            'Nombre',
-            'Apellido',
-            'Dni',
-            'Direccion',
-            'Telefono',
-            'Celular',
-            'Fecha de nacimiento',
-            'observaciones',
-            'activo',
-            'obra social',
-            'estado civil',
-            'localidad',
-            'sexo',
-            ])
-        
-        pacientes = Paciente.objects.all()
-
-        for paciente in pacientes:
-            writer.writerow([
-                paciente.nombre,
-                paciente.apellido,
-                paciente.numero_dni,
-                paciente.direccion,
-                paciente.telefono,
-                paciente.celular,
-                paciente.fecha_nacimiento,
-                paciente.observaciones,
-                paciente.activo,
-                paciente.id_obra_social.nombre,
-                paciente.id_estado_civil.nombre,
-                paciente.id_localidad.nombre,
-                paciente.id_sexo.nombre,
-                ])
-
-        return response
