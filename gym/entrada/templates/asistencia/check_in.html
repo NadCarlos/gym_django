@@ -5,20 +5,20 @@
 
 <body class="body">
     <div class="container d-flex justify-content-center align-items-center">
-        <img style="width: 200px; height: 200px;" class="imagen" src="{% static 'public/cermed_sin_fondo.png' %}" alt="E">
+        <img style="width: 300px; height: 300px;" class="imagen" src="{% static 'public/cermed_sin_fondo.png' %}" alt="E">
     </div>
     <div class="container d-flex justify-content-center align-items-center vh-50">
         <div class="row">
             <div class="card">
                 <div style="background-color: #009f95;" class="card-header text-center">
-                    <h3 class="card-title ">Check In</h3>
+                    <p class="h2">CHECK IN</p>
                 </div>
                 <div class="card-body">
                     <form method="POST" action="#">
                         {% csrf_token %}
 
                         <div class="mb-4">
-                            <label for="numero_dni" class="form-label">Ingresa tu DNI:</label>
+                            <label for="numero_dni" class="form-label"><p class="h2">INGRESA TU DNI:</p></label>
                             {{ form.numero_dni }}
                         </div>
 
@@ -60,8 +60,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button style="background-color: #009f95;" type="submit"
-                                class="btn btn-primary w-100">Ingresar</button>
+                            <button style="background-color: #009f95;" type="submit" class="btn btn-primary w-100"><p class="h2">INGRESAR</p></button>
                         </div>
 
                     </form>
@@ -94,7 +93,7 @@
         }
 
         .card {
-            max-width: 400px;
+            max-width: 500px;
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
@@ -104,18 +103,18 @@
             color: white;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
-            padding: 15px;
+            padding: 20px;
         }
 
         .card-body {
-            padding: 30px;
+            padding: 40px;
         }
 
         .num {
-            font-size: 1.5rem;
-            padding: 15px;
-            width: 60px;
-            height: 60px;
+            font-size: 2rem;
+            padding: 20px;
+            width: 80px;
+            height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -129,10 +128,10 @@
         .delete {
             background-color: #dc3545;
             color: white;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            padding: 15px;
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -148,8 +147,8 @@
         }
 
         .imagen {
-            width: 150px;
-            height: 150px;
+            width: 300px;
+            height: 300px;
         }
     </style>
     {% endblock %}
