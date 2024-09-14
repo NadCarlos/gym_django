@@ -40,16 +40,26 @@ class AsistenciasList(View):
         # Instanciar el filtro con los datos enviados por el formulario
         filterset = AsistenciasFilter(request.GET, queryset=asisteniaRepo.get_all())
 
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'fecha')  # Por defecto ordenar por fecha
+
         # Obtener el queryset filtrado
-        asistencias=filterset.qs
+        asistencias = filterset.qs
+
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            asistencias = asistencias.order_by(ordering)
+
         return render(
             request,
             self.template_name,
-            {
-                'asistencias': asistencias,  # Pasamos las asistencias filtradas
-                'form': filterset.form,  # Pasamos el formulario del filtro al template
-            }
+            dict(
+                asistencias=asistencias,  # Pasamos las asistencias filtradas y ordenadas
+                form=filterset.form,  # Pasamos el formulario del filtro al template
+                ordering=ordering,  # Pasamos el orden actual para su uso en el template
+            )
         )
+
 
 
 class AsistenciasToCsv(View):

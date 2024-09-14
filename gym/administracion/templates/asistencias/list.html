@@ -39,31 +39,85 @@
     </form>
     
 
-    <div class="mt-4 table-responsive">
-        <table class="table table-striped table-hover table-bordered">
-            <thead class="table-primary">
-                <tr>
-                    <th>Apellido</th>
-                    <th>Nombre</th>
-                    <th>Fecha</th>
-                    <th>Hora</th>
-                    <th>Prestacion</th>
-                    <th>Obra Social</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for asistencia in asistencias %}
-                <tr>
-                    <td>{{ asistencia.id_prestacion_paciente.id_paciente.apellido }}</td>
-                    <td>{{ asistencia.id_prestacion_paciente.id_paciente.nombre }}</td>
-                    <td>{{ asistencia.fecha }}</td>
-                    <td>{{ asistencia.hora }}</td>
-                    <td>{{ asistencia.id_prestacion_paciente.id_prestacion.nombre }}</td>
-                    <td>{{ asistencia.id_prestacion_paciente.id_obra_social.nombre }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-primary">
+            <tr>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_prestacion_paciente__id_paciente__apellido' %}-id_prestacion_paciente__id_paciente__apellido{% else %}id_prestacion_paciente__id_paciente__apellido{% endif %}">
+                        Apellido
+                        {% if request.GET.ordering == 'id_prestacion_paciente__id_paciente__apellido' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-id_prestacion_paciente__id_paciente__apellido' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_prestacion_paciente__id_paciente__nombre' %}-id_prestacion_paciente__id_paciente__nombre{% else %}id_prestacion_paciente__id_paciente__nombre{% endif %}">
+                        Nombre
+                        {% if request.GET.ordering == 'id_prestacion_paciente__id_paciente__nombre' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-id_prestacion_paciente__id_paciente__nombre' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'fecha' %}-fecha{% else %}fecha{% endif %}">
+                        Fecha
+                        {% if request.GET.ordering == 'fecha' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-fecha' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'hora' %}-hora{% else %}hora{% endif %}">
+                        Hora
+                        {% if request.GET.ordering == 'hora' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-hora' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_prestacion_paciente__id_prestacion__nombre' %}-id_prestacion_paciente__id_prestacion__nombre{% else %}id_prestacion_paciente__id_prestacion__nombre{% endif %}">
+                        Prestación
+                        {% if request.GET.ordering == 'id_prestacion_paciente__id_prestacion__nombre' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-id_prestacion_paciente__id_prestacion__nombre' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_prestacion_paciente__id_obra_social__nombre' %}-id_prestacion_paciente__id_obra_social__nombre{% else %}id_prestacion_paciente__id_obra_social__nombre{% endif %}">
+                        Obra Social
+                        {% if request.GET.ordering == 'id_prestacion_paciente__id_obra_social__nombre' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-id_prestacion_paciente__id_obra_social__nombre' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asistencia in asistencias %}
+            <tr>
+                <td>{{ asistencia.id_prestacion_paciente.id_paciente.apellido }}</td>
+                <td>{{ asistencia.id_prestacion_paciente.id_paciente.nombre }}</td>
+                <td>{{ asistencia.fecha }}</td>
+                <td>{{ asistencia.hora }}</td>
+                <td>{{ asistencia.id_prestacion_paciente.id_prestacion.nombre }}</td>
+                <td>{{ asistencia.id_prestacion_paciente.id_obra_social.nombre }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
     </div>
 </div>
 <script type="text/javascript">
