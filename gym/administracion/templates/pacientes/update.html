@@ -28,10 +28,9 @@
             <div class="mb-2 row">
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">DNI:</label>
                 <div class="col-sm-6">
-                    {{ form.numero_dni }}
+                    <input type="text" id="numero_dni" class="form-control" maxlength="8" name="numero_dni" value="{{ form.numero_dni.value }}">
                 </div>
-                <div class="col-sm-4">
-                </div>
+                <div class="col-sm-4"></div>
             </div>
 
             <div class="mb-2 row">
@@ -123,4 +122,20 @@
         </form>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dniInput = document.getElementById('numero_dni');
+
+        // Ensure only numbers and a max length of 8
+        dniInput.addEventListener('input', function () {
+            // Allow only numbers
+            this.value = this.value.replace(/\D/g, '');
+
+            // Limit to 8 characters
+            if (this.value.length > 8) {
+                this.value = this.value.slice(0, 8);
+            }
+        });
+    });
+</script>
 {% endblock %}

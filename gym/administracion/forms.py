@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import MaxLengthValidator
 from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion
 
 from django.core.exceptions import ValidationError
@@ -6,8 +7,6 @@ from django.core.exceptions import ValidationError
 from administracion.models import ObraSocial, Prestacion
 
 class PacienteCreateForm(forms.ModelForm):
-
-    
 
     def __init__(self, *args, **kwargs):
         super(PacienteCreateForm, self).__init__(*args, **kwargs)
@@ -78,7 +77,7 @@ class PacienteUpdateForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control custom-class'}),
-            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class','maxlength': '8'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'telefono': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
             'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
@@ -89,12 +88,6 @@ class PacienteUpdateForm(forms.ModelForm):
             'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
         }
-
-    def clean_numero_dni(self):
-        numero_dni = self.cleaned_data.get('numero_dni')
-        if len(str(numero_dni)) > 8:
-            raise ValidationError('El DNI no puede tener más de 8 caracteres.')
-        return numero_dni
 
 
 class PrestacionCreateForm(forms.ModelForm):

@@ -142,7 +142,7 @@ class Paciente(models.Model):
         )
 
     numero_dni = models.CharField(
-        max_length=11,
+        max_length=8,
         null=False,
         blank=False,
         verbose_name="Numero DNI"
