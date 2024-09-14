@@ -34,19 +34,28 @@ estadoCivilRepo = EstadoCivilRepository()
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PacientesList(ListView):
-    queryset = pacienteRepo.filter_by_activo()
     template_name = 'pacientes/list.html'
     context_object_name = 'pacientes'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = pacienteRepo.filter_by_activo()
         self.filterset = PacienteFilter(self.request.GET, queryset=queryset)
-        return self.filterset.qs
-    
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        
+        # Obtener el parámetro de ordenamiento
+        ordering = self.request.GET.get('ordering', 'apellido')  # Por defecto ordenar por apellido
+
+        # Si existe un campo de ordenamiento, aplicarlo
+        if ordering:
+            queryset = self.filterset.qs.order_by(ordering)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = self.filterset.form
         return context
+
+
 
 class PacientesToCsv(View):
 
