@@ -41,7 +41,7 @@ class AsistenciasList(View):
         filterset = AsistenciasFilter(request.GET, queryset=asisteniaRepo.get_all())
 
         # Obtener el parámetro de ordenamiento
-        ordering = request.GET.get('ordering', 'fecha')  # Por defecto ordenar por fecha
+        ordering = request.GET.get('ordering', 'fecha')
 
         # Obtener el queryset filtrado
         asistencias = filterset.qs
@@ -54,12 +54,11 @@ class AsistenciasList(View):
             request,
             self.template_name,
             dict(
-                asistencias=asistencias,  # Pasamos las asistencias filtradas y ordenadas
-                form=filterset.form,  # Pasamos el formulario del filtro al template
-                ordering=ordering,  # Pasamos el orden actual para su uso en el template
+                asistencias=asistencias,
+                form=filterset.form,
+                ordering=ordering,
             )
         )
-
 
 
 class AsistenciasToCsv(View):
@@ -100,12 +99,15 @@ class AsistenciasToCsv(View):
             asistencias = asistencias.filter(id_prestacion_paciente__id_prestacion=id_prestacion)
 
         for asistencia in asistencias:
-            print(asistencia.id_prestacion_paciente.id_obra_social.nombre)
+            horaAsistencia = asistencia.hora
+            horaAsistencia=str(horaAsistencia)
+            horaAsistencia=horaAsistencia.split(".")
+            horaAsistencia=horaAsistencia[0]
             writer.writerow([
                 asistencia.id_prestacion_paciente.id_paciente.apellido,
                 asistencia.id_prestacion_paciente.id_paciente.nombre,
                 asistencia.fecha,
-                asistencia.hora,
+                horaAsistencia,
                 asistencia.id_prestacion_paciente.id_obra_social.nombre,
                 asistencia.id_prestacion_paciente.id_prestacion.nombre
                 ])
