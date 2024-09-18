@@ -19,7 +19,7 @@
 
                         <div class="mb-4">
                             <label for="numero_dni" class="form-label"><p class="h2">INGRESA TU DNI:</p></label>
-                            {{ form.numero_dni }}
+                            <input style="font-size: 28px;" required value="" type="number" id="numero_dni" class="form-control" maxlength="9" name="numero_dni" value="{{ form.numero_dni.value }}">
                         </div>
 
                         <div class="container text-center mb-4">
@@ -51,11 +51,14 @@
                                 <div class="col-4">
                                     <button type="button" class="btn btn-outline-primary btn-lg num">9</button>
                                 </div>
-                                <div class="col-4 offset-4">
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete clear-all"><i class="bi bi-x-octagon-fill"></i></button>
+                                </div>
+                                <div class="col-4">
                                     <button type="button" class="btn btn-outline-primary btn-lg num">0</button>
                                 </div>
                                 <div class="col-4">
-                                    <button type="button" class="btn btn-outline-danger btn-lg delete">⌫</button>
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete delete-one"><i class="bi bi-backspace-fill"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -73,16 +76,21 @@
         document.addEventListener('DOMContentLoaded', () => {
             const dniInput = document.querySelector('input[name="numero_dni"]');
             const botones = document.querySelectorAll('.num');
-            const borrar = document.querySelector('.delete');
-
+            const deleteOneBtn = document.querySelector('.delete-one');
+            const clearAllBtn = document.querySelector('.clear-all');
+    
             botones.forEach(boton => {
                 boton.addEventListener('click', () => {
                     dniInput.value += boton.textContent;
                 });
             });
-
-            borrar.addEventListener('click', () => {
+    
+            deleteOneBtn.addEventListener('click', () => {
                 dniInput.value = dniInput.value.slice(0, -1);
+            });
+    
+            clearAllBtn.addEventListener('click', () => {
+                dniInput.value = '';
             });
         });
     </script>
