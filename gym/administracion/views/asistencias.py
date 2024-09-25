@@ -1,4 +1,5 @@
 import csv
+
 from typing import Any
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -66,7 +67,7 @@ class AsistenciasToCsv(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=asistencias.xlsx'
+        response['Content-Disposition'] = 'attachment;filename=asistencias.csv'
         writer = csv.writer(response)
 
         writer.writerow([
@@ -99,7 +100,7 @@ class AsistenciasToCsv(View):
             asistencias = asistencias.filter(id_prestacion_paciente__id_prestacion=id_prestacion)
 
         for asistencia in asistencias:
-            horaAsistencia = asistencia.hora
+            horaAsistencia=asistencia.hora
             horaAsistencia=str(horaAsistencia)
             horaAsistencia=horaAsistencia.split(".")
             horaAsistencia=horaAsistencia[0]
@@ -111,4 +112,7 @@ class AsistenciasToCsv(View):
                 asistencia.id_prestacion_paciente.id_obra_social.nombre,
                 asistencia.id_prestacion_paciente.id_prestacion.nombre
                 ])
-        return response
+            
+        read_file = pd.read_csv(response)
+        read_file.to_excel('asistencias.xlsx', index=None, header=True)
+        return read_file

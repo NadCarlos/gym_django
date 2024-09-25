@@ -62,7 +62,7 @@ class PacientesToCsv(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=pacientes.xlsx'
+        response['Content-Disposition'] = 'attachment;filename=pacientes.csv'
         writer = csv.writer(response)
 
         writer.writerow([
