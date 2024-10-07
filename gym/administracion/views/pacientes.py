@@ -1,4 +1,5 @@
-import csv
+import pandas as pd
+import io
 
 from typing import Any
 from django.views import View
@@ -56,31 +57,13 @@ class PacientesList(ListView):
         return context
 
 
-
 class PacientesToCsv(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=pacientes.csv'
-        writer = csv.writer(response)
-
-        writer.writerow([
-            'Nombre',
-            'Apellido',
-            'Dni',
-            'Direccion',
-            'Telefono',
-            'Celular',
-            'Fecha de nacimiento',
-            'observaciones',
-            'activo',
-            'obra social',
-            'estado civil',
-            'localidad',
-            'sexo',
-            ])
-        
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=pacientes.xlsx'
+       
         apellido = request.GET.get('apellido')
         id_obra_social = request.GET.get('id_obra_social')
         id_estado_civil = request.GET.get('id_estado_civil')
@@ -100,8 +83,9 @@ class PacientesToCsv(View):
         if id_sexo:
             pacientes = pacientes.filter(id_sexo=id_sexo)
 
+        data = []
         for paciente in pacientes:
-            writer.writerow([
+            data.append([
                 paciente.nombre,
                 paciente.apellido,
                 paciente.numero_dni,
@@ -116,7 +100,33 @@ class PacientesToCsv(View):
                 paciente.id_localidad.nombre,
                 paciente.id_sexo.nombre,
                 ])
+
+        df = pd.DataFrame(data, columns=[
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Direccion',
+            'Telefono',
+            'Celular',
+            'Fecha de nacimiento',
+            'observaciones',
+            'activo',
+            'obra social',
+            'estado civil',
+            'localidad',
+            'sexo',
+            ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Pacientes', index=False)
+
+        response.write(output.getvalue())
+
         return response
+
 
 class PacienteDetail(View):
 
@@ -130,6 +140,7 @@ class PacienteDetail(View):
                 paciente=paciente,
             )
         )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteCreate(View):

@@ -1,4 +1,5 @@
-import csv
+import pandas as pd
+import io
 
 from typing import Any
 from django.views import View
@@ -13,11 +14,12 @@ from entrada.repositories.asistencia import AsistenciaRepository
 from administracion.models import Asistencia
 
 
-asisteniaRepo = AsistenciaRepository()
+asistenciaRepo = AsistenciaRepository()
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class AsistenciasList(View):
-    queryset = asisteniaRepo.get_all()
+    queryset = asistenciaRepo.get_all()
     template_name = 'asistencias/list.html'
     context_object_name = 'asistencias'
 
@@ -39,7 +41,7 @@ class AsistenciasList(View):
 
     def get(self, request):
         # Instanciar el filtro con los datos enviados por el formulario
-        filterset = AsistenciasFilter(request.GET, queryset=asisteniaRepo.get_all())
+        filterset = AsistenciasFilter(request.GET, queryset=asistenciaRepo.get_all())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
@@ -66,19 +68,9 @@ class AsistenciasToCsv(View):
 
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment;filename=asistencias.csv'
-        writer = csv.writer(response)
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=asistencias.xlsx'
 
-        writer.writerow([
-            'Apellido',
-            'Nombre',
-            'Fecha',
-            'Hora',
-            'Obra Social',
-            'Prestacion',
-            ])
-        
         apellido = request.GET.get('apellido')
         fecha_after = request.GET.get('fecha_after')
         fecha_before = request.GET.get('fecha_before')
@@ -88,7 +80,7 @@ class AsistenciasToCsv(View):
         asistencias = Asistencia.objects.all()
 
         if apellido:
-            asistencias = asistencias.filter(apellido__icontains=apellido)
+            asistencias = asistencias.filter(id_prestacion_paciente__id_paciente__apellido__icontains=apellido)
 
         if fecha_after and fecha_before:
             asistencias = asistencias.filter(fecha__gte=fecha_after, fecha__lte=fecha_before)
@@ -99,20 +91,29 @@ class AsistenciasToCsv(View):
         if id_prestacion:
             asistencias = asistencias.filter(id_prestacion_paciente__id_prestacion=id_prestacion)
 
+        data = []
         for asistencia in asistencias:
-            horaAsistencia=asistencia.hora
-            horaAsistencia=str(horaAsistencia)
-            horaAsistencia=horaAsistencia.split(".")
-            horaAsistencia=horaAsistencia[0]
-            writer.writerow([
+            hora_asistencia = str(asistencia.hora).split(".")[0]
+            data.append([
                 asistencia.id_prestacion_paciente.id_paciente.apellido,
                 asistencia.id_prestacion_paciente.id_paciente.nombre,
                 asistencia.fecha,
-                horaAsistencia,
+                hora_asistencia,
                 asistencia.id_prestacion_paciente.id_obra_social.nombre,
-                asistencia.id_prestacion_paciente.id_prestacion.nombre
-                ])
-            
-        read_file = pd.read_csv(response)
-        read_file.to_excel('asistencias.xlsx', index=None, header=True)
-        return read_file
+                asistencia.id_prestacion_paciente.id_prestacion.nombre,
+            ])
+
+        # Convert data to a DataFrame
+        df = pd.DataFrame(data, columns=[
+            'Apellido', 'Nombre', 'Fecha', 'Hora', 'Obra Social', 'Prestacion'
+        ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Asistencias', index=False)
+
+        response.write(output.getvalue())
+
+        return response
