@@ -1,9 +1,7 @@
 import pandas as pd
 import io
 
-from typing import Any
 from django.views import View
-from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
@@ -34,27 +32,33 @@ estadoCivilRepo = EstadoCivilRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class PacientesList(ListView):
+class PacientesList(View):
     template_name = 'pacientes/list.html'
     context_object_name = 'pacientes'
 
-    def get_queryset(self):
-        queryset = pacienteRepo.filter_by_activo()
-        self.filterset = PacienteFilter(self.request.GET, queryset=queryset)
+    def get(self, request):
+
+        filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo())
         
         # Obtener el parámetro de ordenamiento
-        ordering = self.request.GET.get('ordering', 'apellido')  # Por defecto ordenar por apellido
+        ordering = request.GET.get('ordering', 'apellido')
+
+        # Obtener el queryset filtrado
+        pacientes = filterset.qs
 
         # Si existe un campo de ordenamiento, aplicarlo
         if ordering:
-            queryset = self.filterset.qs.order_by(ordering)
+            pacientes = filterset.qs.order_by(ordering)
 
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = self.filterset.form
-        return context
+        return render(
+            request,
+            self.template_name,
+            dict(
+                pacientes=pacientes,
+                form=filterset.form,
+                ordering=ordering,
+            )
+        )
 
 
 class PacientesToCsv(View):

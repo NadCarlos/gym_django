@@ -1,7 +1,6 @@
 import pandas as pd
 import io
 
-from typing import Any
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -15,23 +14,6 @@ from administracion.models import Asistencia
 
 
 asistenciaRepo = AsistenciaRepository()
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class AsistenciasList(View):
-    queryset = asistenciaRepo.get_all()
-    template_name = 'asistencias/list.html'
-    context_object_name = 'asistencias'
-
-    def get(self, request):
-        asistencias = self.queryset
-        return render (
-            request,
-            self.template_name,
-            dict(
-                asistencias=asistencias,
-            )
-        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
