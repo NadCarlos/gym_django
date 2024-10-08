@@ -318,3 +318,123 @@ class Asistencia(models.Model):
 
     def __str__(self):
         return  self.id_prestacion_paciente.id_paciente.nombre
+
+
+class Profesional(models.Model):
+
+    nombre = models.CharField(
+        max_length=150,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+    apellido = models.CharField(
+        max_length=150,
+        null=False,
+        blank=False,
+        verbose_name="Apellido"
+    )
+    
+    numero_dni = models.CharField(
+        max_length=8,
+        null=False,
+        blank=False,
+        verbose_name="Numero DNI"
+    )
+    
+    matricula = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        verbose_name="Matricula",
+    )
+
+    direccion = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True,
+        verbose_name="Direccion",
+    )
+
+    celular = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Numero Celular",
+    )
+    
+    fecha_nacimiento = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name="Fecha de nacimiento",
+    )
+
+    id_sexo = models.ForeignKey(
+        Sexo,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='sexo_prof',
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_prof',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+    
+
+class Tratamiento(models.Model):
+
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+
+class ProfesionalTratamiento(models.Model):
+
+    id_profecional = models.ForeignKey(
+        Profesional,
+        on_delete=models.RESTRICT,
+        related_name='profesional',
+    )
+
+    id_tratamiento = models.ForeignKey(
+        Tratamiento,
+        on_delete=models.RESTRICT,
+        related_name='tratamiento',
+    )
+
+    fecha_inicio = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Inicio de la prestacion'
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )

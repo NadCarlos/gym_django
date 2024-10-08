@@ -11,6 +11,9 @@ from administracion.models import (
     Paciente,
     PrestacionPaciente,
     Asistencia,
+    Profesional,
+    ProfesionalTratamiento,
+    Tratamiento,
 )
 
 
@@ -81,4 +84,22 @@ class PrestacionPacienteAdmin(admin.ModelAdmin):
 class AsistenciaAdmin(admin.ModelAdmin):
     list_display = (
         'fecha',
+    )
+
+@admin.register(Profesional)
+class ProfecionalTratamiento(admin.ModelAdmin):
+    list_display = (
+        'nombre',
+    )
+
+@admin.register(ProfesionalTratamiento)
+class ProfesionalTratamientoAdmin(admin.ModelAdmin):
+    list_display = (
+        'fecha_inicio',
+    )
+
+@admin.register(Tratamiento)
+class TratamientoAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
     )
