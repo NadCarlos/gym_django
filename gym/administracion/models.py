@@ -345,8 +345,8 @@ class Profesional(models.Model):
     
     matricula = models.CharField(
         max_length=20,
-        blank=True,
-        null=True,
+        blank=False,
+        null=False,
         verbose_name="Matricula",
     )
 
@@ -368,6 +368,14 @@ class Profesional(models.Model):
         null=False,
         blank=False,
         verbose_name="Fecha de nacimiento",
+    )
+
+    id_localidad = models.ForeignKey(
+        Localidad,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='localidad_prof',
     )
 
     id_sexo = models.ForeignKey(
@@ -430,7 +438,7 @@ class ProfesionalTratamiento(models.Model):
     fecha_inicio = models.DateField(
         null=False,
         blank=False,
-        verbose_name='Inicio de la prestacion'
+        verbose_name='Inicio del Tratamiento'
     )
 
     activo = models.BooleanField(
