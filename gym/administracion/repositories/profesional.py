@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from administracion.models import Profesional, Sexo, Localidad
 
 
-class PacienteRepository:
+class ProfesionalRepository:
 
     def get_all(self) -> List[Profesional]:
         return Profesional.objects.all().order_by('apellido').values()
