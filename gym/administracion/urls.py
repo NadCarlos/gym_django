@@ -42,6 +42,7 @@ from administracion.views.profesional import (
     ProfesionalDelete,
     ProfesionalCreate,
     ProfesionalUpdate,
+    ProfesionalesToCsv,
 )
 
 
@@ -84,6 +85,7 @@ asistencias = [
 profesional = [
     path(route='profesional_list/',view=ProfesionalList.as_view(), name='profesional_list'),
     path(route='profesional_create/',view=ProfesionalCreate.as_view(), name='profesional_create'),
+    path(route='profesional_csv/',view=ProfesionalesToCsv.as_view(), name='profesional_csv'),
     path(route='<int:id>/profesional_detail/',view=ProfesionalDetail.as_view(), name='profesional_detail'),
     path(route='<int:id>/profesional_update/',view=ProfesionalUpdate.as_view(), name='profesional_update'),
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),

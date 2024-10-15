@@ -1,7 +1,12 @@
+import pandas as pd
+import io
+
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+
+from administracion.models import Profesional
 
 from administracion.filters import ProfesionalFilter
 
@@ -47,7 +52,62 @@ class ProfesionalList(View):
                 ordering=ordering,
             )
         )
-    
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalesToCsv(View):
+
+    def get(self, request):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=profesionales.xlsx'
+       
+        apellido = request.GET.get('apellido')
+        id_sexo = request.GET.get('id_sexo')
+
+        profesionales = Profesional.objects.filter(activo=True)
+
+        if apellido:
+            profesionales = profesionales.filter(apellido__icontains=apellido)
+
+        if id_sexo:
+            profesionales = profesionales.filter(id_sexo=id_sexo)
+
+        data = []
+        for profesional in profesionales:
+            data.append([
+                profesional.nombre,
+                profesional.apellido,
+                profesional.numero_dni,
+                profesional.matricula,
+                profesional.direccion,
+                profesional.celular,
+                profesional.fecha_nacimiento,
+                profesional.id_localidad.nombre,
+                profesional.id_sexo.nombre,
+                ])
+
+        df = pd.DataFrame(data, columns=[
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Matricula',
+            'Direccion',
+            'Celular',
+            'Fecha de nacimiento',
+            'localidad',
+            'sexo',
+            ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Profesionales', index=False)
+
+        response.write(output.getvalue())
+
+        return response
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ProfesionalDetail(View):
