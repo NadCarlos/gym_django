@@ -9,7 +9,7 @@ from administracion.filters import ProfesionalFilter
 from administracion.repositories.profesional import ProfesionalRepository
 
 
-profecionalRepo = ProfesionalRepository()
+profesionalRepo = ProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -19,7 +19,7 @@ class ProfesionalList(View):
 
     def get(self, request):
 
-        filterset = ProfesionalFilter(request.GET, profecionalRepo.filter_by_activo())
+        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_by_activo())
         
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
@@ -38,5 +38,19 @@ class ProfesionalList(View):
                 profesionales=profesionales,
                 form=filterset.form,
                 ordering=ordering,
+            )
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalDetail(View):
+
+    def get(self, request, id):
+        profesional = profesionalRepo.get_by_id(id=id)
+        return render(
+            request,
+            'profesional/detail.html',
+            dict(
+                profesional=profesional,
             )
         )

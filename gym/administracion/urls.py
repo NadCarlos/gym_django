@@ -38,6 +38,7 @@ from administracion.views.asistencias import (
 
 from administracion.views.profesional import (
     ProfesionalList,
+    ProfesionalDetail,
 )
 
 
@@ -79,6 +80,7 @@ asistencias = [
 
 profesional = [
     path(route='profesional_list/',view=ProfesionalList.as_view(), name='profesional_list'),
+    path(route='<int:id>/profesional_detail/',view=ProfesionalDetail.as_view(), name='profesional_detail'),
 ]
 
 urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional

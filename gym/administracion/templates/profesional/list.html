@@ -83,7 +83,7 @@
                     <td>{{ profesional.matricula }}</td>
                     <td>{{ profesional.id_sexo.nombre }}</td>
                     <td>
-                        <a href="#" class="btn btn-info btn-sm">
+                        <a href="{% url 'profesional_detail' profesional.id %}" class="btn btn-info btn-sm">
                             <i class="bi bi-info-circle"></i> Detalles
                         </a>
                     </td>
