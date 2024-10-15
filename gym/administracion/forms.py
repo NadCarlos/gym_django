@@ -208,3 +208,33 @@ class ProfesionalCreateForm(forms.ModelForm):
             'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class ProfesionalUpdateForm(forms.ModelForm):
+    class Meta:
+
+        model = Profesional
+
+        fields = [
+            'nombre',
+            'apellido',
+            'numero_dni',
+            'matricula',
+            'direccion',
+            'celular',
+            'fecha_nacimiento',
+            'id_sexo',
+            'id_localidad',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'matricula': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }

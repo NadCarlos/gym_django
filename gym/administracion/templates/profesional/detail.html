@@ -12,8 +12,8 @@
         <div class="row">
             <div class="col-md-6">
                 <p class="card-text"><strong>DNI:</strong> {{ profesional.numero_dni }}</p>
-                <p class="card-text"><strong>Dirección:</strong> {{ profesional.matricula }}</p>
-                <p class="card-text"><strong>Teléfono:</strong> {{ profesional.direccion }}</p>
+                <p class="card-text"><strong>Matricula:</strong> {{ profesional.matricula }}</p>
+                <p class="card-text"><strong>Direccion:</strong> {{ profesional.direccion }}</p>
                 <p class="card-text"><strong>Celular:</strong> {{ profesional.celular }}</p>
             </div>
             <div class="col-md-6">
@@ -32,7 +32,7 @@
             <a href="{% url 'profesional_delete' profesional.id %}" class="btn btn-danger">
                 <i class="bi bi-trash"></i> Eliminar
             </a>
-            <a href="#" class="btn btn-primary">
+            <a href="{% url 'profesional_update' profesional.id %}" class="btn btn-primary">
                 <i class="bi bi-pencil"></i> Editar
             </a>
         </div>

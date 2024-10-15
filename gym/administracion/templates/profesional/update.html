@@ -1,0 +1,113 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">Editar Profesional</h2>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Nombre:</label>
+                <div class="col-sm-6">
+                    {{ form.nombre }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Apellido:</label>
+                <div class="col-sm-6">
+                    {{ form.apellido }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">DNI:</label>
+                <div class="col-sm-6">
+                    <input type="text" id="numero_dni" class="form-control" maxlength="8" name="numero_dni" value="{{ form.numero_dni.value }}">
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Matricula:</label>
+                <div class="col-sm-6">
+                    {{ form.matricula }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">F. de Nacimiento:</label>
+                <div class="col-sm-6">
+                    {{ form.fecha_nacimiento }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Sexo:</label>
+                <div class="col-sm-6">
+                    {{ form.id_sexo }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Localidad:</label>
+                <div class="col-sm-6">
+                    {{ form.id_localidad }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Dirección:</label>
+                <div class="col-sm-6">
+                    {{ form.direccion }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Celular:</label>
+                <div class="col-sm-6">
+                    {{ form.celular }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dniInput = document.getElementById('numero_dni');
+
+        // Ensure only numbers and a max length of 8
+        dniInput.addEventListener('input', function () {
+            // Allow only numbers
+            this.value = this.value.replace(/\D/g, '');
+
+            // Limit to 8 characters
+            if (this.value.length > 8) {
+                this.value = this.value.slice(0, 8);
+            }
+        });
+    });
+</script>
+{% endblock %}
