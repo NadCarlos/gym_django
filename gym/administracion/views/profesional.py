@@ -54,3 +54,13 @@ class ProfesionalDetail(View):
                 profesional=profesional,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalDelete(View):
+
+    def get(self, request, id):
+        profesional = profesionalRepo.get_by_id(id=id)
+        #No elimino, cambio el campo activo a False
+        profesionalRepo.delete_by_activo(profesional=profesional)
+        return redirect('profesional_list')
