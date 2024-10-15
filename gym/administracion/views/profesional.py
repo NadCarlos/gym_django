@@ -1,15 +1,19 @@
 from django.views import View
-from django.views.generic.list import ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 
 from administracion.filters import ProfesionalFilter
 
-from administracion.repositories.profesional import ProfesionalRepository
+from administracion.forms import ProfesionalCreateForm
 
+from administracion.repositories.profesional import ProfesionalRepository
+from administracion.repositories.sexo import SexoRepository
+from administracion.repositories.localidad import LocalidadRepository
 
 profesionalRepo = ProfesionalRepository()
+sexoRepo = SexoRepository()
+localidadRepo = LocalidadRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -55,6 +59,48 @@ class ProfesionalDetail(View):
             )
         )
     
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalCreate(View):
+
+    def get(self, request):
+        sexo = sexoRepo.get_by_name(nombre="Masculino")
+        localidad = localidadRepo.get_by_name(nombre="Rio Cuarto")
+        form = ProfesionalCreateForm(initial = {
+            'id_usuario': request.user,
+            'id_sexo': sexo.id,
+            'id_localidad': localidad.id
+            }
+        )
+        return render(
+            request,
+            'profesional/create.html',
+            dict(
+                form=form
+            )
+        )
+
+    def post(self, request):
+        form = ProfesionalCreateForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['nombre']
+            nombre = nombre.upper()
+            apellido = form.cleaned_data['apellido']
+            apellido = apellido.upper()
+            profesional_nuevo = profesionalRepo.create(
+                id_usuario=form.cleaned_data['id_usuario'],
+                nombre=nombre,
+                apellido=apellido,
+                numero_dni=form.cleaned_data['numero_dni'],
+                matricula=form.cleaned_data['matricula'],
+                fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                id_sexo=form.cleaned_data['id_sexo'],
+                id_localidad=form.cleaned_data['id_localidad'],
+                direccion=form.cleaned_data['direccion'],
+                celular=form.cleaned_data['celular'],
+                )
+            return redirect('profesional_detail', profesional_nuevo.id)
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ProfesionalDelete(View):

@@ -1,10 +1,6 @@
 from django import forms
-from django.core.validators import MaxLengthValidator
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional
 
-from django.core.exceptions import ValidationError
-
-from administracion.models import ObraSocial, Prestacion
 
 class PacienteCreateForm(forms.ModelForm):
 
@@ -179,4 +175,36 @@ class PrestacionForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class ProfesionalCreateForm(forms.ModelForm):
+    class Meta:
+
+        model = Profesional
+
+        fields = [
+            'nombre',
+            'apellido',
+            'numero_dni',
+            'matricula',
+            'direccion',
+            'celular',
+            'fecha_nacimiento',
+            'id_sexo',
+            'id_localidad',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'apellido': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'matricula': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'direccion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'celular': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
