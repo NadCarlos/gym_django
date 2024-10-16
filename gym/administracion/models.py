@@ -414,6 +414,12 @@ class Tratamiento(models.Model):
         verbose_name="Nombre",
     )
 
+    descripcion = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+
     activo = models.BooleanField(
         default=1,
         null=False,
