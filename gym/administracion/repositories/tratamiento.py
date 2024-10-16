@@ -33,15 +33,19 @@ class TratamientoRepository:
     def create(
         self,
         nombre: str,
+        descripcion: str,
     ):
         return Tratamiento.objects.create(
             nombre=nombre,
+            descripcion=descripcion,
         )
     
     def update(
         self, 
         tratamiento: Tratamiento,
         nombre: str,
+        descripcion: str,
     ) -> Tratamiento:
         tratamiento.nombre = nombre
+        tratamiento.descripcion = descripcion
         tratamiento.save()

@@ -45,6 +45,13 @@ from administracion.views.profesional import (
     ProfesionalesToCsv,
 )
 
+from administracion.views.tratamiento import (
+    TratamientoList,
+    TratamientoCreate,
+    TratamientoUpdate,
+    TratamientoDelete,
+)
+
 
 pacientes = [
     path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),
@@ -91,4 +98,11 @@ profesional = [
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),
 ]
 
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional
+tratamientos = [
+    path(route='tratamientos/',view=TratamientoList.as_view(), name='tratamientos'),
+    path(route='tratamiento_create/',view=TratamientoCreate.as_view(), name='tratamiento_create'),
+    path(route='<int:id>/tratamiento_update/',view=TratamientoUpdate.as_view(), name='tratamiento_update'),
+    path(route='<int:id>/tratamiento_delete/',view=TratamientoDelete.as_view(), name='tratamiento_delete'),
+]
+
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional +tratamientos
