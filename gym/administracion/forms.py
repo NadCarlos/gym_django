@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento
 
 
 class PacienteCreateForm(forms.ModelForm):
@@ -237,4 +237,21 @@ class ProfesionalUpdateForm(forms.ModelForm):
             'fecha_nacimiento': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'id_sexo': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_localidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class TratamientoForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Tratamiento
+
+        fields = [
+            'nombre',
+            'descripcion',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }

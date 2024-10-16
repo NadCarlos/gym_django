@@ -3,7 +3,7 @@ from typing import List, Optional
 from administracion.models import Tratamiento
 
 
-class PacienteRepository:
+class TratamientoRepository:
 
     def get_all(self) -> List[Tratamiento]:
         return Tratamiento.objects.all()
