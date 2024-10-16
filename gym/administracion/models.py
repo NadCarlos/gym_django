@@ -429,7 +429,7 @@ class Tratamiento(models.Model):
 
 class ProfesionalTratamiento(models.Model):
 
-    id_profecional = models.ForeignKey(
+    id_profesional = models.ForeignKey(
         Profesional,
         on_delete=models.RESTRICT,
         related_name='profesional',
