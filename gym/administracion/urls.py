@@ -52,6 +52,12 @@ from administracion.views.tratamiento import (
     TratamientoDelete,
 )
 
+from administracion.views.tratamiento_profesional import (
+    TratamientoProfesionalList,
+    TratamientoProfesionalCreate,
+    TratamientoProfesionalDelete,
+)
+
 
 pacientes = [
     path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),
@@ -105,4 +111,10 @@ tratamientos = [
     path(route='<int:id>/tratamiento_delete/',view=TratamientoDelete.as_view(), name='tratamiento_delete'),
 ]
 
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional +tratamientos
+tratamiento_profesional = [
+    path(route='<int:id>/tratamiento_profesional_list/',view=TratamientoProfesionalList.as_view(), name='tratamiento_profesional_list'),
+    path(route='<int:id>/tratamiento_profesional_create/',view=TratamientoProfesionalCreate.as_view(), name='tratamiento_profesional_create'),
+    path(route='<int:id>/tratamiento_profesional_delete/',view=TratamientoProfesionalDelete.as_view(), name='tratamiento_profesional_delete'),
+]
+
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional

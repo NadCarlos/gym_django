@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento
 
 
 class PacienteCreateForm(forms.ModelForm):
@@ -254,4 +254,28 @@ class TratamientoForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class TratamientoProfesionalCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(TratamientoProfesionalCreateForm, self).__init__(*args, **kwargs)
+        self.fields['id_tratamiento'].required = True
+        self.fields['id_tratamiento'].queryset = Tratamiento.objects.filter(activo=True)
+
+    class Meta:
+
+        model = ProfesionalTratamiento
+
+        fields = [
+            'fecha_inicio',
+            'id_tratamiento',
+            'id_profesional',
+            ]
+        
+        widgets = {
+            'fecha_inicio': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_tratamiento': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_profesional': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }

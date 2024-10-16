@@ -426,6 +426,9 @@ class Tratamiento(models.Model):
         blank=False,
     )
 
+    def __str__(self):
+        return  self.nombre
+
 
 class ProfesionalTratamiento(models.Model):
 
