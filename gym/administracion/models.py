@@ -145,6 +145,7 @@ class Paciente(models.Model):
         max_length=8,
         null=False,
         blank=False,
+        unique=True,
         verbose_name="Numero DNI"
         )
 
@@ -340,6 +341,7 @@ class Profesional(models.Model):
         max_length=8,
         null=False,
         blank=False,
+        unique=True,
         verbose_name="Numero DNI"
     )
     

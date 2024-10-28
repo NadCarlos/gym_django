@@ -173,26 +173,34 @@ class PacienteCreate(View):
     def post(self, request):
         form = PacienteCreateForm(request.POST)
         if form.is_valid():
-            nombre = form.cleaned_data['nombre']
-            nombre = nombre.upper()
-            apellido = form.cleaned_data['apellido']
-            apellido = apellido.upper()
-            paciente_nuevo = pacienteRepo.create(
-                id_usuario=form.cleaned_data['id_usuario'],
-                nombre=nombre,
-                apellido=apellido,
-                numero_dni=form.cleaned_data['numero_dni'],
-                fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                id_obra_social=form.cleaned_data['id_obra_social'],
-                id_estado_civil=form.cleaned_data['id_estado_civil'],
-                id_sexo=form.cleaned_data['id_sexo'],
-                id_localidad=form.cleaned_data['id_localidad'],
-                direccion=form.cleaned_data['direccion'],
-                telefono=form.cleaned_data['telefono'],
-                celular=form.cleaned_data['celular'],
-                observaciones=form.cleaned_data['observaciones'],
-                )
-            return redirect('paciente_detail', paciente_nuevo.id)
+            dni = form.cleaned_data['numero_dni']
+            dni=int(dni)
+            pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni)
+            if pacienteExistente is None:
+                nombre = form.cleaned_data['nombre']
+                nombre = nombre.upper()
+                apellido = form.cleaned_data['apellido']
+                apellido = apellido.upper()
+                paciente_nuevo = pacienteRepo.create(
+                    id_usuario=form.cleaned_data['id_usuario'],
+                    nombre=nombre,
+                    apellido=apellido,
+                    numero_dni=form.cleaned_data['numero_dni'],
+                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                    id_obra_social=form.cleaned_data['id_obra_social'],
+                    id_estado_civil=form.cleaned_data['id_estado_civil'],
+                    id_sexo=form.cleaned_data['id_sexo'],
+                    id_localidad=form.cleaned_data['id_localidad'],
+                    direccion=form.cleaned_data['direccion'],
+                    telefono=form.cleaned_data['telefono'],
+                    celular=form.cleaned_data['celular'],
+                    observaciones=form.cleaned_data['observaciones'],
+                    )
+                return redirect('paciente_detail', paciente_nuevo.id)
+            else:
+                return redirect('error_paciente_existente')
+        else:
+            return redirect('error_paciente_existente')
 
 
 class PacienteUpdate(View):
@@ -249,3 +257,13 @@ class PacienteDelete(View):
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
     
+
+class ErrorPacienteExistente(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request):
+        return render(
+            request,
+            'pacientes/error_paciente_existente.html',
+        )
+
