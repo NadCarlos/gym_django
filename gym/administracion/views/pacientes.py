@@ -224,26 +224,32 @@ class PacienteUpdate(View):
         paciente = pacienteRepo.get_by_id(id=id)
         try:
             if form.is_valid():
-                nombre = form.cleaned_data['nombre']
-                nombre = nombre.upper()
-                apellido = form.cleaned_data['apellido']
-                apellido = apellido.upper()
-                pacienteRepo.update(
-                    paciente=paciente,
-                    nombre=nombre,
-                    apellido=apellido,
-                    numero_dni=form.cleaned_data['numero_dni'],
-                    direccion=form.cleaned_data['direccion'],
-                    telefono=form.cleaned_data['telefono'],
-                    celular=form.cleaned_data['celular'],
-                    observaciones=form.cleaned_data['observaciones'],
-                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                    obra_social=form.cleaned_data['id_obra_social'],
-                    estado_civil=form.cleaned_data['id_estado_civil'],
-                    sexo=form.cleaned_data['id_sexo'],
-                    localidad=form.cleaned_data['id_localidad'],
-                    )
-                return redirect('paciente_detail', paciente.id)
+                dni = form.cleaned_data['numero_dni']
+                dni=int(dni)
+                pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni)
+                if pacienteExistente is None:
+                    nombre = form.cleaned_data['nombre']
+                    nombre = nombre.upper()
+                    apellido = form.cleaned_data['apellido']
+                    apellido = apellido.upper()
+                    pacienteRepo.update(
+                        paciente=paciente,
+                        nombre=nombre,
+                        apellido=apellido,
+                        numero_dni=form.cleaned_data['numero_dni'],
+                        direccion=form.cleaned_data['direccion'],
+                        telefono=form.cleaned_data['telefono'],
+                        celular=form.cleaned_data['celular'],
+                        observaciones=form.cleaned_data['observaciones'],
+                        fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                        obra_social=form.cleaned_data['id_obra_social'],
+                        estado_civil=form.cleaned_data['id_estado_civil'],
+                        sexo=form.cleaned_data['id_sexo'],
+                        localidad=form.cleaned_data['id_localidad'],
+                        )
+                    return redirect('paciente_detail', paciente.id)
+                else:
+                    return redirect('error_paciente_existente')
         except:
             return redirect('error')
 
