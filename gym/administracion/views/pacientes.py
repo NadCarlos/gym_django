@@ -200,7 +200,7 @@ class PacienteCreate(View):
             else:
                 return redirect('error_paciente_existente')
         else:
-            return redirect('error_paciente_existente')
+            return redirect('error')
 
 
 class PacienteUpdate(View):
@@ -227,7 +227,7 @@ class PacienteUpdate(View):
                 dni = form.cleaned_data['numero_dni']
                 dni=int(dni)
                 pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni)
-                if pacienteExistente is None:
+                if pacienteExistente is None or pacienteExistente.id == paciente.id:
                     nombre = form.cleaned_data['nombre']
                     nombre = nombre.upper()
                     apellido = form.cleaned_data['apellido']
