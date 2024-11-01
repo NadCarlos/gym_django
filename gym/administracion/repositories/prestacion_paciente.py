@@ -19,7 +19,7 @@ class PrestacionPacienteRepository:
         return PrestacionPaciente.objects.filter(id_paciente=id_paciente).all().order_by('-fecha_inicio')
     
     def filter_by_id_paciente_activo(self, id_paciente) -> Optional[PrestacionPaciente]:
-        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).filter(activo=True)
+        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).filter(activo=True).first()
     
     def filter_by_activo(self) -> List[PrestacionPaciente]:
         return PrestacionPaciente.objects.filter(
@@ -68,11 +68,21 @@ class PrestacionPacienteRepository:
         fecha_fin: str,
         id_prestacion: Prestacion,
         id_obra_social: ObraSocial,
-    ) -> Paciente:
+    ) -> PrestacionPaciente:
 
         prestacionPaciente.fecha_inicio = fecha_inicio
         prestacionPaciente.fecha_fin = fecha_fin
         prestacionPaciente.id_prestacion = id_prestacion
         prestacionPaciente.id_obra_social = id_obra_social
+
+        prestacionPaciente.save()
+
+    def end_date(
+        self,
+        prestacionPaciente: PrestacionPaciente,
+        fecha_fin: str,
+    ) -> PrestacionPaciente:
+
+        prestacionPaciente.fecha_fin = fecha_fin
 
         prestacionPaciente.save()

@@ -1,6 +1,8 @@
 import pandas as pd
 import io
 
+from datetime import date
+
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -19,6 +21,8 @@ from administracion.repositories.sexo import SexoRepository
 from administracion.repositories.prestacion import PrestacionRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.estado_civil import EstadoCivilRepository
+from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
+
 
 from administracion.models import Paciente
 
@@ -29,6 +33,7 @@ sexoRepo = SexoRepository()
 prestacionRepo = PrestacionRepository()
 localidadRepo = LocalidadRepository()
 estadoCivilRepo = EstadoCivilRepository()
+prestacionPacienteRepo = PrestacionPacienteRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -257,9 +262,17 @@ class PacienteUpdate(View):
 class PacienteDelete(View):
 
     @method_decorator(login_required(login_url='login'))
-    def get(self, request, id):
+    def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
+        prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        today = date.today()
+        prestacionPacienteRepo.end_date(
+            prestacionPaciente=prestacionPaciente,
+            fecha_fin=today,
+        )
+
         #No elimino, cambio el campo activo a False
+        prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
     

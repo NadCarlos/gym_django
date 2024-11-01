@@ -44,16 +44,6 @@
                     <td class="bg-danger text-white">{{ prestacion_paciente.fecha_fin }}</td>
                     <td class="bg-danger text-white">{{ prestacion_paciente.activo }}</td>
                     <td class="bg-danger text-white">
-                        {% if user.is_staff %}
-                        <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}"
-                            class="btn btn-secondary btn-sm me-2">
-                            <i class="bi bi-trash"></i> Finalizar Prestacion
-                        </a>
-                        <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}"
-                            class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
-                        </a>
-                        {% endif %}
                     </td>
                     {% endif %}
                 </tr>
