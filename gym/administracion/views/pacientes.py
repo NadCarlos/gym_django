@@ -41,9 +41,8 @@ class PacientesList(View):
     template_name = 'pacientes/list.html'
     context_object_name = 'pacientes'
 
-    def get(self, request):
-
-        filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo())
+    def get(self, request, state):
+        filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo(state))
         
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
@@ -62,6 +61,7 @@ class PacientesList(View):
                 pacientes=pacientes,
                 form=filterset.form,
                 ordering=ordering,
+                state=state,
             )
         )
 
@@ -275,7 +275,7 @@ class PacienteDelete(View):
 
         #No elimino, cambio el campo activo a False
         pacienteRepo.delete_by_activo(paciente=paciente)
-        return redirect('pacientes_list')
+        return redirect('pacientes_list', True)
     
 
 class ErrorPacienteExistente(View):

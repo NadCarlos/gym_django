@@ -61,7 +61,7 @@ from administracion.views.tratamiento_profesional import (
 
 
 pacientes = [
-    path(route='pacientes/',view=PacientesList.as_view(), name='pacientes_list'),
+    path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
     path(route='pacientes_csv/',view=PacientesToCsv.as_view(), name='pacientes_csv'),
     path(route='paciente_create/',view=PacienteCreate.as_view(), name='paciente_create'),
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),

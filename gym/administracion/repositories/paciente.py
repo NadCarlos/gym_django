@@ -15,9 +15,9 @@ class PacienteRepository:
     def filter_by_dni(self, numero_dni) -> Optional[Paciente]:
         return Paciente.objects.filter(numero_dni=numero_dni).first()
     
-    def filter_by_activo(self) -> List[Paciente]:
+    def filter_by_activo(self, state) -> List[Paciente]:
         return Paciente.objects.filter(
-            activo=True
+            activo=state
         ).order_by('apellido')
 
     def get_by_id(self, id: int) -> Optional[Paciente]:
