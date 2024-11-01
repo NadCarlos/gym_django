@@ -265,14 +265,15 @@ class PacienteDelete(View):
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
-        today = date.today()
-        prestacionPacienteRepo.end_date(
-            prestacionPaciente=prestacionPaciente,
-            fecha_fin=today,
-        )
+        if prestacionPaciente != None:
+            today = date.today()
+            prestacionPacienteRepo.end_date(
+                prestacionPaciente=prestacionPaciente,
+                fecha_fin=today,
+            )
+            prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
 
         #No elimino, cambio el campo activo a False
-        prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list')
     

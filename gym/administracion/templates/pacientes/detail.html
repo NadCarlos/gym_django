@@ -31,7 +31,7 @@
         </a>
         {% if user.is_staff %}
         <div class="btn-group">
-            <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger">
+            <a onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');" href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger">
                 <i class="bi bi-trash"></i> Eliminar
             </a>
             <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary">
