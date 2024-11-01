@@ -31,25 +31,31 @@
         </a>
         {% if user.is_staff %}
         <div class="btn-group">
-            <a onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');" href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger">
-                <i class="bi bi-trash"></i> Eliminar
-            </a>
-            <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary">
-                <i class="bi bi-pencil"></i> Editar
-            </a>
-            <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Nueva Prestación
-            </a>
-            <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-primary">
-                <i class="bi bi-list"></i> Historial Prestaciónes
-            </a>
-            <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-primary">
-                <i class="bi bi-person-plus"></i> Nueva Asistencia
-            </a>
-            <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-primary">
-                <i class="bi bi-clock-history"></i> Historial de Asistencias
-            </a>
-        </div>
+            {% if paciente.activo == True %}
+                <a onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');" href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Eliminar
+                </a>
+                <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nueva Prestación
+                </a>
+                <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-primary">
+                    <i class="bi bi-list"></i> Historial Prestaciónes
+                </a>
+                <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-primary">
+                    <i class="bi bi-person-plus"></i> Nueva Asistencia
+                </a>
+                <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-primary">
+                    <i class="bi bi-clock-history"></i> Historial de Asistencias
+                </a>
+            </div>
+        {% elif paciente.activo == False %}
+        <a onclick="return confirm('Esto va a restaurar al Paciente');" href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-danger">
+            <i class="bi bi-arrow-up-circle-fill"></i> Reactivar
+        </a>
+        {% endif %}
         {% endif %}
     </div>
 </div>

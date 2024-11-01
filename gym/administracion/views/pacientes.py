@@ -276,6 +276,15 @@ class PacienteDelete(View):
         #No elimino, cambio el campo activo a False
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list', True)
+
+
+class PacienteReactivate(View):
+
+    @method_decorator(login_required(login_url='login'))
+    def get(self, request, id, *args, **kwargs):
+        paciente = pacienteRepo.get_by_id(id=id)
+        pacienteRepo.reactivate(paciente=paciente)
+        return redirect('pacientes_list', True)
     
 
 class ErrorPacienteExistente(View):

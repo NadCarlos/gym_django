@@ -11,11 +11,11 @@
 
     {% if state == 'False' %}
     <a href="{% url 'pacientes_list' True %}" class="btn btn-primary mb-4">
-        <i class="bi bi-file-earmark-spreadsheet"></i> Ver Activos
+        <i class="bi bi-eye"></i> Ver Activos
     </a>
     {% elif state == 'True' %}
     <a href="{% url 'pacientes_list' False %}" class="btn btn-primary mb-4">
-        <i class="bi bi-file-earmark-spreadsheet"></i> Ver Eliminados
+        <i class="bi bi-eye"></i> Ver Eliminados
     </a>
     <a href="{% url 'pacientes_csv' %}?{{ request.GET.urlencode }}" class="btn btn-primary mb-4">
         <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL

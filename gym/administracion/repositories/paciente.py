@@ -41,6 +41,10 @@ class PacienteRepository:
         paciente.activo=False
         paciente.save()
 
+    def reactivate(self, paciente: Paciente):
+        paciente.activo=True
+        paciente.save()
+
     def create(
         self,
         id_usuario: User,

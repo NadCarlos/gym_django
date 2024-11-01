@@ -8,6 +8,7 @@ from administracion.views.pacientes import (
     PacienteDelete,
     PacientesToCsv,
     ErrorPacienteExistente,
+    PacienteReactivate,
     )
 
 from administracion.views.prestacion_paciente import (
@@ -67,6 +68,7 @@ pacientes = [
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),
     path(route='<int:id>/paciente_update/',view=PacienteUpdate.as_view(), name='paciente_update'),
     path(route='<int:id>/paciente_delete/',view=PacienteDelete.as_view(), name='paciente_delete'),
+    path(route='<int:id>/paciente_reactivate/',view=PacienteReactivate.as_view(), name='paciente_reactivate'),
     path(route='error_paciente_existente/',view=ErrorPacienteExistente.as_view(), name='error_paciente_existente'),
 ]
 
