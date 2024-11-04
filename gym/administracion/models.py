@@ -457,3 +457,78 @@ class ProfesionalTratamiento(models.Model):
         null=False,
         blank=False,
     )
+
+
+class Dia(models.Model):
+
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+
+class Agenda(models.Model):
+
+    fecha = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Fecha',
+    )
+
+    hora_inicio = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Inicio",
+    )
+
+    hora_fin = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Fin",
+    )
+
+    id_prestacion_paciente = models.ForeignKey(
+        PrestacionPaciente,
+        on_delete=models.RESTRICT,
+        related_name='prestacion_paciente_agenda',
+    )
+
+    id_profesional_tratamiento = models.ForeignKey(
+        ProfesionalTratamiento,
+        on_delete=models.RESTRICT,
+        related_name='profesional_tratamiento_agenda',
+    )
+
+    id_dia = models.ForeignKey(
+        Dia,
+        on_delete=models.RESTRICT,
+        related_name='dia_agenda'
+    )
+
+    tiempo = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        null=False,
+        blank=False,
+        verbose_name='tiempo'
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_agenda',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )

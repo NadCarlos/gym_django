@@ -14,6 +14,8 @@ from administracion.models import (
     Profesional,
     ProfesionalTratamiento,
     Tratamiento,
+    Dia,
+    Agenda,
 )
 
 
@@ -102,4 +104,16 @@ class ProfesionalTratamientoAdmin(admin.ModelAdmin):
 class TratamientoAdmin(admin.ModelAdmin):
     list_display = (
         'nombre',
+    )
+
+@admin.register(Dia)
+class DiaAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
+    )
+
+@admin.register(Agenda)
+class AgendaAdmin(admin.ModelAdmin):
+    list_display = (
+        'fecha',
     )
