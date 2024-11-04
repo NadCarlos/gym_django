@@ -60,6 +60,12 @@ from administracion.views.tratamiento_profesional import (
     TratamientoProfesionalDelete,
 )
 
+from administracion.views.agenda import(
+    AgendaPaciente,
+    AgendaProfesional,
+    AgendaPacienteCreate
+)
+
 
 pacientes = [
     path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
@@ -121,4 +127,9 @@ tratamiento_profesional = [
     path(route='<int:id>/tratamiento_profesional_delete/',view=TratamientoProfesionalDelete.as_view(), name='tratamiento_profesional_delete'),
 ]
 
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional
+agenda = [
+    path(route='<int:id>/agenda_paciente',view=AgendaPaciente.as_view(), name='agenda_paciente'),
+    path(route='<int:id>/agenda_profesional',view=AgendaProfesional.as_view(), name='agenda_profesional'),
+    path(route='<int:id>/agenda_paciente_create',view=AgendaPacienteCreate.as_view(), name='agenda_paciente_create'),
+]
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda

@@ -1,0 +1,151 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <h1 class="text-dark text-center">Agenda {{paciente.apellido}}, {{paciente.nombre}}</h1>
+        <div class="row d-flex">
+            <div class="flex-col">
+                <div class="card-box">
+                    <h3 class="text-dark text-center">Lunes</h3>
+                    <div class="mt-2 table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Hora Inicio</th>
+                                    <th>Hora Fin</th>
+                                    <th>Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for agenda in agendas %}
+                                    {% if agenda.dia == 'Lunes' %}
+                                        <tr>
+                                            <td>{{ asistencia.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box">
+                    <h3 class="text-dark text-center">Martes</h3>
+                    <div class="mt-2 table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Hora1</th>
+                                    <th>Hora2</th>
+                                    <th>NombreApellido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Hora1</td>
+                                    <td>Hora2</td>
+                                    <td>NombreApellidoMucho mas largo de lo esperado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box">
+                    <h3 class="text-dark text-center">Miércoles</h3>
+                    <div class="mt-2 table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Hora1</th>
+                                    <th>Hora2</th>
+                                    <th>NombreApellido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Hora1</td>
+                                    <td>Hora2</td>
+                                    <td>NombreApellidoMucho mas largo de lo esperado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box">
+                    <h3 class="text-dark text-center">Jueves</h3>
+                    <div class="mt-2 table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Hora1</th>
+                                    <th>Hora2</th>
+                                    <th>NombreApellido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Hora1</td>
+                                    <td>Hora2</td>
+                                    <td>NombreApellidoMucho mas largo de lo esperado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box">
+                    <h3 class="text-dark text-center">Viernes</h3>
+                    <div class="mt-2 table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Hora1</th>
+                                    <th>Hora2</th>
+                                    <th>NombreApellido</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Hora1</td>
+                                    <td>Hora2</td>
+                                    <td>NombreApellidoMucho mas largo de lo esperado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .flex-col {
+        flex: 1 1 20%;
+        padding: 1px;
+    }
+    .card-box {
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .header-title {
+        font-family: Arial, sans-serif;
+        font-weight: 600;
+        font-size: 1.2em;
+        color: #343a40;
+    }
+    .text-center {
+        margin: 0;
+    }
+</style>
+
+{% endblock %}
+
