@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -26,11 +24,15 @@ class AgendaPaciente(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        agenda = agendaRepo.filter_by_id_paciente(id_prestacion_paciente=prestacion.id)
+        print(agenda)
         return render(
             request,
             'agenda/agenda.html',
             dict(
                 paciente=paciente,
+                agenda=agenda,
             )
         )
 
