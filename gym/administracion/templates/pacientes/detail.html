@@ -25,38 +25,54 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-between mt-4">
-        <a href="{% url 'pacientes_list' True %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Volver a la lista
-        </a>
-        {% if user.is_staff %}
-        <div class="btn-group">
-            {% if paciente.activo == True %}
-                <a onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');" href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger">
-                    <i class="bi bi-trash"></i> Eliminar
-                </a>
-                <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary">
-                    <i class="bi bi-pencil"></i> Editar
-                </a>
-                <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Nueva Prestación
-                </a>
-                <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-primary">
-                    <i class="bi bi-list"></i> Historial Prestaciónes
-                </a>
-                <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-primary">
-                    <i class="bi bi-person-plus"></i> Nueva Asistencia
-                </a>
-                <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-primary">
-                    <i class="bi bi-clock-history"></i> Historial de Asistencias
-                </a>
-            </div>
-        {% elif paciente.activo == False %}
-        <a onclick="return confirm('Esto va a restaurar al Paciente');" href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-danger">
-            <i class="bi bi-arrow-up-circle-fill"></i> Reactivar
-        </a>
-        {% endif %}
-        {% endif %}
+    {% if user.is_staff %}
+    <div class="row mt-3">
+        <!-- Primera columna -->
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'pacientes_list' True %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle me-2"></i> Volver a la lista
+            </a>
+        </div>
+        <div class="col-md-3 mb-3">
+            {% if paciente.activo %}
+            <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary w-100 mb-2">
+                <i class="bi bi-pencil me-2"></i> Editar
+            </a>
+            <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger w-100 mb-2"
+                onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');">
+                <i class="bi bi-trash me-2"></i> Eliminar
+            </a>
+            <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-plus-circle me-2"></i> Nueva Prestación
+            </a>
+            <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-list me-2"></i> Historial Prestaciones
+            </a>
+            {% else %}
+            <a href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-warning w-100 mb-2"
+                onclick="return confirm('Esto va a restaurar al Paciente');">
+                <i class="bi bi-arrow-up-circle-fill me-2"></i> Reactivar
+            </a>
+            {% endif %}
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-3">
+            {% if paciente.activo %}
+            <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-person-plus me-2"></i> Nueva Asistencia
+            </a>
+            <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-clock-history me-2"></i> Historial de Asistencias
+            </a>
+            <a href="{% url 'agenda_paciente_create' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-check me-2"></i> Nuevo Turno
+            </a>
+            <a href="{% url 'agenda_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-calendar me-2"></i> Ver Agenda
+            </a>
+            {% endif %}
+        </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
