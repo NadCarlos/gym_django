@@ -28,7 +28,7 @@ class AgendaPaciente(View):
         agenda = agendaRepo.filter_by_id_paciente(id_prestacion_paciente=prestacion.id)
         return render(
             request,
-            'agenda/agenda.html',
+            'agenda/agenda_paciente.html',
             dict(
                 paciente=paciente,
                 agenda=agenda,
