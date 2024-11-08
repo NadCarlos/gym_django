@@ -12,6 +12,12 @@ class ProfesionalRepository:
     def filter_by_id(self) -> Optional[Profesional]:
         return Profesional.objects.filter(id=id).first()
     
+    def filter_by_dni(self, numero_dni) -> Optional[Profesional]:
+        return Profesional.objects.filter(numero_dni=numero_dni).first()
+    
+    def filter_by_matricula(self, matricula) -> Optional[Profesional]:
+        return Profesional.objects.filter(matricula=matricula).first()
+    
     def filter_by_activo(self) -> List[Profesional]:
         return Profesional.objects.filter(
             activo=True

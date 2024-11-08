@@ -45,6 +45,7 @@ from administracion.views.profesional import (
     ProfesionalCreate,
     ProfesionalUpdate,
     ProfesionalesToCsv,
+    ErrorProfesionalExistente,
 )
 
 from administracion.views.tratamiento import (
@@ -112,6 +113,7 @@ profesional = [
     path(route='<int:id>/profesional_detail/',view=ProfesionalDetail.as_view(), name='profesional_detail'),
     path(route='<int:id>/profesional_update/',view=ProfesionalUpdate.as_view(), name='profesional_update'),
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),
+    path(route='<error_profesional_existente/',view=ErrorProfesionalExistente.as_view(), name='error_profesional_existente'),
 ]
 
 tratamientos = [

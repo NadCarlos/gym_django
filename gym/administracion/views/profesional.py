@@ -147,23 +147,32 @@ class ProfesionalCreate(View):
         form = ProfesionalCreateForm(request.POST)
         try:
             if form.is_valid():
-                nombre = form.cleaned_data['nombre']
-                nombre = nombre.upper()
-                apellido = form.cleaned_data['apellido']
-                apellido = apellido.upper()
-                profesional_nuevo = profesionalRepo.create(
-                    id_usuario=form.cleaned_data['id_usuario'],
-                    nombre=nombre,
-                    apellido=apellido,
-                    numero_dni=form.cleaned_data['numero_dni'],
-                    matricula=form.cleaned_data['matricula'],
-                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                    id_sexo=form.cleaned_data['id_sexo'],
-                    id_localidad=form.cleaned_data['id_localidad'],
-                    direccion=form.cleaned_data['direccion'],
-                    celular=form.cleaned_data['celular'],
-                    )
-                return redirect('profesional_detail', profesional_nuevo.id)
+                dni = form.cleaned_data['numero_dni']
+                dni=int(dni)
+                dniExistente = profesionalRepo.filter_by_dni(numero_dni=dni)
+                matricula = form.cleaned_data['matricula']
+                matriculaExistente = profesionalRepo.filter_by_matricula(matricula=matricula)
+                print(dniExistente, matriculaExistente)
+                if dniExistente is None and matriculaExistente is None:
+                    nombre = form.cleaned_data['nombre']
+                    nombre = nombre.upper()
+                    apellido = form.cleaned_data['apellido']
+                    apellido = apellido.upper()
+                    profesional_nuevo = profesionalRepo.create(
+                        id_usuario=form.cleaned_data['id_usuario'],
+                        nombre=nombre,
+                        apellido=apellido,
+                        numero_dni=form.cleaned_data['numero_dni'],
+                        matricula=form.cleaned_data['matricula'],
+                        fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                        id_sexo=form.cleaned_data['id_sexo'],
+                        id_localidad=form.cleaned_data['id_localidad'],
+                        direccion=form.cleaned_data['direccion'],
+                        celular=form.cleaned_data['celular'],
+                        )
+                    return redirect('profesional_detail', profesional_nuevo.id)
+                else:
+                    return redirect('error_profesional_existente')
         except:
             return redirect('error')
 
@@ -217,3 +226,13 @@ class ProfesionalDelete(View):
         #No elimino, cambio el campo activo a False
         profesionalRepo.delete_by_activo(profesional=profesional)
         return redirect('profesional_list')
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ErrorProfesionalExistente(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'profesional/error_profesional_existente.html',
+        )
