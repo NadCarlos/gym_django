@@ -86,10 +86,8 @@
 
         // Almacena todas las opciones originales
         const tratamientosOriginales = Array.from(tratamientoSelect.querySelectorAll('option[data-profesional-id]'));
-        console.log(tratamientosOriginales)
         profesionalSelect.addEventListener('change', function () {
             const profesionalId = this.value;
-            console.log(profesionalId)
             // Limpia las opciones actuales
             tratamientoSelect.innerHTML = '<option value="">Seleccione un tratamiento</option>';
 

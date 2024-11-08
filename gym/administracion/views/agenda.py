@@ -43,7 +43,6 @@ class AgendaPacienteCreate(View):
         paciente = pacienteRepo.get_by_id(id=id)
         profesionales = profesionalRepo.filter_by_activo()
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
-        print(tratamientosActivos)
         form = AgendaCreateForm(
             initial = {
                 'id_usuario': request.user,
