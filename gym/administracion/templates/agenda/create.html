@@ -38,6 +38,36 @@
                 <div class="col-sm-4">
                 </div>
             </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
+                <div class="col-sm-6">
+                    <select class="form-control custom-class" id="select-profesional" name="select">
+                        <option>Seleccione un profesional</option>
+                        {% for profesional in profesionales %}
+                        <option value="{{ profesional.id }}">{{ profesional.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Tratamiento:</label>
+                <div class="col-sm-6">
+                    <select class="form-control custom-class" id="select-tratamiento" name="id_profesional_tratamiento">
+                        <option>Seleccione un tratamiento</option>
+                        {% for tratamiento in tratamientosActivos %}
+                            <option value="{{ tratamiento.id }}" data-profesional-id="{{ tratamiento.id_profesional.id }}">
+                                {{ tratamiento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
             {{ form.id_usuario }}
             <div class="d-flex justify-content-center">
                 <button type="submit" class=" btn btn-success">
@@ -47,4 +77,30 @@
         </form>
     </div>
 </div>
+
+<script>
+    // Asegúrate de que el script se ejecute después de que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function () {
+        const profesionalSelect = document.getElementById('select-profesional');
+        const tratamientoSelect = document.getElementById('select-tratamiento');
+
+        // Almacena todas las opciones originales
+        const tratamientosOriginales = Array.from(tratamientoSelect.querySelectorAll('option[data-profesional-id]'));
+        console.log(tratamientosOriginales)
+        profesionalSelect.addEventListener('change', function () {
+            const profesionalId = this.value;
+            console.log(profesionalId)
+            // Limpia las opciones actuales
+            tratamientoSelect.innerHTML = '<option value="">Seleccione un tratamiento</option>';
+
+            // Filtra y añade las opciones correspondientes
+            tratamientosOriginales.forEach(option => {
+                if (option.getAttribute('data-profesional-id') == profesionalId) {
+                    tratamientoSelect.appendChild(option.cloneNode(true));
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

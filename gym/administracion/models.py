@@ -458,6 +458,9 @@ class ProfesionalTratamiento(models.Model):
         blank=False,
     )
 
+    def __str__(self):
+        return  self.id_tratamiento.nombre
+
 
 class Dia(models.Model):
 

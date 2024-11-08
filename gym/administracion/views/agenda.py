@@ -26,7 +26,6 @@ class AgendaPaciente(View):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         agenda = agendaRepo.filter_by_id_paciente(id_prestacion_paciente=prestacion.id)
-        print(agenda)
         return render(
             request,
             'agenda/agenda.html',
@@ -42,6 +41,9 @@ class AgendaPacienteCreate(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        profesionales = profesionalRepo.filter_by_activo()
+        tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
+        print(tratamientosActivos)
         form = AgendaCreateForm(
             initial = {
                 'id_usuario': request.user,
@@ -52,6 +54,8 @@ class AgendaPacienteCreate(View):
             'agenda/create.html',
             dict(
                 paciente=paciente,
+                profesionales=profesionales,
+                tratamientosActivos=tratamientosActivos,
                 form=form,
             )
         )
@@ -59,7 +63,6 @@ class AgendaPacienteCreate(View):
     def post(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
-        tratamiento = tratamientoProfesionalRepo.filter_by_activo().first()
         form = AgendaCreateForm(request.POST)
         if form.is_valid():
             hora_inicio=form.cleaned_data['hora_inicio'],
@@ -76,7 +79,7 @@ class AgendaPacienteCreate(View):
                 hora_inicio=form.cleaned_data['hora_inicio'],
                 hora_fin=form.cleaned_data['hora_fin'],
                 id_prestacion_paciente=prestacion,
-                id_profesional_tratamiento=tratamiento,
+                id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
                 tiempo=diferencia_minutos,
             )
