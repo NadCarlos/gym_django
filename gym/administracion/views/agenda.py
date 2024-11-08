@@ -51,7 +51,7 @@ class AgendaPacienteCreate(View):
         )
         return render(
             request,
-            'agenda/create.html',
+            'agenda/create_create.html',
             dict(
                 paciente=paciente,
                 profesionales=profesionales,
