@@ -25,6 +25,8 @@ class AgendaPaciente(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        if prestacion is None:
+            return redirect('error_prestacion_paciente')
         agenda = agendaRepo.filter_by_id_paciente(id_prestacion_paciente=prestacion.id)
         return render(
             request,
@@ -41,6 +43,9 @@ class AgendaPacienteCreate(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        if prestacion is None:
+            return redirect('error_prestacion_paciente')
         profesionales = profesionalRepo.filter_by_activo()
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
         form = AgendaCreateForm(
@@ -50,7 +55,7 @@ class AgendaPacienteCreate(View):
         )
         return render(
             request,
-            'agenda/create_create.html',
+            'agenda/create.html',
             dict(
                 paciente=paciente,
                 profesionales=profesionales,
@@ -94,4 +99,14 @@ class AgendaProfesional(View):
         return render(
             request,
             'agenda/agenda.html',
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ErrorPrestacionFaltante(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'agenda/error_prestacion_paciente.html',
         )
