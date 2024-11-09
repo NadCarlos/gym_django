@@ -45,7 +45,7 @@
                     <select class="form-control custom-class" id="select-profesional" name="select">
                         <option>Seleccione un profesional</option>
                         {% for profesional in profesionales %}
-                        <option value="{{ profesional.id }}">{{ profesional.nombre }}</option>
+                        <option value="{{ profesional.id }}">{{ profesional.apellido }}</option>
                         {% endfor %}
                     </select>
                 </div>

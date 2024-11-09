@@ -405,6 +405,9 @@ class Profesional(models.Model):
         null=False,
         blank=False,
     )
+
+    def __str__(self):
+        return  self.apellido
     
 
 class Tratamiento(models.Model):
@@ -538,3 +541,6 @@ class Agenda(models.Model):
         null=False,
         blank=False,
     )
+
+    def __str__(self):
+        return  self.id_profesional_tratamiento.id_profesional.apellido

@@ -38,6 +38,9 @@
             <a href="{% url 'tratamiento_profesional_list' profesional.id %}" class="btn btn-primary">
                 <i class="bi bi-calendar-check-fill"></i> Tratamientos
             </a>
+            <a href="{% url 'agenda_profesional' profesional.id %}" class="btn btn-primary">
+                <i class="bi bi-calendar-check-fill"></i> Agenda
+            </a>
         </div>
         {% endif %}
     </div>

@@ -96,9 +96,14 @@ class AgendaProfesional(View):
 
     def get(self, request, id):
         profesional = profesionalRepo.get_by_id(id=id)
+        agenda = agendaRepo.get_all()
         return render(
             request,
-            'agenda/agenda.html',
+            'agenda/agenda_profesional.html',
+            dict(
+                profesional=profesional,
+                agenda=agenda,
+            )
         )
     
 

@@ -15,6 +15,9 @@ class AgendaRepository:
     def filter_by_id_paciente(self, id_prestacion_paciente) -> Optional[Agenda]:
         return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente)
     
+    def filter_by_id_profesional(self, id_profesional_tratamiento) -> Optional[Agenda]:
+        return Agenda.objects.filter(id_profesional_tratamiento=id_profesional_tratamiento)
+    
     def filter_by_activo(self, state) -> List[Agenda]:
         return Agenda.objects.filter(activo=state)
 
