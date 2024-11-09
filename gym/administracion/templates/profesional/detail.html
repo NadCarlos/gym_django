@@ -23,26 +23,42 @@
             </div>
         </div>
     </div>
-    <div class="d-flex justify-content-between mt-4">
-        <a href="{% url 'profesional_list' %}" class="btn btn-secondary">
-            <i class="bi bi-arrow-left-circle"></i> Volver a la lista
-        </a>
-        {% if user.is_staff %}
-        <div class="btn-group">
-            <a href="{% url 'profesional_delete' profesional.id %}" class="btn btn-danger">
-                <i class="bi bi-trash"></i> Eliminar
-            </a>
-            <a href="{% url 'profesional_update' profesional.id %}" class="btn btn-primary">
-                <i class="bi bi-pencil"></i> Editar
-            </a>
-            <a href="{% url 'tratamiento_profesional_list' profesional.id %}" class="btn btn-primary">
-                <i class="bi bi-calendar-check-fill"></i> Tratamientos
-            </a>
-            <a href="{% url 'agenda_profesional' profesional.id %}" class="btn btn-primary">
-                <i class="bi bi-calendar-check-fill"></i> Agenda
+    {% if user.is_staff %}
+    <div class="row mt-3">
+        <div class="col-md-6 mb-3">
+            <a href="{% url 'profesional_list' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Volver a la lista
             </a>
         </div>
-        {% endif %}
+        <!-- Primera columna -->
+        <div class="col-md-3 mb-3">
+            {% if profesional.activo %}
+            <a href="{% url 'tratamiento_profesional_list' profesional.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-list me-2"></i> Tratamientos
+            </a>
+            <a href="{% url 'profesional_update' profesional.id %}" class="btn btn-primary w-100 mb-2">
+                <i class="bi bi-pencil me-2"></i> Editar
+            </a>
+            {% else %}
+            <a href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-warning w-100 mb-2"
+                onclick="return confirm('Esto va a restaurar al Profesional');">
+                <i class="bi bi-arrow-up-circle-fill me-2"></i> Reactivar
+            </a>
+            {% endif %}
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-3">
+            {% if profesional.activo %}
+            <a href="{% url 'agenda_profesional' profesional.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-calendar me-2"></i> Ver Agenda
+            </a>
+            <a href="{% url 'profesional_delete' profesional.id %}" class="btn btn-danger w-100 mb-2"
+                onclick="return confirm('Esto va a borrar el Profesional');">
+                <i class="bi bi-trash me-2"></i> Eliminar
+            </a>
+            {% endif %}
+        </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

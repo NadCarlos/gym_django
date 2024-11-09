@@ -35,18 +35,17 @@
         </div>
         <div class="col-md-3 mb-3">
             {% if paciente.activo %}
-            <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary w-100 mb-2">
-                <i class="bi bi-pencil me-2"></i> Editar
-            </a>
-            <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger w-100 mb-2"
-                onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');">
-                <i class="bi bi-trash me-2"></i> Eliminar
-            </a>
-            <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
-                <i class="bi bi-plus-circle me-2"></i> Nueva Prestación
-            </a>
             <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-list me-2"></i> Historial Prestaciones
+            </a>
+            <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-clock-history me-2"></i> Historial de Asistencias
+            </a>
+            <a href="{% url 'agenda_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-calendar me-2"></i> Ver Agenda
+            </a>
+            <a href="{% url 'paciente_update' paciente.id %}" class="btn btn-primary w-100 mb-2">
+                <i class="bi bi-pencil me-2"></i> Editar
             </a>
             {% else %}
             <a href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-warning w-100 mb-2"
@@ -58,17 +57,18 @@
         <!-- Segunda columna -->
         <div class="col-md-3">
             {% if paciente.activo %}
+            <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-plus-circle me-2"></i> Nueva Prestación
+            </a>
             <a href="{% url 'nueva_asistencia_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-person-plus me-2"></i> Nueva Asistencia
-            </a>
-            <a href="{% url 'historial_aistencias_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
-                <i class="bi bi-clock-history me-2"></i> Historial de Asistencias
             </a>
             <a href="{% url 'agenda_paciente_create' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-check me-2"></i> Nuevo Turno
             </a>
-            <a href="{% url 'agenda_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
-                <i class="bi bi-calendar me-2"></i> Ver Agenda
+            <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger w-100 mb-2"
+                onclick="return confirm('Esto va a borrar el Paciente y Finalizar la Prestacione Activa');">
+                <i class="bi bi-trash me-2"></i> Eliminar
             </a>
             {% endif %}
         </div>
