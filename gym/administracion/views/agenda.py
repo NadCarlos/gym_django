@@ -75,6 +75,8 @@ class AgendaPacienteCreate(View):
             # Convierte horas y minutos a minutos totales para ambos tiempos
             hora_inicio_total_minutos = hora_inicio[0].hour * 60 + hora_inicio[0].minute
             hora_fin_total_minutos = hora_fin[0].hour * 60 + hora_fin[0].minute
+            if hora_fin_total_minutos <= hora_fin_total_minutos:
+                return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
             
             agendaRepo.create(
@@ -114,4 +116,14 @@ class ErrorPrestacionFaltante(View):
         return render(
             request,
             'agenda/error_prestacion_paciente.html',
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ErrorHora(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'agenda/error_hora.html',
         )
