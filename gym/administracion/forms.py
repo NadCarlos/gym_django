@@ -283,6 +283,10 @@ class TratamientoProfesionalCreateForm(forms.ModelForm):
 
 class AgendaCreateForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(AgendaCreateForm, self).__init__(*args, **kwargs)
+        self.fields['fecha'].disabled = True
+
     class Meta:
 
         model = Agenda

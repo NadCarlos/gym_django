@@ -1,3 +1,5 @@
+import datetime
+
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -46,11 +48,14 @@ class AgendaPacienteCreate(View):
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         if prestacion is None:
             return redirect('error_prestacion_paciente')
+        date = datetime.datetime.now()
+        print(date)
         profesionales = profesionalRepo.filter_by_activo()
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
         form = AgendaCreateForm(
             initial = {
                 'id_usuario': request.user,
+                'fecha': date,
             }
         )
         return render(
@@ -60,6 +65,7 @@ class AgendaPacienteCreate(View):
                 paciente=paciente,
                 profesionales=profesionales,
                 tratamientosActivos=tratamientosActivos,
+                date=date,
                 form=form,
             )
         )
@@ -75,7 +81,7 @@ class AgendaPacienteCreate(View):
             # Convierte horas y minutos a minutos totales para ambos tiempos
             hora_inicio_total_minutos = hora_inicio[0].hour * 60 + hora_inicio[0].minute
             hora_fin_total_minutos = hora_fin[0].hour * 60 + hora_fin[0].minute
-            if hora_fin_total_minutos <= hora_fin_total_minutos:
+            if hora_fin_total_minutos <= hora_inicio_total_minutos:
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
             
