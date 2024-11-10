@@ -49,7 +49,7 @@ class AgendaPacienteCreate(View):
         if prestacion is None:
             return redirect('error_prestacion_paciente')
         date = datetime.datetime.now()
-        print(date)
+        dateSTR = date.strftime("%d-%m-%Y")
         profesionales = profesionalRepo.filter_by_activo()
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
         form = AgendaCreateForm(
@@ -65,7 +65,7 @@ class AgendaPacienteCreate(View):
                 paciente=paciente,
                 profesionales=profesionales,
                 tratamientosActivos=tratamientosActivos,
-                date=date,
+                dateSTR=dateSTR,
                 form=form,
             )
         )

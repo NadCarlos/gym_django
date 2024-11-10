@@ -283,10 +283,6 @@ class TratamientoProfesionalCreateForm(forms.ModelForm):
 
 class AgendaCreateForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(AgendaCreateForm, self).__init__(*args, **kwargs)
-        self.fields['fecha'].disabled = True
-
     class Meta:
 
         model = Agenda
@@ -301,7 +297,7 @@ class AgendaCreateForm(forms.ModelForm):
             ]
         
         widgets = {
-            'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'readonly':'readonly', 'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'hora_inicio': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
             'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
