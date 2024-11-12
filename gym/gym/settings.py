@@ -78,6 +78,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "dbbackup",
+    "django_crontab",
     # Custom Apps
     "home",
     "administracion",
@@ -134,6 +136,29 @@ DATABASES = {
     }
 }
 
+DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "backup_data"}
+
+
+def custom_backup_filename(databasename, datetime, *args, **kwargs):
+    """
+    Create a custom filename for database back ups using dbbackup
+
+    Args:
+        databasename (str): Database name
+        datetime (datetime): Datetime format
+
+    Returns:
+        str: filename
+    """
+    databasename = env("MYSQL_DATABASE")
+    return f"{databasename}_{datetime}.sql"
+
+
+DBBACKUP_FILENAME_TEMPLATE = custom_backup_filename
+
+
+CRONJOBS = [("0 2 * * *", "gym.cron_backup.daily_database_backup")]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
