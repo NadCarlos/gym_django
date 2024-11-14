@@ -18,8 +18,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Mañana</th>
+                                </tr>
                                 {% for x in agenda %}
-                                    {% if x.id_dia.nombre == 'Lunes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id %}
+                                    {% if x.id_dia.nombre == 'Lunes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                        <tr>
+                                            <td>{{ x.hora_inicio }}</td>
+                                            <td>{{ x.hora_fin }}</td>
+                                            <td>{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                {% for x in agenda %}
+                                    {% if x.id_dia.nombre == 'Lunes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                         <tr>
                                             <td>{{ x.hora_inicio }}</td>
                                             <td>{{ x.hora_fin }}</td>
@@ -45,8 +60,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Mañana</th>
+                                </tr>
                                 {% for x in agenda %}
-                                    {% if x.id_dia.nombre == 'Martes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id %}
+                                    {% if x.id_dia.nombre == 'Martes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                        <tr>
+                                            <td>{{ x.hora_inicio }}</td>
+                                            <td>{{ x.hora_fin }}</td>
+                                            <td>{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                {% for x in agenda %}
+                                    {% if x.id_dia.nombre == 'Martes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                         <tr>
                                             <td>{{ x.hora_inicio }}</td>
                                             <td>{{ x.hora_fin }}</td>
@@ -72,8 +102,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Mañana</th>
+                                </tr>
                                 {% for x in agenda %}
-                                    {% if x.id_dia.nombre == 'Miercoles' and x.id_profesional_tratamiento.id_profesional.id == profesional.id %}
+                                    {% if x.id_dia.nombre == 'Miercoles' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                        <tr>
+                                            <td>{{ x.hora_inicio }}</td>
+                                            <td>{{ x.hora_fin }}</td>
+                                            <td>{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                {% for x in agenda %}
+                                    {% if x.id_dia.nombre == 'Miercoles' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                         <tr>
                                             <td>{{ x.hora_inicio }}</td>
                                             <td>{{ x.hora_fin }}</td>
@@ -99,8 +144,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Mañana</th>
+                                </tr>
                                 {% for x in agenda %}
-                                    {% if x.id_dia.nombre == 'Jueves' and x.id_profesional_tratamiento.id_profesional.id == profesional.id %}
+                                    {% if x.id_dia.nombre == 'Jueves' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                        <tr>
+                                            <td>{{ x.hora_inicio }}</td>
+                                            <td>{{ x.hora_fin }}</td>
+                                            <td>{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                {% for x in agenda %}
+                                    {% if x.id_dia.nombre == 'Jueves' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                         <tr>
                                             <td>{{ x.hora_inicio }}</td>
                                             <td>{{ x.hora_fin }}</td>
@@ -126,8 +186,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Mañana</th>
+                                </tr>
                                 {% for x in agenda %}
-                                    {% if x.id_dia.nombre == 'Viernes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id %}
+                                    {% if x.id_dia.nombre == 'Viernes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                        <tr>
+                                            <td>{{ x.hora_inicio }}</td>
+                                            <td>{{ x.hora_fin }}</td>
+                                            <td>{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                                <tr>
+                                    <th colspan="3" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                {% for x in agenda %}
+                                    {% if x.id_dia.nombre == 'Viernes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                         <tr>
                                             <td>{{ x.hora_inicio }}</td>
                                             <td>{{ x.hora_fin }}</td>

@@ -1,4 +1,5 @@
 import datetime
+from datetime import time
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -111,6 +112,7 @@ class AgendaProfesional(View):
             dict(
                 profesional=profesional,
                 agenda=agenda,
+                hora_limite_tarde=time(15, 0),
             )
         )
     
