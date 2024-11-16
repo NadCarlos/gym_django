@@ -13,11 +13,13 @@ from administracion.forms import (
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.prestacion import PrestacionRepository
+from administracion.repositories.agenda import AgendaRepository
 
 
 prestacionPacienteRepo = PrestacionPacienteRepository()
 pacienteRepo = PacienteRepository()
 prestacionRepo = PrestacionRepository()
+agendaRepo = AgendaRepository()
 
 
 class NuevaPrestacionPaciente(View):
@@ -111,12 +113,16 @@ class DeletePrestacionPaciente(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
+        agendas = agendaRepo.filter_by_id_prestacion_paciente(id_prestacion_paciente=prestacionPaciente.id)
         today = date.today()
+        if agendas != None:
+            for agenda in agendas:
+                agendaRepo.delete_by_activo(agenda=agenda)
+
         prestacionPacienteRepo.end_date(
             prestacionPaciente=prestacionPaciente,
             fecha_fin=today,
         )
-        #No elimino, cambio el campo activo a False
         prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
         return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
     
