@@ -85,6 +85,7 @@ class AgendaPacienteCreate(View):
             if hora_fin_total_minutos <= hora_inicio_total_minutos:
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
+            diferencia_horas = diferencia_minutos / 60
             
             agendaRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],
@@ -94,7 +95,7 @@ class AgendaPacienteCreate(View):
                 id_prestacion_paciente=prestacion,
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
-                tiempo=diferencia_minutos,
+                tiempo=diferencia_horas,
             )
 
             return redirect('agenda_paciente', paciente.id)
@@ -131,6 +132,7 @@ class AgendaPacienteUpdate(View):
             if hora_fin_total_minutos <= hora_inicio_total_minutos:
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
+            diferencia_horas = diferencia_minutos / 60
             
             agendaRepo.update(
                 agenda=agenda,
@@ -139,7 +141,7 @@ class AgendaPacienteUpdate(View):
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
                 fecha_fin=form.cleaned_data['fecha_fin'],
-                tiempo=diferencia_minutos,
+                tiempo=diferencia_horas,
             )
 
             return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
