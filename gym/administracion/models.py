@@ -486,6 +486,12 @@ class Agenda(models.Model):
         verbose_name='Fecha',
     )
 
+    fecha_fin = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha',
+    )
+
     hora_inicio = models.TimeField(
         null=False,
         blank=False,
