@@ -145,6 +145,17 @@ class AgendaPacienteUpdate(View):
             )
 
             return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AgendaDelete(View):
+
+    def get(self, request, id, *args, **kwargs):
+        agenda = agendaRepo.get_by_id(id=id)
+        print(agenda.activo)
+        #No elimino, cambio el campo activo a False
+        agendaRepo.delete_by_activo(agenda=agenda)
+        return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -152,7 +163,7 @@ class AgendaProfesional(View):
 
     def get(self, request, id):
         profesional = profesionalRepo.get_by_id(id=id)
-        agenda = agendaRepo.get_all()
+        agenda = agendaRepo.filter_by_activo(state=True)
         return render(
             request,
             'agenda/agenda_profesional.html',
