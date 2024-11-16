@@ -4,7 +4,7 @@
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Gestionar Agenda</h2>
     <div class="card p-4 shadow-sm">
-        <form method="post">
+        <form id="form-tratamiento" method="post">
             {% csrf_token %}
             <div class="mb-2 row">
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Fecha:</label>
@@ -43,7 +43,7 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
                 <div class="col-sm-6">
                     <select class="form-control custom-class" id="select-profesional" name="select">
-                        <option>Seleccione un profesional</option>
+                        <option value="" >Seleccione un profesional</option>
                         {% for profesional in profesionales %}
                         <option value="{{ profesional.id }}">{{ profesional.apellido }}</option>
                         {% endfor %}
@@ -57,7 +57,7 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Tratamiento:</label>
                 <div class="col-sm-6">
                     <select class="form-control custom-class" id="select-tratamiento" name="id_profesional_tratamiento">
-                        <option>Seleccione un tratamiento</option>
+                        <option value="">Seleccione un tratamiento</option>
                         {% for tratamiento in tratamientosActivos %}
                             <option value="{{ tratamiento.id }}" data-profesional-id="{{ tratamiento.id_profesional.id }}">
                                 {{ tratamiento }}
@@ -98,6 +98,21 @@
                 }
             });
         });
+    });
+    document.getElementById('form-tratamiento').addEventListener('submit', function(event) {
+        const selectTratamiento = document.getElementById('select-tratamiento');
+        if (!selectTratamiento.value) {
+            alert('Debe seleccionar un tratamiento antes de continuar.');
+            event.preventDefault(); // Evita el envío del formulario
+        }
+    });
+
+    document.getElementById('form-tratamiento').addEventListener('submit', function(event) {
+        const selectProfesional = document.getElementById('select-profesional');
+        if (!selectProfesional.value) {
+            alert('Debe seleccionar un profesional antes de continuar.');
+            event.preventDefault(); // Evita el envío del formulario
+        }
     });
 </script>
 
