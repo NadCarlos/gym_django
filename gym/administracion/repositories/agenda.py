@@ -83,3 +83,13 @@ class AgendaRepository:
         tiempo=tiempo,
 
         agenda.save()
+
+    def end_date(
+        self,
+        agenda: Agenda,
+        fecha_fin: str,
+    ) -> Agenda:
+
+        agenda.fecha_fin = fecha_fin
+
+        agenda.save()

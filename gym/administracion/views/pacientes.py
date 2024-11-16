@@ -22,6 +22,7 @@ from administracion.repositories.prestacion import PrestacionRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.estado_civil import EstadoCivilRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
+from administracion.repositories.agenda import AgendaRepository
 
 
 from administracion.models import Paciente
@@ -34,6 +35,7 @@ prestacionRepo = PrestacionRepository()
 localidadRepo = LocalidadRepository()
 estadoCivilRepo = EstadoCivilRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
+agendaRepo = AgendaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -267,6 +269,14 @@ class PacienteDelete(View):
         prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         if prestacionPaciente != None:
             today = date.today()
+            agendas = agendaRepo.filter_by_id_prestacion_paciente(id_prestacion_paciente=prestacionPaciente.id)
+            if agendas != None:
+                for agenda in agendas:
+                    agendaRepo.end_date(
+                        agenda=agenda,
+                        fecha_fin=today,
+                    )
+                    agendaRepo.delete_by_activo(agenda=agenda)
             prestacionPacienteRepo.end_date(
                 prestacionPaciente=prestacionPaciente,
                 fecha_fin=today,
