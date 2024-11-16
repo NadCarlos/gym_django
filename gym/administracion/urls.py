@@ -65,6 +65,7 @@ from administracion.views.agenda import(
     AgendaPaciente,
     AgendaProfesional,
     AgendaPacienteCreate,
+    AgendaPacienteUpdate,
     ErrorPrestacionFaltante,
     ErrorHora,
 )
@@ -135,6 +136,7 @@ agenda = [
     path(route='<int:id>/agenda_paciente',view=AgendaPaciente.as_view(), name='agenda_paciente'),
     path(route='<int:id>/agenda_profesional',view=AgendaProfesional.as_view(), name='agenda_profesional'),
     path(route='<int:id>/agenda_paciente_create',view=AgendaPacienteCreate.as_view(), name='agenda_paciente_create'),
+    path(route='<int:id>/agenda_paciente_update',view=AgendaPacienteUpdate.as_view(), name='agenda_paciente_update'),
     path(route='error_prestacion_paciente',view=ErrorPrestacionFaltante.as_view(), name='error_prestacion_paciente'),
     path(route='error_hora',view=ErrorHora.as_view(), name='error_hora'),
 ]

@@ -64,24 +64,19 @@ class AgendaRepository:
     def update(
         self, 
         agenda: Agenda,
-        id_usuario: User,
-        fecha: str,
         hora_inicio: int,
         hora_fin: int,
-        id_prestacion_paciente: PrestacionPaciente,
         id_profesional_tratamiento: ProfesionalTratamiento,
         id_dia: Dia,
+        fecha_fin: str,
         tiempo: int,
     ) -> Agenda:
 
-        agenda.id_usuario = id_usuario
-        agenda.id_usuario = id_usuario
-        agenda.fecha = fecha
         agenda.hora_inicio = hora_inicio
         agenda.hora_fin = hora_fin
-        agenda.id_prestacion_paciente = id_prestacion_paciente
         agenda.id_profesional_tratamiento=id_profesional_tratamiento
         agenda.id_dia = id_dia
-        agenda.tiempo = tiempo
+        agenda.fecha_fin = fecha_fin
+        tiempo=tiempo,
 
         agenda.save()
