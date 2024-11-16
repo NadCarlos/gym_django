@@ -107,6 +107,8 @@ class AgendaPacienteUpdate(View):
     def get(self, request, id):
         agenda = agendaRepo.get_by_id(id=id)
         profesionales = profesionalRepo.filter_by_activo()
+        profesional_old = agenda.id_profesional_tratamiento.id_profesional
+        tratamiento_old = agenda.id_profesional_tratamiento
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
         form = AgendaUpdateForm(instance=agenda)
         return render(
@@ -116,6 +118,8 @@ class AgendaPacienteUpdate(View):
                 form=form,
                 profesionales=profesionales,
                 tratamientosActivos=tratamientosActivos,
+                profesional_old=profesional_old,
+                tratamiento_old=tratamiento_old,
             )
         )
     

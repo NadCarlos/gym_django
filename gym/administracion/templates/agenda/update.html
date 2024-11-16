@@ -35,9 +35,11 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
                 <div class="col-sm-6">
                     <select class="form-control custom-class" id="select-profesional" name="select">
-                        <option>Seleccione un profesional</option>
+                        <option value="{{ profesional_old.id }}">{{ profesional_old.apellido }}</option>
                         {% for profesional in profesionales %}
-                        <option value="{{ profesional.id }}">{{ profesional.apellido }}</option>
+                            {% if profesional.id != profesional_old.id %}
+                                <option value="{{ profesional.id }}">{{ profesional.apellido }}</option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>
@@ -48,11 +50,13 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Tratamiento:</label>
                 <div class="col-sm-6">
                     <select class="form-control custom-class" id="select-tratamiento" name="id_profesional_tratamiento">
-                        <option>Seleccione un tratamiento</option>
+                        <option value="{{ tratamiento_old.id }}" >{{ tratamiento_old }}</option>
                         {% for tratamiento in tratamientosActivos %}
-                            <option value="{{ tratamiento.id }}" data-profesional-id="{{ tratamiento.id_profesional.id }}">
-                                {{ tratamiento }}
-                            </option>
+                            {% if tratamiento.id != tratamiento_old.id_tratamiento.id and tratamiento_old.id_profesional.id == profesional_old.id %}
+                                <option value="{{ tratamiento.id }}" data-profesional-id="{{ tratamiento.id_profesional.id }}">
+                                    {{ tratamiento }}
+                                </option>
+                            {% endif %}
                         {% endfor %}
                     </select>
                 </div>
