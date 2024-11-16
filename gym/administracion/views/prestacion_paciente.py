@@ -117,6 +117,10 @@ class DeletePrestacionPaciente(View):
         today = date.today()
         if agendas != None:
             for agenda in agendas:
+                agendaRepo.end_date(
+                    agenda=agenda,
+                    fecha_fin=today,
+                )
                 agendaRepo.delete_by_activo(agenda=agenda)
 
         prestacionPacienteRepo.end_date(

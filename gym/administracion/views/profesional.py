@@ -152,7 +152,6 @@ class ProfesionalCreate(View):
                 dniExistente = profesionalRepo.filter_by_dni(numero_dni=dni)
                 matricula = form.cleaned_data['matricula']
                 matriculaExistente = profesionalRepo.filter_by_matricula(matricula=matricula)
-                print(dniExistente, matriculaExistente)
                 if dniExistente is None and matriculaExistente is None:
                     nombre = form.cleaned_data['nombre']
                     nombre = nombre.upper()

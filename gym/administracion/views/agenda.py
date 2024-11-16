@@ -121,9 +121,7 @@ class AgendaPacienteUpdate(View):
     def post(self, request, id):
         agenda = agendaRepo.get_by_id(id=id)
         form = AgendaUpdateForm(request.POST)
-        print(request.GET)
         if form.is_valid():
-            print("no")
             hora_inicio=form.cleaned_data['hora_inicio'],
             hora_fin=form.cleaned_data['hora_fin'],
 
@@ -152,7 +150,6 @@ class AgendaDelete(View):
 
     def get(self, request, id, *args, **kwargs):
         agenda = agendaRepo.get_by_id(id=id)
-        print(agenda.activo)
         #No elimino, cambio el campo activo a False
         agendaRepo.delete_by_activo(agenda=agenda)
         return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
