@@ -3,6 +3,7 @@ version: "3.8"
 services:
   db:
     image: mysql:5.7
+    restart: always
     env_file:
       - .env
     environment:
@@ -12,12 +13,11 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3308:${MYSQL_PORT}" #host:container
-
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${MYSQL_ROOT_PASSWORD}"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - db_data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/
