@@ -3,7 +3,18 @@
 {% block content %}
 <div class="content">
     <div class="container-fluid">
-        <h1 class="text-dark text-center">Agenda {{paciente.apellido}}, {{paciente.nombre}}</h1>
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-11">
+                <h1 class="text-dark text-center">Agenda {{paciente.apellido}}, {{paciente.nombre}}</h1>
+            </div>
+            <!-- Segunda columna -->
+            <div class="col-md-1">
+                <a href="{% url 'agenda_paciente_create' paciente.id %}" class="btn btn-primary">
+                    + Nuevo Turno
+                </a>
+            </div>
+        </div>
         <div class="row d-flex">
             <div class="flex-col">
                 <div class="card-box">
@@ -15,8 +26,8 @@
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
                                     <th style="width: 75%;">Profesional</th>
-                                    <th style="width: 5%;"><i class="bi bi-pencil me-2"></i></th>
-                                    <th style="width: 5%;"><i class="bi bi-trash me-2"></i></th>
+                                    <th style="width: 5%;">
+                                    <th style="width: 5%;">
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,8 +57,8 @@
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
                                     <th style="width: 75%;">Profesional</th>
-                                    <th style="width: 5%;"><i class="bi bi-pencil me-2"></i></th>
-                                    <th style="width: 5%;"><i class="bi bi-trash me-2"></i></th>
+                                    <th style="width: 5%;">
+                                    <th style="width: 5%;">
                                 </tr>
                             </thead>
                             <tbody>
@@ -77,8 +88,8 @@
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
                                     <th style="width: 75%;">Profesional</th>
-                                    <th style="width: 5%;"><i class="bi bi-pencil me-2"></i></th>
-                                    <th style="width: 5%;"><i class="bi bi-trash me-2"></i></th>
+                                    <th style="width: 5%;">
+                                    <th style="width: 5%;">
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,8 +119,8 @@
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
                                     <th style="width: 75%;">Profesional</th>
-                                    <th style="width: 5%;"><i class="bi bi-pencil me-2"></i></th>
-                                    <th style="width: 5%;"><i class="bi bi-trash me-2"></i></th>
+                                    <th style="width: 5%;">
+                                    <th style="width: 5%;">
                                 </tr>
                             </thead>
                             <tbody>
@@ -139,8 +150,8 @@
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
                                     <th style="width: 75%;">Profesional</th>
-                                    <th style="width: 5%;"><i class="bi bi-pencil me-2"></i></th>
-                                    <th style="width: 5%;"><i class="bi bi-trash me-2"></i></th>
+                                    <th style="width: 5%;">
+                                    <th style="width: 5%;">
                                 </tr>
                             </thead>
                             <tbody>
