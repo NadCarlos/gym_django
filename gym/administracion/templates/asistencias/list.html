@@ -74,12 +74,22 @@
                 </th>
                 <th>
                     <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'hora' %}-hora{% else %}hora{% endif %}">
-                        Hora
+                        Hora Registro
                         {% if request.GET.ordering == 'hora' %}
                             <i class="bi bi-caret-down-fill"></i>
                         {% elif request.GET.ordering == '-hora' %}
                             <i class="bi bi-caret-up-fill"></i>
                         {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="#">
+                        Hora Agenda
+                    </a>
+                </th>
+                <th>
+                    <a href="#">
+                        Tiempo Trabajado
                     </a>
                 </th>
                 <th>
@@ -102,6 +112,21 @@
                         {% endif %}
                     </a>
                 </th>
+                <th>
+                    <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_agenda__id_profesional_tratamiento__id_profesional__nombre' %}-id_agenda__id_profesional_tratamiento__id_profesional__nombre{% else %}id_agenda__id_profesional_tratamiento__id_profesional__nombre{% endif %}">
+                        Profesional
+                        {% if request.GET.ordering == 'id_agenda__id_profesional_tratamiento__id_profesional__nombre' %}
+                            <i class="bi bi-caret-down-fill"></i>
+                        {% elif request.GET.ordering == '-id_agenda__id_profesional_tratamiento__id_profesional__nombre' %}
+                            <i class="bi bi-caret-up-fill"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="#">
+                        Tratamiento
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -111,8 +136,12 @@
                 <td>{{ asistencia.id_prestacion_paciente.id_paciente.nombre }}</td>
                 <td>{{ asistencia.fecha }}</td>
                 <td>{{ asistencia.hora }}</td>
+                <td>{{ asistencia.id_agenda.hora_inicio }}</td>
+                <td>{{ asistencia.id_agenda.tiempo }}</td>
                 <td>{{ asistencia.id_prestacion_paciente.id_prestacion.nombre }}</td>
                 <td>{{ asistencia.id_prestacion_paciente.id_obra_social.nombre }}</td>
+                <td>{{ asistencia.id_agenda.id_profesional_tratamiento.id_profesional.nombre }}</td>
+                <td>{{ asistencia.id_agenda.id_profesional_tratamiento.id_tratamiento.nombre }}</td>
             </tr>
             {% endfor %}
         </tbody>
