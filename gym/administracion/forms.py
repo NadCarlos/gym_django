@@ -317,7 +317,6 @@ class AgendaUpdateForm(forms.ModelForm):
             'hora_fin',
             'id_dia',
             'id_profesional_tratamiento',
-            'fecha_fin',
             ]
         
         widgets = {
@@ -325,5 +324,4 @@ class AgendaUpdateForm(forms.ModelForm):
             'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_profesional_tratamiento': forms.Select(attrs={'class': 'form-control custom-class'}),
-            'fecha_fin': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
         }

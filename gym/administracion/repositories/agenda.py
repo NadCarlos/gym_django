@@ -71,7 +71,6 @@ class AgendaRepository:
         hora_fin: int,
         id_profesional_tratamiento: ProfesionalTratamiento,
         id_dia: Dia,
-        fecha_fin: str,
         tiempo: int,
     ) -> Agenda:
 
@@ -79,7 +78,6 @@ class AgendaRepository:
         agenda.hora_fin = hora_fin
         agenda.id_profesional_tratamiento=id_profesional_tratamiento
         agenda.id_dia = id_dia
-        agenda.fecha_fin = fecha_fin
         tiempo=tiempo,
 
         agenda.save()

@@ -1,5 +1,5 @@
 import datetime
-from datetime import time
+from datetime import time, date
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -144,7 +144,6 @@ class AgendaPacienteUpdate(View):
                 hora_fin=form.cleaned_data['hora_fin'],
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
-                fecha_fin=form.cleaned_data['fecha_fin'],
                 tiempo=diferencia_horas,
             )
 
@@ -156,6 +155,11 @@ class AgendaDelete(View):
 
     def get(self, request, id, *args, **kwargs):
         agenda = agendaRepo.get_by_id(id=id)
+        today = date.today()
+        agendaRepo.end_date(
+            agenda=agenda,
+            fecha_fin=today,
+            )
         #No elimino, cambio el campo activo a False
         agendaRepo.delete_by_activo(agenda=agenda)
         return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
