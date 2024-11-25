@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from administracion.models import Asistencia, PrestacionPaciente
+from administracion.models import Asistencia, PrestacionPaciente, Agenda
 
 
 class AsistenciaRepository:
@@ -27,7 +27,9 @@ class AsistenciaRepository:
     def create(
         self,
         prestacionPaciente: PrestacionPaciente,
+        agenda: Agenda,
     ):
         return Asistencia.objects.create(
             id_prestacion_paciente=prestacionPaciente,
+            id_agenda=agenda,
         )

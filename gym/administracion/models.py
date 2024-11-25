@@ -288,39 +288,6 @@ class PrestacionPaciente(models.Model):
         return  self.id_paciente.nombre
 
 
-class Asistencia(models.Model):
-
-    fecha = models.DateField(
-        auto_now_add=True,
-        blank=False,
-        null=False,
-        verbose_name="Fecha Asistencia",
-        )
-
-    hora = models.TimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False,
-        verbose_name="Hora Asistencia",
-        )
-
-    momento_de_carga = models.DateTimeField(
-        auto_now_add=True,
-        blank=False,
-        null=False,
-        verbose_name="Momento de carga",
-        )
-
-    id_prestacion_paciente = models.ForeignKey(
-        PrestacionPaciente,
-        on_delete=models.RESTRICT,
-        related_name='prestacion_paciente_asistencia',
-    )
-
-    def __str__(self):
-        return  self.id_prestacion_paciente.id_paciente.nombre
-
-
 class Profesional(models.Model):
 
     nombre = models.CharField(
@@ -550,3 +517,44 @@ class Agenda(models.Model):
 
     def __str__(self):
         return  self.id_profesional_tratamiento.id_profesional.apellido
+    
+
+class Asistencia(models.Model):
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Fecha Asistencia",
+        )
+
+    hora = models.TimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Hora Asistencia",
+        )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Momento de carga",
+        )
+
+    id_prestacion_paciente = models.ForeignKey(
+        PrestacionPaciente,
+        on_delete=models.RESTRICT,
+        related_name='prestacion_paciente_asistencia',
+    )
+
+    id_agenda = models.ForeignKey(
+        Agenda,
+        blank=True,
+        null=True,
+        on_delete=models.RESTRICT,
+        related_name='agenda',
+    )
+
+    def __str__(self):
+        return  self.id_prestacion_paciente.id_paciente.nombre

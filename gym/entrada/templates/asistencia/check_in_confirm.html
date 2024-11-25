@@ -20,6 +20,7 @@
         <form method="post">
             {% csrf_token %}
             {{form.id_prestacion_paciente}}
+            {{form.id_agenda}}
             <button hidden id="clickButton" type="submit" class="btn btn-primary">Guardar</button>
         </form>
     </div>

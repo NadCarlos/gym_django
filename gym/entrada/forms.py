@@ -10,10 +10,12 @@ class AsistenciaCreateForm(forms.ModelForm):
 
         fields = [
             'id_prestacion_paciente',
+            'id_agenda',
             ]
         
         widgets = {
             'id_prestacion_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_agenda': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
 
 
