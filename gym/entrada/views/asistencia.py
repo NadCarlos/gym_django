@@ -22,9 +22,9 @@ prestacionPacienteRepo = PrestacionPacienteRepository()
 agendaRepo = AgendaRepository()
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class AsistenciaPacienteList(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
@@ -42,9 +42,10 @@ class AsistenciaPacienteList(View):
         except:
             return redirect('error_no_prestacion', paciente.id)
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class NuevaAsistenciaPaciente(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente(id_paciente=paciente.id)
@@ -61,7 +62,6 @@ class NuevaAsistenciaPaciente(View):
         except:
             return redirect('error_no_prestacion', paciente.id)
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
         try:
@@ -74,9 +74,9 @@ class NuevaAsistenciaPaciente(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CheckIn(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         form = AsistenciaPublicCreateForm()
         return render(
@@ -86,12 +86,11 @@ class CheckIn(View):
                 form=form
             )
         )
-    
-    @method_decorator(login_required(login_url='login'))
+
     def post(self, request):
         form = AsistenciaPublicCreateForm(request.POST or None)
-        try: 
-            if request.POST and form.is_valid():
+        try:
+            if form.is_valid():
                 dni = form.cleaned_data['numero_dni']
                 dni=int(dni)
                 paciente = pacienteRepo.get_by_dni(numero_dni=dni)
@@ -100,9 +99,9 @@ class CheckIn(View):
             return redirect('check_in_error')
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CheckInConfirm(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         try:
@@ -132,7 +131,6 @@ class CheckInConfirm(View):
         except:
             return redirect('check_in_not_found')
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
         paciente = pacienteRepo.get_by_id(id=id)
@@ -144,13 +142,12 @@ class CheckInConfirm(View):
                     )
                 return redirect('check_in_success', paciente.id)
         except:
-            print("oca")
             return redirect('check_in_error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CheckInSuccess(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         date = datetime.datetime.now()
         date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
@@ -165,18 +162,19 @@ class CheckInSuccess(View):
         )
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CheckInError(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
             request,
             'asistencia/check_in_error.html'
         )
-    
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class CheckInNotFound(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
             request,
@@ -184,9 +182,9 @@ class CheckInNotFound(View):
         )
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PrestacionNotFound(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         return render(
