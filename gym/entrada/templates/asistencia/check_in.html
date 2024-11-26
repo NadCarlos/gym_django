@@ -19,7 +19,7 @@
 
                         <div class="mb-4">
                             <label for="numero_dni" class="form-label"><p class="h2">INGRESA TU DNI:</p></label>
-                            <input style="font-size: 28px;" required value="" type="number" id="numero_dni" class="form-control" maxlength="9" name="numero_dni" value="{{ form.numero_dni.value }}">
+                            <input style="font-size: 28px;" required value="" type="number" id="numero_dni" class="form-control" name="numero_dni" value="{{ form.numero_dni.value }}">
                         </div>
 
                         <div class="container text-center mb-4">
@@ -78,19 +78,28 @@
             const botones = document.querySelectorAll('.num');
             const deleteOneBtn = document.querySelector('.delete-one');
             const clearAllBtn = document.querySelector('.clear-all');
-    
+            const maxLength = 8;
+
             botones.forEach(boton => {
                 boton.addEventListener('click', () => {
-                    dniInput.value += boton.textContent;
+                    if (dniInput.value.length < maxLength) {
+                        dniInput.value += boton.textContent.trim();
+                    }
                 });
             });
-    
+
             deleteOneBtn.addEventListener('click', () => {
                 dniInput.value = dniInput.value.slice(0, -1);
             });
-    
+
             clearAllBtn.addEventListener('click', () => {
                 dniInput.value = '';
+            });
+
+            dniInput.addEventListener('input', () => {
+                if (dniInput.value.length > maxLength) {
+                    dniInput.value = dniInput.value.slice(0, maxLength);
+                }
             });
         });
     </script>
