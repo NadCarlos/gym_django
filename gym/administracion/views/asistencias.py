@@ -76,18 +76,23 @@ class AsistenciasToCsv(View):
         data = []
         for asistencia in asistencias:
             hora_asistencia = str(asistencia.hora).split(".")[0]
+            hora_agenda = str(asistencia.id_agenda.hora_inicio).split(".")[0]
             data.append([
                 asistencia.id_prestacion_paciente.id_paciente.apellido,
                 asistencia.id_prestacion_paciente.id_paciente.nombre,
                 asistencia.fecha,
                 hora_asistencia,
+                hora_agenda,
+                asistencia.id_agenda.tiempo,
                 asistencia.id_prestacion_paciente.id_obra_social.nombre,
                 asistencia.id_prestacion_paciente.id_prestacion.nombre,
+                asistencia.id_agenda.id_profesional_tratamiento.id_profesional.apellido,
+                asistencia.id_agenda.id_profesional_tratamiento.id_tratamiento.nombre
             ])
 
         # Convert data to a DataFrame
         df = pd.DataFrame(data, columns=[
-            'Apellido', 'Nombre', 'Fecha', 'Hora', 'Obra Social', 'Prestacion'
+            'Apellido', 'Nombre', 'Fecha', 'Hora Registro', 'Hora Agenda', 'Tiempo Trabajado', 'Obra Social', 'Prestacion', 'Profesional', 'Tratamiento'
         ])
 
         # Use an in-memory output stream to avoid file system I/O
