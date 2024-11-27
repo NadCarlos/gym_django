@@ -80,7 +80,7 @@ class AsistenciasToCsv(View):
             tiempo = asistencia.id_agenda.tiempo
             profesional = asistencia.id_agenda.id_profesional_tratamiento.id_profesional.apellido
             tratamiento = asistencia.id_agenda.id_profesional_tratamiento.id_tratamiento.nombre
-            if asistencia.id_agenda.id == 1:
+            if asistencia.id_agenda.id == 1 or None:
                 hora_asistencia = ""
                 tiempo = ""
                 profesional = ""
