@@ -76,7 +76,12 @@ class AsistenciasToCsv(View):
         data = []
         for asistencia in asistencias:
             hora_asistencia = str(asistencia.hora).split(".")[0]
-            if asistencia.id_agenda.id == 1 or None:
+            if asistencia.id_agenda == None:
+                hora_agenda = ""
+                tiempo = ""
+                profesional = ""
+                tratamiento = ""
+            elif asistencia.id_agenda.id == 1:
                 hora_agenda = ""
                 tiempo = ""
                 profesional = ""
