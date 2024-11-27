@@ -552,6 +552,7 @@ class Asistencia(models.Model):
         Agenda,
         blank=True,
         null=True,
+        default=None,
         on_delete=models.RESTRICT,
         related_name='agenda',
     )

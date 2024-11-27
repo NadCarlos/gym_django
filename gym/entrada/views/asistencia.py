@@ -113,11 +113,18 @@ class CheckInConfirm(View):
                 dia = dia + 1
                 prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
                 agenda_paciente = agendaRepo.filter_by_id_prestacion_paciente_id_dia(id_prestacion_paciente=prestacion_paciente.id, id_dia=dia)
-                agenda_paciente = agenda_paciente[0]
+                
+                # Borrar cuando las agendas esten completas
+                if len(agenda_paciente) == 0:
+                    agenda_paciente = 1
+                else:
+                    agenda_paciente = agenda_paciente[0].id
+                ###
+                
                 form = AsistenciaCreateForm(
                     initial = {
                         'id_prestacion_paciente': prestacion_paciente.id,
-                        'id_agenda': agenda_paciente.id
+                        'id_agenda': agenda_paciente
                         }
                     )
                 return render(

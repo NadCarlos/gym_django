@@ -131,6 +131,20 @@
         </thead>
         <tbody>
             {% for asistencia in asistencias %}
+            {% if asistencia.id_agenda.id == 1 %}
+            <tr>
+                <td>{{ asistencia.id_prestacion_paciente.id_paciente.apellido }}</td>
+                <td>{{ asistencia.id_prestacion_paciente.id_paciente.nombre }}</td>
+                <td>{{ asistencia.fecha }}</td>
+                <td>{{ asistencia.hora }}</td>
+                <td></td>
+                <td></td>
+                <td>{{ asistencia.id_prestacion_paciente.id_prestacion.nombre }}</td>
+                <td>{{ asistencia.id_prestacion_paciente.id_obra_social.nombre }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% else %}
             <tr>
                 <td>{{ asistencia.id_prestacion_paciente.id_paciente.apellido }}</td>
                 <td>{{ asistencia.id_prestacion_paciente.id_paciente.nombre }}</td>
@@ -143,6 +157,7 @@
                 <td>{{ asistencia.id_agenda.id_profesional_tratamiento.id_profesional.nombre }}</td>
                 <td>{{ asistencia.id_agenda.id_profesional_tratamiento.id_tratamiento.nombre }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </tbody>
     </table>

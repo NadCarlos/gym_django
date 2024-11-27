@@ -27,7 +27,7 @@ class AsistenciaRepository:
     def create(
         self,
         prestacionPaciente: PrestacionPaciente,
-        agenda: Agenda,
+        agenda: Optional[Agenda] = None,
     ):
         return Asistencia.objects.create(
             id_prestacion_paciente=prestacionPaciente,
