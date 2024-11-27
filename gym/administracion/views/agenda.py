@@ -106,6 +106,7 @@ class AgendaPacienteUpdate(View):
 
     def get(self, request, id):
         agenda = agendaRepo.get_by_id(id=id)
+        paciente = agenda.id_prestacion_paciente.id_paciente
         profesionales = profesionalRepo.filter_by_activo()
         profesional_old = agenda.id_profesional_tratamiento.id_profesional
         tratamiento_old = agenda.id_profesional_tratamiento
@@ -117,6 +118,7 @@ class AgendaPacienteUpdate(View):
             dict(
                 form=form,
                 profesionales=profesionales,
+                paciente=paciente,
                 tratamientosActivos=tratamientosActivos,
                 profesional_old=profesional_old,
                 tratamiento_old=tratamiento_old,
