@@ -76,7 +76,6 @@ class AsistenciasToCsv(View):
         data = []
         for asistencia in asistencias:
             hora_asistencia = str(asistencia.hora).split(".")[0]
-            hora_agenda = str(asistencia.id_agenda.hora_inicio).split(".")[0]
             tiempo = asistencia.id_agenda.tiempo
             profesional = asistencia.id_agenda.id_profesional_tratamiento.id_profesional.apellido
             tratamiento = asistencia.id_agenda.id_profesional_tratamiento.id_tratamiento.nombre
@@ -85,7 +84,8 @@ class AsistenciasToCsv(View):
                 tiempo = ""
                 profesional = ""
                 tratamiento = ""
-            
+            else:
+                hora_agenda = str(asistencia.id_agenda.hora_inicio).split(".")[0]
 
             data.append([
                 asistencia.id_prestacion_paciente.id_paciente.apellido,
