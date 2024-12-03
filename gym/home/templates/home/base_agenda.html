@@ -51,42 +51,6 @@
                         <a class="nav-link" href="{% url 'register' %}"><i class="bi bi-person-badge"></i> Registro</a>
                     </li>
                     {% endif %}
-
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person"></i> Pacientes
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="{% url 'pacientes_list' True %}">
-                                    <i class="bi bi-person"></i> Ver Pacientes</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'obras_sociales' %}">
-                                    <i class="bi bi-shield"></i> Ver Obras Sociales</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'prestaciones' %}">
-                                    <i class="bi bi-list-check"></i> Ver Prestaciones</a>
-                            </li>
-                            <li><a class="dropdown-item" href="{% url 'asistencias' %}">
-                                    <i class="bi bi-calendar-check"></i> Ver Asistencias</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="dropdown">
-                        <button style="margin-left: 4px;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-file-earmark-person"></i> Profesionales
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="{% url 'profesional_list' %}">
-                                <i class="bi bi-file-earmark-person"></i> Ver Profesionales</a>
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'tratamientos' %}">
-                            <i class="bi bi-shield"></i> Ver Tratamientos</a>
-                        </li>
-                        </ul>
-                    </div>
                     <!-- ------------------ -->
                     {% else %}
                     <li class="nav-item">
