@@ -26,6 +26,7 @@ tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 class AgendaPaciente(View):
 
     def get(self, request, id):
+        path = request.session['uid'] = request.path
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         if prestacion is None:
@@ -35,6 +36,7 @@ class AgendaPaciente(View):
             request,
             'agenda/agenda_paciente.html',
             dict(
+                path=path,
                 paciente=paciente,
                 agenda=agenda,
             )
@@ -128,6 +130,7 @@ class AgendaPacienteUpdate(View):
     def post(self, request, id):
         agenda = agendaRepo.get_by_id(id=id)
         form = AgendaUpdateForm(request.POST)
+        path = request.session.get('uid')
         if form.is_valid():
             hora_inicio=form.cleaned_data['hora_inicio'],
             hora_fin=form.cleaned_data['hora_fin'],
@@ -149,7 +152,7 @@ class AgendaPacienteUpdate(View):
                 tiempo=diferencia_horas,
             )
 
-            return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
+            return redirect( path )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -171,12 +174,14 @@ class AgendaDelete(View):
 class AgendaProfesional(View):
 
     def get(self, request, id):
+        path = request.session['uid'] = request.path
         profesional = profesionalRepo.get_by_id(id=id)
         agenda = agendaRepo.filter_by_activo(state=True)
         return render(
             request,
             'agenda/agenda_profesional.html',
             dict(
+                path=path,
                 profesional=profesional,
                 agenda=agenda,
                 hora_limite_tarde=time(15, 0),

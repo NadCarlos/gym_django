@@ -1,6 +1,8 @@
 {% extends "home/base.html" %}
 
 {% block content %}
+{{ path }}
+<input type="hidden" name="next" value="{{ path }}">
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Gestionar Agenda: {{ paciente.nombre }}, {{ paciente.apellido }}</h2>
     <div class="card p-4 shadow-sm">
