@@ -52,7 +52,7 @@
                     <select class="form-control custom-class" id="select-tratamiento" name="id_profesional_tratamiento">
                         <option value="{{ tratamiento_old.id }}" >{{ tratamiento_old }}</option>
                         {% for tratamiento in tratamientosActivos %}
-                            {% if tratamiento.id != tratamiento_old.id_tratamiento.id and tratamiento_old.id_profesional.id == profesional_old.id %}
+                            {% if tratamiento.id != tratamiento_old.id_tratamiento.id or tratamiento_old.id_profesional.id == profesional_old.id %}
                                 <option value="{{ tratamiento.id }}" data-profesional-id="{{ tratamiento.id_profesional.id }}">
                                     {{ tratamiento }}
                                 </option>
