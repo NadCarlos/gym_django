@@ -1,5 +1,6 @@
 import pandas as pd
 import io
+import datetime
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -22,8 +23,16 @@ class AsistenciasList(View):
     context_object_name = 'asistencias'
 
     def get(self, request):
-        # Instanciar el filtro con los datos enviados por el formulario
-        filterset = AsistenciasFilter(request.GET, queryset=asistenciaRepo.get_all())
+
+        print(request.GET.get('fecha_after'))
+        if request.GET.get('fecha_after') is None:
+            hoy = datetime.date.today()
+            hace_30_dias = hoy - datetime.timedelta(days=30)
+
+            # Instanciar el filtro con los datos enviados por el formulario
+            filterset = AsistenciasFilter(request.GET, queryset=asistenciaRepo.filter_by_dates(start_date=hace_30_dias,end_date=hoy))
+        else:
+            filterset = AsistenciasFilter(request.GET, queryset=asistenciaRepo.get_all())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
@@ -53,7 +62,7 @@ class AsistenciasToCsv(View):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=asistencias.xlsx'
 
-        apellido = request.GET.get('apellido')
+        apellido = request.GET.get('id_prestacion_paciente__id_paciente__apellido')
         fecha_after = request.GET.get('fecha_after')
         fecha_before = request.GET.get('fecha_before')
         id_obra_social = request.GET.get('id_prestacion_paciente__id_obra_social')

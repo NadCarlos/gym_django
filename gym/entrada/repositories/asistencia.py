@@ -13,6 +13,9 @@ class AsistenciaRepository:
     
     def filter_by_id(self) -> Optional[Asistencia]:
         return Asistencia.objects.filter(id=id).first()
+
+    def filter_by_dates(self, start_date, end_date) -> Optional[Asistencia]:
+        return Asistencia.objects.filter(fecha__gte=start_date, fecha__lt=end_date)
     
     def get_by_id(self, id: int) -> Optional[Asistencia]:
         try:
