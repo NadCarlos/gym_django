@@ -27,7 +27,7 @@ class AsistenciasList(View):
         print(request.GET.get('fecha_after'))
         if request.GET.get('fecha_after') is None:
             hoy = datetime.date.today()
-            hace_30_dias = hoy - datetime.timedelta(days=30)
+            hace_30_dias = hoy - datetime.timedelta(days=10)
 
             # Instanciar el filtro con los datos enviados por el formulario
             filterset = AsistenciasFilter(request.GET, queryset=asistenciaRepo.filter_by_dates(start_date=hace_30_dias,end_date=hoy))
