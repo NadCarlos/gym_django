@@ -159,6 +159,7 @@ class AgendaPacienteUpdate(View):
 class AgendaDelete(View):
 
     def get(self, request, id, *args, **kwargs):
+        path = request.session.get('uid')
         agenda = agendaRepo.get_by_id(id=id)
         today = date.today()
         agendaRepo.end_date(
@@ -167,7 +168,7 @@ class AgendaDelete(View):
             )
         #No elimino, cambio el campo activo a False
         agendaRepo.delete_by_activo(agenda=agenda)
-        return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
+        return redirect( path )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
