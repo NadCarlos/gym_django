@@ -45,7 +45,19 @@ class PacientesList(View):
 
     def get(self, request, state):
         filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo(state))
-        
+        pacientes = pacienteRepo.filter_by_activo(state)
+        prestaciones = prestacionPacienteRepo.get_all()
+        pacientesFinished = []
+        for paciente in pacientes:
+            for prestacion in prestaciones:
+                if paciente.id == prestacion.id_paciente.id and prestacion.activo == True:
+                    tiene_prestacion_activa = 'Prestacion Activa'
+                    paciente.__dict__['tiene_prestacion_activa'] = tiene_prestacion_activa
+                    break
+            else:
+                tiene_prestacion_activa = 'Sin Prestacion Activa'
+                paciente.__dict__['tiene_prestacion_activa'] = tiene_prestacion_activa
+            pacientesFinished.append(paciente)
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
 
@@ -61,16 +73,18 @@ class PacientesList(View):
             self.template_name,
             dict(
                 pacientes=pacientes,
+                pacientesFinished=pacientesFinished,
                 form=filterset.form,
                 ordering=ordering,
                 state=state,
+                prestaciones=prestaciones,
             )
         )
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacientesToCsv(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=pacientes.xlsx'
@@ -94,8 +108,16 @@ class PacientesToCsv(View):
         if id_sexo:
             pacientes = pacientes.filter(id_sexo=id_sexo)
 
+        prestaciones = prestacionPacienteRepo.get_all()
         data = []
         for paciente in pacientes:
+            for prestacion in prestaciones:
+                if paciente.id == prestacion.id_paciente.id and prestacion.activo == True:
+                    tiene_prestacion_activa = 'Prestacion Activa'
+                    break
+            else:
+                tiene_prestacion_activa = 'Sin Prestacion Activa'
+
             data.append([
                 paciente.nombre,
                 paciente.apellido,
@@ -110,6 +132,7 @@ class PacientesToCsv(View):
                 paciente.id_estado_civil.nombre,
                 paciente.id_localidad.nombre,
                 paciente.id_sexo.nombre,
+                tiene_prestacion_activa,
                 ])
 
         df = pd.DataFrame(data, columns=[
@@ -126,6 +149,7 @@ class PacientesToCsv(View):
             'estado civil',
             'localidad',
             'sexo',
+            'Prestacion Activa',
             ])
 
         # Use an in-memory output stream to avoid file system I/O
@@ -139,9 +163,9 @@ class PacientesToCsv(View):
         return response
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteDetail(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         return render(
@@ -210,9 +234,9 @@ class PacienteCreate(View):
             return redirect('error')
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteUpdate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         form = PacienteUpdateForm(instance=paciente)
@@ -225,7 +249,6 @@ class PacienteUpdate(View):
             )
         )
 
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id):
         form = PacienteUpdateForm(request.POST)
         paciente = pacienteRepo.get_by_id(id=id)
@@ -261,9 +284,9 @@ class PacienteUpdate(View):
             return redirect('error')
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteDelete(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
@@ -288,18 +311,18 @@ class PacienteDelete(View):
         return redirect('pacientes_list', True)
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteReactivate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         pacienteRepo.reactivate(paciente=paciente)
         return redirect('pacientes_list', True)
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ErrorPacienteExistente(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         return render(
             request,
