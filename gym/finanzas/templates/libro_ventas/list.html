@@ -1,0 +1,8 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+{% for data in cleaned_data %}
+    <p>{{ data }}</p>
+{% endfor %}
+<a href="{% url 'save' %}" class="btn btn-primary">Guardar</a>
+{% endblock %}

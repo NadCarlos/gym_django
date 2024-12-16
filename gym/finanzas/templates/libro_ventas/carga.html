@@ -1,0 +1,12 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+Finanzas
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="file">
+    <button type="submit" class=" btn btn-success">
+        <i class="bi bi-save"></i> Ver Datos
+    </button>
+</form>
+{% endblock %}

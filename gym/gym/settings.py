@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "administracion",
     "entrada",
     "usuarios",
+    "finanzas",
 ]
 
 MIDDLEWARE = [
