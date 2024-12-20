@@ -43,7 +43,7 @@ class Factura(models.Model):
         verbose_name="tipo"
         )
     
-    serie = models.CharField(
+    pto_vta = models.CharField(
         max_length=50,
         null=False,
         blank=False,
@@ -63,9 +63,11 @@ class Factura(models.Model):
         verbose_name="fecha"
     )
 
-    importe = models.FloatField(
+    importe = models.DecimalField(
         null=False,
         blank=False,
+        max_digits=20,
+        decimal_places=2,
         verbose_name="importe"
     )
 

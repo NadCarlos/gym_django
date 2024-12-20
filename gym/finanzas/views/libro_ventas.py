@@ -32,21 +32,21 @@ class CargaView(View):
             if isinstance(fila[0], datetime):
                 cleaned_data.append(fila)
 
-        # [0]=Fecha,[1]=Tipo,[2]=Serie,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=Importe
+        # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=Importe
         for data in cleaned_data:
             beneficiarioExist = beneficiarioRepo.filter_by_numero_cuit(numero_cuit=data[5])
             if beneficiarioExist is None:
-                print(beneficiarioExist)
-                print("No existe creo beneficiario nuevo")
                 nuevoBeneficiario = beneficiarioRepo.create(
                     nombre=data[4],
                     numero_cuit=data[5],
                 )
-            print("Creo factura")
+
+                beneficiarioExist = nuevoBeneficiario
+
             importe = float(data[6])
             facturaRepo.create(
                 tipo=data[1],
-                serie=data[2],
+                pto_vta=data[2],
                 numero=data[3],
                 fecha=data[0],
                 importe=importe,

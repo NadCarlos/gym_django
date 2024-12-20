@@ -33,7 +33,7 @@ class FacturaRepository:
     def create(
         self,
         tipo: str,
-        serie: str,
+        pto_vta: str,
         numero: str,
         fecha: str,
         importe: float,
@@ -41,7 +41,7 @@ class FacturaRepository:
     ):
         return Factura.objects.create(
             tipo=tipo,
-            serie=serie,
+            pto_vta=pto_vta,
             numero=numero,
             fecha=fecha,
             importe=importe,
