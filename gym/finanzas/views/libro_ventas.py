@@ -7,6 +7,10 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
+from finanzas.forms import BeneficiarioUpdateForm
+
+from finanzas.filters import FacturasFilter
+
 from finanzas.repositories.beneficiarios import BeneficiarioRepository
 from finanzas.repositories.facturas import FacturaRepository
 
@@ -58,13 +62,79 @@ class CargaView(View):
             request,
             'libro_ventas/list.html',
             dict(
-                cleaned_data=cleaned_data,
+                facturas=cleaned_data,
+            )
+        )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class FacturasList(View):
+    context_object_name = 'facturas'
+
+    def get(self, request):
+        # A futuro poner mes y año de de default para que no traiga todo
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'fecha')
+        # Obtener el queryset filtrado
+        facturas = filterset.qs
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            facturas = facturas.order_by(ordering)
+
+        return render(
+            request,
+            'libro_ventas/list.html',
+            dict(
+                facturas=facturas,
+                form=filterset.form,
+                ordering=ordering,
             )
         )
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class GuardarCarga(View):
+class BeneficiariosList(View):
 
     def get(self, request):
-        print(request.POST)
+        beneficiarios = beneficiarioRepo.filter_by_activo()
+
+        return render(
+            request,
+            'beneficiarios/list.html',
+            dict(
+                beneficiarios=beneficiarios,
+            )
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class BeneficiarioUpdate(View):
+
+    def get(self, request, id):
+        beneficiario = beneficiarioRepo.get_by_id(id=id)
+        form = BeneficiarioUpdateForm(instance=beneficiario)
+
+        return render(
+            request,
+            'beneficiarios/update.html',
+            dict(
+                beneficiario=beneficiario,
+                form=form,
+            )
+        )
+    
+    def post(self, request, id):
+        form = BeneficiarioUpdateForm(request.POST)
+        beneficiario = beneficiarioRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                beneficiarioRepo.update(
+                    beneficiario=beneficiario,
+                    nombre=form.cleaned_data['nombre'],
+                    numero_cuit=form.cleaned_data['numero_cuit'],
+                )
+                return redirect('beneficiarios_list')
+        except:
+            return redirect('error')

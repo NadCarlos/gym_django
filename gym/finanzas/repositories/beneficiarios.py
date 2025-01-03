@@ -50,3 +50,15 @@ class BeneficiarioRepository:
             numero_cuit=numero_cuit,
         )
     
+    def update(
+        self,
+        beneficiario: Beneficiario,
+        nombre: str,
+        numero_cuit: str,
+    ) -> Beneficiario:
+        
+        beneficiario.nombre = nombre
+        beneficiario.numero_cuit = numero_cuit
+
+        beneficiario.save()
+    

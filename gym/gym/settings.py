@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-import environ
-import sentry_sdk
+import environ # type: ignore
+import sentry_sdk # type: ignore
 
 sentry_sdk.init(
     dsn="https://a8c704adad13e0007ed22f78b69d4714@o4507817863610368.ingest.us.sentry.io/4507817865445376",

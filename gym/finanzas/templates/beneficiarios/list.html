@@ -1,0 +1,31 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Beneficiarios</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>CUIT</th>
+                    <th>Mas...</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for beneficiario in beneficiarios %}
+                <tr>
+                    <td>{{ beneficiario.nombre }}</td>
+                    <td>{{ beneficiario.numero_cuit }}</td>
+                    <td>
+                        <a href="{% url 'beneficiario_update' beneficiario.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-info-circle"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
