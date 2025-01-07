@@ -1,4 +1,4 @@
-import pandas # type: ignore
+import pandas
 
 from datetime import datetime
 
@@ -29,7 +29,10 @@ class CargaView(View):
         )
     
     def post(self, request):
-        file = request.FILES['file']
+        try:
+            file = request.FILES['file']
+        except:
+            return redirect('error')
         excel = pandas.read_excel(file)
         cleaned_data = []
         for fila in excel.values:
@@ -56,15 +59,8 @@ class CargaView(View):
                 importe=importe,
                 id_beneficiario=beneficiarioExist,
             )
-            
 
-        return render(
-            request,
-            'libro_ventas/list.html',
-            dict(
-                facturas=cleaned_data,
-            )
-        )
+        return redirect('list')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -72,8 +68,14 @@ class FacturasList(View):
     context_object_name = 'facturas'
 
     def get(self, request):
-        # A futuro poner mes y año de de default para que no traiga todo
-        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+        if request.GET.get('fecha') is None:
+            hoy = datetime.today()
+            year = hoy.year
+            month = hoy.month
+
+            filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_dates(year=year, month=month))
+        else:
+            filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')

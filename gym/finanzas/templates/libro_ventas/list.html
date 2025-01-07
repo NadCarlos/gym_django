@@ -60,7 +60,7 @@
                     </th>
                     <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'tipo' %}-tipo{% else %}tipo{% endif %}">
-                            Combrobante
+                            Comprobante
                             {% if request.GET.ordering == 'tipo' %}
                                 <i class="bi bi-caret-down-fill"></i>
                             {% elif request.GET.ordering == '-tipo' %}
@@ -115,6 +115,8 @@
             </tbody>
         </table>
     </div>
+    <p>*Los datos que carga de forma predeterminada son del mes de la fecha, filtrar para ver anteriores</p>
+    <p>**No importa el dia seleccionado, va a traer todos los datos del mes de la fecha</p>
 </div>
 <script type="text/javascript">
     $(document).ready(function(){
