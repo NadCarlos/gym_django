@@ -16,8 +16,14 @@ class FacturaRepository:
             activo=True
         ).order_by('nombre')
     
-    def filter_by_dates(self, year, month) -> Optional[Factura]:
+    def filter_by_date(self, year, month) -> Optional[Factura]:
         return Factura.objects.filter(fecha__year=year, fecha__month=month)
+    
+    def filter_by_dates(self, start_date, end_date) -> Optional[Factura]:
+        return Factura.objects.filter(fecha__gte=start_date, fecha__lt=end_date)
+    
+    def filter_by_numero_fact(self, fact_numero: str) -> List[Factura]:
+        return Factura.objects.filter(numero=fact_numero).first()
     
     def get_by_id(self, id: int) -> Optional[Factura]:
         try:

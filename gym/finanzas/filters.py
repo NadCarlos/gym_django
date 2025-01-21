@@ -6,7 +6,7 @@ from finanzas.models import Factura, Beneficiario
 
 class FacturasFilter(django_filters.FilterSet):
 
-    fecha = django_filters.CharFilter(method='filter_by_month_year')
+    fecha = django_filters.DateFromToRangeFilter()
     id_beneficiario__nombre = django_filters.CharFilter(lookup_expr='icontains')
     id_beneficiario__numero_cuit = django_filters.CharFilter(lookup_expr='icontains')
 
@@ -18,11 +18,12 @@ class FacturasFilter(django_filters.FilterSet):
             'id_beneficiario__numero_cuit',
         ]
 
-    def filter_by_month_year(self, queryset, name, value):
+    # La forma vieja, para sacar solo un mes unico
+    """def filter_by_month_year(self, queryset, name, value):
         try:
             year, month, day = value.split('-')
             return queryset.filter(
                 Q(fecha__month=month) & Q(fecha__year=year)
             )
         except ValueError:
-            return queryset
+            return queryset"""

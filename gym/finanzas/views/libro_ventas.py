@@ -1,6 +1,6 @@
 import pandas
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -41,24 +41,28 @@ class CargaView(View):
 
         # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=Importe
         for data in cleaned_data:
-            beneficiarioExist = beneficiarioRepo.filter_by_numero_cuit(numero_cuit=data[5])
-            if beneficiarioExist is None:
-                nuevoBeneficiario = beneficiarioRepo.create(
-                    nombre=data[4],
-                    numero_cuit=data[5],
+            facturaExist = facturaRepo.filter_by_numero_fact(fact_numero=data[3])
+            if facturaExist is None:
+                beneficiarioExist = beneficiarioRepo.filter_by_numero_cuit(numero_cuit=data[5])
+                if beneficiarioExist is None:
+                    nuevoBeneficiario = beneficiarioRepo.create(
+                        nombre=data[4],
+                        numero_cuit=data[5],
+                    )
+
+                    beneficiarioExist = nuevoBeneficiario
+
+                importe = float(data[6])
+                facturaRepo.create(
+                    tipo=data[1],
+                    pto_vta=data[2],
+                    numero=data[3],
+                    fecha=data[0],
+                    importe=importe,
+                    id_beneficiario=beneficiarioExist,
                 )
-
-                beneficiarioExist = nuevoBeneficiario
-
-            importe = float(data[6])
-            facturaRepo.create(
-                tipo=data[1],
-                pto_vta=data[2],
-                numero=data[3],
-                fecha=data[0],
-                importe=importe,
-                id_beneficiario=beneficiarioExist,
-            )
+            else:
+                pass
 
         return redirect('list')
 
@@ -68,12 +72,12 @@ class FacturasList(View):
     context_object_name = 'facturas'
 
     def get(self, request):
-        if request.GET.get('fecha') is None:
+        if request.GET.get('fecha_after') is None:
             hoy = datetime.today()
-            year = hoy.year
-            month = hoy.month
+            hace_30_dias = hoy - timedelta(days=10)
 
-            filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_dates(year=year, month=month))
+            # Instanciar el filtro con los datos enviados por el formulario
+            filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_dates(start_date=hace_30_dias,end_date=hoy))
         else:
             filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
 
@@ -85,6 +89,10 @@ class FacturasList(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
+        total = 0
+        for factura in facturas:
+            total += factura.importe
+
         return render(
             request,
             'libro_ventas/list.html',
@@ -92,6 +100,7 @@ class FacturasList(View):
                 facturas=facturas,
                 form=filterset.form,
                 ordering=ordering,
+                total=total,
             )
         )
     
