@@ -97,6 +97,8 @@ class FacturasList(View):
         for factura in facturas:
             total += factura.importe
             factura.importe = locale.currency(factura.importe, grouping=True)
+            factura.pto_vta = factura.pto_vta.zfill(4)
+            factura.numero = factura.numero.zfill(8)
 
         total = locale.currency(total, grouping=True)
 
