@@ -16,6 +16,15 @@ RUN apt-get update && apt-get install -y \
     default-mysql-client \
     cron
 
+# Set up locale
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y locales \
+    && sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen \
+    && locale-gen
+ENV LANG es_AR.UTF-8
+ENV LANGUAGE es_AR:es
+ENV LC_ALL es_AR.UTF-8
+
 # Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt

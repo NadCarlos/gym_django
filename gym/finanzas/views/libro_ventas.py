@@ -1,5 +1,5 @@
 import pandas
-
+import locale
 from datetime import datetime, timedelta
 
 from django.views import View
@@ -17,6 +17,10 @@ from finanzas.repositories.facturas import FacturaRepository
 
 beneficiarioRepo = BeneficiarioRepository()
 facturaRepo = FacturaRepository()
+
+
+locale.setlocale(locale.LC_ALL, '')
+
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -41,7 +45,7 @@ class CargaView(View):
 
         # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=Importe
         for data in cleaned_data:
-            facturaExist = facturaRepo.filter_by_numero_fact(fact_numero=data[3])
+            facturaExist = facturaRepo.filter_by_numero_fact(fact_numero=data[3], pto_vta=data[2])
             if facturaExist is None:
                 beneficiarioExist = beneficiarioRepo.filter_by_numero_cuit(numero_cuit=data[5])
                 if beneficiarioExist is None:
@@ -92,6 +96,9 @@ class FacturasList(View):
         total = 0
         for factura in facturas:
             total += factura.importe
+            factura.importe = locale.currency(factura.importe, grouping=True)
+
+        total = locale.currency(total, grouping=True)
 
         return render(
             request,
