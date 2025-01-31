@@ -1,0 +1,47 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<h2 class="text-center">Finanzas</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Carga Facturas</h5>
+                    <a href="{% url 'upload' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-person"></i> Cargar
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Lista Facturas</h5>
+                    <a href="{% url 'list' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-shield"></i> Ver Lista
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="text-center">Beneficiarios</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm mb-4">
+                <div style="background-color: #009f95;" class="card-body">
+                    <h5 style="color: #ffffff;" class="card-title">Beneficiarios</h5>
+                    <a href="{% url 'beneficiarios_list' %}" class="btn btn-primary btn-lg btn-block">
+                        <i class="bi bi-person"></i> Ver Beneficiarios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

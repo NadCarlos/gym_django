@@ -1,6 +1,7 @@
 from django.urls import path
 
 from finanzas.views.libro_ventas import (
+    Index,
     CargaView,
     FacturasList,
     BeneficiariosList,
@@ -9,6 +10,7 @@ from finanzas.views.libro_ventas import (
 
 
 urlpatterns = [
+    path(route='index/',view=Index.as_view(), name='index'),
     path(route='upload/',view=CargaView.as_view(), name='upload'),
     path(route='list/',view=FacturasList.as_view(), name='list'),
     path(route='beneficiarios_list/',view=BeneficiariosList.as_view(), name='beneficiarios_list'),

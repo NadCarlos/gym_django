@@ -18,9 +18,17 @@ from finanzas.repositories.facturas import FacturaRepository
 beneficiarioRepo = BeneficiarioRepository()
 facturaRepo = FacturaRepository()
 
-
 locale.setlocale(locale.LC_ALL, '')
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class Index(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'libro_ventas/index.html',
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
