@@ -113,6 +113,13 @@ class OrdenPago(models.Model):
         decimal_places=2,
     )
 
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones",
+        )
+
     activo = models.BooleanField(
         default=1,
         null=False,
@@ -132,7 +139,7 @@ class OrdenPago(models.Model):
     )
 
     def __str__(self):
-        return  self.id_beneficiario.id   
+        return  self.id_beneficiario.nombre
 
 
 class Concepto(models.Model):
@@ -191,7 +198,7 @@ class DetalleOrden(models.Model):
     )
 
     id_factura = models.ForeignKey(
-        Beneficiario,
+        Factura,
         on_delete=models.RESTRICT,
         null=False,
         blank=False,

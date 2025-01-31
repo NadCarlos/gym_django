@@ -1,0 +1,45 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Orden Nro {{ orden.numero }}</h2>
+    {{ orden.fecha }}
+    {{ orden.numero }}
+    {{ orden.id_beneficiario.nombre }}
+    {{ orden.id_beneficiario.numero_cuit }}
+    {{ orden.total }}
+
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.id_ordenpago }}
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Factura:</label>
+                <div class="col-sm-6">
+                    {{ form.id_factura }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Importe:</label>
+                <div class="col-sm-6">
+                    {{ form.importe }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

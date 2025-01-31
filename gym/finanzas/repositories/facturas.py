@@ -8,7 +8,7 @@ class FacturaRepository:
     def get_all(self) -> List[Factura]:
         return Factura.objects.all()
     
-    def filter_by_id(self) -> Optional[Factura]:
+    def filter_by_id(self, id) -> Optional[Factura]:
         return Factura.objects.filter(id=id).first()
     
     def filter_by_activo(self) -> List[Factura]:

@@ -6,6 +6,8 @@ from finanzas.views.libro_ventas import (
     FacturasList,
     BeneficiariosList,
     BeneficiarioUpdate,
+    OrdenPagoCreate,
+    OrdenPagoPopulate,
 )
 
 
@@ -15,4 +17,6 @@ urlpatterns = [
     path(route='list/',view=FacturasList.as_view(), name='list'),
     path(route='beneficiarios_list/',view=BeneficiariosList.as_view(), name='beneficiarios_list'),
     path(route='<int:id>/beneficiario_update/',view=BeneficiarioUpdate.as_view(), name='beneficiario_update'),
+    path(route='orden_pago_create/',view=OrdenPagoCreate.as_view(), name='orden_pago_create'),
+    path(route='<int:id>/orden_pago_populate/',view=OrdenPagoPopulate.as_view(), name='orden_pago_populate'),
 ]

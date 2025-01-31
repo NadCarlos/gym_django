@@ -7,16 +7,20 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from finanzas.forms import BeneficiarioUpdateForm
+from finanzas.forms import BeneficiarioUpdateForm, OrdenPagoCreateForm, DetalleOrdenPagoCreateForm
 
 from finanzas.filters import FacturasFilter
 
 from finanzas.repositories.beneficiarios import BeneficiarioRepository
 from finanzas.repositories.facturas import FacturaRepository
+from finanzas.repositories.orden_pago import OrdenPagoRepository
+from finanzas.repositories.detalle_orden_pago import DetalleOrdenRepo
 
 
 beneficiarioRepo = BeneficiarioRepository()
 facturaRepo = FacturaRepository()
+ordenPagoRepo = OrdenPagoRepository()
+detalleOrdenRepo = DetalleOrdenRepo()
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -166,3 +170,65 @@ class BeneficiarioUpdate(View):
                 return redirect('beneficiarios_list')
         except:
             return redirect('error')
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoCreate(View):
+
+    def get(self, request):
+        form = OrdenPagoCreateForm(initial = {'id_usuario': request.user,})
+
+        return render(
+            request,
+            'orden_pago/create.html',
+            dict(
+                form = form,
+            )
+        )
+    
+    def post(self, request):
+        form = OrdenPagoCreateForm(request.POST)
+        if form.is_valid():
+                orden = ordenPagoRepo.create(
+                    id_usuario=form.cleaned_data['id_usuario'],
+                    fecha=form.cleaned_data['fecha'],
+                    numero=form.cleaned_data['numero'],
+                    id_beneficiario=form.cleaned_data['id_beneficiario'],
+                    total=form.cleaned_data['total'],
+                )
+                return redirect('orden_pago_populate', orden.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoPopulate(View):
+
+    def get(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        form = DetalleOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id)
+
+        return render(
+            request,
+            'orden_pago/orden_pago_populate.html',
+            dict(
+                orden = orden,
+                form = form,
+            )
+        )
+    
+    def post(self, request, id):
+        orden = request.POST.get('id_ordenpago')
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        importe = request.POST.get('importe')
+        facturas_ids = request.POST.get('id_factura')
+
+        for factura_id in facturas_ids:
+            factura = facturaRepo.filter_by_id(id=factura_id)
+            print(factura)
+            print(orden)
+            detalleOrdenRepo.create(
+                importe=importe,
+                id_ordenpago=orden,
+                id_factura=factura,
+            )
+
+
