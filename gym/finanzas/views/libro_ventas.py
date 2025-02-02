@@ -7,7 +7,12 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from finanzas.forms import BeneficiarioUpdateForm, OrdenPagoCreateForm, DetalleOrdenPagoCreateForm
+from finanzas.forms import (
+    BeneficiarioUpdateForm,
+    OrdenPagoCreateForm,
+    DetalleOrdenPagoCreateForm,
+    DescuentoOrdenPagoCreateForm
+)
 
 from finanzas.filters import FacturasFilter
 
@@ -15,12 +20,16 @@ from finanzas.repositories.beneficiarios import BeneficiarioRepository
 from finanzas.repositories.facturas import FacturaRepository
 from finanzas.repositories.orden_pago import OrdenPagoRepository
 from finanzas.repositories.detalle_orden_pago import DetalleOrdenRepo
+from finanzas.repositories.descuentos import DescuentoRepository
+from finanzas.repositories.conceptos import ConceptoRepository
 
 
 beneficiarioRepo = BeneficiarioRepository()
 facturaRepo = FacturaRepository()
 ordenPagoRepo = OrdenPagoRepository()
 detalleOrdenRepo = DetalleOrdenRepo()
+descuentoRepo = DescuentoRepository()
+conceptoRepo = ConceptoRepository()
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -204,7 +213,7 @@ class OrdenPagoPopulate(View):
 
     def get(self, request, id):
         orden = ordenPagoRepo.filter_by_id(id=id)
-        form = DetalleOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id)
+        form = DetalleOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id_beneficiario.id)
 
         return render(
             request,
@@ -219,16 +228,72 @@ class OrdenPagoPopulate(View):
         orden = request.POST.get('id_ordenpago')
         orden = ordenPagoRepo.filter_by_id(id=id)
         importe = request.POST.get('importe')
-        facturas_ids = request.POST.get('id_factura')
+        facturas_ids = request.POST.getlist('id_factura')
 
         for factura_id in facturas_ids:
+            print(factura_id)
             factura = facturaRepo.filter_by_id(id=factura_id)
-            print(factura)
-            print(orden)
             detalleOrdenRepo.create(
                 importe=importe,
                 id_ordenpago=orden,
                 id_factura=factura,
             )
 
+        return redirect('orden_pago_descuento', orden.id)
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoDescuento(View):
+
+    def get(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        form = DescuentoOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id})
+        
+        return render(
+            request,
+            'orden_pago/orden_pago_descuento.html',
+            dict(
+                orden = orden,
+                form = form,
+            )
+        )
+    
+    def post(self, request, id):
+        orden = request.POST.get('id_ordenpago')
+        conceptos_ids = request.POST.getlist('id_concepto')
+        print("request.POST", request.POST)
+        print("Conceptos:",conceptos_ids)
+        importe = request.POST.get('importe')
+        observaciones = request.POST.get('observaciones')
+        
+        orden = ordenPagoRepo.filter_by_id(id=id)
+
+        for concepto_id in conceptos_ids:
+            concepto = conceptoRepo.filter_by_id(id=concepto_id)
+            descuento = descuentoRepo.create(
+                observaciones=observaciones,
+                importe=importe,
+                id_ordenpago=orden,
+                id_concepto=concepto,
+            )
+
+        return redirect('detail', orden.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoDetail(View):
+
+    def get(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        facturas = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
+        descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
+
+        return render(
+            request,
+            'orden_pago/detail.html',
+            dict(
+                orden=orden,
+                facturas=facturas,
+                descuentos=descuentos,
+            )
+        )

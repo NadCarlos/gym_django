@@ -8,6 +8,9 @@ class DetalleOrdenRepo:
     def filter_by_id(self, id) -> Optional[DetalleOrden]:
         return DetalleOrden.objects.filter(id=id).first()
     
+    def filter_by_orden_id(self, orden_id) -> Optional[DetalleOrden]:
+        return DetalleOrden.objects.filter(id_ordenpago=orden_id)
+    
     def create(
         self,
         importe: str,

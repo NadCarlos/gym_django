@@ -13,15 +13,15 @@
     </div>
 
     <div class="card shadow-sm p-4">
-        <h5 class="text-center mb-3">Agregar Facturas</h5>
+        <h5 class="text-center mb-3">Registrar Descuentos</h5>
         <form method="post">
             {% csrf_token %}
             {{ form.id_ordenpago }}
 
             <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label fw-bold text-end">Factura:</label>
+                <label class="col-sm-2 col-form-label fw-bold text-end">Concepto:</label>
                 <div class="col-sm-6">
-                    {{ form.id_factura }}
+                    {{ form.id_concepto }}
                 </div>
             </div>
 
@@ -29,6 +29,13 @@
                 <label class="col-sm-2 col-form-label fw-bold text-end">Importe:</label>
                 <div class="col-sm-6">
                     {{ form.importe }}
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label fw-bold text-end">Observaciones:</label>
+                <div class="col-sm-6">
+                    {{ form.observaciones }}
                 </div>
             </div>
 

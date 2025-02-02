@@ -1,0 +1,51 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Orden de Pago</h2>
+    
+    <!-- Sección de Detalles -->
+    <div class="card p-4 mb-4 shadow-sm">
+        <h4 class="mb-3">Detalles</h4>
+        <p><strong>Fecha:</strong> {{ orden.fecha }}</p>
+        <p><strong>Número:</strong> {{ orden.numero }}</p>
+        <p><strong>Beneficiario:</strong> {{ orden.id_beneficiario.nombre }}</p>
+        <p><strong>CUIT:</strong> {{ orden.id_beneficiario.numero_cuit }}</p>
+        <p class="fs-5 fw-bold">Total: ${{ orden.total }}</p>
+    </div>
+
+    <div class="row">
+        <!-- Facturas -->
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm">
+                <h4 class="mb-3">Facturas</h4>
+                <ul class="list-group">
+                    {% for factura in facturas %}
+                        <li class="list-group-item">
+                            <strong>Tipo:</strong> {{ factura.id_factura.tipo }} <br>
+                            <strong>Fecha:</strong> {{ factura.id_factura.fecha }} <br>
+                            <strong>Importe:</strong> ${{ factura.id_factura.importe }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Descuentos -->
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm">
+                <h4 class="mb-3">Descuentos</h4>
+                <ul class="list-group">
+                    {% for descuento in descuentos %}
+                        <li class="list-group-item">
+                            <strong>Concepto:</strong> {{ descuento.id_concepto.nombre }} <br>
+                            <strong>Importe:</strong> ${{ descuento.importe }} <br>
+                            <strong>Observaciones:</strong> {{ descuento.observaciones }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

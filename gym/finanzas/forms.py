@@ -1,5 +1,5 @@
 from django import forms
-from finanzas.models import Beneficiario, OrdenPago, DetalleOrden, Factura
+from finanzas.models import Beneficiario, OrdenPago, DetalleOrden, Factura, Descuento, Concepto
 
 
 class BeneficiarioUpdateForm(forms.ModelForm):
@@ -67,4 +67,30 @@ class DetalleOrdenPagoCreateForm(forms.ModelForm):
             'id_ordenpago': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'id_factura': forms.SelectMultiple(attrs={'class': 'form-control custom-class'}),
             'importe': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+        }
+
+
+class DescuentoOrdenPagoCreateForm(forms.ModelForm):
+
+    id_concepto = forms.ModelMultipleChoiceField(
+        queryset=Concepto.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
+    class Meta:
+
+        model = Descuento
+
+        fields = [
+            'id_ordenpago',
+            'id_concepto',
+            'importe',
+            'observaciones'
+        ]
+
+        widgets = {
+            'id_ordenpago': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_concepto': forms.SelectMultiple(attrs={'class': 'form-control custom-class'}),
+            'importe': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }
