@@ -24,7 +24,6 @@ class AsistenciasList(View):
 
     def get(self, request):
 
-        print(request.GET.get('fecha_after'))
         if request.GET.get('fecha_after') is None:
             hoy = datetime.date.today()
             hace_30_dias = hoy - datetime.timedelta(days=10)

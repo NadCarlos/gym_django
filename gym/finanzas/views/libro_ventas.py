@@ -231,7 +231,6 @@ class OrdenPagoPopulate(View):
         facturas_ids = request.POST.getlist('id_factura')
 
         for factura_id in facturas_ids:
-            print(factura_id)
             factura = facturaRepo.filter_by_id(id=factura_id)
             detalleOrdenRepo.create(
                 importe=importe,
@@ -261,8 +260,6 @@ class OrdenPagoDescuento(View):
     def post(self, request, id):
         orden = request.POST.get('id_ordenpago')
         conceptos_ids = request.POST.getlist('id_concepto')
-        print("request.POST", request.POST)
-        print("Conceptos:",conceptos_ids)
         importe = request.POST.get('importe')
         observaciones = request.POST.get('observaciones')
         
