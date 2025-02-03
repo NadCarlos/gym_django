@@ -11,7 +11,8 @@ from finanzas.forms import (
     BeneficiarioUpdateForm,
     OrdenPagoCreateForm,
     DetalleOrdenPagoCreateForm,
-    DescuentoOrdenPagoCreateForm
+    DescuentoOrdenPagoCreateForm,
+    FacturaForm
 )
 
 from finanzas.filters import FacturasFilter
@@ -213,7 +214,7 @@ class OrdenPagoPopulate(View):
 
     def get(self, request, id):
         orden = ordenPagoRepo.filter_by_id(id=id)
-        form = DetalleOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id_beneficiario.id)
+        form = FacturaForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id_beneficiario)
 
         return render(
             request,

@@ -21,14 +21,24 @@
             <div class="mb-3 row">
                 <label class="col-sm-2 col-form-label fw-bold text-end">Factura:</label>
                 <div class="col-sm-6">
-                    {{ form.id_factura }}
+                    {{ form.facturas }}
+                    <button class="btn btn-success px-4 py-2">
+                        <i class="bi bi-save"></i> Añadir
+                    </button>
                 </div>
             </div>
 
             <div class="mb-3 row">
                 <label class="col-sm-2 col-form-label fw-bold text-end">Importe:</label>
                 <div class="col-sm-6">
-                    {{ form.importe }}
+                    {{ form.descuentos }}
+                    <button class="btn btn-success px-4 py-2">
+                        <i class="bi bi-save"></i> Añadir
+                    </button>
+                    <button class="btn btn-success px-4 py-2">
+                        <i class="bi bi-save"></i> Nuevo Concepto
+                    </button>
+
                 </div>
             </div>
 

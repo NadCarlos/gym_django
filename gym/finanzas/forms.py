@@ -94,3 +94,35 @@ class DescuentoOrdenPagoCreateForm(forms.ModelForm):
             'importe': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class FacturaForm(forms.Form):
+
+    def __init__(self, id_beneficiario=None, *args, **kwargs):
+        super(FacturaForm, self).__init__(*args, **kwargs)
+        self.fields['descuentos'].queryset = Concepto.objects.all()
+        if id_beneficiario:
+            self.fields['facturas'].queryset = Factura.objects.filter(id_beneficiario=id_beneficiario)
+        
+
+    id_ordenpago = forms.ModelMultipleChoiceField(
+        queryset=OrdenPago.objects.none(),
+        widget=forms.HiddenInput(),
+    )
+
+    facturas = forms.ModelMultipleChoiceField(
+        queryset=Factura.objects.none(),
+        widget=forms.Select(),
+    )
+
+    descuentos = forms.ModelMultipleChoiceField(
+        queryset=Concepto.objects.none(),
+        widget=forms.Select(),
+    )
+
+
+class DescuentoForm(forms.Form):
+
+    def __init__(self, id_beneficiario=None, *args, **kwargs):
+        super(DescuentoForm, self).__init__(*args, **kwargs)
+        self.fields['descuentos'].queryset = Descuento.objects.all()
