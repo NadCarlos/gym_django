@@ -12,42 +12,129 @@
         <p><strong>Total:</strong> ${{ orden.total }}</p>
     </div>
 
-    <div class="card shadow-sm p-4">
-        <h5 class="text-center mb-3">Agregar Facturas</h5>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.id_ordenpago }}
-
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label fw-bold text-end">Factura:</label>
-                <div class="col-sm-6">
-                    {{ form.facturas }}
-                    <button class="btn btn-success px-4 py-2">
-                        <i class="bi bi-save"></i> Añadir
-                    </button>
+    <div class="row">
+        <!-- Facturas -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h5 class="text-center mb-3">Facturas</h5>
+                <div class="mb-3">
+                    <select id="factura-select" class="form-select">
+                        {% for factura in facturas %}
+                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
                 </div>
+                <ul id="lista-facturas" class="list-group"></ul>
             </div>
+        </div>
 
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label fw-bold text-end">Importe:</label>
-                <div class="col-sm-6">
-                    {{ form.descuentos }}
-                    <button class="btn btn-success px-4 py-2">
-                        <i class="bi bi-save"></i> Añadir
-                    </button>
-                    <button class="btn btn-success px-4 py-2">
-                        <i class="bi bi-save"></i> Nuevo Concepto
-                    </button>
-
+        <!-- Conceptos -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h5 class="text-center mb-3">Conceptos</h5>
+                <div class="mb-3">
+                    <select id="concepto-select" class="form-select">
+                        {% for concepto in conceptos %}
+                            <option value="{{ concepto.id }}">{{ concepto.nombre }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Importe:</label>
+                    <input type="number" id="concepto-importe" class="form-control" placeholder="Ingrese el importe">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Observaciones:</label>
+                    <input type="text" id="concepto-observaciones" class="form-control" placeholder="Ingrese observaciones">
+                </div>
+                <button class="btn btn-primary w-100" type="button" onclick="agregarConcepto()">Añadir Concepto</button>
+                <ul id="lista-conceptos" class="list-group mt-3"></ul>
             </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn btn-success px-4 py-2">
-                    <i class="bi bi-save"></i> Guardar
-                </button>
-            </div>
-        </form>
+        </div>
     </div>
+
+    <!-- Formulario para enviar datos -->
+    <form method="post" id="orden-form">
+        {% csrf_token %}
+        <input type="hidden" name="facturas" id="facturas-input">
+        <input type="hidden" name="conceptos" id="conceptos-input">
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success px-4 py-2">
+                <i class="bi bi-save"></i> Guardar Orden
+            </button>
+        </div>
+    </form>
 </div>
+
+<script>
+    let facturas = [];
+    let conceptos = [];
+
+    function agregarFactura() {
+        let select = document.getElementById("factura-select");
+        let lista = document.getElementById("lista-facturas");
+        let selectedOption = select.options[select.selectedIndex];
+
+        if (!selectedOption) return;
+
+        let facturaId = selectedOption.value;
+        let facturaTexto = selectedOption.text;
+
+        facturas.push({ id: facturaId, texto: facturaTexto });
+        actualizarLista(lista, facturas, "facturas");
+    }
+
+    function agregarConcepto() {
+        let select = document.getElementById("concepto-select");
+        let importeInput = document.getElementById("concepto-importe");
+        let observacionesInput = document.getElementById("concepto-observaciones");
+        let lista = document.getElementById("lista-conceptos");
+        let selectedOption = select.options[select.selectedIndex];
+
+        if (!selectedOption || !importeInput.value) return;
+
+        let conceptoId = selectedOption.value;
+        let conceptoTexto = selectedOption.text;
+        let importe = importeInput.value;
+        let observaciones = observacionesInput.value;
+
+        conceptos.push({ id: conceptoId, texto: conceptoTexto, importe: importe, observaciones: observaciones });
+        actualizarLista(lista, conceptos, "conceptos");
+
+        // Limpiar campos después de agregar
+        importeInput.value = "";
+        observacionesInput.value = "";
+    }
+
+    function actualizarLista(lista, elementos, tipo) {
+        lista.innerHTML = "";
+        elementos.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            if (tipo === "facturas") {
+                li.innerHTML = `${item.texto} <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
+            } else {
+                li.innerHTML = `${item.texto} - $${item.importe} (${item.observaciones}) <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
+            }
+            lista.appendChild(li);
+        });
+        actualizarFormulario();
+    }
+
+    function eliminarElemento(index, tipo) {
+        if (tipo === "facturas") {
+            facturas.splice(index, 1);
+            actualizarLista(document.getElementById("lista-facturas"), facturas, "facturas");
+        } else {
+            conceptos.splice(index, 1);
+            actualizarLista(document.getElementById("lista-conceptos"), conceptos, "conceptos");
+        }
+    }
+
+    function actualizarFormulario() {
+        document.getElementById("facturas-input").value = JSON.stringify(facturas.map(f => f.id));
+        document.getElementById("conceptos-input").value = JSON.stringify(conceptos.map(c => ({ id: c.id, importe: c.importe, observaciones: c.observaciones })));
+    }
+</script>
 {% endblock %}

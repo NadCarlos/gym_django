@@ -214,19 +214,23 @@ class OrdenPagoPopulate(View):
 
     def get(self, request, id):
         orden = ordenPagoRepo.filter_by_id(id=id)
-        form = FacturaForm(initial = {'id_ordenpago': orden.id}, id_beneficiario=orden.id_beneficiario)
+        facturas = facturaRepo.filter_by_beneficiario_id(id_beneficiario=orden.id_beneficiario)
+        conceptos = conceptoRepo.get_all()
 
         return render(
             request,
             'orden_pago/orden_pago_populate.html',
             dict(
                 orden = orden,
-                form = form,
+                facturas = facturas,
+                conceptos = conceptos,
             )
         )
     
     def post(self, request, id):
-        orden = request.POST.get('id_ordenpago')
+        post = request.POST
+        print(post)
+        """orden = request.POST.get('id_ordenpago')
         orden = ordenPagoRepo.filter_by_id(id=id)
         importe = request.POST.get('importe')
         facturas_ids = request.POST.getlist('id_factura')
@@ -237,9 +241,9 @@ class OrdenPagoPopulate(View):
                 importe=importe,
                 id_ordenpago=orden,
                 id_factura=factura,
-            )
+            )"""
 
-        return redirect('orden_pago_descuento', orden.id)
+        return redirect('orden_pago_descuento', id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

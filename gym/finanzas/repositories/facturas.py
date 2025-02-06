@@ -11,6 +11,9 @@ class FacturaRepository:
     def filter_by_id(self, id) -> Optional[Factura]:
         return Factura.objects.filter(id=id).first()
     
+    def filter_by_beneficiario_id(self, id_beneficiario) -> Optional[Factura]:
+        return Factura.objects.filter(id_beneficiario=id_beneficiario)
+    
     def filter_by_activo(self) -> List[Factura]:
         return Factura.objects.filter(
             activo=True
