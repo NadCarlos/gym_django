@@ -2,25 +2,35 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Orden N° {{ orden.numero }}</h2>
 
-    <div class="card shadow-sm p-4 mb-4">
-        <h5 class="text-center mb-3">Detalles de la Orden</h5>
-        <p><strong>Fecha:</strong> {{ orden.fecha }}</p>
-        <p><strong>Beneficiario:</strong> {{ orden.id_beneficiario.nombre }}</p>
-        <p><strong>CUIT:</strong> {{ orden.id_beneficiario.numero_cuit }}</p>
-        <p><strong>Total:</strong> ${{ orden.total }}</p>
+    <div class="card p-4 shadow-sm">
+        <div class="row mb-3">
+            <div class="col">
+                <h4 class="text-center mb-4">Orden N° {{ orden.numero }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Fecha:</strong> {{ orden.fecha }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Beneficiario:</strong> {{ orden.id_beneficiario.nombre }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>CUIT:</strong> {{ orden.id_beneficiario.numero_cuit }}</p>
+            </div>
+        </div>
     </div>
 
     <div class="row">
         <!-- Facturas -->
         <div class="col-md-6">
             <div class="card shadow-sm p-4">
-                <h5 class="text-center mb-3">Facturas</h5>
+                <label class="form-label">Facturas:</label>
                 <div class="mb-3">
                     <select id="factura-select" class="form-select">
                         {% for factura in facturas %}
-                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }}</option>
+                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }} - {{ factura.fecha }}</option>
                         {% endfor %}
                     </select>
                     <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
@@ -32,27 +42,28 @@
         <!-- Conceptos -->
         <div class="col-md-6">
             <div class="card shadow-sm p-4">
-                <h5 class="text-center mb-3">Conceptos</h5>
-                <div class="mb-3">
-                    <select id="concepto-select" class="form-select">
-                        {% for concepto in conceptos %}
-                            <option value="{{ concepto.id }}">{{ concepto.nombre }}</option>
-                        {% endfor %}
-                    </select>
+                <label class="form-label">Conceptos:</label>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <select id="concepto-select" class="form-select">
+                            {% for concepto in conceptos %}
+                                <option value="{{ concepto.id }}">{{ concepto.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" id="concepto-importe" class="form-control" placeholder="Importe">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" id="concepto-observaciones" class="form-control" placeholder="Observaciones">
+                    </div>
+                    <div>
+                        <button class="btn btn-primary w-100" type="button" onclick="agregarConcepto()">Añadir Concepto</button>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Importe:</label>
-                    <input type="number" id="concepto-importe" class="form-control" placeholder="Ingrese el importe">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Observaciones:</label>
-                    <input type="text" id="concepto-observaciones" class="form-control" placeholder="Ingrese observaciones">
-                </div>
-                <button class="btn btn-primary w-100" type="button" onclick="agregarConcepto()">Añadir Concepto</button>
                 <ul id="lista-conceptos" class="list-group mt-3"></ul>
             </div>
         </div>
-    </div>
 
     <!-- Formulario para enviar datos -->
     <form method="post" id="orden-form">
