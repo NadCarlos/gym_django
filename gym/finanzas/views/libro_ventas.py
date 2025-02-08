@@ -230,18 +230,21 @@ class OrdenPagoPopulate(View):
     def post(self, request, id):
         post = request.POST
         print(post)
-        """orden = request.POST.get('id_ordenpago')
-        orden = ordenPagoRepo.filter_by_id(id=id)
-        importe = request.POST.get('importe')
         facturas_ids = request.POST.getlist('id_factura')
+        conceptos = request.POST.getlist('conceptos')
+        print(conceptos)
+        importe = request.POST.get('importe')
 
         for factura_id in facturas_ids:
             factura = facturaRepo.filter_by_id(id=factura_id)
-            detalleOrdenRepo.create(
+            """detalleOrdenRepo.create(
                 importe=importe,
-                id_ordenpago=orden,
+                id_ordenpago=id,
                 id_factura=factura,
             )"""
+
+        for concepto in conceptos[0]:
+            print(concepto)
 
         return redirect('orden_pago_descuento', id)
 

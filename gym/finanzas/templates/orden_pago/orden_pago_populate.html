@@ -26,11 +26,11 @@
         <!-- Facturas -->
         <div class="col-md-6">
             <div class="card shadow-sm p-4">
-                <label class="form-label">Facturas:</label>
+                <label class="form-label">Facturas: Nro - Importe - Fecha - Pto Vta</label>
                 <div class="mb-3">
                     <select id="factura-select" class="form-select">
                         {% for factura in facturas %}
-                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }} - {{ factura.fecha }}</option>
+                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }} - {{ factura.fecha }} - {{ factura.pto_vta }}</option>
                         {% endfor %}
                     </select>
                     <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
@@ -92,9 +92,15 @@
         let facturaId = selectedOption.value;
         let facturaTexto = selectedOption.text;
 
+        if (facturas.some(f => f.id === facturaId)) {
+            alert("Esta factura ya ha sido agregada.");
+            return;
+        }
+
         facturas.push({ id: facturaId, texto: facturaTexto });
         actualizarLista(lista, facturas, "facturas");
     }
+
 
     function agregarConcepto() {
         let select = document.getElementById("concepto-select");
@@ -112,8 +118,6 @@
 
         conceptos.push({ id: conceptoId, texto: conceptoTexto, importe: importe, observaciones: observaciones });
         actualizarLista(lista, conceptos, "conceptos");
-
-        // Limpiar campos después de agregar
         importeInput.value = "";
         observacionesInput.value = "";
     }
