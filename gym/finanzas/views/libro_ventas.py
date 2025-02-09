@@ -1,5 +1,6 @@
 import pandas
 import locale
+import json
 from datetime import datetime, timedelta
 
 from django.views import View
@@ -228,22 +229,32 @@ class OrdenPagoPopulate(View):
         )
     
     def post(self, request, id):
-        post = request.POST
-        print(post)
-        facturas_ids = request.POST.getlist('id_factura')
-        conceptos = request.POST.getlist('conceptos')
-        print(conceptos)
-        importe = request.POST.get('importe')
+        facturas = json.loads(request.POST.get("facturas", "[]"))  # ["1", "2", "3"]
+        conceptos_raw = json.loads(request.POST.get("conceptos", "[]"))  # ["5,1000,Descuento especial", "8,500,Bonificación"]
 
-        for factura_id in facturas_ids:
+        conceptos = []
+        for item in conceptos_raw:
+            partes = item.split(",")  # Separar ID, importe y observaciones
+            conceptos.append({
+                "id": partes[0],
+                "importe": partes[1],
+                "observaciones": partes[2] if len(partes) > 2 else ""
+            })
+
+        
+        print("Facturas:", facturas)  # ['1', '2', '3']
+        print("Conceptos:", conceptos)
+
+        for factura_id in facturas:
             factura = facturaRepo.filter_by_id(id=factura_id)
+            print(factura_id)
             """detalleOrdenRepo.create(
                 importe=importe,
                 id_ordenpago=id,
                 id_factura=factura,
             )"""
 
-        for concepto in conceptos[0]:
+        for concepto in conceptos:
             print(concepto)
 
         return redirect('orden_pago_descuento', id)
