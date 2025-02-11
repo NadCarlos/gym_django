@@ -247,9 +247,9 @@ class OrdenPagoPopulate(View):
                 importe=importe,
                 id_ordenpago=id,
                 id_factura=factura,
-            )"""
+            )
 
-        """for concepto in conceptos:
+        for concepto in conceptos:
             descuento = descuentoRepo.create(
                 id_ordenpago = id,
                 id_concepto = concepto["id"],
