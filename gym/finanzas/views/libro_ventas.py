@@ -1,5 +1,6 @@
 import pandas
 import locale
+import json
 from datetime import datetime, timedelta
 
 from django.views import View
@@ -217,6 +218,9 @@ class OrdenPagoPopulate(View):
         facturas = facturaRepo.filter_by_beneficiario_id(id_beneficiario=orden.id_beneficiario)
         conceptos = conceptoRepo.get_all()
 
+        for factura in facturas:
+            factura.pto_vta = factura.pto_vta.zfill(4)
+
         return render(
             request,
             'orden_pago/orden_pago_populate.html',
@@ -228,11 +232,13 @@ class OrdenPagoPopulate(View):
         )
     
     def post(self, request, id):
-        post = request.POST
-        print(post)
-        facturas_ids = request.POST.getlist('id_factura')
-        conceptos = request.POST.getlist('conceptos')
-        print(conceptos)
+        facturas_ids = request.POST.get('facturas')
+        facturas_ids = str(facturas_ids)
+        facturas_ids = json.loads(facturas_ids)
+        conceptos = request.POST.get('conceptos')
+        conceptos = str(conceptos)
+        conceptos = json.loads(conceptos)
+
         importe = request.POST.get('importe')
 
         for factura_id in facturas_ids:
@@ -243,8 +249,13 @@ class OrdenPagoPopulate(View):
                 id_factura=factura,
             )"""
 
-        for concepto in conceptos[0]:
-            print(concepto)
+        """for concepto in conceptos:
+            descuento = descuentoRepo.create(
+                id_ordenpago = id,
+                id_concepto = concepto["id"],
+                importe = concepto["importe"],
+                observaciones = concepto["observaciones"],
+            )"""
 
         return redirect('orden_pago_descuento', id)
 
