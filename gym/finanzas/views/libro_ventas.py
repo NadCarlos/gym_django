@@ -300,3 +300,18 @@ class OrdenPagoDetail(View):
                 total = total,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenesPagoList(View):
+
+    def get(self, request):
+        ordenes = ordenPagoRepo.filter_by_activo()
+
+        return render(
+            request,
+            'orden_pago/list.html',
+            dict(
+                ordenes=ordenes,
+            )
+        )

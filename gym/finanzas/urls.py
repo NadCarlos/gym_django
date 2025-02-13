@@ -9,6 +9,7 @@ from finanzas.views.libro_ventas import (
     OrdenPagoCreate,
     OrdenPagoPopulate,
     OrdenPagoDetail,
+    OrdenesPagoList,
 )
 
 
@@ -21,4 +22,5 @@ urlpatterns = [
     path(route='orden_pago_create/',view=OrdenPagoCreate.as_view(), name='orden_pago_create'),
     path(route='<int:id>/orden_pago_populate/',view=OrdenPagoPopulate.as_view(), name='orden_pago_populate'),
     path(route='<int:id>/detail/',view=OrdenPagoDetail.as_view(), name='detail'),
+    path(route='orden_pago_list/',view=OrdenesPagoList.as_view(), name='orden_pago_list'),
 ]

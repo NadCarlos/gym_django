@@ -9,6 +9,9 @@ class OrdenPagoRepository:
     def filter_by_id(self, id) -> Optional[OrdenPago]:
         return OrdenPago.objects.filter(id=id).first()
     
+    def filter_by_activo(self) -> List[OrdenPago]:
+        return OrdenPago.objects.filter(activo=True).order_by('id_beneficiario__nombre')
+    
     def create(
         self,
         id_usuario: User,
