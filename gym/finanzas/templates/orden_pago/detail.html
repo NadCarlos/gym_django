@@ -30,14 +30,13 @@
                             <div>
                                 <strong>Factura N°:</strong> {{ factura.id_factura.numero }} <br>
                                 <small><strong>Fecha:</strong> {{ factura.id_factura.fecha }}</small> <br>
-                                <small><strong>Importe:</strong> ${{ factura.id_factura.importe }}</small>
                             </div>
-                            <span class="badge bg-success p-2">${{ factura.id_factura.importe }}</span>
+                            <span class="badge bg-success p-2">Importe: ${{ factura.id_factura.importe }}</span>
                         </li>
                     {% endfor %}
                 </ul>
                 <div class="text-end mt-3">
-                    <h5 class="text-dark"><strong>Total Facturas: </strong> ${{ facturasTotal }}</h5>
+                    <h5 class="text-dark"><strong>Total Facturas: </strong>Importe: ${{ facturasTotal }}</h5>
                 </div>
             </div>
         </div>
