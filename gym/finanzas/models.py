@@ -111,6 +111,9 @@ class OrdenPago(models.Model):
         verbose_name='total',
         max_digits=10,
         decimal_places=2,
+        default=0,
+        null=True,
+        blank=True,
     )
 
     observaciones = models.CharField(

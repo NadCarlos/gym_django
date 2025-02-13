@@ -7,6 +7,7 @@
         <form method="post">
             {% csrf_token %}
             {{ form.id_usuario }}
+            {{ form.total }}
             <div class="mb-2 row">
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Fecha:</label>
                 <div class="col-sm-6">
@@ -29,15 +30,6 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Beneficiario:</label>
                 <div class="col-sm-6">
                     {{ form.id_beneficiario }}
-                </div>
-                <div class="col-sm-4">
-                </div>
-            </div>
-
-            <div class="mb-2 row">
-                <label class="d-flex justify-content-end col-sm-2 col-form-label">Total:</label>
-                <div class="col-sm-6">
-                    {{ form.total }}
                 </div>
                 <div class="col-sm-4">
                 </div>

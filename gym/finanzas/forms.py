@@ -37,7 +37,7 @@ class OrdenPagoCreateForm(forms.ModelForm):
             'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'numero': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'id_beneficiario': forms.Select(attrs={'class': 'form-control custom-class'}),
-            'total': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+            'total': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
 

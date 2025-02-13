@@ -187,7 +187,7 @@ class BeneficiarioUpdate(View):
 class OrdenPagoCreate(View):
 
     def get(self, request):
-        form = OrdenPagoCreateForm(initial = {'id_usuario': request.user,})
+        form = OrdenPagoCreateForm(initial = {'id_usuario': request.user})
 
         return render(
             request,
@@ -244,7 +244,7 @@ class OrdenPagoPopulate(View):
         for factura_id in facturas_ids:
             factura = facturaRepo.filter_by_id(id=factura_id)
             detalleOrdenRepo.create(
-                importe=orden.total, #aca le mando fruta guarda
+                importe=factura.importe,
                 id_ordenpago=orden,
                 id_factura=factura,
             )
@@ -267,43 +267,7 @@ class OrdenPagoPopulate(View):
                     observaciones = concepto["observaciones"],
                 )
 
-        return redirect('orden_pago_descuento', id)
-
-
-@method_decorator(login_required(login_url='login'), name='dispatch')
-class OrdenPagoDescuento(View):
-
-    def get(self, request, id):
-        orden = ordenPagoRepo.filter_by_id(id=id)
-        form = DescuentoOrdenPagoCreateForm(initial = {'id_ordenpago': orden.id})
-        
-        return render(
-            request,
-            'orden_pago/orden_pago_descuento.html',
-            dict(
-                orden = orden,
-                form = form,
-            )
-        )
-    
-    def post(self, request, id):
-        orden = request.POST.get('id_ordenpago')
-        conceptos_ids = request.POST.getlist('id_concepto')
-        importe = request.POST.get('importe')
-        observaciones = request.POST.get('observaciones')
-        
-        orden = ordenPagoRepo.filter_by_id(id=id)
-
-        for concepto_id in conceptos_ids:
-            concepto = conceptoRepo.filter_by_id(id=concepto_id)
-            descuento = descuentoRepo.create(
-                observaciones=observaciones,
-                importe=importe,
-                id_ordenpago=orden,
-                id_concepto=concepto,
-            )
-
-        return redirect('detail', orden.id)
+        return redirect('detail', id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -314,12 +278,25 @@ class OrdenPagoDetail(View):
         facturas = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
         descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
 
+        facturasTotal = 0
+        for factura in facturas:
+            facturasTotal = facturasTotal + factura.importe
+
+        descuentosTotal = 0
+        for descuento in descuentos:
+            descuentosTotal = descuentosTotal + descuento.importe
+
+        total = facturasTotal - descuentosTotal
+
         return render(
             request,
             'orden_pago/detail.html',
             dict(
                 orden=orden,
                 facturas=facturas,
+                facturasTotal=facturasTotal,
                 descuentos=descuentos,
+                descuentosTotal=descuentosTotal,
+                total = total,
             )
         )
