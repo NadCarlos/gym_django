@@ -2,7 +2,6 @@
 
 {% block content %}
 <div class="container mt-5">
-
     <div class="card p-4 shadow-sm">
         <div class="row mb-3">
             <div class="col">
@@ -57,13 +56,17 @@
                     <div class="col-md-5">
                         <input type="text" id="concepto-observaciones" class="form-control" placeholder="Observaciones">
                     </div>
-                    <div>
+                    <div class="col-md-8">
                         <button class="btn btn-primary w-100" type="button" onclick="agregarConcepto()">Añadir Concepto</button>                        
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary w-100" type="button" data-bs-toggle="modal" data-bs-target="#nuevoConceptoModal">Nuevo Concepto</button>                        
                     </div>
                 </div>
                 <ul id="lista-conceptos" class="list-group mt-3"></ul>
             </div>
         </div>
+    </div>
 
     <!-- Formulario para enviar datos -->
     <form method="post" id="orden-form">
@@ -76,6 +79,27 @@
             </button>
         </div>
     </form>
+</div>
+
+<!-- MODAL PARA CREAR UN NUEVO CONCEPTO -->
+<div class="modal fade" id="nuevoConceptoModal" tabindex="-1" aria-labelledby="nuevoConceptoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevoConceptoModalLabel">Nuevo Concepto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="nuevoConceptoForm">
+                    <div class="mb-3">
+                        <label for="nuevoConceptoNombre" class="form-label">Nombre del Concepto</label>
+                        <input type="text" id="nuevoConceptoNombre" class="form-control" required>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" onclick="guardarNuevoConcepto()">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -101,7 +125,6 @@
         actualizarLista(lista, facturas, "facturas");
     }
 
-
     function agregarConcepto() {
         let select = document.getElementById("concepto-select");
         let importeInput = document.getElementById("concepto-importe");
@@ -122,16 +145,35 @@
         observacionesInput.value = "";
     }
 
+    function guardarNuevoConcepto() {
+        let nombreInput = document.getElementById("nuevoConceptoNombre");
+        let conceptoSelect = document.getElementById("concepto-select");
+
+        if (!nombreInput.value.trim()) {
+            alert("Por favor, ingrese un nombre para el concepto.");
+            return;
+        }
+
+        let nuevoConceptoId = `NEW`;
+        let nuevoConceptoNombre = nombreInput.value.trim();
+
+        let nuevaOpcion = new Option(nuevoConceptoNombre, nuevoConceptoId);
+        conceptoSelect.add(nuevaOpcion);
+        conceptoSelect.value = nuevoConceptoId;
+
+        nombreInput.value = "";
+        let modalElement = document.getElementById("nuevoConceptoModal");
+        let modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+    }
+
     function actualizarLista(lista, elementos, tipo) {
         lista.innerHTML = "";
         elementos.forEach((item, index) => {
             let li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
-            if (tipo === "facturas") {
-                li.innerHTML = `${item.texto} <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
-            } else {
-                li.innerHTML = `${item.texto} - $${item.importe} (${item.observaciones}) <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
-            }
+            li.innerHTML = `${item.texto} - $${item.importe || ''} (${item.observaciones || ''}) 
+                <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
             lista.appendChild(li);
         });
         actualizarFormulario();
@@ -149,7 +191,7 @@
 
     function actualizarFormulario() {
         document.getElementById("facturas-input").value = JSON.stringify(facturas.map(f => f.id));
-        document.getElementById("conceptos-input").value = JSON.stringify(conceptos.map(c => ({ id: c.id, importe: c.importe, observaciones: c.observaciones })));
+        document.getElementById("conceptos-input").value = JSON.stringify(conceptos.map(c => ({ id: c.id, nombre: c.texto, importe: c.importe, observaciones: c.observaciones })));
     }
 </script>
 {% endblock %}

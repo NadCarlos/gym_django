@@ -232,6 +232,8 @@ class OrdenPagoPopulate(View):
         )
     
     def post(self, request, id):
+        print(request.POST)
+        orden = ordenPagoRepo.filter_by_id(id=id)
         facturas_ids = request.POST.get('facturas')
         facturas_ids = str(facturas_ids)
         facturas_ids = json.loads(facturas_ids)
@@ -239,23 +241,31 @@ class OrdenPagoPopulate(View):
         conceptos = str(conceptos)
         conceptos = json.loads(conceptos)
 
-        importe = request.POST.get('importe')
-
         for factura_id in facturas_ids:
             factura = facturaRepo.filter_by_id(id=factura_id)
-            """detalleOrdenRepo.create(
-                importe=importe,
-                id_ordenpago=id,
+            detalleOrdenRepo.create(
+                importe=orden.total, #aca le mando fruta guarda
+                id_ordenpago=orden,
                 id_factura=factura,
             )
 
         for concepto in conceptos:
-            descuento = descuentoRepo.create(
-                id_ordenpago = id,
-                id_concepto = concepto["id"],
-                importe = concepto["importe"],
-                observaciones = concepto["observaciones"],
-            )"""
+            if concepto["id"] == "NEW":
+                nuevo_concepto = conceptoRepo.create(nombre=concepto["nombre"])
+                descuento = descuentoRepo.create(
+                    id_ordenpago = orden,
+                    id_concepto = nuevo_concepto,
+                    importe = concepto["importe"],
+                    observaciones = concepto["observaciones"],
+                )
+            else:
+                concepto_existente = conceptoRepo.filter_by_id(id=concepto["id"])
+                descuento = descuentoRepo.create(
+                    id_ordenpago = orden,
+                    id_concepto = concepto_existente,
+                    importe = concepto["importe"],
+                    observaciones = concepto["observaciones"],
+                )
 
         return redirect('orden_pago_descuento', id)
 

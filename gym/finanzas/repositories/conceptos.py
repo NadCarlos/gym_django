@@ -10,3 +10,11 @@ class ConceptoRepository:
     
     def filter_by_id(self, id) -> Optional[Concepto]:
         return Concepto.objects.filter(id=id).first()
+    
+    def create(
+        self,
+        nombre: str,
+    ):
+        return Concepto.objects.create(
+            nombre=nombre,
+        )
