@@ -11,9 +11,6 @@ from django.shortcuts import render, redirect
 from finanzas.forms import (
     BeneficiarioUpdateForm,
     OrdenPagoCreateForm,
-    DetalleOrdenPagoCreateForm,
-    DescuentoOrdenPagoCreateForm,
-    FacturaForm
 )
 
 from finanzas.filters import FacturasFilter
@@ -219,6 +216,7 @@ class OrdenPagoPopulate(View):
         conceptos = conceptoRepo.get_all()
 
         for factura in facturas:
+            factura.importe = locale.currency(factura.importe, grouping=True)
             factura.pto_vta = factura.pto_vta.zfill(4)
 
         return render(
@@ -280,13 +278,18 @@ class OrdenPagoDetail(View):
 
         facturasTotal = 0
         for factura in facturas:
-            facturasTotal = facturasTotal + factura.importe
+            facturasTotal = facturasTotal + factura.id_factura.importe
+            factura.id_factura.importe = locale.currency(factura.id_factura.importe, grouping=True)
 
         descuentosTotal = 0
         for descuento in descuentos:
             descuentosTotal = descuentosTotal + descuento.importe
+            descuento.importe = locale.currency(descuento.importe, grouping=True)
 
         total = facturasTotal - descuentosTotal
+        descuentosTotal = locale.currency(descuentosTotal, grouping=True)
+        facturasTotal = locale.currency(facturasTotal, grouping=True)
+        total = locale.currency(total, grouping=True)
 
         return render(
             request,
