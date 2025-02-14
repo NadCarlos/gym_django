@@ -68,4 +68,11 @@
         <h3 class="text-dark">Total: <span class="text-success">${{ total }}</span></h3>
     </div>
 </div>
+<script>
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function (event)
+    {
+    history.pushState(null, document.title, location.href);
+    });
+</script>
 {% endblock %}
