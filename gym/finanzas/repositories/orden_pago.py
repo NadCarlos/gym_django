@@ -6,11 +6,17 @@ from finanzas.models import OrdenPago, Beneficiario
 
 class OrdenPagoRepository:
 
+    def get_all(self) -> List[OrdenPago]:
+        return OrdenPago.objects.all()
+
     def filter_by_id(self, id) -> Optional[OrdenPago]:
         return OrdenPago.objects.filter(id=id).first()
     
     def filter_by_activo(self) -> List[OrdenPago]:
         return OrdenPago.objects.filter(activo=True).order_by('id_beneficiario__nombre')
+    
+    def filter_by_dates(self, start_date, end_date) -> Optional[OrdenPago]:
+        return OrdenPago.objects.filter(fecha__gte=start_date, fecha__lt=end_date)
     
     def create(
         self,

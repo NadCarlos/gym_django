@@ -13,7 +13,7 @@ from finanzas.forms import (
     OrdenPagoCreateForm,
 )
 
-from finanzas.filters import FacturasFilter
+from finanzas.filters import FacturasFilter, OrdenesPagoFilter
 
 from finanzas.repositories.beneficiarios import BeneficiarioRepository
 from finanzas.repositories.facturas import FacturaRepository
@@ -307,14 +307,45 @@ class OrdenPagoDetail(View):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenesPagoList(View):
+    context_object_name = 'ordenes'
 
     def get(self, request):
-        ordenes = ordenPagoRepo.filter_by_activo()
+        if request.GET.get('fecha_after') is None:
+            hoy = datetime.today()
+            hace_10_dias = hoy - timedelta(days=10)
+
+            # Instanciar el filtro con los datos enviados por el formulario
+            filterset = OrdenesPagoFilter(
+                request.GET, queryset=ordenPagoRepo.filter_by_dates(start_date=hace_10_dias, end_date=hoy)
+            )
+        else:
+            filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.get_all())
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'fecha')
+
+        # Obtener el queryset filtrado
+        ordenes = filterset.qs
+
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            ordenes = ordenes.order_by(ordering)
+
+        total = 0
+        for orden in ordenes:
+            total += orden.total
+            orden.total = locale.currency(orden.total, grouping=True)
+            orden.numero = orden.numero.zfill(8)  # Ajusta el número con ceros a la izquierda si es necesario
+
+        total = locale.currency(total, grouping=True)
 
         return render(
             request,
             'orden_pago/list.html',
             dict(
                 ordenes=ordenes,
+                form=filterset.form,
+                ordering=ordering,
+                total=total,
             )
         )

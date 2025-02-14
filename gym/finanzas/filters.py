@@ -1,7 +1,7 @@
 import django_filters
 from django.db.models import Q
 
-from finanzas.models import Factura, Beneficiario
+from finanzas.models import Factura, OrdenPago, Beneficiario
 
 
 class FacturasFilter(django_filters.FilterSet):
@@ -27,3 +27,17 @@ class FacturasFilter(django_filters.FilterSet):
             )
         except ValueError:
             return queryset"""
+    
+
+class OrdenesPagoFilter(django_filters.FilterSet):
+
+    fecha = django_filters.DateFromToRangeFilter()
+    id_beneficiario__nombre = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = OrdenPago
+        fields = [
+            'fecha',
+            'id_beneficiario__nombre',
+        ]
+
