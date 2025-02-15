@@ -9,7 +9,7 @@
                 <div style="background-color: #009f95;" class="card-body">
                     <h5 style="color: #ffffff;" class="card-title">Carga Facturas</h5>
                     <a href="{% url 'upload' %}" class="btn btn-primary btn-lg btn-block">
-                        <i class="bi bi-person"></i> Cargar
+                        <i class="bi bi-file-earmark-arrow-up"></i> Cargar
                     </a>
                 </div>
             </div>
@@ -19,7 +19,7 @@
                 <div style="background-color: #009f95;" class="card-body">
                     <h5 style="color: #ffffff;" class="card-title">Lista Facturas</h5>
                     <a href="{% url 'list' %}" class="btn btn-primary btn-lg btn-block">
-                        <i class="bi bi-shield"></i> Ver Lista
+                        <i class="bi bi-file-earmark-ruled"></i> Ver Lista
                     </a>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                 <div style="background-color: #009f95;" class="card-body">
                     <h5 style="color: #ffffff;" class="card-title">Orden de Pago</h5>
                     <a href="{% url 'orden_pago_create' %}" class="btn btn-primary btn-lg btn-block">
-                        <i class="bi bi-person"></i> Nueva Orden de Pago
+                        <i class="bi bi-file-earmark-arrow-up"></i> Nueva Orden de Pago
                     </a>
                 </div>
             </div>
@@ -43,9 +43,9 @@
         <div class="col-md-3">
             <div class="card text-center shadow-sm mb-4">
                 <div style="background-color: #009f95;" class="card-body">
-                    <h5 style="color: #ffffff;" class="card-title">Lista de Ordenes de PAgo</h5>
+                    <h5 style="color: #ffffff;" class="card-title">Lista de Ordenes de Pago</h5>
                     <a href="{% url 'orden_pago_list' %}" class="btn btn-primary btn-lg btn-block">
-                        <i class="bi bi-person"></i> Ver Ordenes de Pago
+                        <i class="bi bi-receipt"></i> Ver Ordenes de Pago
                     </a>
                 </div>
             </div>
@@ -68,6 +68,4 @@
         </div>
     </div>
 </div>
-
-
 {% endblock %}
