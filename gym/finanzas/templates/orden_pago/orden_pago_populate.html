@@ -29,7 +29,7 @@
                 <div class="mb-3">
                     <select id="factura-select" class="form-select">
                         {% for factura in facturas %}
-                            <option value="{{ factura.id }}">{{ factura.numero }} - ${{ factura.importe }} - {{ factura.fecha }} - {{ factura.pto_vta }}</option>
+                            <option value="{{ factura.id }}">{{ factura.numero }} - {{ factura.importe }} - {{ factura.fecha }} - {{ factura.pto_vta }}</option>
                         {% endfor %}
                     </select>
                     <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
@@ -140,7 +140,7 @@
         let observaciones = observacionesInput.value;
 
         conceptos.push({ id: conceptoId, texto: conceptoTexto, importe: importe, observaciones: observaciones });
-        actualizarLista(lista, conceptos, "conceptos");
+        actualizarListaConcepto(lista, conceptos, "conceptos");
         importeInput.value = "";
         observacionesInput.value = "";
     }
@@ -173,6 +173,18 @@
             let li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `${item.texto} ${item.importe || ''} ${item.fecha || ''}
+                <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
+            lista.appendChild(li);
+        });
+        actualizarFormulario();
+    }
+
+    function actualizarListaConcepto(lista, elementos, tipo) {
+        lista.innerHTML = "";
+        elementos.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
                 <button class="btn btn-danger btn-sm" onclick="eliminarElemento(${index}, '${tipo}')">X</button>`;
             lista.appendChild(li);
         });

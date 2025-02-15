@@ -250,24 +250,26 @@ class OrdenPagoPopulate(View):
 
         descuentosTotal = 0
         for concepto in conceptos:
+            importe = int(concepto["importe"])
+            observaciones = concepto["observaciones"]
+            if observaciones == "":
+                observaciones = "Sin Observaciones"
             if concepto["id"] == "NEW":
                 nuevo_concepto = conceptoRepo.create(nombre=concepto["nombre"])
                 descuento = descuentoRepo.create(
                     id_ordenpago = orden,
                     id_concepto = nuevo_concepto,
-                    importe = concepto["importe"],
-                    observaciones = concepto["observaciones"],
+                    importe = importe,
+                    observaciones = observaciones,
                 )
-                descuentosTotal = descuentosTotal + descuento.importe
             else:
                 concepto_existente = conceptoRepo.filter_by_id(id=concepto["id"])
                 descuento = descuentoRepo.create(
                     id_ordenpago = orden,
                     id_concepto = concepto_existente,
-                    importe = concepto["importe"],
-                    observaciones = concepto["observaciones"],
+                    importe = importe,
+                    observaciones = observaciones,
                 )
-                descuentosTotal = descuentosTotal + descuento.importe
 
         total = facturasTotal - descuentosTotal
         
