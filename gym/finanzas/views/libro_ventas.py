@@ -98,7 +98,7 @@ class FacturasList(View):
     def get(self, request):
         if request.GET.get('fecha_after') is None:
             hoy = datetime.today()
-            hace_30_dias = hoy - timedelta(days=10)
+            hace_30_dias = hoy - timedelta(days=100)
 
             # Instanciar el filtro con los datos enviados por el formulario
             filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_dates(start_date=hace_30_dias,end_date=hoy))
@@ -230,7 +230,6 @@ class OrdenPagoPopulate(View):
         )
     
     def post(self, request, id):
-        print(request.POST)
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas_ids = request.POST.get('facturas')
         facturas_ids = str(facturas_ids)
@@ -239,14 +238,17 @@ class OrdenPagoPopulate(View):
         conceptos = str(conceptos)
         conceptos = json.loads(conceptos)
 
+        facturasTotal = 0
         for factura_id in facturas_ids:
             factura = facturaRepo.filter_by_id(id=factura_id)
+            facturasTotal = facturasTotal + factura.importe
             detalleOrdenRepo.create(
                 importe=factura.importe,
                 id_ordenpago=orden,
                 id_factura=factura,
             )
 
+        descuentosTotal = 0
         for concepto in conceptos:
             if concepto["id"] == "NEW":
                 nuevo_concepto = conceptoRepo.create(nombre=concepto["nombre"])
@@ -256,6 +258,7 @@ class OrdenPagoPopulate(View):
                     importe = concepto["importe"],
                     observaciones = concepto["observaciones"],
                 )
+                descuentosTotal = descuentosTotal + descuento.importe
             else:
                 concepto_existente = conceptoRepo.filter_by_id(id=concepto["id"])
                 descuento = descuentoRepo.create(
@@ -264,6 +267,14 @@ class OrdenPagoPopulate(View):
                     importe = concepto["importe"],
                     observaciones = concepto["observaciones"],
                 )
+                descuentosTotal = descuentosTotal + descuento.importe
+
+        total = facturasTotal - descuentosTotal
+        
+        ordenPagoRepo.update_total(
+            orden_pago=orden,
+            total=total,
+        )
 
         return redirect('detail', id)
 
@@ -319,7 +330,7 @@ class OrdenesPagoList(View):
                 request.GET, queryset=ordenPagoRepo.filter_by_dates(start_date=hace_10_dias, end_date=hoy)
             )
         else:
-            filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.get_all())
+            filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.filter_by_activo())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
@@ -335,7 +346,7 @@ class OrdenesPagoList(View):
         for orden in ordenes:
             total += orden.total
             orden.total = locale.currency(orden.total, grouping=True)
-            orden.numero = orden.numero.zfill(8)  # Ajusta el número con ceros a la izquierda si es necesario
+            orden.numero = orden.numero.zfill(8)
 
         total = locale.currency(total, grouping=True)
 

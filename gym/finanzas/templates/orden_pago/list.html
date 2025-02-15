@@ -77,7 +77,7 @@
                 <tr>
                     <td class="fw-bold"><i class="bi bi-person-circle"></i> {{ orden.id_beneficiario.nombre }}</td>
                     <td>{{ orden.numero }}</td>
-                    <td class="text-success fw-bold">$ {{ orden.total }}</td>
+                    <td class="text-success fw-bold">{{ orden.total }}</td>
                     <td>{{ orden.fecha }}</td>
                     <td>
                         <a href="{% url 'detail' orden.id %}" class="btn btn-outline-primary btn-sm">

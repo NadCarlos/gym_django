@@ -16,7 +16,7 @@ class OrdenPagoRepository:
         return OrdenPago.objects.filter(activo=True).order_by('id_beneficiario__nombre')
     
     def filter_by_dates(self, start_date, end_date) -> Optional[OrdenPago]:
-        return OrdenPago.objects.filter(fecha__gte=start_date, fecha__lt=end_date)
+        return OrdenPago.objects.filter(activo=True).filter(fecha__gte=start_date, fecha__lt=end_date)
     
     def create(
         self,
@@ -33,3 +33,12 @@ class OrdenPagoRepository:
             id_beneficiario=id_beneficiario,
             total=total,
         )
+    
+    def update_total(
+        self,
+        orden_pago: OrdenPago,
+        total: str,
+    ) -> OrdenPago:
+        
+        orden_pago.total = total
+        orden_pago.save()
