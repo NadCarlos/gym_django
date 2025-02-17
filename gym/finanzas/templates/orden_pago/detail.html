@@ -70,11 +70,14 @@
 
     <div class="card p-4 shadow-sm mt-4 text-center">
         <div class="d-grid gap-3 d-md-flex justify-content-md-center">
-            <a href="{% url 'index' %}" class="btn btn-success btn-lg px-4">
+            <a href="{% url 'orden_pago_list' %}" class="btn btn-success btn-lg px-4">
                 <i class="bi bi-check-circle"></i> Aceptar
             </a>
             <a href="#" class="btn btn-warning btn-lg px-4">
                 <i class="bi bi-pencil-square"></i> Editar
+            </a>
+            <a href="{% url 'orden_pago_delete' orden.id %}" onclick="return confirm('Esta seguro que quiere borrar esta orden de pago?');" class="btn btn-danger btn-lg px-4">
+                <i class="bi bi-x-circle"></i> Borrar
             </a>
         </div>
     </div>

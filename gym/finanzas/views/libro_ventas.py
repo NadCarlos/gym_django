@@ -323,7 +323,7 @@ class OrdenesPagoList(View):
     context_object_name = 'ordenes'
 
     def get(self, request):
-        if request.GET.get('fecha_after') is None:
+        """if request.GET.get('fecha_after') is None:
             hoy = datetime.today()
             hace_10_dias = hoy - timedelta(days=10)
 
@@ -332,8 +332,9 @@ class OrdenesPagoList(View):
                 request.GET, queryset=ordenPagoRepo.filter_by_dates(start_date=hace_10_dias, end_date=hoy)
             )
         else:
-            filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.filter_by_activo())
-
+            filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.filter_by_activo())"""
+        
+        filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.filter_by_activo())
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
 
@@ -362,3 +363,13 @@ class OrdenesPagoList(View):
                 total=total,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoDelete(View):
+
+    def get(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        #No elimino, cambio el campo activo a False
+        ordenPagoRepo.delete_by_activo(orden=orden)
+        return redirect('orden_pago_list')
