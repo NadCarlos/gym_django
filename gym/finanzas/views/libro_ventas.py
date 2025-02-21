@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
@@ -270,6 +271,166 @@ class OrdenPagoPopulate(View):
                     importe = importe,
                     observaciones = observaciones,
                 )
+
+        total = facturasTotal - descuentosTotal
+        
+        ordenPagoRepo.update_total(
+            orden_pago=orden,
+            total=total,
+        )
+
+        return redirect('detail', id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoEdit(View):
+
+    def get(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        facturas = facturaRepo.filter_by_beneficiario_id(id_beneficiario=orden.id_beneficiario)
+        conceptos = conceptoRepo.get_all()
+
+        ordenes_selected = detalleOrdenRepo.filter_by_orden_id(orden_id=id)
+        facturas_selected = []
+        for orden_selected in ordenes_selected:
+            fact = orden_selected.id_factura
+            fact = json.dumps(
+                    {
+                        "id": fact.id,
+                        "numero": fact.numero,
+                        "importe": float(fact.importe),
+                        "fecha": str(fact.fecha),
+                        "pto_vta": fact.pto_vta,
+                    }
+                )
+            facturas_selected.append(fact)
+
+        descuentos_selected = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
+        descuentos_selected_json = []
+        for d in descuentos_selected:
+            desc_sel = json.dumps(
+                    {
+                        "id": d.id,
+                        "id_concepto": d.id_concepto.nombre,
+                        "importe": float(d.importe),
+                        "observaciones": d.observaciones,
+                    }
+                )
+            descuentos_selected_json.append(desc_sel)
+
+        facturas_selected_json = mark_safe(json.dumps(facturas_selected, ensure_ascii=False))
+        descuentos_selected_json = mark_safe(json.dumps(descuentos_selected_json, ensure_ascii=False))
+
+        for factura in facturas:
+            factura.importe = locale.currency(factura.importe, grouping=True)
+            factura.pto_vta = factura.pto_vta.zfill(4)
+
+        return render(
+            request,
+            'orden_pago/edit.html',
+            dict(
+                orden = orden,
+                facturas = facturas,
+                conceptos = conceptos,
+                facturas_selected_json = facturas_selected_json,
+                descuentos_selected_json = descuentos_selected_json,
+            )
+        )
+
+    def post(self, request, id):
+        orden = ordenPagoRepo.filter_by_id(id=id)
+        facturas_ids = request.POST.get('facturas')
+        facturas_ids = str(facturas_ids)
+        facturas_ids = json.loads(facturas_ids)
+
+        detalle_orden_old = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
+        det_ord_fact_list = [] #ids
+        det_ord_list = [] # noids
+        for det_ord in detalle_orden_old:
+            det_ord_list.append(det_ord)
+            det_ord_fact_list.append(det_ord.id_factura.id)
+
+        # valido si existe o no en la antiguas y si no esta la creamo viteh
+        for factura_id in facturas_ids:
+            if factura_id not in det_ord_fact_list:
+                factura = facturaRepo.filter_by_id(id=factura_id)
+                detalleOrdenRepo.create(
+                    importe=factura.importe,
+                    id_ordenpago=orden,
+                    id_factura=factura,
+                )
+
+        facturasTotal = 0
+        for factura_id in det_ord_fact_list:
+            if factura_id not in facturas_ids:
+                factura = facturaRepo.filter_by_id(id=factura_id)
+                detalle_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id, orden_id=orden.id)
+                facturasTotal = facturasTotal + factura.importe
+                detalleOrdenRepo.update_activo(
+                    detalle_orden = detalle_orden,
+                    activo=False,
+                )
+        
+        #conceptos existentes
+        descuentos_list_old = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
+        descuentos_list_old_ids = []
+        for dto in descuentos_list_old:
+            dto_id = int(dto.id)
+            descuentos_list_old_ids.append(dto_id)
+
+        descuentos_new = request.POST.get('conceptos_old')
+        descuentos_new = str(descuentos_new)
+        if descuentos_new != "":
+            descuentos_new = json.loads(descuentos_new)
+            descuentos_new_ids = []
+            for dto_new in descuentos_new:
+                dto_id = int(dto_new["id"])
+                descuentos_new_ids.append(dto_id)
+
+            for descuento_id in descuentos_list_old_ids:
+                if descuento_id not in descuentos_new_ids:
+                    descuento_a_borrar = descuentoRepo.filter_by_id(id=descuento_id)
+                    descuentoRepo.update_activo(
+                        descuento=descuento_a_borrar,
+                        activo=False,
+                    )
+
+        elif not descuentos_new:
+            for concepto_id in descuentos_list_old_ids:
+                descuento_a_borrar = descuentoRepo.filter_by_id(id=concepto_id)
+                descuentoRepo.update_activo(
+                    descuento=descuento_a_borrar,
+                    activo=False,
+                )
+
+        #conceptos nuevos
+        conceptos = request.POST.get('conceptos')
+        conceptos = str(conceptos)
+        conceptos = json.loads(conceptos)
+        descuentosTotal = 0
+        for concepto in conceptos:
+            importe = int(concepto["importe"])
+            observaciones = concepto["observaciones"]
+
+            if concepto["id"]:
+                if observaciones == "":
+                    observaciones = "Sin Observaciones"
+                if concepto["id"] == "NEW":
+                    nuevo_concepto = conceptoRepo.create(nombre=concepto["nombre"])
+                    descuento = descuentoRepo.create(
+                        id_ordenpago = orden,
+                        id_concepto = nuevo_concepto,
+                        importe = importe,
+                        observaciones = observaciones,
+                    )
+                else:
+                    concepto_existente = conceptoRepo.filter_by_id(id=concepto["id"])
+                    descuento = descuentoRepo.create(
+                        id_ordenpago = orden,
+                        id_concepto = concepto_existente,
+                        importe = importe,
+                        observaciones = observaciones,
+                    )
 
         total = facturasTotal - descuentosTotal
         

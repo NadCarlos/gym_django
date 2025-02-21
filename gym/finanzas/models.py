@@ -191,6 +191,12 @@ class Descuento(models.Model):
         verbose_name="Obseraciones",
         )
     
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+    
 
 class DetalleOrden(models.Model):
 
@@ -212,4 +218,10 @@ class DetalleOrden(models.Model):
         verbose_name='importe',
         max_digits=10,
         decimal_places=2,
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
     )

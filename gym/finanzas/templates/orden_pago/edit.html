@@ -1,0 +1,296 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card p-4 shadow-sm">
+        <div class="row mb-3">
+            <div class="col">
+                <h4 class="text-center mb-4">Orden N° {{ orden.numero }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Fecha:</strong> {{ orden.fecha }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Beneficiario:</strong> {{ orden.id_beneficiario.nombre }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>CUIT:</strong> {{ orden.id_beneficiario.numero_cuit }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Facturas -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <label class="form-label">Facturas: Nro - Importe - Fecha - Pto Vta</label>
+                <div class="mb-3">
+                    <select id="factura-select" class="form-select">
+                        {% for factura in facturas %}
+                            <option value="{{ factura.id }}">{{ factura.numero }} - {{ factura.importe }} - {{ factura.fecha }} - {{ factura.pto_vta }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
+                </div>
+                <ul id="lista-facturas" class="list-group"></ul>
+            </div>
+        </div>
+
+        <!-- Conceptos -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <label class="form-label">Descuentos:</label>
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <select id="concepto-select" class="form-select">
+                            {% for concepto in conceptos %}
+                                <option value="{{ concepto.id }}">{{ concepto.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" id="concepto-importe" class="form-control" placeholder="Importe">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" id="concepto-observaciones" class="form-control" placeholder="Observaciones">
+                    </div>
+                    <div class="col-md-8">
+                        <button class="btn btn-primary w-100" type="button" onclick="agregarConcepto()">Añadir Concepto</button>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-secondary w-100" type="button" data-bs-toggle="modal" data-bs-target="#nuevoConceptoModal">Nuevo Concepto</button>                        
+                    </div>
+                </div>
+                <ul id="lista-conceptos" class="list-group mt-3"></ul>
+                <ul id="lista-conceptos-old" class="list-group mt-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario para enviar datos -->
+    <form method="post" id="orden-form">
+        {% csrf_token %}
+        <input type="hidden" name="facturas" id="facturas-input">
+        <input type="hidden" name="conceptos" id="conceptos-input">
+        <input type="hidden" name="conceptos_old" id="conceptos-input-old">
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success px-4 py-2">
+                <i class="bi bi-save"></i> Guardar Orden
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- MODAL PARA CREAR UN NUEVO CONCEPTO -->
+<div class="modal fade" id="nuevoConceptoModal" tabindex="-1" aria-labelledby="nuevoConceptoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nuevoConceptoModalLabel">Nuevo Concepto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="nuevoConceptoForm">
+                    <div class="mb-3">
+                        <label for="nuevoConceptoNombre" class="form-label">Nombre del Concepto</label>
+                        <input type="text" id="nuevoConceptoNombre" class="form-control" required>
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" onclick="guardarNuevoConcepto()">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div hidden id="facturas-data">{{ facturas_selected_json|safe }}</div>
+<div hidden id="conceptos-data-old">{{ descuentos_selected_json|safe }}</div>
+
+<script>
+    let facturas = [];
+    let conceptos = [];
+    let conceptos_old = [];
+
+    //on load
+    document.addEventListener("DOMContentLoaded", function() {
+        //f
+        let facturasDataElement = document.getElementById("facturas-data");
+        let facturasData = facturasDataElement.textContent.trim();
+        let facturas_selected = JSON.parse(facturasData);
+        facturas_selected.forEach((fact, index) => {
+            let factura = JSON.parse(fact);
+            let facturaTexto = `${factura.numero} ${factura.importe || ''} ${factura.fecha || ''}`;
+
+            facturas.push({ id: factura.id, texto: facturaTexto });
+        });
+        actualizarListaFactura(document.getElementById("lista-facturas"), facturas);
+        actualizarFormulario();
+
+        //c
+        let lista = document.getElementById("lista-conceptos-old");
+        let conceptosDataElement = document.getElementById("conceptos-data-old");
+        let conceptosData = conceptosDataElement.textContent.trim();
+        let conceptos_selected = JSON.parse(conceptosData);
+
+        conceptos_selected.forEach((concept, index) => {
+            let concepto = JSON.parse(concept);
+            let conceptoId = concepto.id;
+            let conceptoTexto = concepto.id_concepto;
+            let importe = concepto.importe;
+            let observaciones = concepto.observaciones;
+            conceptos_old.push({ id: conceptoId, texto: conceptoTexto, importe: importe, observaciones: observaciones });
+
+            lista.innerHTML = "";
+            conceptos_old.forEach((item, index) => {
+                let li = document.createElement("li");
+                li.className = "list-group-item d-flex justify-content-between align-items-center";
+                li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
+                    <button class="btn btn-danger btn-sm" onclick="eliminarElementoConceptoExistente(${index})">X</button>`;
+                lista.appendChild(li);
+            });
+            actualizarFormularioConcepto();
+            });
+    });
+
+    //facturas
+    function agregarFactura() {
+        let select = document.getElementById("factura-select");
+        let lista = document.getElementById("lista-facturas");
+        let selectedOption = select.options[select.selectedIndex];
+
+        if (!selectedOption) return;
+
+        let facturaId = selectedOption.value;
+        let facturaTexto = selectedOption.text;
+
+        if (facturas.some(f => f.id == facturaId)) {
+            alert("Esta factura ya ha sido agregada.");
+            return;
+        }
+
+        facturas.push({ id: facturaId, texto: facturaTexto });
+        actualizarListaFactura(lista, facturas);
+    }
+
+    function actualizarListaFactura(lista, elementos) {
+        lista.innerHTML = "";
+        elementos.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${item.texto}
+                <button class="btn btn-danger btn-sm" onclick="eliminarElementoFactura(${index})">X</button>`;
+            lista.appendChild(li);
+        });
+        actualizarFormulario();
+    }
+
+    function eliminarElementoFactura(index) {
+        facturas.splice(index, 1);
+        actualizarListaFactura(document.getElementById("lista-facturas"), facturas, "facturas");
+    }
+
+
+    //conceptos
+    function agregarConcepto() {
+        let select = document.getElementById("concepto-select");
+        let importeInput = document.getElementById("concepto-importe");
+        let observacionesInput = document.getElementById("concepto-observaciones");
+        let lista = document.getElementById("lista-conceptos");
+        let selectedOption = select.options[select.selectedIndex];
+
+        if (!selectedOption || !importeInput.value) return;
+
+        let conceptoId = selectedOption.value;
+        let conceptoTexto = selectedOption.text;
+        let importe = importeInput.value;
+        let observaciones = observacionesInput.value;
+
+        conceptos.push({ id: conceptoId, texto: conceptoTexto, importe: importe, observaciones: observaciones });
+        actualizarListaConcepto(lista, conceptos);
+        console.log(conceptos)
+        importeInput.value = "";
+        observacionesInput.value = "";
+    }
+
+    function guardarNuevoConcepto() {
+        let nombreInput = document.getElementById("nuevoConceptoNombre");
+        let conceptoSelect = document.getElementById("concepto-select");
+
+        if (!nombreInput.value.trim()) {
+            alert("Por favor, ingrese un nombre para el concepto.");
+            return;
+        }
+
+        let nuevoConceptoId = `NEW`;
+        let nuevoConceptoNombre = nombreInput.value.trim();
+
+        let nuevaOpcion = new Option(nuevoConceptoNombre, nuevoConceptoId);
+        conceptoSelect.add(nuevaOpcion);
+        conceptoSelect.value = nuevoConceptoId;
+
+        nombreInput.value = "";
+        let modalElement = document.getElementById("nuevoConceptoModal");
+        let modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+    }
+
+    function actualizarListaConcepto(lista, elementos) {
+        lista.innerHTML = "";
+        elementos.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
+                <button class="btn btn-danger btn-sm" onclick="eliminarElementoConcepto(${index})">X</button>`;
+            lista.appendChild(li);
+        });
+        actualizarFormulario();
+    }
+
+    function actualizarListaConceptoExistente(lista, elementos) {
+        lista.innerHTML = "";
+        elementos.forEach((item, index) => {
+            let li = document.createElement("li");
+            li.className = "list-group-item d-flex justify-content-between align-items-center";
+            li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
+                <button class="btn btn-danger btn-sm" onclick="eliminarElementoConceptoExistente(${index})">X</button>`;
+            lista.appendChild(li);
+        });
+        actualizarFormulario();
+    }
+
+    function actualizarFormulario() {
+        document.getElementById("facturas-input").value = JSON.stringify(facturas.map(f => f.id));
+        document.getElementById("conceptos-input").value = JSON.stringify(conceptos.map(c => ({ id: c.id, nombre: c.texto, importe: c.importe, observaciones: c.observaciones })));
+    }
+
+    function actualizarFormularioConcepto() {
+        document.getElementById("conceptos-input-old").value = JSON.stringify(
+            conceptos_old.map(c => ({
+                id: c.id,
+                nombre: c.texto,
+                importe: c.importe,
+                observaciones: c.observaciones
+            }))
+        );
+    }
+
+    function eliminarElementoConcepto(index) {  
+        conceptos.splice(index, 1);
+        actualizarListaConcepto(document.getElementById("lista-conceptos"), conceptos);
+    }
+
+    function eliminarElementoConceptoExistente(index) {  
+        conceptos_old.splice(index, 1);
+        actualizarListaConceptoExistente(document.getElementById("lista-conceptos-old"), conceptos_old);
+        actualizarFormularioConcepto(); // Asegurar que se actualiza el campo oculto
+    }
+
+    //saas
+    history.pushState(null, document.title, location.href);
+    window.addEventListener('popstate', function (event)
+    {
+    history.pushState(null, document.title, location.href);
+    });
+</script>
+{% endblock %}

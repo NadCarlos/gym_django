@@ -9,7 +9,10 @@ class DetalleOrdenRepo:
         return DetalleOrden.objects.filter(id=id).first()
     
     def filter_by_orden_id(self, orden_id) -> Optional[DetalleOrden]:
-        return DetalleOrden.objects.filter(id_ordenpago=orden_id)
+        return DetalleOrden.objects.filter(id_ordenpago=orden_id).filter(activo = True)
+    
+    def filter_by_factura_id(self, factura_id, orden_id) -> Optional[DetalleOrden]:
+        return DetalleOrden.objects.filter(id_ordenpago=orden_id).filter(id_factura=factura_id).filter(activo = True).first()
     
     def create(
         self,
@@ -22,3 +25,27 @@ class DetalleOrdenRepo:
             id_ordenpago=id_ordenpago,
             id_factura=id_factura,
         )
+    
+    def update(
+        self, 
+        detalle_orden: DetalleOrden,
+        importe: str,
+        id_ordenpago: OrdenPago,
+        id_factura: Factura,
+    ) -> DetalleOrden:
+
+        detalle_orden.importe = importe
+        detalle_orden.id_ordenpago = id_ordenpago
+        detalle_orden.id_factura=id_factura
+
+        detalle_orden.save()
+
+    def update_activo(
+        self, 
+        detalle_orden: DetalleOrden,
+        activo: bool,
+    ) -> DetalleOrden:
+
+        detalle_orden.activo = activo
+
+        detalle_orden.save()
