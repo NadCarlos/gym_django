@@ -4,8 +4,14 @@ from finanzas.views.libro_ventas import (
     Index,
     CargaView,
     FacturasList,
+)
+
+from finanzas.views.beneficiarios import (
     BeneficiariosList,
     BeneficiarioUpdate,
+)
+
+from finanzas.views.orden_pago import (
     OrdenPagoCreate,
     OrdenPagoPopulate,
     OrdenPagoDetail,
@@ -15,12 +21,18 @@ from finanzas.views.libro_ventas import (
 )
 
 
-urlpatterns = [
+libro_ventas = [
     path(route='',view=Index.as_view(), name='index'),
     path(route='upload/',view=CargaView.as_view(), name='upload'),
     path(route='list/',view=FacturasList.as_view(), name='list'),
+]
+
+beneficiarios = [
     path(route='beneficiarios_list/',view=BeneficiariosList.as_view(), name='beneficiarios_list'),
     path(route='<int:id>/beneficiario_update/',view=BeneficiarioUpdate.as_view(), name='beneficiario_update'),
+]
+
+orden_pago = [
     path(route='orden_pago_create/',view=OrdenPagoCreate.as_view(), name='orden_pago_create'),
     path(route='<int:id>/orden_pago_populate/',view=OrdenPagoPopulate.as_view(), name='orden_pago_populate'),
     path(route='<int:id>/detail/',view=OrdenPagoDetail.as_view(), name='detail'),
@@ -28,3 +40,5 @@ urlpatterns = [
     path(route='<int:id>/orden_pago_edit/',view=OrdenPagoEdit.as_view(), name='orden_pago_edit'),
     path(route='<int:id>/orden_pago_delete/',view=OrdenPagoDelete.as_view(), name='orden_pago_delete'),
 ]
+
+urlpatterns = libro_ventas + beneficiarios + orden_pago
