@@ -82,10 +82,12 @@ class OrdenPagoPopulate(View):
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas_ids = request.POST.get('facturas')
         facturas_ids = str(facturas_ids)
-        facturas_ids = json.loads(facturas_ids)
+        if facturas_ids != "":
+            facturas_ids = json.loads(facturas_ids)
         conceptos = request.POST.get('conceptos')
         conceptos = str(conceptos)
-        conceptos = json.loads(conceptos)
+        if conceptos != "":
+            conceptos = json.loads(conceptos)
 
         facturasTotal = 0
         for factura_id in facturas_ids:
