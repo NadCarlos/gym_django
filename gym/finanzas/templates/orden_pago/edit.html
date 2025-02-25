@@ -24,15 +24,15 @@
     <div class="row">
         <!-- Facturas -->
         <div class="col-md-6">
-            <div class="card shadow-sm p-4">
+            <div id="facturas-container" class="card shadow-sm p-4">
                 <label class="form-label">Facturas: Nro - Importe - Fecha - Pto Vta</label>
                 <div class="mb-3">
-                    <select id="factura-select" class="form-select">
+                    <select tabindex="1" id="factura-select" class="form-select">
                         {% for factura in facturas %}
                             <option value="{{ factura.id }}">{{ factura.numero }} - {{ factura.importe }} - {{ factura.fecha }} - {{ factura.pto_vta }}</option>
                         {% endfor %}
                     </select>
-                    <button class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
+                    <button tabindex="2" id="factura-btn" class="btn btn-primary mt-2 w-100" type="button" onclick="agregarFactura()">Añadir Factura</button>
                 </div>
                 <ul id="lista-facturas" class="list-group"></ul>
             </div>
@@ -40,7 +40,7 @@
 
         <!-- Conceptos -->
         <div class="col-md-6">
-            <div class="card shadow-sm p-4">
+            <div id="conceptos-container" class="card shadow-sm p-4">
                 <label class="form-label">Descuentos:</label>
                 <div class="row g-2">
                     <div class="col-md-4">
@@ -76,7 +76,7 @@
         <input type="hidden" name="conceptos" id="conceptos-input">
         <input type="hidden" name="conceptos_old" id="conceptos-input-old">
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success px-4 py-2">
+            <button tabindex="3" type="submit" class="btn btn-success px-4 py-2">
                 <i class="bi bi-save"></i> Guardar Orden
             </button>
         </div>
@@ -114,6 +114,53 @@
 
     //on load
     document.addEventListener("DOMContentLoaded", function() {
+        const f_container = document.getElementById("facturas-container");
+        const c_container = document.getElementById("conceptos-container");
+    
+        if (f_container) {
+            // Seleccionar todos los elementos interactivos dentro del contenedor
+            const focusableElements = f_container.querySelectorAll("select, button, input");
+            
+            if (focusableElements.length === 0) return;
+    
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+    
+            f_container.addEventListener("keydown", function (event) {
+                if (event.key === "Tab") {
+                    if (event.shiftKey && document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            });
+        }
+
+        if (c_container) {
+            // Seleccionar todos los elementos interactivos dentro del contenedor
+            const focusableElements = c_container.querySelectorAll("select, button, input");
+            
+            if (focusableElements.length === 0) return;
+    
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+    
+            c_container.addEventListener("keydown", function (event) {
+                if (event.key === "Tab") {
+                    if (event.shiftKey && document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            });
+        }
+        
         //f
         let facturasDataElement = document.getElementById("facturas-data");
         let facturasData = facturasDataElement.textContent.trim();
@@ -179,7 +226,7 @@
             let li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `${item.texto}
-                <button class="btn btn-danger btn-sm" onclick="eliminarElementoFactura(${index})">X</button>`;
+                <button tabindex="-1" class="btn btn-danger btn-sm" onclick="eliminarElementoFactura(${index})">X</button>`;
             lista.appendChild(li);
         });
         actualizarFormulario();
@@ -241,7 +288,7 @@
             let li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
-                <button class="btn btn-danger btn-sm" onclick="eliminarElementoConcepto(${index})">X</button>`;
+                <button tabindex="-1" class="btn btn-danger btn-sm" onclick="eliminarElementoConcepto(${index})">X</button>`;
             lista.appendChild(li);
         });
         actualizarFormulario();
@@ -253,7 +300,7 @@
             let li = document.createElement("li");
             li.className = "list-group-item d-flex justify-content-between align-items-center";
             li.innerHTML = `${item.texto} - $${item.importe || ''} ${item.fecha || ''}
-                <button class="btn btn-danger btn-sm" onclick="eliminarElementoConceptoExistente(${index})">X</button>`;
+                <button tabindex="-1" class="btn btn-danger btn-sm" onclick="eliminarElementoConceptoExistente(${index})">X</button>`;
             lista.appendChild(li);
         });
         actualizarFormulario();
@@ -292,5 +339,5 @@
     {
     history.pushState(null, document.title, location.href);
     });
-</script>
+</script>   
 {% endblock %}

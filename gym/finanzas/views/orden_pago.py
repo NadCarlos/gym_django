@@ -99,7 +99,7 @@ class OrdenPagoPopulate(View):
 
         descuentosTotal = 0
         for concepto in conceptos:
-            importe = int(concepto["importe"])
+            importe = float(concepto["importe"])
             observaciones = concepto["observaciones"]
             if observaciones == "":
                 observaciones = "Sin Observaciones"
@@ -198,26 +198,33 @@ class OrdenPagoEdit(View):
             det_ord_list.append(det_ord)
             det_ord_fact_list.append(det_ord.id_factura.id)
 
+        facturasTotal = 0
+
         # valido si existe o no en la antiguas y si no esta la creamo viteh
         for factura_id in facturas_ids:
             if factura_id not in det_ord_fact_list:
                 factura = facturaRepo.filter_by_id(id=factura_id)
+                factura_importe = float(factura.importe)
+                facturasTotal = facturasTotal + factura_importe
                 detalleOrdenRepo.create(
                     importe=factura.importe,
                     id_ordenpago=orden,
                     id_factura=factura,
                 )
 
-        facturasTotal = 0
+        
         for factura_id in det_ord_fact_list:
             if factura_id not in facturas_ids:
                 factura = facturaRepo.filter_by_id(id=factura_id)
                 detalle_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id, orden_id=orden.id)
-                facturasTotal = facturasTotal + factura.importe
                 detalleOrdenRepo.update_activo(
                     detalle_orden = detalle_orden,
                     activo=False,
                 )
+            else:
+                factura = facturaRepo.filter_by_id(id=factura_id)
+                factura_importe = float(factura.importe)
+                facturasTotal = facturasTotal + factura_importe
         
         #conceptos existentes
         descuentos_list_old = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
@@ -225,6 +232,8 @@ class OrdenPagoEdit(View):
         for dto in descuentos_list_old:
             dto_id = int(dto.id)
             descuentos_list_old_ids.append(dto_id)
+
+        descuentosTotal = 0
 
         descuentos_new = request.POST.get('conceptos_old')
         descuentos_new = str(descuentos_new)
@@ -242,6 +251,10 @@ class OrdenPagoEdit(View):
                         descuento=descuento_a_borrar,
                         activo=False,
                     )
+                else:
+                    descuento_existente = descuentoRepo.filter_by_id(id=descuento_id)
+                    descuento_existente_importe = float(descuento_existente.importe)
+                    descuentosTotal = descuentosTotal + descuento_existente_importe
 
         elif not descuentos_new:
             for concepto_id in descuentos_list_old_ids:
@@ -255,9 +268,8 @@ class OrdenPagoEdit(View):
         conceptos = request.POST.get('conceptos')
         conceptos = str(conceptos)
         conceptos = json.loads(conceptos)
-        descuentosTotal = 0
         for concepto in conceptos:
-            importe = int(concepto["importe"])
+            importe = float(concepto["importe"])
             observaciones = concepto["observaciones"]
 
             if concepto["id"]:
@@ -265,6 +277,8 @@ class OrdenPagoEdit(View):
                     observaciones = "Sin Observaciones"
                 if concepto["id"] == "NEW":
                     nuevo_concepto = conceptoRepo.create(nombre=concepto["nombre"])
+                    dto_importe = float(importe)
+                    descuentosTotal = descuentosTotal + dto_importe
                     descuento = descuentoRepo.create(
                         id_ordenpago = orden,
                         id_concepto = nuevo_concepto,
@@ -273,6 +287,8 @@ class OrdenPagoEdit(View):
                     )
                 else:
                     concepto_existente = conceptoRepo.filter_by_id(id=concepto["id"])
+                    dto_importe = float(importe)
+                    descuentosTotal = descuentosTotal + dto_importe
                     descuento = descuentoRepo.create(
                         id_ordenpago = orden,
                         id_concepto = concepto_existente,
@@ -280,6 +296,7 @@ class OrdenPagoEdit(View):
                         observaciones = observaciones,
                     )
 
+        print(facturasTotal - descuentosTotal)
         total = facturasTotal - descuentosTotal
         
         ordenPagoRepo.update_total(

@@ -24,7 +24,7 @@
     <div class="row">
         <!-- Facturas -->
         <div class="col-md-6">
-            <div class="card shadow-sm p-4">
+            <div id="facturas-container" class="card shadow-sm p-4">
                 <label class="form-label">Facturas: Nro - Importe - Fecha - Pto Vta</label>
                 <div class="mb-3">
                     <select id="factura-select" class="form-select">
@@ -40,7 +40,7 @@
 
         <!-- Conceptos -->
         <div class="col-md-6">
-            <div class="card shadow-sm p-4">
+            <div id="conceptos-container" class="card shadow-sm p-4">
                 <label class="form-label">Descuentos:</label>
                 <div class="row g-2">
                     <div class="col-md-4">
@@ -74,7 +74,7 @@
         <input type="hidden" name="facturas" id="facturas-input">
         <input type="hidden" name="conceptos" id="conceptos-input">
         <div class="text-center mt-4">
-            <button type="submit" class="btn btn-success px-4 py-2">
+            <button id="guardar-orden" type="submit" class="btn btn-success px-4 py-2">
                 <i class="bi bi-save"></i> Guardar Orden
             </button>
         </div>
@@ -103,6 +103,57 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const f_container = document.getElementById("facturas-container");
+        const c_container = document.getElementById("conceptos-container");
+        const g_o_button = document.getElementById("guardar-orden");
+        console.log(g_o_button)
+    
+        if (f_container) {
+            // Seleccionar todos los elementos interactivos dentro del contenedor
+            const focusableElements = f_container.querySelectorAll("select, button, input");
+            
+            if (focusableElements.length === 0) return;
+    
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+    
+            f_container.addEventListener("keydown", function (event) {
+                if (event.key === "Tab") {
+                    if (event.shiftKey && document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            });
+        }
+
+        if (c_container) {
+            // Seleccionar todos los elementos interactivos dentro del contenedor
+            const focusableElements = c_container.querySelectorAll("select, button, input");
+            
+            if (focusableElements.length === 0) return;
+    
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+    
+            c_container.addEventListener("keydown", function (event) {
+                if (event.key === "Tab") {
+                    if (event.shiftKey && document.activeElement === firstElement) {
+                        event.preventDefault();
+                        lastElement.focus();
+                    } else if (!event.shiftKey && document.activeElement === lastElement) {
+                        event.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            });
+        }
+    });
+
     let facturas = [];
     let conceptos = [];
 
