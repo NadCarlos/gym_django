@@ -4,6 +4,7 @@ from finanzas.views.libro_ventas import (
     Index,
     CargaView,
     FacturasList,
+    BalanceList,
 )
 
 from finanzas.views.beneficiarios import (
@@ -25,6 +26,7 @@ libro_ventas = [
     path(route='',view=Index.as_view(), name='index'),
     path(route='upload/',view=CargaView.as_view(), name='upload'),
     path(route='list/',view=FacturasList.as_view(), name='list'),
+    path(route='<int:id>/balance_list/',view=BalanceList.as_view(), name='balance_list'),
 ]
 
 beneficiarios = [

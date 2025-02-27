@@ -118,3 +118,19 @@ class FacturasList(View):
                 total=total,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class BalanceList(View):
+    context_object_name = 'BalanceList'
+
+    def get(self, request, id):
+        beneficiario = beneficiarioRepo.filter_by_id(id=id)
+
+        return render(
+            request,
+            'libro_ventas/balance_list.html',
+            dict(
+                beneficiario=beneficiario,
+            )
+        )

@@ -8,7 +8,7 @@ class BeneficiarioRepository:
     def get_all(self) -> List[Beneficiario]:
         return Beneficiario.objects.all()
     
-    def filter_by_id(self) -> Optional[Beneficiario]:
+    def filter_by_id(self, id) -> Optional[Beneficiario]:
         return Beneficiario.objects.filter(id=id).first()
     
     def filter_by_activo(self) -> List[Beneficiario]:
