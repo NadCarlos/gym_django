@@ -397,6 +397,9 @@ class OrdenPagoDelete(View):
 
     def get(self, request, id):
         orden = ordenPagoRepo.filter_by_id(id=id)
+        detalles = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
+        for detalle in detalles:
+            detalleOrdenRepo.delete_by_activo(detalle_orden=detalle)
         #No elimino, cambio el campo activo a False
         ordenPagoRepo.delete_by_activo(orden=orden)
         return redirect('orden_pago_list')

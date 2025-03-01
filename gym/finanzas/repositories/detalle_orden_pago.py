@@ -5,6 +5,9 @@ from finanzas.models import DetalleOrden, Factura, OrdenPago
 
 class DetalleOrdenRepo:
 
+    def get_all(self) -> List[DetalleOrden]:
+        return DetalleOrden.objects.all()
+
     def filter_by_id(self, id) -> Optional[DetalleOrden]:
         return DetalleOrden.objects.filter(id=id).first()
     
@@ -41,6 +44,10 @@ class DetalleOrdenRepo:
         detalle_orden.id_ordenpago = id_ordenpago
         detalle_orden.id_factura=id_factura
 
+        detalle_orden.save()
+
+    def delete_by_activo(self, detalle_orden: DetalleOrden):
+        detalle_orden.activo=False
         detalle_orden.save()
 
     def update_activo(
