@@ -11,10 +11,16 @@ from finanzas.filters import FacturasFilter
 
 from finanzas.repositories.beneficiarios import BeneficiarioRepository
 from finanzas.repositories.facturas import FacturaRepository
+from finanzas.repositories.detalle_orden_pago import DetalleOrdenRepo
+from finanzas.repositories.orden_pago import OrdenPagoRepository
+from finanzas.repositories.descuentos import DescuentoRepository
 
 
 beneficiarioRepo = BeneficiarioRepository()
 facturaRepo = FacturaRepository()
+detalleOrdenRepo = DetalleOrdenRepo()
+ordenPagoRepo = OrdenPagoRepository()
+descuentoRepo = DescuentoRepository()
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -126,11 +132,59 @@ class BalanceList(View):
 
     def get(self, request, id):
         beneficiario = beneficiarioRepo.filter_by_id(id=id)
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_beneficiario_id(id_beneficiario=id))
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'fecha')
+        # Obtener el queryset filtrado
+        facturas = filterset.qs
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            facturas = facturas.order_by(ordering)
+
+        total = 0
+        total_saldado = 0
+        total_deuda = 0
+        for factura in facturas:
+            total += factura.importe
+            factura.pto_vta = factura.pto_vta.zfill(4)
+            factura.numero = factura.numero.zfill(8)
+            factura_in_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
+            if factura_in_orden:
+                factura.paga = True
+                total_saldado = total_saldado + factura.importe
+            else:
+                factura.paga = False
+                total_deuda = total_deuda + factura.importe
+            factura.importe = locale.currency(factura.importe, grouping=True)
+
+        total_descuentos = 0
+        ordenes_pago = ordenPagoRepo.filter_by_beneficiario(id_beneficiario=beneficiario.id)
+        for orden in ordenes_pago:
+            descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
+            for descuento in descuentos:
+                total_descuentos = total_descuentos + descuento.importe
+
+        total_menos_dtos = total - total_descuentos
+
+        total = locale.currency(total, grouping=True)
+        total_saldado = locale.currency(total_saldado, grouping=True)
+        total_deuda = locale.currency(total_deuda, grouping=True)
+        total_descuentos = locale.currency(total_descuentos, grouping=True)
+        total_menos_dtos = locale.currency(total_menos_dtos, grouping=True)
 
         return render(
             request,
             'libro_ventas/balance_list.html',
             dict(
                 beneficiario=beneficiario,
+                facturas=facturas,
+                form=filterset.form,
+                ordering=ordering,
+                total=total,
+                total_saldado=total_saldado,
+                total_deuda=total_deuda,
+                total_descuentos=total_descuentos,
+                total_menos_dtos=total_menos_dtos,
             )
         )

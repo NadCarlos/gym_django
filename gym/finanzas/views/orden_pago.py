@@ -218,7 +218,7 @@ class OrdenPagoEdit(View):
         for factura_id in det_ord_fact_list:
             if factura_id not in facturas_ids:
                 factura = facturaRepo.filter_by_id(id=factura_id)
-                detalle_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id, orden_id=orden.id)
+                detalle_orden = detalleOrdenRepo.filter_by_orden_pago_and_factura_id(factura_id=factura.id, orden_id=orden.id)
                 detalleOrdenRepo.update_activo(
                     detalle_orden = detalle_orden,
                     activo=False,
@@ -298,7 +298,6 @@ class OrdenPagoEdit(View):
                         observaciones = observaciones,
                     )
 
-        print(facturasTotal - descuentosTotal)
         total = facturasTotal - descuentosTotal
         
         ordenPagoRepo.update_total(

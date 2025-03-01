@@ -15,6 +15,9 @@ class OrdenPagoRepository:
     def filter_by_activo(self) -> List[OrdenPago]:
         return OrdenPago.objects.filter(activo=True).order_by('id_beneficiario__nombre')
     
+    def filter_by_beneficiario(self, id_beneficiario) -> List[OrdenPago]:
+        return OrdenPago.objects.filter(id_beneficiario=id_beneficiario).filter(activo=True)
+    
     def filter_by_dates(self, start_date, end_date) -> Optional[OrdenPago]:
         return OrdenPago.objects.filter(activo=True).filter(fecha__gte=start_date, fecha__lt=end_date)
     
