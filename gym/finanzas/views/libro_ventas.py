@@ -188,3 +188,67 @@ class BalanceList(View):
                 total_menos_dtos=total_menos_dtos,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class BalanceListAll(View):
+    context_object_name = 'BalanceListAll'
+
+    def get(self, request):
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'fecha')
+        # Obtener el queryset filtrado
+        facturas = filterset.qs
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            facturas = facturas.order_by(ordering)
+
+        total = 0
+        total_saldado = 0
+        total_deuda = 0
+        for factura in facturas:
+            total += factura.importe
+            factura.pto_vta = factura.pto_vta.zfill(4)
+            factura.numero = factura.numero.zfill(8)
+            factura_in_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
+            if factura_in_orden:
+                factura.paga = True
+                total_saldado = total_saldado + factura.importe
+            else:
+                factura.paga = False
+                total_deuda = total_deuda + factura.importe
+            factura.importe = locale.currency(factura.importe, grouping=True)
+
+        beneficiarios = beneficiarioRepo.get_all()
+        total_descuentos = 0
+        for beneficiario in beneficiarios:
+            ordenes_pago = ordenPagoRepo.filter_by_beneficiario(id_beneficiario=beneficiario.id)
+            for orden in ordenes_pago:
+                descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
+                for descuento in descuentos:
+                    total_descuentos = total_descuentos + descuento.importe
+
+        total_menos_dtos = total - total_descuentos
+
+        total = locale.currency(total, grouping=True)
+        total_saldado = locale.currency(total_saldado, grouping=True)
+        total_deuda = locale.currency(total_deuda, grouping=True)
+        total_descuentos = locale.currency(total_descuentos, grouping=True)
+        total_menos_dtos = locale.currency(total_menos_dtos, grouping=True)
+
+        return render(
+            request,
+            'libro_ventas/balance_list_all.html',
+            dict(
+                facturas=facturas,
+                form=filterset.form,
+                ordering=ordering,
+                total=total,
+                total_saldado=total_saldado,
+                total_deuda=total_deuda,
+                total_descuentos=total_descuentos,
+                total_menos_dtos=total_menos_dtos,
+            )
+        )
