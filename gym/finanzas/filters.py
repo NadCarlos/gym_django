@@ -41,3 +41,13 @@ class OrdenesPagoFilter(django_filters.FilterSet):
             'id_beneficiario__nombre',
         ]
 
+
+class BeneficiarioFilter(django_filters.FilterSet):
+
+    nombre = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Beneficiario
+        fields = [
+            'nombre',
+        ]

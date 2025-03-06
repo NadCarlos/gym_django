@@ -7,6 +7,8 @@ from finanzas.forms import (
     BeneficiarioUpdateForm,
 )
 
+from finanzas.filters import BeneficiarioFilter
+
 from finanzas.repositories.beneficiarios import BeneficiarioRepository
 
 
@@ -17,13 +19,22 @@ beneficiarioRepo = BeneficiarioRepository()
 class BeneficiariosList(View):
 
     def get(self, request):
-        beneficiarios = beneficiarioRepo.filter_by_activo()
+        filterset = BeneficiarioFilter(request.GET, queryset=beneficiarioRepo.filter_by_activo())
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering')
+        # Obtener el queryset filtrado
+        beneficiarios = filterset.qs
+        # Aplicar el ordenamiento si existe
+        if ordering:
+            beneficiarios = beneficiarios.order_by(ordering)
 
         return render(
             request,
             'beneficiarios/list.html',
             dict(
                 beneficiarios=beneficiarios,
+                form=filterset.form,
             )
         )
     
