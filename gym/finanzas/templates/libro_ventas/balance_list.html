@@ -97,15 +97,23 @@
             <tbody>
                 {% for factura in facturas %}
                 <tr>
-                    <td>{{ factura.id_beneficiario.nombre }}</td>
-                    <td>{{ factura.id_beneficiario.numero_cuit }}</td>
-                    <td>{{ factura.fecha }}</td>
-                    <td>{{ factura.tipo }}</td>
-                    <td>{{ factura.pto_vta }}</td>
-                    <td>{{ factura.numero }}</td>
-                    <td style="text-align: right;" class="{% if factura.paga %}text-success{% else %}text-danger{% endif %}">
-                        {{ factura.importe }}
-                    </td>
+                    {% if factura.paga == True %}
+                        <td class="text-success">{{ factura.id_beneficiario.nombre }}</td>
+                        <td class="text-success">{{ factura.id_beneficiario.numero_cuit }}</td>
+                        <td class="text-success">{{ factura.fecha }}</td>
+                        <td class="text-success">{{ factura.tipo }}</td>
+                        <td class="text-success">{{ factura.pto_vta }}</td>
+                        <td class="text-success">{{ factura.numero }}</td>
+                        <td style="text-align: right;" class="text-success">{{ factura.importe }}</td>
+                    {% else %}
+                        <td class="text-danger">{{ factura.id_beneficiario.nombre }}</td>
+                        <td class="text-danger">{{ factura.id_beneficiario.numero_cuit }}</td>
+                        <td class="text-danger">{{ factura.fecha }}</td>
+                        <td class="text-danger">{{ factura.tipo }}</td>
+                        <td class="text-danger">{{ factura.pto_vta }}</td>
+                        <td class="text-danger">{{ factura.numero }}</td>
+                        <td style="text-align: right;" class="text-danger">{{ factura.importe }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
                 
