@@ -2,6 +2,7 @@
 <html lang="es">
 
 {% load static %}
+{% load auth_extras %}
 
 <head>
     <meta charset="UTF-8">
@@ -87,6 +88,21 @@
                         </li>
                         </ul>
                     </div>
+
+                    {% if request.user|has_group:"Finanzas" %} 
+                    <div class="dropdown">
+                        <button style="margin-left: 4px;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-file-earmark-person"></i> Finanzas
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="{% url 'index' %}">
+                                <i class="bi bi-file-earmark-person"></i>Menu</a>
+                        </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
                     <!-- ------------------ -->
                     {% else %}
                     <li class="nav-item">
