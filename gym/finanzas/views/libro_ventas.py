@@ -4,8 +4,10 @@ from datetime import datetime, timedelta
 
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
+
+from utils.permissions import es_admin_o_finanzas
 
 from finanzas.filters import FacturasFilter
 
@@ -25,6 +27,7 @@ descuentoRepo = DescuentoRepository()
 locale.setlocale(locale.LC_ALL, '')
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class Index(View):
 
@@ -35,6 +38,7 @@ class Index(View):
         )
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class CargaView(View):
 
@@ -83,6 +87,7 @@ class CargaView(View):
         return redirect('list')
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class FacturasList(View):
     context_object_name = 'facturas'
@@ -126,6 +131,7 @@ class FacturasList(View):
         )
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class BalanceList(View):
     context_object_name = 'BalanceList'
@@ -190,6 +196,7 @@ class BalanceList(View):
         )
     
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class BalanceListAll(View):
     context_object_name = 'BalanceListAll'

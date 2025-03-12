@@ -4,8 +4,10 @@ import json
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
+
+from utils.permissions import es_admin_o_finanzas
 
 from finanzas.forms import (
     OrdenPagoCreateForm,
@@ -29,6 +31,7 @@ conceptoRepo = ConceptoRepository()
 locale.setlocale(locale.LC_ALL, '')
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoCreate(View):
 
@@ -56,6 +59,7 @@ class OrdenPagoCreate(View):
                 return redirect('orden_pago_populate', orden.id)
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoPopulate(View):
 
@@ -132,6 +136,7 @@ class OrdenPagoPopulate(View):
         return redirect('detail', id)
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoEdit(View):
 
@@ -308,6 +313,7 @@ class OrdenPagoEdit(View):
         return redirect('detail', id)
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoDetail(View):
 
@@ -345,6 +351,7 @@ class OrdenPagoDetail(View):
         )
     
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenesPagoList(View):
     context_object_name = 'ordenes'
@@ -392,6 +399,7 @@ class OrdenesPagoList(View):
         )
     
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoDelete(View):
 

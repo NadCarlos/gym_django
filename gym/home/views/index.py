@@ -1,6 +1,6 @@
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 class IndexView(View):

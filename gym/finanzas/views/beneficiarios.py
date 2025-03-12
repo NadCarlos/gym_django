@@ -1,7 +1,9 @@
 from django.views import View
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
+
+from utils.permissions import es_admin_o_finanzas
 
 from finanzas.forms import (
     BeneficiarioUpdateForm,
@@ -15,6 +17,7 @@ from finanzas.repositories.beneficiarios import BeneficiarioRepository
 beneficiarioRepo = BeneficiarioRepository()
 
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class BeneficiariosList(View):
 
@@ -39,6 +42,7 @@ class BeneficiariosList(View):
         )
     
 
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class BeneficiarioUpdate(View):
 
