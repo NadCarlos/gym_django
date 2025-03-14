@@ -6,6 +6,8 @@ from django.shortcuts import redirect, render
 from django.views import View
 from usuarios.forms import LoginForm
 
+from utils.permissions import es_admin_o_finanzas, es_admin_o_gimnasio
+
 
 class LoginView(View):
 
@@ -25,8 +27,15 @@ class LoginView(View):
         if request.POST and form.is_valid():
             user = form.login(request)
             if user:
-                login(request, user)
-                return redirect ('inicio')
+                permiso_gym = es_admin_o_gimnasio(user)
+                permiso_fina = es_admin_o_finanzas(user)
+                if permiso_gym == True:
+                    login(request, user)
+                    return redirect ('inicio')
+                elif permiso_fina == True:
+                    login(request, user)
+                    return redirect ('index')
+                
         return render(
             request,
             'usuarios/login.html',
