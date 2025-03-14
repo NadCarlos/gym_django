@@ -24,25 +24,21 @@
                     <td class="bg-success text-white">{{ tratamiento_profesional.id_tratamiento.nombre }}</td>
                     <td class="bg-success text-white">{{ tratamiento_profesional.activo }}</td>
                     <td class="bg-success text-white">
-                        {% if user.is_staff %}
                         <a href="{% url 'tratamiento_profesional_delete' tratamiento_profesional.id %}"
                             class="btn btn-danger btn-sm me-2"
                             onclick="return confirm('¿Estás seguro de que deseas finalizar este tratamiento?');">
                             <i class="bi bi-trash"></i> Finalizar Tratamiento
                         </a>
-                        {% endif %}
                     </td>
                     {% else %}
                     <td class="bg-danger text-white">{{ tratamiento_profesional.fecha_inicio }}</td>
                     <td class="bg-danger text-white">{{ tratamiento_profesional.id_tratamiento.nombre }}</td>
                     <td class="bg-danger text-white">{{ tratamiento_profesional.activo }}</td>
                     <td class="bg-danger text-white">
-                        {% if user.is_staff %}
                         <a href="{% url 'tratamiento_profesional_delete' tratamiento_profesional.id %}"
                             class="btn btn-secondary btn-sm me-2">
                             <i class="bi bi-trash"></i> Finalizar Tratamiento
                         </a>
-                        {% endif %}
                     </td>
                     {% endif %}
                 </tr>

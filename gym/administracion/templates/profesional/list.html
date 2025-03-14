@@ -4,7 +4,6 @@
 <div class="container mt-4">
     <h2 class="mb-4">Lista de Profesionales</h2>
     
-    {% if user.is_staff %}
     <a href="{% url 'profesional_create' %}" class="btn btn-primary mb-4">
         <i class="bi bi-person-plus"></i> Nuevo Profesional
     </a>
@@ -12,7 +11,6 @@
     <a href="{% url 'profesional_csv' %}" class="btn btn-primary mb-4">
         <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL
     </a>
-    {% endif %}
 
     <form method="GET" action="{% url 'profesional_list' %}" class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center">

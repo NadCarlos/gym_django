@@ -1,6 +1,3 @@
-from django.contrib.auth import (
-    login,
-)
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect, render
@@ -29,7 +26,6 @@ class RegisterView(View):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
             return redirect ('inicio')
         
         return render(
