@@ -1,10 +1,12 @@
+import pandas as pd
+import io
 import datetime
 from datetime import time, date
 
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
@@ -188,6 +190,44 @@ class AgendaProfesional(View):
                 hora_limite_tarde=time(14, 0),
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AgendaProfesionalToCsv(View):
+
+    def get(self, request, id):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=agenda_profesional.xlsx'
+        profesional = profesionalRepo.get_by_id(id=id)
+        nombre_profesional = profesional.nombre
+        agenda = agendaRepo.filter_by_activo(state=True)
+
+        data = []
+        for entrada in agenda:
+            hora_inicio = str(entrada.hora_inicio).split(".")[0]
+            hora_fin = str(entrada.hora_fin).split(".")[0]
+            data.append([
+                "",
+                entrada.id_prestacion_paciente.id_paciente.nombre,
+                hora_inicio,
+                hora_fin,
+                entrada.id_dia.nombre,
+            ])
+
+        # Convert data to a DataFrame
+        df = pd.DataFrame(data, columns=[
+            nombre_profesional, 'Paciente', 'Hora Inicio', 'Hora Fin', 'Dia'
+        ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='agenda_profesional', index=False)
+
+        response.write(output.getvalue())
+
+        return response
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

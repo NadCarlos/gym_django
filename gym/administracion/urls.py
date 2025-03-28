@@ -64,6 +64,7 @@ from administracion.views.tratamiento_profesional import (
 from administracion.views.agenda import(
     AgendaPaciente,
     AgendaProfesional,
+    AgendaProfesionalToCsv,
     AgendaPacienteCreate,
     AgendaPacienteUpdate,
     AgendaDelete,
@@ -136,6 +137,7 @@ tratamiento_profesional = [
 agenda = [
     path(route='<int:id>/agenda_paciente',view=AgendaPaciente.as_view(), name='agenda_paciente'),
     path(route='<int:id>/agenda_profesional',view=AgendaProfesional.as_view(), name='agenda_profesional'),
+    path(route='<int:id>/agenda_profesional_csv',view=AgendaProfesionalToCsv.as_view(), name='agenda_profesional_csv'),
     path(route='<int:id>/agenda_paciente_create',view=AgendaPacienteCreate.as_view(), name='agenda_paciente_create'),
     path(route='<int:id>/agenda_paciente_update',view=AgendaPacienteUpdate.as_view(), name='agenda_paciente_update'),
     path(route='<int:id>/agenda_paciente_delete',view=AgendaDelete.as_view(), name='agenda_paciente_delete'),

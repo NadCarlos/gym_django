@@ -3,7 +3,18 @@
 {% block content %}
 <div class="content">
     <div class="container-fluid">
-        <h2 class="text-dark text-center">Agenda {{profesional.apellido}}, {{profesional.nombre}}</h2>
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-11">
+                <h2 class="text-dark text-center">Agenda {{profesional.apellido}}, {{profesional.nombre}}</h2>
+            </div>
+            <!-- Segunda columna -->
+            <div class="col-md-1">
+                <a href="{% url 'agenda_profesional_csv' profesional.id %}" class="btn btn-primary mb-4">
+                    <i class="bi bi-person-plus"></i> Guardar
+                </a>
+            </div>
+        </div>
         <div class="row d-flex">
             <div class="flex-col">
                 <div class="card-box p-0">
