@@ -185,10 +185,10 @@ class AgendaProfesional(View):
                 path=path,
                 profesional=profesional,
                 agenda=agenda,
-                hora_limite_tarde=time(15, 0),
+                hora_limite_tarde=time(14, 0),
             )
         )
-    
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ErrorPrestacionFaltante(View):
