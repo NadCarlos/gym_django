@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Agenda, Dia, PrestacionPaciente, ProfesionalTratamiento
+from administracion.models import Agenda, Dia, PrestacionPaciente, ProfesionalTratamiento, Profesional
 
 
 class AgendaRepository:
@@ -29,8 +29,11 @@ class AgendaRepository:
         return agenda 
     
     def filter_by_activo(self, state) -> List[Agenda]:
-        return Agenda.objects.filter(activo=state)
-
+        return Agenda.objects.filter(activo=state).order_by("hora_inicio")
+    
+    def filter_by_activo_profesional(self, state, id_profesional) -> List[Agenda]:
+            return Agenda.objects.filter(activo=state).filter(id_profesional_tratamiento__id_profesional__id = id_profesional).order_by("hora_inicio")
+    
     def get_by_id(self, id: int) -> Optional[Agenda]:
         try:
             agenda = Agenda.objects.get(id=id)

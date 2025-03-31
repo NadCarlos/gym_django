@@ -200,24 +200,77 @@ class AgendaProfesionalToCsv(View):
         response['Content-Disposition'] = 'attachment; filename=agenda_profesional.xlsx'
         profesional = profesionalRepo.get_by_id(id=id)
         nombre_profesional = profesional.nombre
-        agenda = agendaRepo.filter_by_activo(state=True)
+        agenda = agendaRepo.filter_by_activo_profesional(state=True, id_profesional=id)
 
         data = []
+        data_lunes = []
+        data_martes = []
+        data_miercoles = []
+        data_jueves = []
+        data_viernes = []
         for entrada in agenda:
             hora_inicio = str(entrada.hora_inicio).split(".")[0]
             hora_fin = str(entrada.hora_fin).split(".")[0]
-            data.append([
-                "",
-                entrada.id_prestacion_paciente.id_paciente.nombre,
-                hora_inicio,
-                hora_fin,
-                entrada.id_dia.nombre,
-            ])
+            nombre_completo = entrada.id_prestacion_paciente.id_paciente.apellido + ", " + entrada.id_prestacion_paciente.id_paciente.nombre
+            if entrada.id_dia.id == 1:
+                data_lunes.append([
+                    nombre_completo,
+                    hora_inicio,
+                    hora_fin,
+                ])
+            if entrada.id_dia.id == 2:
+                data_martes.append([
+                    nombre_completo,
+                    hora_inicio,
+                    hora_fin,
+                ])
+            if entrada.id_dia.id == 3:
+                data_miercoles.append([
+                    nombre_completo,
+                    hora_inicio,
+                    hora_fin,
+                ])
+            if entrada.id_dia.id == 4:
+                data_jueves.append([
+                    nombre_completo,
+                    hora_inicio,
+                    hora_fin,
+                ])
+            if entrada.id_dia.id == 5:
+                data_viernes.append([
+                    nombre_completo,
+                    hora_inicio,
+                    hora_fin,
+                ])
+
+        data = {
+            "Lunes": data_lunes,
+            "Martes": data_miercoles,
+            "Miércoles": data_jueves,
+            "Jueves": data_miercoles,
+            "Viernes": data_viernes,
+        }
+
+        max_length = max(len(v) for v in data.values())
+
+        formatted_data = {}
+        for day, entries in data.items():
+            nombres = [entry[0] for entry in entries]
+            hora_inicio = [entry[1] for entry in entries]
+            hora_fin = [entry[2] for entry in entries]
+            
+            # Rellenar con valores vacíos si es necesario
+            nombres.extend([""] * (max_length - len(nombres)))
+            hora_inicio.extend([""] * (max_length - len(hora_inicio)))
+            hora_fin.extend([""] * (max_length - len(hora_fin)))
+
+            formatted_data[f"{day}"] = nombres
+            formatted_data[f"{day}_Hora I"] = hora_inicio
+            formatted_data[f"{day}_Hora F"] = hora_fin
 
         # Convert data to a DataFrame
-        df = pd.DataFrame(data, columns=[
-            nombre_profesional, 'Paciente', 'Hora Inicio', 'Hora Fin', 'Dia'
-        ])
+        df = pd.DataFrame(formatted_data)
+        
 
         # Use an in-memory output stream to avoid file system I/O
         output = io.BytesIO()
