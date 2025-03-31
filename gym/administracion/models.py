@@ -559,3 +559,178 @@ class Asistencia(models.Model):
 
     def __str__(self):
         return  self.id_prestacion_paciente.id_paciente.nombre
+    
+
+class TipoPago(models.Model):
+
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    def __str__(self):
+        return  self.nombre
+
+
+class Pago(models.Model):
+
+    fecha = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Fecha',
+    )
+
+    total = models.DecimalField(
+        verbose_name='total',
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    id_paciente = models.ForeignKey(
+        Paciente,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='paciente_pago',
+    )
+
+    id_tipo_pago = models.ForeignKey(
+        TipoPago,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='tipo_pago',
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_pago',
+    )
+
+
+class Plan(models.Model):
+
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    valor = models.DecimalField(
+        verbose_name='valor_plan',
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    descripcion = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_plan',
+    )
+
+    def __str__(self):
+        return  self.nombre
+
+
+class PacientePlan(models.Model):
+
+    id_paciente = models.ForeignKey(
+        Paciente,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='paciente_plan',
+    )
+
+    id_plan = models.ForeignKey(
+        Plan,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='plan',
+    )
+
+    fecha = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Fecha',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_paciente_plan',
+    )
+
+
+class Cuota(models.Model):
+
+    imputado = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='imputado',
+    )
+
+    id_paciente_plan = models.ForeignKey(
+        PacientePlan,
+        on_delete=models.RESTRICT,
+        related_name='usuario_cuota',
+    )
+
+    valor = models.DecimalField(
+        verbose_name='valor_cuota',
+        max_digits=10,
+        decimal_places=2,
+    )
+
+    anulado = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )

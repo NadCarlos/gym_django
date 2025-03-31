@@ -16,6 +16,11 @@ from administracion.models import (
     Tratamiento,
     Dia,
     Agenda,
+    TipoPago,
+    Pago,
+    Plan,
+    PacientePlan,
+    Cuota,
 )
 
 
@@ -116,4 +121,35 @@ class DiaAdmin(admin.ModelAdmin):
 class AgendaAdmin(admin.ModelAdmin):
     list_display = (
         'fecha',
+    )
+
+@admin.register(TipoPago)
+class TipoPagoAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
+    )
+
+@admin.register(Pago)
+class PagoAdmin(admin.ModelAdmin):
+    list_display = (
+        'fecha',
+    )
+
+
+@admin.register(Plan)
+class PlanAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
+    )
+
+@admin.register(PacientePlan)
+class PacientePlanAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_paciente',
+    )
+
+@admin.register(Cuota)
+class CuotaAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_paciente_plan',
     )
