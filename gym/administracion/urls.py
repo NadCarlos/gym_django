@@ -72,6 +72,13 @@ from administracion.views.agenda import(
     ErrorHora,
 )
 
+from administracion.views.planes import(
+    PlanesList,
+    PlanCreate,
+    PlanUpdate,
+    PlanDelete,
+)
+
 
 pacientes = [
     path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
@@ -144,4 +151,12 @@ agenda = [
     path(route='error_prestacion_paciente',view=ErrorPrestacionFaltante.as_view(), name='error_prestacion_paciente'),
     path(route='error_hora',view=ErrorHora.as_view(), name='error_hora'),
 ]
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda
+
+planes = [
+    path(route='planes_list/',view=PlanesList.as_view(), name='planes_list'),
+    path(route='plan_create/',view=PlanCreate.as_view(), name='plan_create'),
+    path(route='<int:id>/plan_update/',view=PlanUpdate.as_view(), name='plan_update'),
+    path(route='<int:id>/plan_delete',view=PlanDelete.as_view(), name='plan_delete'),
+]
+
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes

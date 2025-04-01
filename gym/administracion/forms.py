@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda, Plan
 
 
 class PacienteCreateForm(forms.ModelForm):
@@ -324,4 +324,44 @@ class AgendaUpdateForm(forms.ModelForm):
             'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_profesional_tratamiento': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class PlanForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Plan
+
+        fields = [
+            'nombre',
+            'descripcion',
+            'valor',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class PlanUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Plan
+
+        fields = [
+            'nombre',
+            'descripcion',
+            'valor',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'valor': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
         }
