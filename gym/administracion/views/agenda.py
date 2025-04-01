@@ -196,10 +196,10 @@ class AgendaProfesional(View):
 class AgendaProfesionalToCsv(View):
 
     def get(self, request, id):
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=agenda_profesional.xlsx'
         profesional = profesionalRepo.get_by_id(id=id)
         nombre_profesional = profesional.nombre
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename=agenda_profesional_{nombre_profesional}.xlsx'
         agenda = agendaRepo.filter_by_activo_profesional(state=True, id_profesional=id)
 
         data = []
@@ -245,9 +245,9 @@ class AgendaProfesionalToCsv(View):
 
         data = {
             "Lunes": data_lunes,
-            "Martes": data_miercoles,
-            "Miércoles": data_jueves,
-            "Jueves": data_miercoles,
+            "Martes": data_martes,
+            "Miércoles": data_miercoles,
+            "Jueves": data_jueves,
             "Viernes": data_viernes,
         }
 
@@ -268,10 +268,8 @@ class AgendaProfesionalToCsv(View):
             formatted_data[f"{day}_Hora I"] = hora_inicio
             formatted_data[f"{day}_Hora F"] = hora_fin
 
-        # Convert data to a DataFrame
         df = pd.DataFrame(formatted_data)
         
-
         # Use an in-memory output stream to avoid file system I/O
         output = io.BytesIO()
 

@@ -38,7 +38,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Lunes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -62,7 +62,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Lunes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -104,7 +104,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Martes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -128,7 +128,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Martes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -170,7 +170,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Miercoles' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -194,7 +194,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Miercoles' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -236,7 +236,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Jueves' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -260,7 +260,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Jueves' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -302,7 +302,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Viernes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
@@ -326,7 +326,7 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.nombre == 'Viernes' and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
