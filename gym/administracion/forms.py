@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda, Plan
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda, Plan, PacientePlan
 
 
 class PacienteCreateForm(forms.ModelForm):
@@ -364,4 +364,30 @@ class PlanUpdateForm(forms.ModelForm):
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'descripcion': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'valor': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+        }
+
+
+class PacientePlanForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PacientePlanForm, self).__init__(*args, **kwargs)
+        self.fields['id_plan'].required = True
+        self.fields['id_plan'].queryset = Plan.objects.filter(activo=True)
+
+    class Meta:
+
+        model = PacientePlan
+
+        fields = [
+            'id_plan',
+            'fecha',
+            'id_paciente',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'id_plan': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }

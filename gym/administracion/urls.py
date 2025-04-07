@@ -79,6 +79,12 @@ from administracion.views.planes import(
     PlanDelete,
 )
 
+from administracion.views.paciente_plan import(
+    PacientePlanesList,
+    PacientePlanCreate,
+    PacientePlanDelete,
+)
+
 
 pacientes = [
     path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
@@ -159,4 +165,10 @@ planes = [
     path(route='<int:id>/plan_delete',view=PlanDelete.as_view(), name='plan_delete'),
 ]
 
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes
+paciente_plan = [
+    path(route='<int:id>/paciente_plan_create/',view=PacientePlanCreate.as_view(), name='paciente_plan_create'),
+    path(route='<int:id>/paciente_plan_list/',view=PacientePlanesList.as_view(), name='paciente_plan_list'),
+    path(route='<int:id>/paciente_plan_delete',view=PacientePlanDelete.as_view(), name='paciente_plan_delete'),
+]
+
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes + paciente_plan
