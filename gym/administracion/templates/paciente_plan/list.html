@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Lista de Prestaciones Paciente: {{ paciente.apellido }}, {{ paciente.nombre }}</h2>
+    <h2 class="mb-4">Lista de Planes Paciente: {{ paciente.apellido }}, {{ paciente.nombre }}</h2>
     {% if paciente_plan_exist == False %}
     <a href="{% url 'paciente_plan_create' paciente.id %}" class="btn btn-success mb-4">
         <i class="bi bi-plus-circle"></i> Asignar Plan

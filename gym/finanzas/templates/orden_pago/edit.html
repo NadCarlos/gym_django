@@ -167,7 +167,12 @@
         let facturas_selected = JSON.parse(facturasData);
         facturas_selected.forEach((fact, index) => {
             let factura = JSON.parse(fact);
-            let facturaTexto = `${factura.numero} ${factura.importe || ''} ${factura.fecha || ''}`;
+            let factura_fecha = factura.fecha
+            let fechaFormateada = factura_fecha.split('-').reverse().join('/');
+            let factura_importe = factura.importe
+            let importeFormateado = factura_importe.toLocaleString('es-ES', {minimumFractionDigits: 2,maximumFractionDigits: 2});
+            let factura_pto_vta = String(factura.pto_vta).padStart(4, '0');
+            let facturaTexto = `${factura.numero} - $${importeFormateado || ''} - ${fechaFormateada || ''} - ${factura_pto_vta}`;
 
             facturas.push({ id: factura.id, texto: facturaTexto });
         });
