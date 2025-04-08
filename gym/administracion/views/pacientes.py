@@ -23,6 +23,8 @@ from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.estado_civil import EstadoCivilRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.agenda import AgendaRepository
+from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
+from administracion.repositories.paciente_plan import PacientePlanRepository
 
 
 from administracion.models import Paciente
@@ -36,6 +38,7 @@ localidadRepo = LocalidadRepository()
 estadoCivilRepo = EstadoCivilRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 agendaRepo = AgendaRepository()
+pacientePlanRepo = PacientePlanRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -306,6 +309,8 @@ class PacienteDelete(View):
             )
             prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
 
+        paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=id)
+        pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
         #No elimino, cambio el campo activo a False
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list', True)
