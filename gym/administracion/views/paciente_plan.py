@@ -19,7 +19,6 @@ class PacientePlanesList(View):
         paciente = pacienteRepo.get_by_id(id=id)
         planes_paciente = pacientePlanRepo.filter_by_paciente(id=id)
         paciente_plan_exist = pacientePlanRepo.paciente_plan_exist(id_paciente=id)
-        print(paciente_plan_exist)
 
         return render(
             request,
