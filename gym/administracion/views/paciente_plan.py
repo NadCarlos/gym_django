@@ -7,10 +7,14 @@ from administracion.forms import PacientePlanForm
 
 from administracion.repositories.paciente_plan import PacientePlanRepository
 from administracion.repositories.paciente import PacienteRepository
+from administracion.repositories.agenda import AgendaRepository
+from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 
 
 pacientePlanRepo = PacientePlanRepository()
 pacienteRepo = PacienteRepository()
+agendaRepo = AgendaRepository()
+prestacionPacienteRepo = PrestacionPacienteRepository()
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PacientePlanesList(View):
@@ -19,6 +23,10 @@ class PacientePlanesList(View):
         paciente = pacienteRepo.get_by_id(id=id)
         planes_paciente = pacientePlanRepo.filter_by_paciente(id=id)
         paciente_plan_exist = pacientePlanRepo.paciente_plan_exist(id_paciente=id)
+        prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        if prestacion is None:
+            return redirect('error_prestacion_paciente')
+        agenda_exist = agendaRepo.filter_by_id_paciente_exist(id_prestacion_paciente=prestacion.id)
 
         return render(
             request,
@@ -27,6 +35,7 @@ class PacientePlanesList(View):
                 paciente=paciente,
                 planes_paciente=planes_paciente,
                 paciente_plan_exist=paciente_plan_exist,
+                agenda_exist=agenda_exist,
             )
         )
 
