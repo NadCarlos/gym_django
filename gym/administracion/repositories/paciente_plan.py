@@ -15,6 +15,9 @@ class PacientePlanRepository:
     def filter_by_id(self, id) -> Optional[PacientePlan]:
         return PacientePlan.objects.filter(id=id)
     
+    def filter_by_activo(self) -> List[PacientePlan]:
+        return PacientePlan.objects.filter(activo=True)
+    
     def filter_by_paciente_activo(self, id_paciente) -> List[PacientePlan]:
         return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True)
     
