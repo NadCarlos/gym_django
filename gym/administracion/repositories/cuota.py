@@ -17,6 +17,9 @@ class CuotaRepository:
     def filter_by_activo(self) -> List[Cuota]:
         return Cuota.objects.filter(activo=True).order_by('nombre')
     
+    def cuota_exist(self,id_paciente_plan, year, month) -> List[Cuota]:
+        return Cuota.objects.filter(id_paciente_plan=id_paciente_plan).filter(imputado__year=year, imputado__month=month).exists()
+    
     def delete_by_activo(self, cuota: Cuota):
         cuota.anulado=False
         cuota.save()
