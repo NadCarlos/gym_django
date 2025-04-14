@@ -1,5 +1,5 @@
 from django import forms
-from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda, Plan, PacientePlan
+from .models import Paciente, PrestacionPaciente, ObraSocial, Prestacion, Profesional, Tratamiento, ProfesionalTratamiento, Agenda, Plan, PacientePlan, Pago, TipoPago, DetallePago
 
 
 class PacienteCreateForm(forms.ModelForm):
@@ -391,3 +391,32 @@ class PacientePlanForm(forms.ModelForm):
             'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class PagoForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PagoForm, self).__init__(*args, **kwargs)
+        self.fields['id_tipo_pago'].required = True
+        self.fields['id_tipo_pago'].queryset = TipoPago.objects.filter(activo=True)
+
+    class Meta:
+
+        model = Pago
+
+        fields = [
+            'fecha',
+            'id_tipo_pago',
+            'total',
+            'id_paciente',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_tipo_pago': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'total': forms.NumberInput(attrs={'class': 'form-control custom-class', 'step': '0.01'}),
+            'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+

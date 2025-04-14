@@ -21,8 +21,8 @@
                         <a href="#" class="btn btn-danger btn-sm me-2">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
-                        <a href="#" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Editar
+                        <a href="{% url 'pago_create' cuota.id_paciente_plan.id_paciente.id cuota.id%}" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Generar Pago
                         </a>
                     </td>
                 </tr>

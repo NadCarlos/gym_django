@@ -90,6 +90,10 @@ from administracion.views.cuota import(
     CuotasList,
 )
 
+from administracion.views.pago import(
+    PagoCreate,
+)
+
 
 pacientes = [
     path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
@@ -181,4 +185,8 @@ cuotas = [
     path(route='cuotas_list/',view=CuotasList.as_view(), name='cuotas_list'),
 ]
 
-urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes + paciente_plan + cuotas
+pagos = [
+    path(route='<int:id>/<int:id_c>/pago_create/',view=PagoCreate.as_view(), name='pago_create'),
+]
+
+urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes + paciente_plan + cuotas + pagos

@@ -1,0 +1,48 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">Nuevo Pago</h2>
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Fecha:</label>
+                <div class="col-sm-6">
+                    {{ form.fecha }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Tipo de Pago:</label>
+                <div class="col-sm-6">
+                    {{ form.id_tipo_pago }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Total:</label>
+                <div class="col-sm-6">
+                    {{ form.total }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            {{ form.id_paciente }}
+            {{ form.id_usuario }}
+
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
