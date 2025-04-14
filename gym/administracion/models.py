@@ -734,3 +734,24 @@ class Cuota(models.Model):
         null=False,
         blank=False,
     )
+
+
+class DetallePago(models.Model):
+
+    id_pago = models.ForeignKey(
+        Pago,
+        on_delete=models.RESTRICT,
+        related_name='id_pago',
+    )
+
+    id_cuota = models.ForeignKey(
+        Cuota,
+        on_delete=models.RESTRICT,
+        related_name='id_cuota',
+    )
+
+    importe = models.DecimalField(
+        verbose_name='importe',
+        max_digits=10,
+        decimal_places=2,
+    )

@@ -21,6 +21,7 @@ from administracion.models import (
     Plan,
     PacientePlan,
     Cuota,
+    DetallePago,
 )
 
 
@@ -152,4 +153,10 @@ class PacientePlanAdmin(admin.ModelAdmin):
 class CuotaAdmin(admin.ModelAdmin):
     list_display = (
         'id_paciente_plan',
+    )
+
+@admin.register(DetallePago)
+class DetallePagoAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_pago',
     )
