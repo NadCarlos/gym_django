@@ -87,6 +87,7 @@ from administracion.views.paciente_plan import(
 
 from administracion.views.cuota import(
     GenerateCuotas,
+    CuotasList,
 )
 
 
@@ -177,6 +178,7 @@ paciente_plan = [
 
 cuotas = [
     path(route='generate_cuotas/',view=GenerateCuotas.as_view(), name='generate_cuotas'),
+    path(route='cuotas_list/',view=CuotasList.as_view(), name='cuotas_list'),
 ]
 
 urlpatterns = pacientes + prestacion_paciente + obra_social + prestaciones + asistencias + profesional + tratamientos + tratamiento_profesional + agenda + planes + paciente_plan + cuotas

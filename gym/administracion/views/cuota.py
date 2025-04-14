@@ -32,3 +32,15 @@ class GenerateCuotas(View):
                 pass
         return redirect('planes_list')
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CuotasList(View):
+    def get(self, request):
+        cuotas = cuotaRepo.get_all()
+        return render(
+            request,
+            'cuota/list.html',
+            dict(
+                cuotas=cuotas
+            )
+        )

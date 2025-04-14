@@ -1,0 +1,34 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Cuotas</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Paciente</th>
+                    <th>Valor</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuota in cuotas %}
+                <tr>
+                    <td>{{ cuota.id_paciente_plan.id_paciente.nombre }}</td>
+                    <td>{{ cuota.valor }}</td>
+                    <td>
+                        <a href="#" class="btn btn-danger btn-sm me-2">
+                            <i class="bi bi-trash"></i> Borrar
+                        </a>
+                        <a href="#" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
