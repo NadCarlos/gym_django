@@ -9,6 +9,9 @@ class DetallePagoRepository:
     def get_all(self) -> List[DetallePago]:
         return DetallePago.objects.all()
     
+    def filter_by_cuota_id(self, id_cuota) -> Optional[DetallePago]:
+        return DetallePago.objects.filter(id_cuota=id_cuota)
+    
     def create(
         self,
         importe: float,

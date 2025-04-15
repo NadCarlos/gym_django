@@ -17,11 +17,27 @@ pagoRepo = PagoRepository()
 detallePagoRepo = DetallePagoRepository()
 pacienteRepo = PacienteRepository()
 cuotaRepo = CuotaRepository()
-    
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PagoList(View):
+     
+    def get(self, request, id):
+        cuota = cuotaRepo.get_by_id(id=id)
+        detalles_pago = detallePagoRepo.filter_by_cuota_id(id_cuota=cuota.id)
+        return render(
+            request,
+            'pago/list.html',
+            dict(
+                cuota=cuota,
+                detalles_pago=detalles_pago,
+            )
+        )
+         
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PagoCreate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, id_c):
         paciente = pacienteRepo.get_by_id(id=id)
         form = PagoForm(initial = {
@@ -37,7 +53,6 @@ class PagoCreate(View):
             )
         )
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, id_c):
         form = PagoForm(request.POST)
         cuota = cuotaRepo.get_by_id(id=id_c)
@@ -55,3 +70,5 @@ class PagoCreate(View):
                     importe=pago.total,
                 )
                 return redirect('cuotas_list')
+
+
