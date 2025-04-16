@@ -183,7 +183,7 @@ paciente_plan = [
 
 cuotas = [
     path(route='generate_cuotas/',view=GenerateCuotas.as_view(), name='generate_cuotas'),
-    path(route='cuotas_list/',view=CuotasList.as_view(), name='cuotas_list'),
+    path(route='cuotas_list/<state>',view=CuotasList.as_view(), name='cuotas_list'),
 ]
 
 pagos = [

@@ -69,6 +69,10 @@ class PagoCreate(View):
                     id_cuota=cuota,
                     importe=pago.total,
                 )
-                return redirect('cuotas_list')
+                cuotaRepo.update_anulado(
+                    cuota=cuota,
+                    anulado=True,
+                )
+                return redirect('cuotas_list', False)
 
 

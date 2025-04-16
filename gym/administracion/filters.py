@@ -1,6 +1,6 @@
 import django_filters
 
-from administracion.models import Paciente, Asistencia, ObraSocial, Prestacion, Profesional
+from administracion.models import Paciente, Asistencia, ObraSocial, Prestacion, Profesional, Cuota
 
 
 class PacienteFilter(django_filters.FilterSet):
@@ -45,4 +45,17 @@ class ProfesionalFilter(django_filters.FilterSet):
         fields = {
             'apellido',
             'id_sexo'
+            }
+        
+
+class CuotaFilter(django_filters.FilterSet):
+
+    imputado = django_filters.DateFromToRangeFilter()
+    id_paciente_plan__id_paciente__apellido = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Cuota
+        fields = {
+            'imputado',
+            'id_paciente_plan__id_paciente__apellido'
             }

@@ -12,6 +12,9 @@ class DetallePagoRepository:
     def filter_by_cuota_id(self, id_cuota) -> Optional[DetallePago]:
         return DetallePago.objects.filter(id_cuota=id_cuota)
     
+    def filter_by_cuota_id_exists(self, id_cuota) -> Optional[DetallePago]:
+        return DetallePago.objects.filter(id_cuota=id_cuota).exists()
+    
     def create(
         self,
         importe: float,
