@@ -38,12 +38,34 @@
 
     <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered">
-            <thead class="table-dark">
+            <thead class="table-primary">
                 <tr>
-                    <th>Paciente</th>
-                    <th>Valor</th>
-                    <th>Imputado</th>
-                    <th>Acciones</th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_paciente_plan__id_paciente__apellido' %}-id_paciente_plan__id_paciente__apellido{% else %}id_paciente_plan__id_paciente__apellido{% endif %}">
+                            Apellido
+                            {% if request.GET.ordering == 'id_paciente_plan__id_paciente__apellido' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_paciente_plan__id_paciente__apellido' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        Nombre
+                    </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'imputado' %}-imputado{% else %}imputado{% endif %}">
+                            Fecha
+                            {% if request.GET.ordering == 'imputado' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-imputado' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        Acciones
+                    </th>
                 </tr>
             </thead>
             <tbody>
