@@ -730,7 +730,7 @@ class Cuota(models.Model):
     )
 
     anulado = models.BooleanField(
-        default=1,
+        default=0,
         null=False,
         blank=False,
     )

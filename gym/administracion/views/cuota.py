@@ -42,8 +42,15 @@ class CuotasList(View):
 
     def get(self, request, state):
         
+        if request.GET.get('imputado_after') is None:
+            hoy = datetime.date.today()
+            hace_30_dias = hoy - datetime.timedelta(days=10)
 
-        filterset = CuotaFilter(request.GET, queryset=cuotaRepo.filter_by_anulado(state=state))
+            # Instanciar el filtro con los datos enviados por el formulario
+            filterset = CuotaFilter(request.GET, queryset=cuotaRepo.filter_by_anulado_dates(state=state, start_date=hace_30_dias,end_date=hoy))
+            print(filterset)
+        else:
+            filterset = CuotaFilter(request.GET, queryset=cuotaRepo.filter_by_anulado(state=state))
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'id_paciente_plan__id_paciente__apellido')
