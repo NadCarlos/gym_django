@@ -25,12 +25,14 @@ class PagoList(View):
     def get(self, request, id):
         cuota = cuotaRepo.get_by_id(id=id)
         detalles_pago = detallePagoRepo.filter_by_cuota_id(id_cuota=cuota.id)
+        paciente = pacienteRepo.get_by_id(id=cuota.id_paciente_plan.id_paciente.id)
         return render(
             request,
             'pago/list.html',
             dict(
                 cuota=cuota,
                 detalles_pago=detalles_pago,
+                paciente=paciente,
             )
         )
          

@@ -3,15 +3,30 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Lista de Cuotas</h2>
-    {% if state == 'True' %}
-    <a href="{% url 'cuotas_list' False %}" class="btn btn-primary mb-4">
-        <i class="bi bi-eye"></i> Ver Inpagas
-    </a>
-    {% elif state == 'False' %}
-    <a href="{% url 'cuotas_list' True %}" class="btn btn-primary mb-4">
-        <i class="bi bi-eye"></i> Ver Pagas
-    </a>
-    {% endif %}
+    
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-2">
+            {% if state == 'True' %}
+            <a href="{% url 'cuotas_list' False %}" class="btn btn-primary mb-4">
+                <i class="bi bi-eye"></i> Ver Inpagas
+            </a>
+            {% elif state == 'False' %}
+            <a href="{% url 'cuotas_list' True %}" class="btn btn-primary mb-4">
+                <i class="bi bi-eye"></i> Ver Pagas
+            </a>
+            {% endif %}
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-8">
+        </div>
+        <!-- Tercera columna -->
+        <div class="col-md-2">
+            <a href="{% url 'generate_cuotas' %}" class="btn btn-primary mb-4" onclick="return confirm('Solo generara a los pacientes que tengan Agenda y Plan activo. ¿Continuar?');">
+                <i class="bi bi-plus-circle"></i> Generar Cuotas
+            </a>
+        </div>
+    </div>
 
     {% if state == 'False' %}
     <form method="GET" action="{% url 'cuotas_list' False %}" class="d-flex align-items-center gap-3">
@@ -51,7 +66,13 @@
                         </a>
                     </th>
                     <th>
-                        Nombre
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'valor' %}-valor{% else %}valor{% endif %}">
+                            Valor
+                            {% if request.GET.ordering == 'valor' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-valor' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
                     </th>
                     <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'imputado' %}-imputado{% else %}imputado{% endif %}">
@@ -75,11 +96,8 @@
                     <td>{{ cuota.valor }}</td>
                     <td>{{ cuota.imputado }}</td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-sm me-2">
-                            <i class="bi bi-trash"></i> Borrar
-                        </a>
-                        <a href="{% url 'pago_list' cuota.id %}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i> Ver Pagos
+                        <a href="{% url 'pago_list' cuota.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye-fill"></i> Ver Pagos
                         </a>
                     </td>
                 </tr>
