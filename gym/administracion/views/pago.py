@@ -7,6 +7,8 @@ from administracion.forms import (
     PagoForm,
 )
 
+from administracion.filters import DetallePagoFilter
+
 from administracion.repositories.pago import PagoRepository
 from administracion.repositories.detalle_pago import DetallePagoRepository
 from administracion.repositories.paciente import PacienteRepository
@@ -21,16 +23,28 @@ cuotaRepo = CuotaRepository()
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PagoList(View):
+    template_name = 'pago/list.html'
+    context_object_name = 'detalles_pago'
      
     def get(self, request, id):
-        cuota = cuotaRepo.get_by_id(id=id)
-        detalles_pago = detallePagoRepo.filter_by_cuota_id(id_cuota=cuota.id)
-        paciente = pacienteRepo.get_by_id(id=cuota.id_paciente_plan.id_paciente.id)
+        paciente = pacienteRepo.get_by_id(id=id)
+        filterset = DetallePagoFilter(request.GET, detallePagoRepo.filter_by_paciente_id(id_paciente=id))
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', '-id_cuota')
+
+        # Obtener el queryset filtrado
+        detalles_pago = filterset.qs
+
+        # Si existe un campo de ordenamiento, aplicarlo
+        if ordering:
+            detalles_pago = filterset.qs.order_by(ordering)
+        
         return render(
             request,
-            'pago/list.html',
+            self.template_name,
             dict(
-                cuota=cuota,
+                form=filterset.form,
                 detalles_pago=detalles_pago,
                 paciente=paciente,
             )

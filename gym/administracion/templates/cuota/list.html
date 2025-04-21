@@ -2,7 +2,12 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Lista de Cuotas</h2>
+
+    {% if state == 'True' %}
+    <h2 class="mb-4">Lista de Cuotas Pagas</h2>
+    {% elif state == 'False' %}
+    <h2 class="mb-4">Lista de Cuotas Inpagas</h2>
+    {% endif %}
     
     <div class="row">
         <!-- Primera columna -->
@@ -96,7 +101,10 @@
                     <td>{{ cuota.valor }}</td>
                     <td>{{ cuota.imputado }}</td>
                     <td>
-                        <a href="{% url 'pago_list' cuota.id %}" class="btn btn-info btn-sm">
+                        <a href="{% url 'pago_create' cuota.id_paciente_plan.id_paciente.id cuota.id%}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Generar Pago
+                        </a>
+                        <a href="{% url 'pago_list' cuota.id_paciente_plan.id_paciente.id %}" class="btn btn-info btn-sm">
                             <i class="bi bi-eye-fill"></i> Ver Pagos
                         </a>
                     </td>

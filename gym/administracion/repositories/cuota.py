@@ -14,6 +14,9 @@ class CuotaRepository:
     def filter_by_id(self, id) -> Optional[Cuota]:
         return Cuota.objects.filter(id=id)
     
+    def filter_by_paciente_id(self, id) -> Optional[Cuota]:
+        return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id)
+    
     def filter_by_anulado(self, state) -> List[Cuota]:
         return Cuota.objects.filter(anulado=state).order_by('id_paciente_plan__id_paciente__apellido')
     

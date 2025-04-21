@@ -1,6 +1,6 @@
 import django_filters
 
-from administracion.models import Paciente, Asistencia, ObraSocial, Prestacion, Profesional, Cuota
+from administracion.models import Paciente, Asistencia, ObraSocial, Prestacion, Profesional, Cuota, DetallePago, TipoPago
 
 
 class PacienteFilter(django_filters.FilterSet):
@@ -58,4 +58,17 @@ class CuotaFilter(django_filters.FilterSet):
         fields = {
             'imputado',
             'id_paciente_plan__id_paciente__apellido'
+            }
+        
+
+class DetallePagoFilter(django_filters.FilterSet):
+
+    id_pago__fecha = django_filters.DateFromToRangeFilter()
+    id_pago__id_tipo_pago__nombre = django_filters.ModelChoiceFilter(queryset = TipoPago.objects.filter(activo=True))
+
+    class Meta:
+        model = DetallePago
+        fields = {
+            'id_pago__fecha',
+            'id_pago__id_tipo_pago__nombre',
             }
