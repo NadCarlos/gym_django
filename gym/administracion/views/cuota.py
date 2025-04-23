@@ -53,6 +53,10 @@ class CuotasList(View):
         if ordering:
             cuotas = filterset.qs.order_by(ordering)
 
+        total = 0
+        for cuota in cuotas:
+            total += cuota.valor
+
         return render(
             request,
             self.template_name,
@@ -61,5 +65,6 @@ class CuotasList(View):
                 ordering=ordering,
                 state=state,
                 cuotas=cuotas,
+                total=total,
             )
         )

@@ -80,6 +80,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        <table class="table table-striped table-hover table-bordered">
+            <td style="text-align: center;">Total: {{ total }}</td>
+        </table>
     </div>
     <a href="{% url 'cuotas_list' False %}" class="btn btn-secondary">
         <i class="bi bi-arrow-left-circle me-2"></i> Volver a detalle

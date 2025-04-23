@@ -39,6 +39,10 @@ class PagoList(View):
         # Si existe un campo de ordenamiento, aplicarlo
         if ordering:
             detalles_pago = filterset.qs.order_by(ordering)
+
+        total = 0
+        for detalle in detalles_pago:
+            total += detalle.importe
         
         return render(
             request,
@@ -47,6 +51,7 @@ class PagoList(View):
                 form=filterset.form,
                 detalles_pago=detalles_pago,
                 paciente=paciente,
+                total=total,
             )
         )
          
