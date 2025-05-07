@@ -310,7 +310,8 @@ class PacienteDelete(View):
             prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
 
         paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=id)
-        pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
+        if paciente_plan != None:
+            pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
         #No elimino, cambio el campo activo a False
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list', True)

@@ -19,7 +19,7 @@ class PacientePlanRepository:
         return PacientePlan.objects.filter(activo=True)
     
     def filter_by_paciente_activo(self, id_paciente) -> List[PacientePlan]:
-        return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True)
+        return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True).first()
     
     def paciente_plan_exist(self, id_paciente) -> List[PacientePlan]:
         return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True).exists()
