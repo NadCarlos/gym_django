@@ -46,7 +46,7 @@
                     <td class="bg-success text-white">
                         <a href="{% url 'delete_prestacion_paciente' prestacion_paciente.id %}"
                             class="btn btn-danger btn-sm me-2"
-                            onclick="return confirm('¿Estás seguro de que deseas finalizar esta prestación?, Tambien se quitaran todos los turnos en la agenda!');">
+                            onclick="return confirm('¿Estás seguro de que deseas finalizar esta prestación?, Se quitaran todos los turnos de la agenda y se desactivara el paciente!');">
                             <i class="bi bi-trash"></i> Finalizar Prestacion
                         </a>
                         <a href="{% url 'update_prestacion_paciente' prestacion_paciente.id %}"

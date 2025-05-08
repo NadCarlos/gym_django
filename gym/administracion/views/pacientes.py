@@ -50,7 +50,7 @@ class PacientesList(View):
         filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo(state))
         pacientes = pacienteRepo.filter_by_activo(state)
         prestaciones = prestacionPacienteRepo.get_all()
-        pacientesFinished = []
+        """pacientesFinished = []
         for paciente in pacientes:
             for prestacion in prestaciones:
                 if paciente.id == prestacion.id_paciente.id and prestacion.activo == True:
@@ -60,7 +60,7 @@ class PacientesList(View):
             else:
                 tiene_prestacion_activa = 'Sin Prestacion Activa'
                 paciente.__dict__['tiene_prestacion_activa'] = tiene_prestacion_activa
-            pacientesFinished.append(paciente)
+            pacientesFinished.append(paciente)"""
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
 
@@ -79,7 +79,6 @@ class PacientesList(View):
             dict(
                 pacientes_count = pacientes_count,
                 pacientes=pacientes,
-                pacientesFinished=pacientesFinished,
                 form=filterset.form,
                 ordering=ordering,
                 state=state,

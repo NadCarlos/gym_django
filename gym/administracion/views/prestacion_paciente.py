@@ -14,12 +14,14 @@ from administracion.repositories.prestacion_paciente import PrestacionPacienteRe
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.prestacion import PrestacionRepository
 from administracion.repositories.agenda import AgendaRepository
+from administracion.repositories.paciente_plan import PacientePlanRepository
 
 
 prestacionPacienteRepo = PrestacionPacienteRepository()
 pacienteRepo = PacienteRepository()
 prestacionRepo = PrestacionRepository()
 agendaRepo = AgendaRepository()
+pacientePlanRepo = PacientePlanRepository()
 
 
 class NuevaPrestacionPaciente(View):
@@ -115,6 +117,7 @@ class DeletePrestacionPaciente(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
+        paciente = pacienteRepo.get_by_id(id=prestacionPaciente.id_paciente.id)
         agendas = agendaRepo.filter_by_id_prestacion_paciente(id_prestacion_paciente=prestacionPaciente.id)
         today = date.today()
         if agendas != None:
@@ -129,7 +132,11 @@ class DeletePrestacionPaciente(View):
             prestacionPaciente=prestacionPaciente,
             fecha_fin=today,
         )
+        paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=paciente.id)
+        if paciente_plan != None:
+            pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
         prestacionPacienteRepo.delete_by_activo(prestacion_paciente=prestacionPaciente)
+        pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
     
 
