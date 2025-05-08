@@ -110,6 +110,8 @@ class FacturasList(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
+        facturas_count = facturas.count()
+
         total = 0
         for factura in facturas:
             total += factura.importe
@@ -124,6 +126,7 @@ class FacturasList(View):
             'libro_ventas/list.html',
             dict(
                 facturas=facturas,
+                facturas_count=facturas_count,
                 form=filterset.form,
                 ordering=ordering,
                 total=total,
@@ -147,6 +150,8 @@ class BalanceList(View):
         # Aplicar el ordenamiento si existe
         if ordering:
             facturas = facturas.order_by(ordering)
+
+        facturas_count = facturas.count()
 
         total = 0
         total_saldado = 0
@@ -185,6 +190,7 @@ class BalanceList(View):
             dict(
                 beneficiario=beneficiario,
                 facturas=facturas,
+                facturas_count=facturas_count,
                 form=filterset.form,
                 ordering=ordering,
                 total=total,
@@ -211,6 +217,8 @@ class BalanceListAll(View):
         # Aplicar el ordenamiento si existe
         if ordering:
             facturas = facturas.order_by(ordering)
+
+        facturas_count = facturas.count()
 
         total = 0
         total_saldado = 0
@@ -250,6 +258,7 @@ class BalanceListAll(View):
             'libro_ventas/balance_list_all.html',
             dict(
                 facturas=facturas,
+                facturas_count=facturas_count,
                 form=filterset.form,
                 ordering=ordering,
                 total=total,

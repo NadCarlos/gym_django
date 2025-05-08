@@ -65,12 +65,14 @@ class ListPrestacionPaciente(View):
         paciente = pacienteRepo.get_by_id(id=id)
         paciente_id = paciente.id
         prestaciones_paciente = prestacionPacienteRepo.filter_by_id_paciente_all(id_paciente=paciente_id)
+        prestaciones_paciente_count = prestaciones_paciente.count()
         return render(
             request,
             'prestacion_paciente/list.html',
             dict(
                 paciente=paciente,
-                prestaciones_paciente=prestaciones_paciente
+                prestaciones_paciente=prestaciones_paciente,
+                prestaciones_paciente_count=prestaciones_paciente_count,
             )
         )
     

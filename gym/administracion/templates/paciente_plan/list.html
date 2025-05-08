@@ -3,19 +3,37 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Lista de Planes Paciente: {{ paciente.apellido }}, {{ paciente.nombre }}</h2>
-    {% if  agenda_exist == False %}
-    <a href="#" class="btn btn-warning mb-4 disabled">
-        <i class="bi bi-slash-circle"></i> No hay turno activo
-    </a>
-    {% elif paciente_plan_exist == False %}
-    <a href="{% url 'paciente_plan_create' paciente.id %}" class="btn btn-success mb-4">
-        <i class="bi bi-plus-circle"></i> Asignar Plan
-    </a>
-    {% else %}
-    <a href="#" class="btn btn-warning mb-4 disabled">
-        <i class="bi bi-slash-circle"></i> No mas de un Plan Activo
-    </a>
-    {% endif %}
+
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-8">
+            {% if  agenda_exist == False %}
+            <a href="#" class="btn btn-warning mb-4 disabled">
+                <i class="bi bi-slash-circle"></i> No hay turno activo
+            </a>
+            {% elif paciente_plan_exist == False %}
+            <a href="{% url 'paciente_plan_create' paciente.id %}" class="btn btn-success mb-4">
+                <i class="bi bi-plus-circle"></i> Asignar Plan
+            </a>
+            {% else %}
+            <a href="#" class="btn btn-warning mb-4 disabled">
+                <i class="bi bi-slash-circle"></i> No mas de un Plan Activo
+            </a>
+            {% endif %}
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-2">
+        </div>
+        <!-- Tercera columna -->
+        <div class="col-md-2">
+            <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                <div class="card-body p-2">
+                    <p class="card-text text-center fw-bold mb-0">Total Registros: {{ planes_paciente_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div class="table-responsive">
         <table class="table table-striped table-hover table-bordered">
             <thead class="table-dark">

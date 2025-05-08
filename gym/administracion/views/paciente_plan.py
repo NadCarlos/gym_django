@@ -27,6 +27,7 @@ class PacientePlanesList(View):
         if prestacion is None:
             return redirect('error_prestacion_paciente')
         agenda_exist = agendaRepo.filter_by_id_paciente_exist(id_prestacion_paciente=prestacion.id)
+        planes_paciente_count = planes_paciente.count()
 
         return render(
             request,
@@ -34,6 +35,7 @@ class PacientePlanesList(View):
             dict(
                 paciente=paciente,
                 planes_paciente=planes_paciente,
+                planes_paciente_count=planes_paciente_count,
                 paciente_plan_exist=paciente_plan_exist,
                 agenda_exist=agenda_exist,
             )

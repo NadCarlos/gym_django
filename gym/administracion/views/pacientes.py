@@ -71,10 +71,13 @@ class PacientesList(View):
         if ordering:
             pacientes = filterset.qs.order_by(ordering)
 
+        pacientes_count = pacientes.count()
+
         return render(
             request,
             self.template_name,
             dict(
+                pacientes_count = pacientes_count,
                 pacientes=pacientes,
                 pacientesFinished=pacientesFinished,
                 form=filterset.form,

@@ -43,10 +43,13 @@ class AsistenciasList(View):
         if ordering:
             asistencias = asistencias.order_by(ordering)
 
+        asistencias_count = asistencias.count()
+
         return render(
             request,
             self.template_name,
             dict(
+                asistencias_count=asistencias_count,
                 asistencias=asistencias,
                 form=filterset.form,
                 ordering=ordering,

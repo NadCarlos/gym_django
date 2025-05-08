@@ -18,10 +18,12 @@ class PrestacionList(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         prestaciones = prestacionRepo.filter_by_activo()
+        prestaciones_count = prestaciones.count()
         return render(
             request,
             'prestacion/list.html',
             dict(
+                prestaciones_count=prestaciones_count,
                 prestaciones=prestaciones
             )
         )

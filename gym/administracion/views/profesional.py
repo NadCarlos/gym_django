@@ -43,11 +43,14 @@ class ProfesionalList(View):
         if ordering:
             profesionales = filterset.qs.order_by(ordering)
 
+        profesionales_count = profesionales.count()
+
         return render(
             request,
             self.template_name,
             dict(
                 profesionales=profesionales,
+                profesionales_count=profesionales_count,
                 form=filterset.form,
                 ordering=ordering,
             )

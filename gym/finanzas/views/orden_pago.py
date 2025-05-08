@@ -379,6 +379,8 @@ class OrdenesPagoList(View):
         if ordering:
             ordenes = ordenes.order_by(ordering)
 
+        ordenes_count = ordenes.count()
+
         total = 0
         for orden in ordenes:
             total += orden.total
@@ -392,6 +394,7 @@ class OrdenesPagoList(View):
             'orden_pago/list.html',
             dict(
                 ordenes=ordenes,
+                ordenes_count=ordenes_count,
                 form=filterset.form,
                 ordering=ordering,
                 total=total,

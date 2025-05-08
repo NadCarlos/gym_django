@@ -32,11 +32,14 @@ class BeneficiariosList(View):
         if ordering:
             beneficiarios = beneficiarios.order_by(ordering)
 
+        beneficiarios_count = beneficiarios.count()
+
         return render(
             request,
             'beneficiarios/list.html',
             dict(
                 beneficiarios=beneficiarios,
+                beneficiarios_count=beneficiarios_count,
                 form=filterset.form,
             )
         )

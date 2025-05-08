@@ -3,6 +3,23 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4"><i class="bi bi-receipt"></i> Lista de Órdenes de Pago</h2>
+
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-8">
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-2">
+        </div>
+        <!-- Tercera columna -->
+        <div class="col-md-2">
+            <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                <div class="card-body p-2">
+                    <p class="card-text text-center fw-bold mb-0">Total Registros: {{ ordenes_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <form method="GET" action="{% url 'orden_pago_list' %}" class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center">

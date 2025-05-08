@@ -18,10 +18,12 @@ class ObraSocialList(View):
     @method_decorator(login_required(login_url='login'))
     def get(self, request):
         obras_sociales = obraSocialRepo.filter_by_activo()
+        obras_sociales_count = obras_sociales.count()
         return render(
             request,
             'obra_social/list.html',
             dict(
+                obras_sociales_count=obras_sociales_count,
                 obras_sociales=obras_sociales
             )
         )

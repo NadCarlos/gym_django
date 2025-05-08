@@ -53,6 +53,8 @@ class CuotasList(View):
         if ordering:
             cuotas = filterset.qs.order_by(ordering)
 
+        cuotas_count = cuotas.count()
+
         total = 0
         for cuota in cuotas:
             total += cuota.valor
@@ -64,6 +66,7 @@ class CuotasList(View):
                 form=filterset.form,
                 ordering=ordering,
                 state=state,
+                cuotas_count=cuotas_count,
                 cuotas=cuotas,
                 total=total,
             )

@@ -16,12 +16,14 @@ class PlanesList(View):
 
     def get(self, request):
         planes = planRepo.filter_by_activo()
+        planes_count = planes.count()
 
         return render(
             request,
             'planes/list.html',
             dict(
-                planes=planes
+                planes=planes,
+                planes_count=planes_count,
             )
         )
     

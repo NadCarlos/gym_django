@@ -18,11 +18,13 @@ class TratamientoList(View):
 
     def get(self, request):
         tratamientos = tratamientoRepo.filter_by_activo()
+        tratamientos_count = tratamientos.count()
         return render(
             request,
             'tratamiento/list.html',
             dict(
-                tratamientos=tratamientos
+                tratamientos=tratamientos,
+                tratamientos_count=tratamientos_count,
             )
         )
     

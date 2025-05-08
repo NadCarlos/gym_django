@@ -20,12 +20,14 @@ class TratamientoProfesionalList(View):
         profesional = profesionalRepo.get_by_id(id=id)
         profesional_id = profesional.id
         tratamientos_profesional = tratamientoProfesionalRepo.filter_by_id_profesional_all(id_profesional=profesional_id)
+        tratamientos_profesional_count = tratamientos_profesional.count()
         return render(
             request,
             'tratamiento_profesional/list.html',
             dict(
                 profesional=profesional,
-                tratamientos_profesional=tratamientos_profesional
+                tratamientos_profesional=tratamientos_profesional,
+                tratamientos_profesional_count=tratamientos_profesional_count,
             )
         )
 

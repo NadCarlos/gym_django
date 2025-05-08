@@ -40,6 +40,8 @@ class PagoList(View):
         if ordering:
             detalles_pago = filterset.qs.order_by(ordering)
 
+        detalles_pago_count = detalles_pago.count()
+
         total = 0
         for detalle in detalles_pago:
             total += detalle.importe
@@ -50,6 +52,7 @@ class PagoList(View):
             dict(
                 form=filterset.form,
                 detalles_pago=detalles_pago,
+                detalles_pago_count=detalles_pago_count,
                 paciente=paciente,
                 total=total,
             )
