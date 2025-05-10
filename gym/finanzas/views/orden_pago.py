@@ -20,6 +20,7 @@ from finanzas.repositories.orden_pago import OrdenPagoRepository
 from finanzas.repositories.detalle_orden_pago import DetalleOrdenRepo
 from finanzas.repositories.descuentos import DescuentoRepository
 from finanzas.repositories.conceptos import ConceptoRepository
+from finanzas.repositories.beneficiarios import BeneficiarioRepository
 
 
 facturaRepo = FacturaRepository()
@@ -27,6 +28,7 @@ ordenPagoRepo = OrdenPagoRepository()
 detalleOrdenRepo = DetalleOrdenRepo()
 descuentoRepo = DescuentoRepository()
 conceptoRepo = ConceptoRepository()
+beneficiarioRepo = BeneficiarioRepository()
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -414,3 +416,39 @@ class OrdenPagoDelete(View):
         #No elimino, cambio el campo activo a False
         ordenPagoRepo.delete_by_activo(orden=orden)
         return redirect('orden_pago_list')
+    
+
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class OrdenPagoCreateFromList(View):
+
+    def post(self, request):
+        facturas_ids = request.POST.getlist('facturas[]')
+        numero = request.POST.get('numero')
+        fecha = request.POST.get('fecha')
+        beneficiario = beneficiarioRepo.filter_by_nombre(nombre=request.POST.get('beneficiario'))
+        
+        orden = ordenPagoRepo.create(
+                    id_usuario=request.user,
+                    fecha=fecha,
+                    numero=numero,
+                    id_beneficiario=beneficiario,
+                    total=0,
+                )
+        
+        facturasTotal = 0
+        for factura_id in facturas_ids:
+            factura = facturaRepo.filter_by_id(id=factura_id)
+            facturasTotal = facturasTotal + factura.importe
+            detalleOrdenRepo.create(
+                importe=factura.importe,
+                id_ordenpago=orden,
+                id_factura=factura,
+            )
+        
+        ordenPagoRepo.update_total(
+            orden_pago=orden,
+            total=facturasTotal,
+        )
+
+        return redirect('detail', orden.id)

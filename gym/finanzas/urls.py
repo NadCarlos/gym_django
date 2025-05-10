@@ -20,6 +20,7 @@ from finanzas.views.orden_pago import (
     OrdenesPagoList,
     OrdenPagoDelete,
     OrdenPagoEdit,
+    OrdenPagoCreateFromList,
 )
 
 
@@ -43,6 +44,7 @@ orden_pago = [
     path(route='orden_pago_list/',view=OrdenesPagoList.as_view(), name='orden_pago_list'),
     path(route='<int:id>/orden_pago_edit/',view=OrdenPagoEdit.as_view(), name='orden_pago_edit'),
     path(route='<int:id>/orden_pago_delete/',view=OrdenPagoDelete.as_view(), name='orden_pago_delete'),
+    path(route='orden_pago_create_from_list/',view=OrdenPagoCreateFromList.as_view(), name='orden_pago_create_from_list'),
 ]
 
 urlpatterns = libro_ventas + beneficiarios + orden_pago

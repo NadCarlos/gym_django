@@ -26,6 +26,11 @@ class BeneficiarioRepository:
             numero_cuit=numero_cuit,
         ).first()
     
+    def filter_by_nombre(self, nombre: str) -> List[Beneficiario]:
+        return Beneficiario.objects.filter(
+            nombre=nombre,
+        ).first()
+    
     def get_by_id(self, id: int) -> Optional[Beneficiario]:
         try:
             beneficiario = Beneficiario.objects.get(id=id)

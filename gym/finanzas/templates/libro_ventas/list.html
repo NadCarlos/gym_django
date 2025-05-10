@@ -2,6 +2,48 @@
 
 {% block content %}
 <div class="container mt-4">
+    <h2 class="mb-4">Nueva Orden de Pago</h2>
+
+    <form method="POST" class="mb-4" action="{% url 'orden_pago_create_from_list' %}">
+        {% csrf_token %}
+        <div class="row g-3 p-2 shadow align-items-center">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="fecha" class="form-label fw-bold">Fecha</label>
+                    <input type="date" class="form-control" id="fecha" name="fecha" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="beneficiario" class="form-label fw-bold">Beneficiario</label>
+                    <input type="text" class="form-control" id="beneficiario" name="beneficiario" readonly>
+                    <div id="beneficiario-alerta" class="alert alert-danger mt-2 d-none" role="alert">
+                        No se pueden seleccionar facturas de distintos beneficiarios.
+                    </div>
+                </div>
+        
+                <div class="col-md-3">
+                    <label for="numero" class="form-label fw-bold">Número</label>
+                    <input type="text" class="form-control" id="numero" name="numero" placeholder="Ingrese número" required>
+                </div>
+            </div>
+        
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <ul id="facturas-seleccionadas" class="list-group"></ul>
+                </div>
+            </div>
+
+            <div id="facturas-hidden-inputs"></div>
+        
+            <div class="row mt-3">
+                <div class="col-md-12 text-center">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send"></i> Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
     <h2 class="mb-4">Lista de Facturas</h2>
     <div class="row">
         <!-- Primera columna -->
@@ -135,6 +177,9 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th>
+                        Opciones
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -149,11 +194,38 @@
                         <td class="text-success">{{ factura.numero }}</td>
                         <td class="text-success" style="text-align: right;" >{{ factura.importe }}</td>
                         <td class="text-success">{{ factura.pago }}</td>
+                        <td>
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input readonly" 
+                                    type="checkbox"
+                                    disabled>
+                                <label class="form-check-label disabled">
+                                    Añadir
+                                </label>
+                            </div>
+                        </td>
                     {% else %}
                         <td class="text-danger">{{ factura.pto_vta }}</td>
                         <td class="text-danger">{{ factura.numero }}</td>
                         <td class="text-danger" style="text-align: right;" >{{ factura.importe }}</td>
                         <td class="text-danger">{{ factura.pago }}</td>
+                        <td>
+                            <div class="form-check">
+                                <input 
+                                    class="form-check-input factura-checkbox" 
+                                    type="checkbox" 
+                                    value="" 
+                                    id="{{ factura.id }}"
+                                    data-fecha="{{ factura.fecha }}"
+                                    data-numero="{{ factura.numero }}"
+                                    data-beneficiario="{{ factura.id_beneficiario }}"
+                                >
+                                <label class="form-check-label" for="{{ factura.id }}">
+                                    Añadir
+                                </label>
+                            </div>
+                        </td>
                     {% endif %}
                 </tr>
                 {% endfor %}
@@ -166,6 +238,75 @@
     </div>
 </div>
 <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.form-check-input');
+        const facturasLista = document.getElementById('facturas-seleccionadas');
+        const hiddenInputsContainer = document.getElementById('facturas-hidden-inputs');
+        const beneficiarioInput = document.getElementById('beneficiario');
+        const alerta = document.getElementById('beneficiario-alerta');
+        const form = document.getElementById('formulario-facturas');
+
+        let beneficiarioGlobal = null;
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const row = checkbox.closest('tr');
+                const id = checkbox.id;
+                const beneficiario = row.children[0].textContent.trim();
+
+                if (checkbox.checked) {
+                    // Primera selección
+                    if (!beneficiarioGlobal) {
+                        beneficiarioGlobal = beneficiario;
+                        beneficiarioInput.value = beneficiario;
+                        alerta.classList.add('d-none');
+                    }
+
+                    // Validación de consistencia
+                    if (beneficiario !== beneficiarioGlobal) {
+                        checkbox.checked = false;
+                        alerta.classList.remove('d-none');
+                        return;
+                    }
+
+                    // Crear ítem visual
+                    const fecha = row.children[2].textContent.trim();
+                    const numero = row.children[5].textContent.trim();
+                    const importe = row.children[6].textContent.trim();
+
+                    const item = document.createElement('li');
+                    item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    item.id = `factura-item-${id}`;
+                    item.textContent = `Factura: ${numero} | Fecha: ${fecha} | Importe: ${importe}`;
+                    facturasLista.appendChild(item);
+
+                    // Crear input oculto
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'facturas[]';
+                    hiddenInput.value = id;
+                    hiddenInput.id = `input-factura-${id}`;
+                    hiddenInputsContainer.appendChild(hiddenInput);
+
+                } else {
+                    // Quitar ítem visual
+                    const item = document.getElementById(`factura-item-${id}`);
+                    if (item) item.remove();
+
+                    // Quitar input oculto
+                    const input = document.getElementById(`input-factura-${id}`);
+                    if (input) input.remove();
+
+                    // Limpiar beneficiario si no quedan seleccionados
+                    if (facturasLista.children.length === 0) {
+                        beneficiarioGlobal = null;
+                        beneficiarioInput.value = '';
+                        alerta.classList.add('d-none');
+                    }
+                }
+            });
+        });
+    });
     $(document).ready(function(){
         // Inicializa el datepicker en los campos de fecha
         $('#fecha-desde').datepicker({
