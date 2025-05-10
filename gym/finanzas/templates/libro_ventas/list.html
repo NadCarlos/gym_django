@@ -41,6 +41,12 @@
             <input type="date" id="fecha-hasta" class="form-control" placeholder="Seleccione la fecha hasta" name="fecha_before" value="{{ request.GET.fecha_before }}">
         </div>
 
+        <select name="pago" class="form-select">
+            <option value="">Todas</option>
+            <option value="true" {% if request.GET.pago == "true" %}selected{% endif %}>Pagas</option>
+            <option value="false" {% if request.GET.pago == "false" %}selected{% endif %}>Impagas</option>
+        </select>
+
         <button type="submit" class="btn btn-success btn-sm ms-3">
             <i class="bi bi-filter-square"></i> Filtrar
         </button>
@@ -119,6 +125,16 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'importe' %}-importe{% else %}importe{% endif %}">
+                            Pago
+                            {% if request.GET.ordering == 'importe' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-importe' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -128,9 +144,17 @@
                     <td>{{ factura.id_beneficiario.numero_cuit }}</td>
                     <td>{{ factura.fecha }}</td>
                     <td>{{ factura.tipo }}</td>
-                    <td>{{ factura.pto_vta }}</td>
-                    <td>{{ factura.numero }}</td>
-                    <td style="text-align: right;" >{{ factura.importe }}</td>
+                    {% if factura.pago == True %}
+                        <td class="text-success">{{ factura.pto_vta }}</td>
+                        <td class="text-success">{{ factura.numero }}</td>
+                        <td class="text-success" style="text-align: right;" >{{ factura.importe }}</td>
+                        <td class="text-success">{{ factura.pago }}</td>
+                    {% else %}
+                        <td class="text-danger">{{ factura.pto_vta }}</td>
+                        <td class="text-danger">{{ factura.numero }}</td>
+                        <td class="text-danger" style="text-align: right;" >{{ factura.importe }}</td>
+                        <td class="text-danger">{{ factura.pago }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
                 

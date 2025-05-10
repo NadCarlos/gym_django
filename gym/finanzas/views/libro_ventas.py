@@ -93,6 +93,7 @@ class FacturasList(View):
     context_object_name = 'facturas'
 
     def get(self, request):
+        pago_filter = request.GET.get('pago')
         if request.GET.get('fecha_after') is None:
             hoy = datetime.today()
             hace_30_dias = hoy - timedelta(days=100)
@@ -114,10 +115,17 @@ class FacturasList(View):
 
         total = 0
         for factura in facturas:
+            factura_paga_exists = detalleOrdenRepo.filter_by_factura_exists(id_factura=factura.id)
+            factura.pago = factura_paga_exists
             total += factura.importe
             factura.importe = locale.currency(factura.importe, grouping=True)
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
+
+        if pago_filter == 'true':
+            facturas = [f for f in facturas if f.pago is True]
+        elif pago_filter == 'false':
+            facturas = [f for f in facturas if f.pago is False]
 
         total = locale.currency(total, grouping=True)
 

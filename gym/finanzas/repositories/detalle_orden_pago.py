@@ -20,6 +20,9 @@ class DetalleOrdenRepo:
     def filter_by_factura_id(self, factura_id) -> Optional[DetalleOrden]:
         return DetalleOrden.objects.filter(id_factura=factura_id).filter(activo = True).first()
     
+    def filter_by_factura_exists(self, id_factura) -> Optional[DetalleOrden]:
+        return DetalleOrden.objects.filter(id_factura=id_factura).filter(activo = True).exists()
+    
     def create(
         self,
         importe: str,
