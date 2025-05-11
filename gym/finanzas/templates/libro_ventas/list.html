@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h2 class="mb-4">Nueva Orden de Pago</h2>
 
-    <form method="POST" class="mb-4" action="{% url 'orden_pago_create_from_list' %}">
+    <form id="formulario-facturas" method="POST" class="mb-4" action="{% url 'orden_pago_create_from_list' %}">
         {% csrf_token %}
         <div class="row g-3 p-2 shadow align-items-center">
             <div class="row">
@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="beneficiario" class="form-label fw-bold">Beneficiario</label>
-                    <input type="text" class="form-control" id="beneficiario" name="beneficiario" readonly>
+                    <input type="text" class="form-control" id="beneficiario" name="beneficiario" readonly required>
                     <div id="beneficiario-alerta" class="alert alert-danger mt-2 d-none" role="alert">
                         No se pueden seleccionar facturas de distintos beneficiarios.
                     </div>
@@ -306,6 +306,15 @@
                 }
             });
         });
+    });
+    const form = document.getElementById('formulario-facturas');
+    const beneficiarioInput = document.getElementById('beneficiario');
+
+    form.addEventListener('submit', function (e) {
+        if (!beneficiarioInput.value.trim()) {
+            e.preventDefault();
+            alert('Debe seleccionar al menos una factura con un beneficiario válido.');
+        }
     });
     $(document).ready(function(){
         // Inicializa el datepicker en los campos de fecha
