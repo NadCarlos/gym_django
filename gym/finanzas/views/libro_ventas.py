@@ -111,21 +111,26 @@ class FacturasList(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
-        facturas_count = facturas.count()
-
-        total = 0
         for factura in facturas:
             factura_paga_exists = detalleOrdenRepo.filter_by_factura_exists(id_factura=factura.id)
             factura.pago = factura_paga_exists
-            total += factura.importe
-            factura.importe = locale.currency(factura.importe, grouping=True)
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
 
-        if pago_filter == 'true':
-            facturas = [f for f in facturas if f.pago is True]
-        elif pago_filter == 'false':
-            facturas = [f for f in facturas if f.pago is False]
+        filtros_pago = {
+            'true': lambda f: f.pago is True,
+            'false': lambda f: f.pago is False,
+        }
+
+        if pago_filter in filtros_pago:
+            facturas = list(filter(filtros_pago[pago_filter], facturas))
+
+        facturas_count = len(facturas)
+
+        total = 0
+        for factura in facturas:
+            total += factura.importe
+            factura.importe = locale.currency(factura.importe, grouping=True)
 
         total = locale.currency(total, grouping=True)
 

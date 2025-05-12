@@ -23,6 +23,9 @@ class DetalleOrdenRepo:
     def filter_by_factura_exists(self, id_factura) -> Optional[DetalleOrden]:
         return DetalleOrden.objects.filter(id_factura=id_factura).filter(activo = True).exists()
     
+    def get_all_factura_ids_with_pago(self):
+        return DetalleOrden.objects.values_list('id_factura', flat=True).distinct()
+    
     def create(
         self,
         importe: str,
