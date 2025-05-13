@@ -109,7 +109,7 @@ class OrdenPago(models.Model):
 
     total = models.DecimalField(
         verbose_name='total',
-        max_digits=10,
+        max_digits=14,
         decimal_places=2,
         default=0,
         null=True,
@@ -180,7 +180,7 @@ class Descuento(models.Model):
 
     importe = models.DecimalField(
         verbose_name='importe',
-        max_digits=10,
+        max_digits=14,
         decimal_places=2,
     )
 
@@ -216,7 +216,7 @@ class DetalleOrden(models.Model):
 
     importe = models.DecimalField(
         verbose_name='importe',
-        max_digits=10,
+        max_digits=14,
         decimal_places=2,
     )
 
