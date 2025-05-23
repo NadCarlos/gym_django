@@ -25,6 +25,7 @@ from administracion.repositories.prestacion_paciente import PrestacionPacienteRe
 from administracion.repositories.agenda import AgendaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente_plan import PacientePlanRepository
+from administracion.repositories.cuota import CuotaRepository
 
 
 from administracion.models import Paciente
@@ -39,6 +40,7 @@ estadoCivilRepo = EstadoCivilRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 agendaRepo = AgendaRepository()
 pacientePlanRepo = PacientePlanRepository()
+cuotaRepo = CuotaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -314,7 +316,12 @@ class PacienteDelete(View):
         paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=id)
         if paciente_plan != None:
             pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
-        #No elimino, cambio el campo activo a False
+        
+        today = date.today()
+        cuota = cuotaRepo.filter_by_paciente_id_mes(id_paciente=id,year=today.year,month=today.month)
+        if cuota:
+            cuotaRepo.delete_by_activo(cuota=cuota)
+
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list', True)
 

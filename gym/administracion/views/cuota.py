@@ -23,7 +23,8 @@ class GenerateCuotas(View):
         planes_paciente = pacientePlanRepo.filter_by_activo()
         today = date.today()
         for plan_paciente in planes_paciente:
-            if cuotaRepo.cuota_exist(id_paciente_plan=plan_paciente.id, year=today.year, month=today.month) == False:
+            cuotaExist = cuotaRepo.cuota_exist(id_paciente=plan_paciente.id_paciente.id, year=today.year, month=today.month)
+            if cuotaExist == False:
                 cuota = cuotaRepo.create(
                     imputado=today,
                     id_paciente_plan=plan_paciente,
