@@ -100,3 +100,13 @@ class PagoCreate(View):
                 return redirect('cuotas_list', False)
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PagoDelete(View):
+     
+    def get(self, request, id):
+        pago = pagoRepo.filter_by_id(id=id)
+        detalle_pago = detallePagoRepo.filter_by_pago_id(id_pago=pago.id)
+        pagoRepo.delete_by_activo(pago=pago)
+        detallePagoRepo.delete_by_activo(detalle_pago=detalle_pago)
+
+        return redirect('pago_list', pago.id_paciente.id)

@@ -42,7 +42,7 @@
                 <tr>
                     <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_cuota' %}-id_cuota{% else %}id_cuota{% endif %}">
-                            Cuota Nrpo.
+                            Cuota Nro.
                             {% if request.GET.ordering == 'id_cuota' %}
                                 <i class="bi bi-caret-down-fill"></i>
                             {% elif request.GET.ordering == '-id_cuota' %}
@@ -88,7 +88,8 @@
                     <td>{{ detalle_pago.id_pago.id_tipo_pago.nombre }}</td>
                     <td>{{ detalle_pago.id_pago.fecha }}</td>
                     <td>
-                        <a href="#" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'pago_delete' detalle_pago.id_pago.id %}" class="btn btn-danger btn-sm me-2"
+                        onclick="return confirm('Vas a borrar este pago. Continuar?');">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
                     </td>

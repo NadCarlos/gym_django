@@ -12,8 +12,11 @@ class DetallePagoRepository:
     def filter_by_cuota_id(self, id_cuota) -> Optional[DetallePago]:
         return DetallePago.objects.filter(id_cuota=id_cuota)
     
+    def filter_by_pago_id(self, id_pago) -> Optional[DetallePago]:
+        return DetallePago.objects.filter(id_pago=id_pago).first()
+    
     def filter_by_paciente_id(self, id_paciente) -> Optional[DetallePago]:
-        return DetallePago.objects.filter(id_cuota__id_paciente_plan__id_paciente__id=id_paciente)
+        return DetallePago.objects.filter(id_cuota__id_paciente_plan__id_paciente__id=id_paciente).filter(activo=True)
     
     def filter_by_cuota_id_exists(self, id_cuota) -> Optional[DetallePago]:
         return DetallePago.objects.filter(id_cuota=id_cuota).exists()
@@ -29,3 +32,7 @@ class DetallePagoRepository:
             id_pago=id_pago,
             id_cuota=id_cuota,
         )
+    
+    def delete_by_activo(self, detalle_pago: DetallePago):
+        detalle_pago.activo=False
+        detalle_pago.save()

@@ -8,6 +8,9 @@ class PagoRepository:
 
     def get_all(self) -> List[Pago]:
         return Pago.objects.all()
+    
+    def filter_by_id(self, id) -> Optional[Pago]:
+        return Pago.objects.filter(id=id).first()
 
     def create(
         self,
@@ -24,3 +27,7 @@ class PagoRepository:
             id_paciente=id_paciente,
             id_usuario=id_usuario,
         )
+    
+    def delete_by_activo(self, pago: Pago):
+        pago.activo=False
+        pago.save()

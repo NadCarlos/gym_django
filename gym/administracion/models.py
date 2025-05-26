@@ -621,6 +621,12 @@ class Pago(models.Model):
         on_delete=models.RESTRICT,
         related_name='usuario_pago',
     )
+    
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
 
 
 class Plan(models.Model):
@@ -754,4 +760,10 @@ class DetallePago(models.Model):
         verbose_name='importe',
         max_digits=10,
         decimal_places=2,
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
     )
