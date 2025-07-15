@@ -3,6 +3,18 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Nueva Orden de Pago</h2>
+    {% if messages %}
+        <div class="toast-backdrop position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center" style="z-index: 1055;">
+            {% for message in messages %}
+            <div class="toast show text-white bg-success shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 300px;">
+                <div class="toast-body d-flex justify-content-between align-items-center">
+                <span>{{ message }}</span>
+                <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="toast" aria-label="Close">Aceptar</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <form id="formulario-facturas" method="POST" class="mb-4" action="{% url 'orden_pago_create_from_list' %}">
         {% csrf_token %}
@@ -240,6 +252,26 @@
         </table>
     </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toast = document.querySelector('.toast');
+    const backdrop = document.querySelector('.toast-backdrop');
+
+    if (toast && backdrop) {
+      const bsToast = new bootstrap.Toast(toast);
+      bsToast.show();
+
+      // Cerrar toast y fondo al clickear el botón o al ocultarse
+      toast.addEventListener('hidden.bs.toast', () => {
+        backdrop.remove();
+      });
+
+      document.querySelector('.btn-close')?.addEventListener('click', () => {
+        bsToast.hide();
+      });
+    }
+  });
+</script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('.form-check-input');

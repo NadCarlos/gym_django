@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
+from django.contrib import messages
 
 from utils.permissions import es_admin_o_finanzas
 
@@ -451,4 +452,6 @@ class OrdenPagoCreateFromList(View):
             total=facturasTotal,
         )
 
-        return redirect('detail', orden.id)
+        messages.success(request, "Orden de pago creada correctamente.")
+
+        return redirect('list')
