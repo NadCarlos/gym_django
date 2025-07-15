@@ -95,17 +95,11 @@ class FacturasList(View):
 
     def get(self, request):
         pago_filter = request.GET.get('pago')
-        if request.GET.get('fecha_after') is None:
-            hoy = datetime.today()
-            hace_30_dias = hoy - timedelta(days=100)
-
-            # Instanciar el filtro con los datos enviados por el formulario
-            filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_dates(start_date=hace_30_dias,end_date=hoy))
-        else:
-            filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+        
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
 
         # Obtener el parámetro de ordenamiento
-        ordering = request.GET.get('ordering', 'fecha')
+        ordering = request.GET.get('ordering', '-fecha')
         # Obtener el queryset filtrado
         facturas = filterset.qs
         # Aplicar el ordenamiento si existe

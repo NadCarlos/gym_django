@@ -372,7 +372,7 @@ class OrdenesPagoList(View):
         
         filterset = OrdenesPagoFilter(request.GET, queryset=ordenPagoRepo.filter_by_activo())
         # Obtener el parámetro de ordenamiento
-        ordering = request.GET.get('ordering', 'fecha')
+        ordering = request.GET.get('ordering', '-fecha')
 
         # Obtener el queryset filtrado
         ordenes = filterset.qs
