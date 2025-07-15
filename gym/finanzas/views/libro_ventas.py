@@ -1,11 +1,12 @@
 import pandas
+import io
 import locale
 from datetime import datetime, timedelta
 
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 
 from utils.permissions import es_admin_o_finanzas
 
@@ -145,6 +146,77 @@ class FacturasList(View):
                 total=total,
             )
         )
+
+
+@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class FacturasToCsv(View):
+    def get(self, request):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=facturas.xlsx'
+
+        beneficiario_nombre = request.GET.get('id_beneficiario__nombre')
+        numero_cuit = request.GET.get('id_beneficiario__numero_cuit')
+        fecha_after = request.GET.get('fecha_after')
+        fecha_before = request.GET.get('fecha_before')
+        pago = request.GET.get('pago')
+
+        facturas = facturaRepo.get_all()
+
+        if beneficiario_nombre:
+            facturas = facturas.filter(id_beneficiario__nombre__icontains=beneficiario_nombre)
+
+        if numero_cuit:
+            facturas = facturas.filter(id_beneficiario__numero_cuit__icontains=numero_cuit)
+
+        if fecha_after and fecha_before:
+            facturas = facturas.filter(fecha__gte=fecha_after, fecha__lt=fecha_before)
+
+        for factura in facturas:
+            factura_paga_exists = detalleOrdenRepo.filter_by_factura_exists(id_factura=factura.id)
+            factura.pago = factura_paga_exists
+            factura.pto_vta = factura.pto_vta.zfill(4)
+            factura.numero = factura.numero.zfill(8)
+
+        filtros_pago = {
+            'true': lambda f: f.pago is True,
+            'false': lambda f: f.pago is False,
+        }
+
+        if pago in filtros_pago:
+            facturas = list(filter(filtros_pago[pago], facturas))
+
+        data = []
+        for factura in facturas:
+            data.append([
+                factura.id_beneficiario.nombre,
+                factura.id_beneficiario.numero_cuit,
+                factura.fecha,
+                factura.pto_vta,
+                factura.numero,
+                factura.importe,
+                factura.pago,
+                ])
+
+        df = pandas.DataFrame(data, columns=[
+            'Beneficiario',
+            'Nro Cuit',
+            'Fecha',
+            'Pto Venta',
+            'Numero',
+            'Importe',
+            'Pagada',
+            ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pandas.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Facturas', index=False)
+
+        response.write(output.getvalue())
+
+        return response
 
 
 @method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')

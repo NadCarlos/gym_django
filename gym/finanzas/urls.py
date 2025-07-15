@@ -4,6 +4,7 @@ from finanzas.views.libro_ventas import (
     Index,
     CargaView,
     FacturasList,
+    FacturasToCsv,
     BalanceList,
     BalanceListAll,
 )
@@ -28,6 +29,7 @@ libro_ventas = [
     path(route='',view=Index.as_view(), name='index'),
     path(route='upload/',view=CargaView.as_view(), name='upload'),
     path(route='list/',view=FacturasList.as_view(), name='list'),
+    path(route='facturas_csv/',view=FacturasToCsv.as_view(), name='facturas_csv'),
     path(route='<int:id>/balance_list/',view=BalanceList.as_view(), name='balance_list'),
     path(route='balance_list_all/',view=BalanceListAll.as_view(), name='balance_list_all'),
 ]
