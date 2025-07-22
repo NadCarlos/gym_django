@@ -96,10 +96,16 @@
                     <td>{{ orden.numero }}</td>
                     <td class="text-success fw-bold">{{ orden.total }}</td>
                     <td>{{ orden.fecha }}</td>
-                    <td>
-                        <a href="{% url 'detail' orden.id %}" class="btn btn-outline-primary btn-sm">
+                    <td><input type="hidden" name="next" value="{{ from_list }}">
+                        {% if from_list == False %}
+                        <a href="{% url 'detail' orden.id False %}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-eye"></i> Ver Detalle
                         </a>
+                        {% elif from_list == True %}
+                        <a href="{% url 'detail' orden.id True %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> Ver Detalle
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

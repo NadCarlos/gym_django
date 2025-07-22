@@ -86,6 +86,7 @@ class OrdenPagoPopulate(View):
         )
     
     def post(self, request, id):
+        from_list = False
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas_ids = request.POST.get('facturas')
         facturas_ids = str(facturas_ids)
@@ -136,14 +137,14 @@ class OrdenPagoPopulate(View):
             total=total,
         )
 
-        return redirect('detail', id)
+        return redirect('detail', id, from_list)
 
 
 @method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoEdit(View):
 
-    def get(self, request, id):
+    def get(self, request, id, from_list):
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas = facturaRepo.filter_by_beneficiario_id(id_beneficiario=orden.id_beneficiario)
         conceptos = conceptoRepo.get_all()
@@ -192,10 +193,11 @@ class OrdenPagoEdit(View):
                 conceptos = conceptos,
                 facturas_selected_json = facturas_selected_json,
                 descuentos_selected_json = descuentos_selected_json,
+                from_list = from_list,
             )
         )
 
-    def post(self, request, id):
+    def post(self, request, id, from_list):
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas_ids = request.POST.get('facturas')
         facturas_ids = str(facturas_ids)
@@ -313,14 +315,17 @@ class OrdenPagoEdit(View):
             total=total,
         )
 
-        return redirect('detail', id)
+        if from_list == "True":
+            messages.success(request, "Orden de pago creada correctamente desde la lista.")
+
+        return redirect('detail', id, from_list)
 
 
 @method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoDetail(View):
 
-    def get(self, request, id):
+    def get(self, request, id, from_list):
         orden = ordenPagoRepo.filter_by_id(id=id)
         facturas = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
         descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
@@ -350,6 +355,7 @@ class OrdenPagoDetail(View):
                 descuentos=descuentos,
                 descuentosTotal=descuentosTotal,
                 total = total,
+                from_list = from_list,
             )
         )
     
@@ -360,6 +366,7 @@ class OrdenesPagoList(View):
     context_object_name = 'ordenes'
 
     def get(self, request):
+        from_list = False
         """if request.GET.get('fecha_after') is None:
             hoy = datetime.today()
             hace_10_dias = hoy - timedelta(days=10)
@@ -401,6 +408,7 @@ class OrdenesPagoList(View):
                 form=filterset.form,
                 ordering=ordering,
                 total=total,
+                from_list=from_list,
             )
         )
     
@@ -409,14 +417,18 @@ class OrdenesPagoList(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class OrdenPagoDelete(View):
 
-    def get(self, request, id):
+    def get(self, request, id, from_list):
+        print(from_list)
         orden = ordenPagoRepo.filter_by_id(id=id)
         detalles = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
         for detalle in detalles:
             detalleOrdenRepo.delete_by_activo(detalle_orden=detalle)
         #No elimino, cambio el campo activo a False
         ordenPagoRepo.delete_by_activo(orden=orden)
-        return redirect('orden_pago_list')
+        if from_list == "False":
+            return redirect('orden_pago_list')
+        elif from_list == "True":
+            return redirect('list')
     
 
 @method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
@@ -424,6 +436,7 @@ class OrdenPagoDelete(View):
 class OrdenPagoCreateFromList(View):
 
     def post(self, request):
+        from_list = True
         facturas_ids = request.POST.getlist('facturas[]')
         numero = request.POST.get('numero')
         fecha = request.POST.get('fecha')
@@ -452,6 +465,4 @@ class OrdenPagoCreateFromList(View):
             total=facturasTotal,
         )
 
-        messages.success(request, "Orden de pago creada correctamente.")
-
-        return redirect('list')
+        return redirect('orden_pago_edit', orden.id, from_list)
