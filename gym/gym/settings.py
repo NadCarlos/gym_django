@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "entrada",
     "usuarios",
     "finanzas",
+    "rehabilitacion",
 ]
 
 MIDDLEWARE = [
