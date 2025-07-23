@@ -6,5 +6,5 @@ from rehabilitacion.views.inicio.index import(
 
 
 urlpatterns = [
-    path(route='',view=IndexView.as_view(), name='inicio'),
+    path(route='',view=IndexView.as_view(), name='inicio_rehab'),
 ]
