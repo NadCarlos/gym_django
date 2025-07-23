@@ -42,10 +42,10 @@ beneficiarios = [
 orden_pago = [
     path(route='orden_pago_create/',view=OrdenPagoCreate.as_view(), name='orden_pago_create'),
     path(route='<int:id>/orden_pago_populate/',view=OrdenPagoPopulate.as_view(), name='orden_pago_populate'),
-    path(route='<int:id>/detail/',view=OrdenPagoDetail.as_view(), name='detail'),
+    path(route='<int:id>/<from_list>/detail/',view=OrdenPagoDetail.as_view(), name='detail'),
     path(route='orden_pago_list/',view=OrdenesPagoList.as_view(), name='orden_pago_list'),
-    path(route='<int:id>/orden_pago_edit/',view=OrdenPagoEdit.as_view(), name='orden_pago_edit'),
-    path(route='<int:id>/orden_pago_delete/',view=OrdenPagoDelete.as_view(), name='orden_pago_delete'),
+    path(route='<int:id>/<from_list>/orden_pago_edit/',view=OrdenPagoEdit.as_view(), name='orden_pago_edit'),
+    path(route='<int:id>/<from_list>/orden_pago_delete/',view=OrdenPagoDelete.as_view(), name='orden_pago_delete'),
     path(route='orden_pago_create_from_list/',view=OrdenPagoCreateFromList.as_view(), name='orden_pago_create_from_list'),
 ]
 
