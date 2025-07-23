@@ -767,3 +767,55 @@ class DetallePago(models.Model):
         null=False,
         blank=False,
     )
+
+
+class Area(models.Model):
+
+    nombre = models.CharField(
+        max_length=50,
+        null=False,
+        blank=False,
+        verbose_name="Nombre",
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    def __str__(self):
+        return  self.nombre
+    
+
+class PacienteArea(models.Model):
+    
+    id_area = models.ForeignKey(
+        Area,
+        on_delete=models.RESTRICT,
+        related_name='id_area',
+        default=1,
+    )
+
+    id_paciente = models.ForeignKey(
+        Paciente,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='paciente_area',
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_pac_area',
+    )
+
+    def __str__(self):
+        return  self.id_area.nombre

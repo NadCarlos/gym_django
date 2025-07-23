@@ -26,6 +26,7 @@ from administracion.repositories.agenda import AgendaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente_plan import PacientePlanRepository
 from administracion.repositories.cuota import CuotaRepository
+from administracion.repositories.paciente_area import PacienteAreaRepository
 
 
 from administracion.models import Paciente
@@ -41,6 +42,7 @@ prestacionPacienteRepo = PrestacionPacienteRepository()
 agendaRepo = AgendaRepository()
 pacientePlanRepo = PacientePlanRepository()
 cuotaRepo = CuotaRepository()
+pacienteAreaRepo = PacienteAreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -49,8 +51,7 @@ class PacientesList(View):
     context_object_name = 'pacientes'
 
     def get(self, request, state):
-        filterset = PacienteFilter(request.GET, pacienteRepo.filter_by_activo(state))
-        pacientes = pacienteRepo.filter_by_activo(state)
+        filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state))
         prestaciones = prestacionPacienteRepo.get_all()
         """pacientesFinished = []
         for paciente in pacientes:
@@ -101,7 +102,7 @@ class PacientesToCsv(View):
         id_estado_civil = request.GET.get('id_estado_civil')
         id_sexo = request.GET.get('id_sexo')
 
-        pacientes = Paciente.objects.filter(activo=True)
+        pacientes = pacienteRepo.filter_pacientes_area(True)
 
         if apellido:
             pacientes = pacientes.filter(apellido__icontains=apellido)
@@ -234,6 +235,10 @@ class PacienteCreate(View):
                     celular=form.cleaned_data['celular'],
                     observaciones=form.cleaned_data['observaciones'],
                     )
+                paciente_area = pacienteAreaRepo.create_default(
+                    id_paciente=paciente_nuevo,
+                    id_usuario=form.cleaned_data['id_usuario'],
+                )
                 return redirect('paciente_detail', paciente_nuevo.id)
             else:
                 return redirect('error_paciente_existente')

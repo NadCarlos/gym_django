@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Localidad
+from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Localidad, PacienteArea
 
 
 class PacienteRepository:
@@ -19,6 +19,13 @@ class PacienteRepository:
         return Paciente.objects.filter(
             activo=state
         ).order_by('apellido')
+    
+    def filter_pacientes_area(self, state) -> List[Paciente]:
+        # Obtener IDs de pacientes relacionados con id_area = 1
+        ids_pacientes = PacienteArea.objects.filter(id_area=1).values_list('id_paciente', flat=True)
+
+        # Obtener el queryset de pacientes
+        return Paciente.objects.filter(id__in=ids_pacientes).filter(activo=state).order_by('apellido')
 
     def get_by_id(self, id: int) -> Optional[Paciente]:
         try:
