@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CERMED</title>
+    <title>CERMED - Rehabilitación</title>
     <link rel="icon" type="image/x-icon" href="{% static 'public/cermed_icon.png' %}">
     <script src="https://cdn.jsdelivr.net/npm/@floating-ui/core@1.6.8"></script>
     <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.12"></script>
@@ -15,98 +15,98 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        .navbar-custom {
+            background-color: #009f95;
+        }
+        .navbar-custom .nav-link,
+        .navbar-custom .navbar-brand,
+        .navbar-custom .dropdown-toggle {
+            color: #fff;
+        }
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .dropdown-item:hover {
+            background-color: #007f78;
+            color: #fff;
+        }
+        .dropdown-menu {
+            border-radius: 0.5rem;
+        }
+    </style>
 </head>
 
 <body>
-    <nav style="background-color: #009f95;" class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
         <div class="container-fluid">
-            <!-- Izquierda -->
-            <a class="navbar-brand" href="{% url 'inicio_rehab' %}">
-                <img class="imagen" style="width: 30px; height: 30px;"
-                    src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="E"> Rehabilitacion
+            <!-- Marca -->
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'inicio_rehab' %}">
+                <img src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="Logo" width="36" height="36" class="me-2">
+                Rehabilitación
             </a>
-            {% if user.is_authenticated %}
-            <a class="nav-link text-white"><i class="bi bi-person-badge"></i> Usuario: {{ user.username }}</a>
-            {% endif %}
 
-            <!-- Derecha -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Botón responsive -->
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarRehab"
+                aria-controls="navbarRehab" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- ------------------ -->
+            <!-- Contenido -->
+            <div class="collapse navbar-collapse" id="navbarRehab">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
+
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-x-square-fill"></i>
-                            Desconectar
-                        </a>
+                        <span class="nav-link disabled text-white"><i class="bi bi-person-circle"></i> {{ user.username }}</span>
                     </li>
 
-                    {% if request.user|has_group:"Gimnasio" or user.is_staff %} 
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person"></i> Pacientes
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-person"></i> Ver Pacientes</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-shield"></i> Ver Obras Sociales</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-list-check"></i> Ver Prestaciones</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">
-                                    <i class="bi bi-calendar-check"></i> Ver Asistencias</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-card-text"></i> Ver Planes </a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-journal-bookmark"></i> Ver Cuotas </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#"><i class="bi bi-box-arrow-right"></i> Desconectar</a>
+                    </li>
 
-                    <div class="dropdown">
-                        <button style="margin-left: 4px;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-file-earmark-person"></i> Profesionales
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-file-earmark-person"></i> Ver Profesionales</a>
-                        </li>
-                        <li><a class="dropdown-item" href="#">
-                            <i class="bi bi-shield"></i> Ver Tratamientos</a>
-                        </li>
+                    {% if request.user|has_group:"Gimnasio" or user.is_staff %}
+                    <!-- Pacientes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="pacientesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-people-fill"></i> Pacientes
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Ver Pacientes</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-shield"></i> Obras Sociales</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-list-check"></i> Prestaciones</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check"></i> Asistencias</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-card-text"></i> Planes</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-journal-bookmark"></i> Cuotas</a></li>
                         </ul>
-                    </div>
+                    </li>
+
+                    <!-- Profesionales -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profesionalesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-briefcase-fill"></i> Profesionales
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-person"></i> Ver Profesionales</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-shield-check"></i> Tratamientos</a></li>
+                        </ul>
+                    </li>
                     {% endif %}
 
-                    {% if request.user|has_group:"Finanzas" or user.is_staff %} 
-                    <div class="dropdown">
-                        <button style="margin-left: 4px;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-file-earmark-person"></i> Finanzas
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">
-                                <i class="bi bi-file-earmark-person"></i>Menu</a>
-                        </li>
+                    {% if request.user|has_group:"Finanzas" or user.is_staff %}
+                    <!-- Finanzas -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="finanzasDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-cash-coin"></i> Finanzas
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-list-task"></i> Menú Finanzas</a></li>
                         </ul>
-                    </div>
+                    </li>
                     {% endif %}
 
-                    <!-- ------------------ -->
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-person-badge"></i> Login</a>
+                        <a class="nav-link text-white" href="#"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -114,10 +114,9 @@
         </div>
     </nav>
 
-    <div class="container-fluid">
+    <div class="container-fluid py-4">
         {% block content %}
         {% endblock %}
     </div>
 </body>
-
 </html>
