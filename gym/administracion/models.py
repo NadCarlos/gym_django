@@ -819,3 +819,36 @@ class PacienteArea(models.Model):
 
     def __str__(self):
         return  self.id_area.nombre
+    
+
+class ProfesionalArea(models.Model):
+    
+    id_area = models.ForeignKey(
+        Area,
+        on_delete=models.RESTRICT,
+        related_name='id_area_pro',
+        default=1,
+    )
+
+    id_paciente = models.ForeignKey(
+        Profesional,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='profesional_area',
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_pro_area',
+    )
+
+    def __str__(self):
+        return  self.id_area.nombre

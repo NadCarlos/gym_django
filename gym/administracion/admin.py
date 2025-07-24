@@ -24,6 +24,7 @@ from administracion.models import (
     DetallePago,
     Area,
     PacienteArea,
+    ProfesionalArea,
 )
 
 
@@ -171,6 +172,12 @@ class AreaAdmin(admin.ModelAdmin):
 
 @admin.register(PacienteArea)
 class PacienteAreaAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_area',
+    )
+
+@admin.register(ProfesionalArea)
+class ProfesionalAreaAdmin(admin.ModelAdmin):
     list_display = (
         'id_area',
     )
