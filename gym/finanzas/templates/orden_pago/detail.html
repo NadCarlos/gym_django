@@ -7,7 +7,7 @@
         <div class="toast show text-white bg-success shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 300px;">
             <div class="toast-body d-flex justify-content-between align-items-center">
             <span>{{ message }}</span>
-            <button type="button" class="btn btn-info btn-sm" data-bs-dismiss="toast" aria-label="Close">Aceptar</button>
+            <a href="{% url 'list' %}"><button type="button" class="btn btn-info btn-sm" data-bs-dismiss="toast" aria-label="Close">Aceptar</button></a>
             </div>
         </div>
         {% endfor %}
