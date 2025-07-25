@@ -18,10 +18,12 @@ from administracion.forms import (
 from administracion.repositories.profesional import ProfesionalRepository
 from administracion.repositories.sexo import SexoRepository
 from administracion.repositories.localidad import LocalidadRepository
+from administracion.repositories.profesional_area import ProfesionalAreaRepository
 
 profesionalRepo = ProfesionalRepository()
 sexoRepo = SexoRepository()
 localidadRepo = LocalidadRepository()
+profesionalAreaRepo = ProfesionalAreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -31,7 +33,7 @@ class ProfesionalList(View):
 
     def get(self, request):
 
-        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_by_activo())
+        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_profesional_area())
         
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
@@ -172,6 +174,10 @@ class ProfesionalCreate(View):
                         direccion=form.cleaned_data['direccion'],
                         celular=form.cleaned_data['celular'],
                         )
+                    profesional_area = profesionalAreaRepo.create_default(
+                        id_profesional=profesional_nuevo,
+                        id_usuario=form.cleaned_data['id_usuario'],
+                    )
                     return redirect('profesional_detail', profesional_nuevo.id)
                 else:
                     return redirect('error_profesional_existente')

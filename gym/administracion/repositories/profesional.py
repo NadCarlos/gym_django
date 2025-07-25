@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Profesional, Sexo, Localidad
+from administracion.models import Profesional, Sexo, Localidad, ProfesionalArea
 
 
 class ProfesionalRepository:
@@ -22,6 +22,11 @@ class ProfesionalRepository:
         return Profesional.objects.filter(
             activo=True
         ).order_by('apellido')
+    
+    def filter_profesional_area(self) -> List[Profesional]:
+        ids_profesionales = ProfesionalArea.objects.filter(id_area=1).values_list('id_profesional', flat=True)
+
+        return Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True).order_by('apellido')
 
     def get_by_id(self, id: int) -> Optional[Profesional]:
         try:

@@ -830,7 +830,7 @@ class ProfesionalArea(models.Model):
         default=1,
     )
 
-    id_paciente = models.ForeignKey(
+    id_profesional = models.ForeignKey(
         Profesional,
         blank=True,
         null=True,
