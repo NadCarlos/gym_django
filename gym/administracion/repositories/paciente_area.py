@@ -22,6 +22,18 @@ class PacienteAreaRepository:
             id_usuario=id_usuario,
         )
     
+    def create(
+        self,
+        id_paciente: Paciente,
+        id_area: Area,
+        id_usuario: User
+    ):
+        return PacienteArea.objects.create(
+            id_paciente=id_paciente,
+            id_area=id_area,
+            id_usuario=id_usuario,
+        )
+    
     def delete_by_activo(self, paciente_area: PacienteArea):
         paciente_area.activo=False
         paciente_area.save()

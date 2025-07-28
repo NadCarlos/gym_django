@@ -1,5 +1,6 @@
 import pandas as pd
 import io
+import json
 
 from datetime import date
 
@@ -27,6 +28,7 @@ from administracion.repositories.prestacion_paciente import PrestacionPacienteRe
 from administracion.repositories.paciente_plan import PacientePlanRepository
 from administracion.repositories.cuota import CuotaRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
+from administracion.repositories.area import AreaRepository
 
 
 from administracion.models import Paciente
@@ -43,6 +45,7 @@ agendaRepo = AgendaRepository()
 pacientePlanRepo = PacientePlanRepository()
 cuotaRepo = CuotaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
+areaRepo = AreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -51,7 +54,7 @@ class PacientesList(View):
     context_object_name = 'pacientes'
 
     def get(self, request, state):
-        filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state))
+        filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state, id_area=1))
         prestaciones = prestacionPacienteRepo.get_all()
         """pacientesFinished = []
         for paciente in pacientes:
@@ -189,6 +192,7 @@ class PacienteDetail(View):
 class PacienteCreate(View):
 
     def get(self, request):
+        pacientes_dni = pacienteRepo.dni_list_segun_area(state=True, id_area=2)
         obra_social = obraSocialRepo.get_by_name(nombre="Particular")
         sexo = sexoRepo.get_by_name(nombre="Masculino")
         estado_civil = estadoCivilRepo.get_by_name(nombre="Soltero")
@@ -205,7 +209,8 @@ class PacienteCreate(View):
             request,
             'pacientes/create.html',
             dict(
-                form=form
+                form=form,
+                pacientes_dni=json.dumps(pacientes_dni),
             )
         )
 
@@ -214,7 +219,7 @@ class PacienteCreate(View):
         if form.is_valid():
             dni = form.cleaned_data['numero_dni']
             dni=int(dni)
-            pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni)
+            pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
             if pacienteExistente is None:
                 nombre = form.cleaned_data['nombre']
                 nombre = nombre.upper()
@@ -268,7 +273,7 @@ class PacienteUpdate(View):
             if form.is_valid():
                 dni = form.cleaned_data['numero_dni']
                 dni=int(dni)
-                pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni)
+                pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
                 if pacienteExistente is None or pacienteExistente.id == paciente.id:
                     nombre = form.cleaned_data['nombre']
                     nombre = nombre.upper()
@@ -329,6 +334,25 @@ class PacienteDelete(View):
 
         pacienteRepo.delete_by_activo(paciente=paciente)
         return redirect('pacientes_list', True)
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteCreateFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        user = request.user
+        area = areaRepo.get_by_id(id=1)
+        
+        paciente_area = pacienteAreaRepo.create(
+            id_paciente=paciente,
+            id_area=area,
+            id_usuario=user,
+        )
+
+        return redirect('paciente_detail', paciente.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

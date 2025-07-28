@@ -1,4 +1,4 @@
-{% extends "home/base.html" %}
+{% extends "inicio/base.html" %}
 
 {% block content %}
 <input type="hidden" name="dni_existentes" id="dni_existentes" value="{{ pacientes_dni }}">
@@ -123,6 +123,7 @@
         </form>
     </div>
 </div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const dniInput = document.getElementById('numero_dni');
@@ -165,5 +166,5 @@
             }
         });
     });
-</script>
+    </script>
 {% endblock %}
