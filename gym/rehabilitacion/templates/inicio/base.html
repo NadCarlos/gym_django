@@ -109,6 +109,12 @@
                         <a class="nav-link text-white" href="#"><i class="bi bi-box-arrow-in-right"></i> Iniciar sesión</a>
                     </li>
                     {% endif %}
+                    {% if user.is_staff %}
+                    <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'inicio_rehab' %}">
+                        <img src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="Logo" width="36" height="36" class="me-2">
+                        Gimnasio
+                    </a>
+                    {% endif %}
                 </ul>
             </div>
         </div>
