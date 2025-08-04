@@ -1,0 +1,61 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="text-primary mb-0">
+            <i class="bi bi-person-vcard me-2"></i> Detalles del Profesional
+        </h2>
+        <a href="{% url 'profesional_rehab_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle me-2"></i> Volver a la lista
+        </a>
+    </div>
+
+    <!-- Tarjeta de detalles -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4 class="card-title text-center text-dark mb-4">
+            {{ profesional.nombre }}, {{ profesional.apellido }}
+        </h4>
+        <div class="row">
+            <!-- Columna izquierda -->
+            <div class="col-md-6">
+                <p><strong>DNI:</strong> {{ profesional.numero_dni }}</p>
+                <p><strong>Matrícula:</strong> {{ profesional.matricula }}</p>
+                <p><strong>Dirección:</strong> {{ profesional.direccion }}</p>
+                <p><strong>Celular:</strong> {{ profesional.celular }}</p>
+            </div>
+            <!-- Columna derecha -->
+            <div class="col-md-6">
+                <p><strong>Fecha de Nacimiento:</strong> {{ profesional.fecha_nacimiento }}</p>
+                <p><strong>Sexo:</strong> {{ profesional.id_sexo.nombre }}</p>
+                <p><strong>Localidad:</strong> {{ profesional.id_localidad.nombre }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="row g-3">
+        {% if profesional.activo %}
+        <div class="col-md-3">
+            <a href="#" class="btn btn-primary w-100">
+                <i class="bi bi-pencil me-2"></i> Editar
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'profesional_delete' profesional.id %}" class="btn btn-danger w-100"
+               onclick="return confirm('Esto va a borrar el Profesional');">
+                <i class="bi bi-trash me-2"></i> Eliminar
+            </a>
+        </div>
+        {% else %}
+        <div class="col-md-3">
+            <a href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-warning w-100"
+               onclick="return confirm('Esto va a restaurar al Profesional');">
+                <i class="bi bi-arrow-up-circle-fill me-2"></i> Reactivar
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

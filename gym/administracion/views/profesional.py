@@ -33,7 +33,7 @@ class ProfesionalList(View):
 
     def get(self, request):
 
-        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_profesional_area())
+        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_profesional_area(id_area=1))
         
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')

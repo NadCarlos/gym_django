@@ -1,0 +1,126 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="text-primary mb-0">
+            <i class="bi bi-people-fill me-2"></i> Lista de Profesionales
+        </h2>
+    </div>
+
+        <!-- Botones principales -->
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-8">
+                <div class="mb-3 d-flex flex-wrap gap-2">
+                    <a href="{% url 'profesional_create' %}" class="btn btn-success me-2">
+                        <i class="bi bi-person-plus"></i> Nuevo Profesional
+                    </a>
+                    <a href="#" class="btn btn-outline-success">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Guardar Excel
+                    </a>
+                </div>
+            </div>
+            <!-- Segunda columna -->
+            <div class="col-md-2">
+            </div>
+            <!-- Tercera columna -->
+            <div class="col-md-2 align-items-end">
+                <div class="text-white bg-dark rounded px-3 py-2 text-center shadow-sm">
+                    <strong>Total Registros: {{ profesionales_count }}</strong>
+                </div>
+            </div>
+        </div>
+
+
+    <!-- Filtros -->
+    <form method="GET" action="{% url 'profesional_rehab_list' %}" class="row g-3 align-items-end mb-4">
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Apellido</label>
+            {{ form.apellido }}
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Sexo</label>
+            {{ form.id_sexo }}
+        </div>
+        <div class="col-md-2">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-filter-square"></i> Filtrar
+            </button>
+        </div>
+    </form>
+
+    <!-- Tabla de profesionales -->
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle shadow-sm">
+            <thead class="table-light text-center">
+                <tr class="align-middle">
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'apellido' %}-apellido{% else %}apellido{% endif %}">
+                            Apellido
+                            {% if request.GET.ordering == 'apellido' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-apellido' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'nombre' %}-nombre{% else %}nombre{% endif %}">
+                            Nombre
+                            {% if request.GET.ordering == 'nombre' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-nombre' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'matricula' %}-matricula{% else %}matricula{% endif %}">
+                            Matrícula
+                            {% if request.GET.ordering == 'matricula' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-matricula' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_sexo' %}-id_sexo{% else %}id_sexo{% endif %}">
+                            Sexo
+                            {% if request.GET.ordering == 'id_sexo' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_sexo' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                {% for profesional in profesionales %}
+                <tr>
+                    <td>{{ profesional.apellido }}</td>
+                    <td>{{ profesional.nombre }}</td>
+                    <td>{{ profesional.matricula }}</td>
+                    <td>{{ profesional.id_sexo.nombre }}</td>
+                    <td>
+                        <a href="{% url 'profesional_rehab_detail' profesional.id %}" class="btn btn-outline-info btn-sm">
+                            <i class="bi bi-info-circle"></i> Detalles
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-muted">No hay profesionales registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -23,8 +23,8 @@ class ProfesionalRepository:
             activo=True
         ).order_by('apellido')
     
-    def filter_profesional_area(self) -> List[Profesional]:
-        ids_profesionales = ProfesionalArea.objects.filter(id_area=1).values_list('id_profesional', flat=True)
+    def filter_profesional_area(self, id_area) -> List[Profesional]:
+        ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
 
         return Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True).order_by('apellido')
 
