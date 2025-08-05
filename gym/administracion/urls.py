@@ -9,6 +9,7 @@ from administracion.views.pacientes import (
     PacientesToCsv,
     ErrorPacienteExistente,
     PacienteReactivate,
+    PacienteCreateFromExistent,
     )
 
 from administracion.views.prestacion_paciente import (
@@ -46,6 +47,7 @@ from administracion.views.profesional import (
     ProfesionalUpdate,
     ProfesionalesToCsv,
     ErrorProfesionalExistente,
+    ProfesionalCreateFromExistent,
 )
 
 from administracion.views.tratamiento import (
@@ -106,6 +108,7 @@ pacientes = [
     path(route='<int:id>/paciente_delete/',view=PacienteDelete.as_view(), name='paciente_delete'),
     path(route='<int:id>/paciente_reactivate/',view=PacienteReactivate.as_view(), name='paciente_reactivate'),
     path(route='error_paciente_existente/',view=ErrorPacienteExistente.as_view(), name='error_paciente_existente'),
+    path(route='paciente_create_existente/',view=PacienteCreateFromExistent.as_view(), name='paciente_create_from_existent'),
 ]
 
 prestacion_paciente = [
@@ -143,6 +146,7 @@ profesional = [
     path(route='<int:id>/profesional_update/',view=ProfesionalUpdate.as_view(), name='profesional_update'),
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),
     path(route='<error_profesional_existente/',view=ErrorProfesionalExistente.as_view(), name='error_profesional_existente'),
+    path(route='profesional_create_existente/',view=ProfesionalCreateFromExistent.as_view(), name='profesional_create_from_existent'),
 ]
 
 tratamientos = [

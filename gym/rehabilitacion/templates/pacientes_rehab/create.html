@@ -157,7 +157,7 @@
                 usarBtn.textContent = 'Crear usando datos existentes';
                 usarBtn.onclick = () => {
                     const dni = dniInput.value;
-                    const urlBase = "{% url 'paciente_create_from_existent' %}";
+                    const urlBase = "{% url 'paciente_rehab_create_from_existent' %}";
                     window.location.href = `${urlBase}?dni=${dni}`;
                 };
     

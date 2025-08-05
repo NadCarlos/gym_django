@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import ProfesionalArea, Profesional
+from administracion.models import ProfesionalArea, Profesional, Area
 
 
 class ProfesionalAreaRepository:
@@ -19,6 +19,18 @@ class ProfesionalAreaRepository:
     ):
         return ProfesionalArea.objects.create(
             id_profesional=id_profesional,
+            id_usuario=id_usuario,
+        )
+    
+    def create(
+        self,
+        id_profesional: Profesional,
+        id_area: Area,
+        id_usuario: User
+    ):
+        return ProfesionalArea.objects.create(
+            id_profesional=id_profesional,
+            id_area=id_area,
             id_usuario=id_usuario,
         )
     

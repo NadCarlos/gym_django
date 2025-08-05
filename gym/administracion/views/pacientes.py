@@ -221,6 +221,7 @@ class PacienteCreate(View):
             dni=int(dni)
             pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
             if pacienteExistente is None:
+                area = areaRepo.get_by_id(id=1)
                 nombre = form.cleaned_data['nombre']
                 nombre = nombre.upper()
                 apellido = form.cleaned_data['apellido']
@@ -240,8 +241,9 @@ class PacienteCreate(View):
                     celular=form.cleaned_data['celular'],
                     observaciones=form.cleaned_data['observaciones'],
                     )
-                paciente_area = pacienteAreaRepo.create_default(
+                paciente_area = pacienteAreaRepo.create(
                     id_paciente=paciente_nuevo,
+                    id_area=area,
                     id_usuario=form.cleaned_data['id_usuario'],
                 )
                 return redirect('paciente_detail', paciente_nuevo.id)

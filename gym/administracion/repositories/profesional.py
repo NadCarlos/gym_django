@@ -27,6 +27,11 @@ class ProfesionalRepository:
         ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
 
         return Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True).order_by('apellido')
+    
+    def dni_list_segun_area(self, state, id_area):
+        ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
+        profesionales = Profesional.objects.filter(id__in=ids_profesionales).filter(activo=state).order_by('apellido')
+        return list(profesionales.values_list('numero_dni', flat=True))
 
     def get_by_id(self, id: int) -> Optional[Profesional]:
         try:

@@ -67,7 +67,7 @@
                     </th>
                     <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'matricula' %}-matricula{% else %}matricula{% endif %}">
-                            DNI
+                            Matricula
                             {% if request.GET.ordering == 'matricula' %}
                                 <i class="bi bi-caret-down-fill"></i>
                             {% elif request.GET.ordering == '-matricula' %}

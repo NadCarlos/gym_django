@@ -1,5 +1,6 @@
 import pandas as pd
 import io
+import json
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -19,11 +20,13 @@ from administracion.repositories.profesional import ProfesionalRepository
 from administracion.repositories.sexo import SexoRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
+from administracion.repositories.area import AreaRepository
 
 profesionalRepo = ProfesionalRepository()
 sexoRepo = SexoRepository()
 localidadRepo = LocalidadRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
+areaRepo = AreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -132,6 +135,7 @@ class ProfesionalDetail(View):
 class ProfesionalCreate(View):
 
     def get(self, request):
+        profesionales_dni = profesionalRepo.dni_list_segun_area(state=True, id_area=2)
         sexo = sexoRepo.get_by_name(nombre="Masculino")
         localidad = localidadRepo.get_by_name(nombre="Rio Cuarto")
         form = ProfesionalCreateForm(initial = {
@@ -144,7 +148,8 @@ class ProfesionalCreate(View):
             request,
             'profesional/create.html',
             dict(
-                form=form
+                form=form,
+                profesionales_dni=json.dumps(profesionales_dni),
             )
         )
 
@@ -158,6 +163,7 @@ class ProfesionalCreate(View):
                 matricula = form.cleaned_data['matricula']
                 matriculaExistente = profesionalRepo.filter_by_matricula(matricula=matricula)
                 if dniExistente is None and matriculaExistente is None:
+                    area = areaRepo.get_by_id(id=1)
                     nombre = form.cleaned_data['nombre']
                     nombre = nombre.upper()
                     apellido = form.cleaned_data['apellido']
@@ -174,8 +180,9 @@ class ProfesionalCreate(View):
                         direccion=form.cleaned_data['direccion'],
                         celular=form.cleaned_data['celular'],
                         )
-                    profesional_area = profesionalAreaRepo.create_default(
+                    profesional_area = profesionalAreaRepo.create(
                         id_profesional=profesional_nuevo,
+                        id_area=area,
                         id_usuario=form.cleaned_data['id_usuario'],
                     )
                     return redirect('profesional_detail', profesional_nuevo.id)
@@ -183,6 +190,25 @@ class ProfesionalCreate(View):
                     return redirect('error_profesional_existente')
         except:
             return redirect('error')
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalCreateFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        profesional = profesionalRepo.get_by_dni(numero_dni=dni)
+        user = request.user
+        area = areaRepo.get_by_id(id=1)
+        
+        profesional_area = profesionalAreaRepo.create(
+            id_profesional=profesional,
+            id_area=area,
+            id_usuario=user,
+        )
+
+        return redirect('profesional_detail', profesional.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
