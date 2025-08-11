@@ -1,0 +1,65 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4" style="color: #009f95;">Nuevo Registro</h2>
+
+    <div class="card shadow-sm p-4">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.id_paciente_area }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.nombre_tutor.id_for_label }}" class="form-label">Nombre Tutor</label>
+                    {{ form.nombre_tutor }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.celular_tutor.id_for_label }}" class="form-label">Celular Tutor</label>
+                    {{ form.celular_tutor }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.hijos.id_for_label }}" class="form-label">Cantidad de Hijos</label>
+                    {{ form.hijos }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.id_estado_certificado.id_for_label }}" class="form-label">Estado Certificado</label>
+                    {{ form.id_estado_certificado }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.vencimiento_certificado.id_for_label }}" class="form-label">Vencimiento Certificado</label>
+                    {{ form.vencimiento_certificado }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.fecha_junta.id_for_label }}" class="form-label">Fecha Junta</label>
+                    {{ form.fecha_junta }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.ven_presupuesto.id_for_label }}" class="form-label">Vencimiento Presupuesto</label>
+                    {{ form.ven_presupuesto }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.vencimiento_presupuesto.id_for_label }}" class="form-label">Fecha de Vencimiento Presupuesto</label>
+                    {{ form.vencimiento_presupuesto }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.id_derivador.id_for_label }}" class="form-label">Derivador</label>
+                    {{ form.id_derivador }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.puerto_esperanza.id_for_label }}" class="form-label">Puerto Esperanza</label>
+                    {{ form.puerto_esperanza }}
+                </div>
+                {{ form.id_usuario }}
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn" style="background-color: #009f95; color: white;">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

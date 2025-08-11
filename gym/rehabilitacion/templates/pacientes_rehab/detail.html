@@ -60,29 +60,14 @@
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
                 <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-book"></i> Ver Planes
-                </a>
-                <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-list"></i> Historial de Prestaciones
-                </a>
-                <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-clock-history"></i> Historial de Asistencias
-                </a>
-                <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-calendar"></i> Ver Agenda
+                    <i class="bi bi-book"></i> Nada
                 </a>
             </div>
         </div>
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
-                <a href="#" class="btn btn-outline-success">
-                    <i class="bi bi-plus-circle"></i> Nueva Prestación
-                </a>
-                <a href="#" class="btn btn-outline-success">
-                    <i class="bi bi-person-plus"></i> Nueva Asistencia
-                </a>
-                <a href="#" class="btn btn-outline-success">
-                    <i class="bi bi-check"></i> Nuevo Turno
+                <a href="{% url 'rehab_create' paciente.id %}" class="btn btn-outline-success">
+                    <i class="bi bi-plus-circle"></i> Nueva Rehabilitacion
                 </a>
             </div>
         </div>

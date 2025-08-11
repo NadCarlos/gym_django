@@ -18,6 +18,10 @@ from rehabilitacion.views.profesional_rehab import(
     ProfesionalRehabCreateFromExistent,
 )
 
+from rehabilitacion.views.rehabilitacion import(
+    RehabilitacionCreate,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
@@ -37,4 +41,8 @@ profesionales = [
     path(route='profesional/create_from_existent',view=ProfesionalRehabCreateFromExistent.as_view(), name='profesional_rehab_create_from_existent'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales
+rehabilitacion = [
+    path(route='rehabilitacion/create/<int:id>',view=RehabilitacionCreate.as_view(), name='rehab_create'),
+]
+
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion

@@ -11,6 +11,9 @@ class PacienteAreaRepository:
     
     def filter_by_id(self, id) -> Optional[PacienteArea]:
         return PacienteArea.objects.filter(id=id).first()
+    
+    def filter_by_id_area_and_paciente(self, id_area, id_paciente) -> Optional[PacienteArea]:
+        return PacienteArea.objects.filter(id_paciente=id_paciente).filter(id_area=id_area).first()
 
     def create_default(
         self,
