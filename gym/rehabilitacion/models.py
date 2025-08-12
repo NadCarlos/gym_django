@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from administracion.models import (
     PacienteArea,
+    ObraSocial,
 )
 
 
@@ -111,6 +112,14 @@ class PacienteRehabilitacion(models.Model):
         Derivador,
         on_delete=models.RESTRICT,
         related_name="id_derivador"
+    )
+
+    id_obra_social = models.ForeignKey(
+        ObraSocial,
+        blank=True, 
+        null=True, 
+        on_delete=models.SET_NULL,
+        related_name='obra_social_paciente_rehabilitacion',
     )
 
     puerto_esperanza = models.BooleanField(

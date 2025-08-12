@@ -9,9 +9,6 @@
             {% csrf_token %}
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    {{ form.id_paciente_area }}
-                </div>
-                <div class="col-md-6 mb-3">
                     <label for="{{ form.nombre_tutor.id_for_label }}" class="form-label">Nombre Tutor</label>
                     {{ form.nombre_tutor }}
                 </div>
@@ -24,14 +21,18 @@
                     {{ form.hijos }}
                 </div>
                 <div class="col-md-6 mb-3">
+                    <label for="{{ form.id_obra_social.id_for_label }}" class="form-label">Obra Social</label>
+                    {{ form.id_obra_social }}
+                </div>
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.id_estado_certificado.id_for_label }}" class="form-label">Estado Certificado</label>
                     {{ form.id_estado_certificado }}
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.vencimiento_certificado.id_for_label }}" class="form-label">Vencimiento Certificado</label>
                     {{ form.vencimiento_certificado }}
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.fecha_junta.id_for_label }}" class="form-label">Fecha Junta</label>
                     {{ form.fecha_junta }}
                 </div>
@@ -52,6 +53,7 @@
                     {{ form.puerto_esperanza }}
                 </div>
                 {{ form.id_usuario }}
+                {{ form.id_paciente_area }}
             </div>
 
             <div class="d-flex justify-content-between mt-4">
@@ -62,4 +64,42 @@
         </form>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let estadoSelect = document.getElementById("id_id_estado_certificado");
+        let vencimientoCert = document.getElementById("id_vencimiento_certificado");
+        let fechaJunta = document.getElementById("id_fecha_junta");
+        let ven_presupuesto = document.getElementById("ven_presupuesto");
+        let vencimiento_presupuesto = document.getElementById("vencimiento_presupuesto");
+    
+        function toggleFechas() {
+            let valor = estadoSelect.value;
+            if (valor == 2) {
+                vencimientoCert.disabled = false;
+                fechaJunta.disabled = false;
+            } else {
+                vencimientoCert.disabled = true;
+                fechaJunta.disabled = true;
+                vencimientoCert.value = "";
+                fechaJunta.value = "";
+            }
+        }
+
+        function toggleFechaVencPresupuesto() {
+            let valor = ven_presupuesto.value;
+            if (valor == 1) {
+                vencimiento_presupuesto.disabled = false;
+            } else {
+                vencimiento_presupuesto.disabled = true;
+                vencimiento_presupuesto.value = "";
+            }
+        }
+    
+        estadoSelect.addEventListener("change", toggleFechas);
+        ven_presupuesto.addEventListener("change", toggleFechaVencPresupuesto);
+    
+        toggleFechas();
+        toggleFechaVencPresupuesto();
+    });
+</script>
 {% endblock %}

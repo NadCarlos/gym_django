@@ -11,11 +11,13 @@ from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
+from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 
 pacienteRepo = PacienteRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
+pacienteRehabRepo = PacienteRehabilitacionRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -37,3 +39,27 @@ class RehabilitacionCreate(View):
                 form=form,
             )
         )
+    
+    def post(self, request, id):
+        form = PacienteRehabilitacionCreateForm(request.POST)
+        if form.is_valid():
+            nombre_tutor = form.cleaned_data['nombre_tutor']
+            nombre_tutor = nombre_tutor.upper()
+            rehabilitacion_nueva = pacienteRehabRepo.create(
+                id_paciente_area=form.cleaned_data['id_paciente_area'],
+                nombre_tutor=nombre_tutor,
+                celular_tutor=form.cleaned_data['celular_tutor'],
+                hijos=form.cleaned_data['hijos'],
+                id_estado_certificado=form.cleaned_data['id_estado_certificado'],
+                vencimiento_certificado=form.cleaned_data['vencimiento_certificado'],
+                fecha_junta=form.cleaned_data['fecha_junta'],
+                ven_presupuesto=form.cleaned_data['ven_presupuesto'],
+                vencimiento_presupuesto=form.cleaned_data['vencimiento_presupuesto'],
+                id_derivador=form.cleaned_data['id_derivador'],
+                puerto_esperanza=form.cleaned_data['puerto_esperanza'],
+                id_obra_social=form.cleaned_data['id_obra_social'],
+                id_usuario=form.cleaned_data['id_usuario'],
+            )
+            return redirect('profesional_rehab_list')
+        else:
+            return redirect('error')
