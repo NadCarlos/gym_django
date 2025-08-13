@@ -16,6 +16,9 @@ class PacienteRehabilitacionRepository:
     def filter_by_id(self, id) -> Optional[PacienteRehabilitacion]:
         return PacienteRehabilitacion.objects.filter(id=id)
     
+    def get_by_paciente_id(self, id_paciente) -> Optional[PacienteRehabilitacion]:
+        return PacienteRehabilitacion.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).exists()
+    
     def create(
         self,
         id_paciente_area: PacienteArea,

@@ -46,31 +46,41 @@
             </div>
         </div>
         {% if paciente.activo %}
-        <div class="col-md-3 mb-3">
-            <div class="d-grid gap-2">
-                <a href="#" class="btn btn-primary">
-                    <i class="bi bi-pencil"></i> Editar
-                </a>
-                <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger"
-                    onclick="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
-                    <i class="bi bi-trash"></i> Eliminar
-                </a>
+            {% if pacienteRehabilitacionDataExists == True %}
+            <div class="col-md-3 mb-3">
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger"
+                        onclick="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="d-grid gap-2">
-                <a href="#" class="btn btn-outline-primary">
-                    <i class="bi bi-book"></i> Historial Rehabilitacion
-                </a>
+            <div class="col-md-3 mb-3">
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-book"></i> Editar Rehabilitacion
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="d-grid gap-2">
-                <a href="{% url 'rehab_create' paciente.id %}" class="btn btn-outline-success">
-                    <i class="bi bi-plus-circle"></i> Nueva Rehabilitacion
-                </a>
+            <div class="col-md-3 mb-3">
+                <div class="d-grid gap-2">
+                    <a href="#" class="btn btn-outline-primary">
+                        <i class="bi bi-book"></i> Nueva Alta
+                    </a>
+                </div>
             </div>
-        </div>
+            {% else %}
+            <div class="col-md-3 mb-3">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'rehab_create' paciente.id %}" class="btn btn-outline-success">
+                        <i class="bi bi-plus-circle"></i> Nueva Rehabilitacion
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         {% else %}
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
