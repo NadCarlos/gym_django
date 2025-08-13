@@ -148,3 +148,73 @@ class PacienteRehabilitacion(models.Model):
 
     def __str__(self):
         return  self.id_paciente_area.id_area.nombre
+
+
+class Familia(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_familia",
+    )
+
+class Diagnostico(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_diagnostico",
+    )
+
+    id_familia = models.ForeignKey(
+        Familia,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_familia',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+
+class Alta(models.Model):
+
+    fecha = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='fecha_',
+    )
+
+    id_diagnostico = models.ForeignKey(
+        Diagnostico,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_diagnostico_alta',
+    )
+
+    id_paciente_rehabilitacion = models.ForeignKey(
+        PacienteRehabilitacion,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_paciente_rehabilitacion_alta',
+    )
+
+    fecha_alta = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='fecha_alta',
+    )
+
+    dado_alta=  models.BooleanField(
+        default=0,
+        null=False,
+        blank=False,
+    )
