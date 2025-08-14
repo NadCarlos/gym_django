@@ -22,6 +22,10 @@ from rehabilitacion.views.rehabilitacion import(
     RehabilitacionCreate,
 )
 
+from rehabilitacion.views.alta import(
+    AltaCreate,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
@@ -45,4 +49,8 @@ rehabilitacion = [
     path(route='rehabilitacion/create/<int:id>',view=RehabilitacionCreate.as_view(), name='rehab_create'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion
+alta = [
+    path(route='alta/create/<int:id>',view=AltaCreate.as_view(), name='alta_create'),
+]
+
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta

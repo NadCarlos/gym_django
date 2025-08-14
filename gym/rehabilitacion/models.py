@@ -159,6 +159,10 @@ class Familia(models.Model):
         verbose_name="Nombre_familia",
     )
 
+    def __str__(self):
+        return  self.nombre
+
+
 class Diagnostico(models.Model):
 
     nombre = models.CharField(
@@ -181,6 +185,9 @@ class Diagnostico(models.Model):
         null=False,
         blank=False,
     )
+
+    def __str__(self):
+        return  self.nombre
 
 
 class Alta(models.Model):

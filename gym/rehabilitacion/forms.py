@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, EstadoCertificado, Derivador, ObraSocial
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, Diagnostico, Familia
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -57,4 +57,33 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             #'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class AltaCreateForm(forms.ModelForm):
+
+    fecha = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control'
+        })
+    )
+
+    id_diagnostico = forms.ModelChoiceField(
+        queryset=Diagnostico.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    id_familia = forms.ModelChoiceField(
+        queryset=Familia.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        required=False
+    )
+
+    class Meta:
+        model = Alta
+        fields = ['fecha', 'id_diagnostico', 'id_familia', 'id_paciente_rehabilitacion']
+
+        widgets = {
+            'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
