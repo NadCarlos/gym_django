@@ -17,6 +17,9 @@ class DiagnosticoRepository:
     def filter_by_familia_id(self, id_familia) -> Optional[Diagnostico]:
         return Diagnostico.objects.filter(id_familia=id_familia).first()
     
+    def filter_by_familia_id_list(self, id_familia) -> Optional[Diagnostico]:
+        return Diagnostico.objects.filter(id_familia=id_familia).values("id", "nombre")
+    
     def create(
         self,
         nombre: str,

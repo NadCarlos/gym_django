@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
 
 from rehabilitacion.forms import (
     AltaCreateForm,
@@ -66,3 +67,9 @@ class AltaCreate(View):
                     id_diagnostico=diagnostico_correcto, #YEA SOMETHING BAD AT HOW THIS IS MANAGED
                 )
                 return redirect('pacientes_rehab_list', id)
+
+
+class DiagnosticosByFamiliaView(View):
+    def get(self, request, familia_id):
+        diagnosticos = diagnosticoRepo.filter_by_familia_id_list(id_familia=familia_id)
+        return JsonResponse(list(diagnosticos), safe=False)

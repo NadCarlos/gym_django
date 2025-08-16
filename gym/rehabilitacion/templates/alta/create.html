@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends 'inicio/base.html' %}
 
 {% block content %}
 <div class="container mt-4">
@@ -13,8 +13,19 @@
         </div>
 
         <div class="mb-3">
+            <label class="form-label">Familia</label>
+            <select name="{{ form.id_familia.name }}" id="id_familia" class="form-control">
+                <option value="">----------</option>
+                {% for fam in form.id_familia.field.queryset %}
+                    <option value="{{ fam.pk }}">{{ fam }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
             <label for="{{ form.id_diagnostico.id_for_label }}" class="form-label">Diagnóstico</label>
             <select name="{{ form.id_diagnostico.name }}" id="id_diagnostico" class="form-control">
+                <option value="">----------</option>
                 {% for diag in form.id_diagnostico.field.queryset %}
                     <option value="{{ diag.pk }}">{{ diag }}</option>
                 {% endfor %}
@@ -27,26 +38,57 @@
             <input type="text" name="nuevo_diagnostico" id="nuevo_diagnostico" class="form-control" placeholder="Ingrese diagnóstico">
         </div>
 
-        <div class="mb-3">
-            <label for="{{ form.id_familia.id_for_label }}" class="form-label">Familia</label>
-            {{ form.id_familia }}
-        </div>
-
         <button type="submit" class="btn btn-primary">Guardar</button>
         <a href="#" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 
 <script>
-document.getElementById("id_diagnostico").addEventListener("change", function() {
+document.addEventListener("DOMContentLoaded", function() {
+    const familiaSelect = document.getElementById("id_familia");
+    const diagnosticoSelect = document.getElementById("id_diagnostico");
     const nuevoDiagContainer = document.getElementById("nuevo_diagnostico_container");
-    if (this.value === "nuevo") {
-        nuevoDiagContainer.style.display = "block";
-    } else {
-        nuevoDiagContainer.style.display = "none";
-    }
+
+    // Al inicio deshabilito diagnóstico
+    diagnosticoSelect.disabled = true;
+
+    // Cambio de familia
+    familiaSelect.addEventListener("change", function() {
+        const familiaId = this.value;
+        diagnosticoSelect.innerHTML = ""; // limpio el select
+        diagnosticoSelect.disabled = true;
+
+        if (familiaId) {
+            fetch(`/rehabilitacion/diagnosticos/${familiaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // cargo opciones
+                    data.forEach(diagnostico => {
+                        const option = document.createElement("option");
+                        option.value = diagnostico.id;
+                        option.textContent = diagnostico.nombre;
+                        diagnosticoSelect.appendChild(option);
+                    });
+
+                    // agrego la opción "Nuevo Diagnóstico"
+                    const nuevoOption = document.createElement("option");
+                    nuevoOption.value = "nuevo";
+                    nuevoOption.textContent = "Nuevo Diagnóstico";
+                    diagnosticoSelect.appendChild(nuevoOption);
+
+                    diagnosticoSelect.disabled = false;
+                });
+        }
+    });
+
+    // Mostrar/ocultar input para nuevo diagnóstico
+    diagnosticoSelect.addEventListener("change", function() {
+        if (this.value === "nuevo") {
+            nuevoDiagContainer.style.display = "block";
+        } else {
+            nuevoDiagContainer.style.display = "none";
+        }
+    });
 });
 </script>
 {% endblock %}
-
-
