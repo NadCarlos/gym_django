@@ -12,7 +12,7 @@ class AltaRepository:
         return Alta.objects.get(id=id)
     
     def filter_by_id(self, id) -> Optional[Alta]:
-        return Alta.objects.filter(id=id)
+        return Alta.objects.filter(id=id).first()
     
     def create(
         self,

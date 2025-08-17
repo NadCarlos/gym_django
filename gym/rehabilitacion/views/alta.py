@@ -41,32 +41,47 @@ class AltaCreate(View):
     
     def post(self, request, id):
         form = AltaCreateForm(request.POST)
+        hay_diagnostico_nuevo = request.POST.get('id_diagnostico')
+        if hay_diagnostico_nuevo == "nuevo":
+            post_data = request.POST.copy()
+            id_familia=post_data['id_familia'],
+            id_familia=id_familia[0]
+            familia=familiaRepo.get_by_id(id=id_familia)
+            diagnostico_nuevo = diagnosticoRepo.create(
+                nombre=request.POST.get('nuevo_diagnostico'),
+                id_familia=familia,
+            )
+            post_data['id_diagnostico'] = diagnostico_nuevo
+
+            form = AltaCreateForm(post_data)
+
         if form.is_valid():
-            hay_diagnostico_nuevo = request.POST.get('id_diagnostico')
             fecha=form.cleaned_data['fecha']
             id_paciente_rehabilitacion=form.cleaned_data['id_paciente_rehabilitacion']
             id_diagnostico=form.cleaned_data['id_diagnostico']
             id_familia=form.cleaned_data['id_familia']
-            if hay_diagnostico_nuevo == "nuevo":
-                nombre_nuevo_diagnostico = request.POST.get('nuevo_diagnostico')
-                diagnostico_nuevo = diagnosticoRepo.create(
-                    id_familia=id_familia,
-                    nombre=nombre_nuevo_diagnostico,
-                )
-                nueva_alta = altaRepo.create(
-                    fecha=fecha,
-                    id_paciente_rehabilitacion=id_paciente_rehabilitacion,
-                    id_diagnostico=diagnostico_nuevo.id,
-                )
-                return redirect('pacientes_rehab_list', id)
-            else:
-                diagnostico_correcto = diagnosticoRepo.filter_by_familia_id(id_familia=id_familia)
-                nueva_alta = altaRepo.create(
-                    fecha=fecha,
-                    id_paciente_rehabilitacion=id_paciente_rehabilitacion,
-                    id_diagnostico=diagnostico_correcto, #YEA SOMETHING BAD AT HOW THIS IS MANAGED
-                )
-                return redirect('pacientes_rehab_list', id)
+            alta_nueva=altaRepo.create(
+                fecha=fecha,
+                id_diagnostico=id_diagnostico,
+                id_paciente_rehabilitacion=id_paciente_rehabilitacion,
+            )
+
+            return redirect('alta_detail', alta_nueva.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AltaDetail(View):
+
+    def get(self, request, id):
+        alta = altaRepo.filter_by_id(id=id)
+        print(alta)
+        return render(
+            request,
+            'alta/detail.html',
+            dict(
+                alta=alta,
+            )
+        )
 
 
 class DiagnosticosByFamiliaView(View):

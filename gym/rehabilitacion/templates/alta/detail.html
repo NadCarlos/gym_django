@@ -1,0 +1,44 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Detalle del Alta</h2>
+
+    <div class="card shadow-sm p-4 rounded-3">
+        <div class="mb-3">
+            <strong>📅 Fecha:</strong>
+            <span>{{ alta.fecha }}</span>
+        </div>
+
+        <div class="mb-3">
+            <strong>🩺 Diagnóstico:</strong>
+            <span>{{ alta.id_diagnostico.nombre }}</span>
+        </div>
+
+        <div class="mb-3">
+            <strong>📅 Fecha de Alta:</strong>
+            <span>
+                {% if alta.fecha_alta %}
+                    {{ alta.fecha_alta }}
+                {% else %}
+                    <em>No registrada</em>
+                {% endif %}
+            </span>
+        </div>
+
+        <div class="mb-3">
+            <strong>✅ Dado de Alta:</strong>
+            {% if alta.dado_alta %}
+                <span class="badge bg-success">Sí</span>
+            {% else %}
+                <span class="badge bg-danger">No</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="#" class="btn btn-primary">Editar</a>
+        <a href="#" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+{% endblock %}
