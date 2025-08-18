@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #009f95;">Nuevo Registro</h2>
+    <h2 class="text-center mb-4" style="color: #009f95;">Actualizar Rehabilitacion Paciente</h2>
 
     <div class="card shadow-sm p-4">
         <form method="post" novalidate>
@@ -54,8 +54,6 @@
                     <label for="{{ form.puerto_esperanza.id_for_label }}" class="form-label">Puerto Esperanza</label>
                     {{ form.puerto_esperanza }}
                 </div>
-                {{ form.id_usuario }}
-                {{ form.id_paciente_area }}
             </div>
 
             <div class="d-flex justify-content-between mt-4">
@@ -77,20 +75,17 @@
             let valor = estadoSelect.value;
             if (valor == 2) {
                 vencimientoCert.disabled = false;
-                fechaJunta.disabled = false;
             } else {
                 vencimientoCert.disabled = true;
-                vencimientoCert.value = "";
             }
         }
 
         function toggleFechaVencPresupuesto() {
             let valor = ven_presupuesto.value;
-            if (valor == 1) {
+            if (valor == "True") {
                 vencimiento_presupuesto.disabled = false;
             } else {
                 vencimiento_presupuesto.disabled = true;
-                vencimiento_presupuesto.value = "";
             }
         }
     

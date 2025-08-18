@@ -53,3 +53,33 @@ class PacienteRehabilitacionRepository:
             id_obra_social=id_obra_social,
             id_usuario=id_usuario,
         )
+    
+    def update(
+        self,
+        rehabilitacion_paciente: PacienteRehabilitacion,
+        nombre_tutor: str,
+        celular_tutor:str,
+        hijos: int,
+        id_estado_certificado: EstadoCertificado,
+        vencimiento_certificado: bool,
+        fecha_junta: str,
+        ven_presupuesto: bool,
+        vencimiento_presupuesto: str,
+        id_derivador: Derivador,
+        puerto_esperanza: bool,
+        id_obra_social:ObraSocial,
+    )-> PacienteRehabilitacion:
+        
+        rehabilitacion_paciente.nombre_tutor=nombre_tutor
+        rehabilitacion_paciente.celular_tutor=celular_tutor
+        rehabilitacion_paciente.hijos=hijos
+        rehabilitacion_paciente.id_estado_certificado=id_estado_certificado
+        rehabilitacion_paciente.vencimiento_certificado=vencimiento_certificado
+        rehabilitacion_paciente.fecha_junta=fecha_junta
+        rehabilitacion_paciente.ven_presupuesto=ven_presupuesto
+        rehabilitacion_paciente.vencimiento_presupuesto=vencimiento_presupuesto
+        rehabilitacion_paciente.id_derivador=id_derivador
+        rehabilitacion_paciente.puerto_esperanza=puerto_esperanza
+        rehabilitacion_paciente.id_obra_social=id_obra_social
+
+        rehabilitacion_paciente.save()

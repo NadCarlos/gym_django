@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, HttpResponse
 
 from rehabilitacion.forms import(
     PacienteRehabilitacionCreateForm,
+    PacienteRehabilitacionUpdateForm,
 )
 
 from administracion.repositories.paciente import PacienteRepository
@@ -41,6 +42,7 @@ class RehabilitacionCreate(View):
         )
     
     def post(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
         form = PacienteRehabilitacionCreateForm(request.POST)
         if form.is_valid():
             nombre_tutor = form.cleaned_data['nombre_tutor']
@@ -60,6 +62,47 @@ class RehabilitacionCreate(View):
                 id_obra_social=form.cleaned_data['id_obra_social'],
                 id_usuario=form.cleaned_data['id_usuario'],
             )
-            return redirect('profesional_rehab_list')
+            return redirect('paciente_rehab_detail', paciente.id)
         else:
             return redirect('error')
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class RehabilitacionUpdate(View):
+
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        id_paciente_rehabilitacion = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        form = PacienteRehabilitacionUpdateForm(instance=id_paciente_rehabilitacion)
+        return render(
+            request,
+            'rehabilitacion/update.html',
+            dict(
+                form=form,
+            )
+        )
+    
+    def post(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        id_paciente_rehabilitacion = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        form = PacienteRehabilitacionUpdateForm(request.POST)
+        if form.is_valid():
+            nombre_tutor = form.cleaned_data['nombre_tutor']
+            nombre_tutor = nombre_tutor.upper()
+            pacienteRehabRepo.update(
+                rehabilitacion_paciente=id_paciente_rehabilitacion,
+                nombre_tutor=nombre_tutor,
+                celular_tutor=form.cleaned_data['celular_tutor'],
+                hijos=form.cleaned_data['hijos'],
+                id_estado_certificado=form.cleaned_data['id_estado_certificado'],
+                vencimiento_certificado=form.cleaned_data['vencimiento_certificado'],
+                fecha_junta=form.cleaned_data['fecha_junta'],
+                ven_presupuesto=form.cleaned_data['ven_presupuesto'],
+                vencimiento_presupuesto=form.cleaned_data['vencimiento_presupuesto'],
+                id_derivador=form.cleaned_data['id_derivador'],
+                puerto_esperanza=form.cleaned_data['puerto_esperanza'],
+                id_obra_social=form.cleaned_data['id_obra_social'],
+            )
+            return redirect('paciente_rehab_detail', paciente.id)
+"""        else:
+            return redirect('error')"""

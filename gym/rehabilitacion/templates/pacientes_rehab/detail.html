@@ -39,29 +39,28 @@
                         <p><strong>Nombre del Tutor:</strong> {{ rehabilitacion_paciente.nombre_tutor }}</p>
                         <p><strong>Celular Tutor:</strong> {{ rehabilitacion_paciente.celular_tutor }}</p>
                         <p><strong>Hijos:</strong> {{ rehabilitacion_paciente.hijos }}</p>
-                        <p><strong>Estado Certificado:</strong> {{ rehabilitacion_paciente.id_estado_certificado.nombre }}</p>
-                        <p><strong>Fecha de Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
-                        <p><strong>Vencimiento Presupuesto:</strong> 
-                            {% if rehabilitacion_paciente.vencimiento_presupuesto %}
-                                {{ rehabilitacion_paciente.vencimiento_presupuesto }}
-                            {% else %}
-                                <em>No definido</em>
-                            {% endif %}
-                        </p>
-                        <p><strong>Presupuesto Vigente:</strong> 
-                            {% if rehabilitacion_paciente.ven_presupuesto %}
-                                <span class="badge bg-success">Sí</span>
-                            {% else %}
-                                <span class="badge bg-danger">No</span>
-                            {% endif %}
-                        </p>
-                        <p><strong>Derivador:</strong> {{ rehabilitacion_paciente.id_derivador.nombre }}</p>
                         <p><strong>Obra Social:</strong> {{ rehabilitacion_paciente.id_obra_social.nombre }}</p>
+                        <p><strong>Fecha de Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
+                        {% if rehabilitacion_paciente.id_estado_certificado.nombre == "NO" %}
+                            <p><strong>Estado Certificado:</strong><span class="badge bg-danger">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                        {% elif rehabilitacion_paciente.id_estado_certificado.nombre == "EN TRAMITE" %}
+                            <p><strong>Estado Certificado:</strong><span class="badge bg-warning">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                        {% else %}
+                            <p><strong>Estado Certificado:</strong> <span class="badge bg-success">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                            <p><strong>Vencimiento Certificado:</strong> {{ rehabilitacion_paciente.vencimiento_certificado }}</p>
+                        {% endif %}
+                        {% if rehabilitacion_paciente.ven_presupuesto == False %}
+                            <p><strong>Presupuesto Vigente:</strong><span class="badge bg-danger"> NO</span></p>
+                        {% else %}
+                            <p><strong>Presupuesto Vigente:</strong> <span class="badge bg-success"> SI</span></p>
+                            <p><strong>Fecha de Vencimiento Presupuesto:</strong> {{ rehabilitacion_paciente.vencimiento_presupuesto }}</p>
+                        {% endif %}
+                        <p><strong>Derivador:</strong> {{ rehabilitacion_paciente.id_derivador.nombre }}</p>
                         <p><strong>Puerto Esperanza:</strong> 
                             {% if rehabilitacion_paciente.puerto_esperanza %}
-                                <span class="badge bg-success">Sí</span>
+                                <span class="badge bg-success">SI</span>
                             {% else %}
-                                <span class="badge bg-danger">No</span>
+                                <span class="badge bg-danger">NO</span>
                             {% endif %}
                         </p>
                     {% else %}
@@ -85,8 +84,11 @@
             {% if rehabilitacion_paciente %}
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
-                    <a href="#" class="btn btn-primary">
-                        <i class="bi bi-pencil"></i> Editar
+                    <a href="{% url 'rehab_update' paciente.id %}" class="btn btn-primary">
+                        <i class="bi bi-book"></i> Editar Rehabilitacion
+                    </a>
+                    <a href="{% url 'paciente_rehab_update' paciente.id %}" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Editar Paciente
                     </a>
                     <a href="{% url 'paciente_delete' paciente.id %}" class="btn btn-danger"
                         onclick="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
@@ -96,9 +98,7 @@
             </div>
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
-                    <a href="#" class="btn btn-outline-primary">
-                        <i class="bi bi-book"></i> Editar Rehabilitacion
-                    </a>
+                    
                 </div>
             </div>
             <div class="col-md-3 mb-3">

@@ -158,6 +158,56 @@ class PacienteRehabCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteRehabUpdate(View):
+
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        form = PacienteUpdateForm(instance=paciente)
+        return render(
+            request,
+            'pacientes_rehab/update.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
+
+    def post(self, request, id):
+        form = PacienteUpdateForm(request.POST)
+        paciente = pacienteRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                dni = form.cleaned_data['numero_dni']
+                dni=int(dni)
+                pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
+                if pacienteExistente is None or pacienteExistente.id == paciente.id:
+                    nombre = form.cleaned_data['nombre']
+                    nombre = nombre.upper()
+                    apellido = form.cleaned_data['apellido']
+                    apellido = apellido.upper()
+                    pacienteRepo.update(
+                        paciente=paciente,
+                        nombre=nombre,
+                        apellido=apellido,
+                        numero_dni=form.cleaned_data['numero_dni'],
+                        direccion=form.cleaned_data['direccion'],
+                        telefono=form.cleaned_data['telefono'],
+                        celular=form.cleaned_data['celular'],
+                        observaciones=form.cleaned_data['observaciones'],
+                        fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                        obra_social=form.cleaned_data['id_obra_social'],
+                        estado_civil=form.cleaned_data['id_estado_civil'],
+                        sexo=form.cleaned_data['id_sexo'],
+                        localidad=form.cleaned_data['id_localidad'],
+                        )
+                    return redirect('paciente_rehab_detail', paciente.id)
+                else:
+                    return redirect('error_paciente_existente')
+        except:
+            return redirect('error')
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class PacienteRehabCreateFromExistent(View):
 
     def get(self, request):

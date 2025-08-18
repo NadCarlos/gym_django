@@ -52,6 +52,11 @@ class Derivador(models.Model):
 
 
 class PacienteRehabilitacion(models.Model):
+
+    SI_NO_CHOICES = [
+        (False, "NO"),
+        (True, "SI"),
+    ]
     
     id_paciente_area = models.ForeignKey(
         PacienteArea,
@@ -97,6 +102,7 @@ class PacienteRehabilitacion(models.Model):
     )
 
     ven_presupuesto = models.BooleanField(
+        choices=SI_NO_CHOICES,
         default=0,
         null=False,
         blank=False,
@@ -123,6 +129,7 @@ class PacienteRehabilitacion(models.Model):
     )
 
     puerto_esperanza = models.BooleanField(
+        choices=SI_NO_CHOICES,
         default=0,
         null=False,
         blank=False,
