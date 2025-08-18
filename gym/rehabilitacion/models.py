@@ -220,7 +220,7 @@ class Alta(models.Model):
         verbose_name='fecha_alta',
     )
 
-    dado_alta=  models.BooleanField(
+    dado_alta = models.BooleanField(
         default=0,
         null=False,
         blank=False,

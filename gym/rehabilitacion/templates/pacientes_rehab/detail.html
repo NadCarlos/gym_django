@@ -1,35 +1,72 @@
 {% extends 'inicio/base.html' %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-2">
     <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+    <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
         <h2 class="text-primary mb-0">
             <i class="bi bi-person-vcard-fill me-2"></i>Detalles del Paciente
         </h2>
     </div>
 
-    <!-- Datos del paciente -->
+    <!-- Datos del paciente + rehabilitación -->
     <div class="card shadow-sm border-0">
         <div class="card-header">
-            <h5 class="card-title text-center mb-4">{{ paciente.nombre }}, {{ paciente.apellido }}</h5>
+            <h5 class="card-title text-center mb-4">
+                {{ paciente.nombre }}, {{ paciente.apellido }}
+            </h5>
         </div>
         <div class="card-body">
             <div class="row mb-3">
-                <!-- Columna izquierda -->
+                <!-- Columna izquierda: Paciente -->
                 <div class="col-md-6">
+                    <h5 class="text-primary mb-3"><i class="bi bi-person"></i> Datos Personales</h5>
                     <p><strong>DNI:</strong> {{ paciente.numero_dni }}</p>
                     <p><strong>Dirección:</strong> {{ paciente.direccion }}</p>
                     <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
                     <p><strong>Celular:</strong> {{ paciente.celular }}</p>
-                </div>
-                <!-- Columna derecha -->
-                <div class="col-md-6">
                     <p><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento }}</p>
                     <p><strong>Obra Social:</strong> {{ paciente.id_obra_social.nombre }}</p>
                     <p><strong>Estado Civil:</strong> {{ paciente.id_estado_civil.nombre }}</p>
                     <p><strong>Sexo:</strong> {{ paciente.id_sexo.nombre }}</p>
                     <p><strong>Localidad:</strong> {{ paciente.id_localidad.nombre }}</p>
+                </div>
+
+                <!-- Columna derecha: Rehabilitación -->
+                <div class="col-md-6">
+                    <h5 class="text-success mb-3"><i class="bi bi-heart-pulse"></i> Datos de Rehabilitación</h5>
+                    {% if rehabilitacion_paciente %}
+                        <p><strong>Nombre del Tutor:</strong> {{ rehabilitacion_paciente.nombre_tutor }}</p>
+                        <p><strong>Celular Tutor:</strong> {{ rehabilitacion_paciente.celular_tutor }}</p>
+                        <p><strong>Hijos:</strong> {{ rehabilitacion_paciente.hijos }}</p>
+                        <p><strong>Estado Certificado:</strong> {{ rehabilitacion_paciente.id_estado_certificado.nombre }}</p>
+                        <p><strong>Fecha de Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
+                        <p><strong>Vencimiento Presupuesto:</strong> 
+                            {% if rehabilitacion_paciente.vencimiento_presupuesto %}
+                                {{ rehabilitacion_paciente.vencimiento_presupuesto }}
+                            {% else %}
+                                <em>No definido</em>
+                            {% endif %}
+                        </p>
+                        <p><strong>Presupuesto Vigente:</strong> 
+                            {% if rehabilitacion_paciente.ven_presupuesto %}
+                                <span class="badge bg-success">Sí</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Derivador:</strong> {{ rehabilitacion_paciente.id_derivador.nombre }}</p>
+                        <p><strong>Obra Social:</strong> {{ rehabilitacion_paciente.id_obra_social.nombre }}</p>
+                        <p><strong>Puerto Esperanza:</strong> 
+                            {% if rehabilitacion_paciente.puerto_esperanza %}
+                                <span class="badge bg-success">Sí</span>
+                            {% else %}
+                                <span class="badge bg-danger">No</span>
+                            {% endif %}
+                        </p>
+                    {% else %}
+                        <p class="text-muted"><em>No hay datos de rehabilitación cargados</em></p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -37,7 +74,6 @@
 
     <!-- Acciones -->
     <div class="row mt-4">
-        
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
                 <a href="{% url 'pacientes_rehab_list' True %}" class="btn btn-outline-secondary">
@@ -46,7 +82,7 @@
             </div>
         </div>
         {% if paciente.activo %}
-            {% if pacienteRehabilitacionDataExists == True %}
+            {% if rehabilitacion_paciente %}
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
                     <a href="#" class="btn btn-primary">

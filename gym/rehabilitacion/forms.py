@@ -74,15 +74,9 @@ class AltaCreateForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
-    id_familia = forms.ModelChoiceField(
-        queryset=Familia.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        required=False
-    )
-
     class Meta:
         model = Alta
-        fields = ['fecha', 'id_diagnostico', 'id_familia', 'id_paciente_rehabilitacion']
+        fields = ['fecha', 'id_diagnostico', 'id_paciente_rehabilitacion']
 
         widgets = {
             'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),

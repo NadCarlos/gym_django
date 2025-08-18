@@ -81,13 +81,13 @@ class PacienteRehabDetail(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
-        pacienteRehabilitacionDataExists = pacienteRehabRepo.get_by_paciente_id(id_paciente=id)
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         return render(
             request,
             'pacientes_rehab/detail.html',
             dict(
                 paciente=paciente,
-                pacienteRehabilitacionDataExists=pacienteRehabilitacionDataExists,
+                rehabilitacion_paciente=rehabilitacion_paciente,
             )
         )
     
