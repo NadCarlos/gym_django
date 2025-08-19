@@ -16,7 +16,11 @@ prestacionRepo = PrestacionRepository()
 class PrestacionList(View):
 
     @method_decorator(login_required(login_url='login'))
-    def get(self, request):
+    def get(self, request, area):
+        if area == 1:
+            base_template = "home/base.html"
+        elif area == 2:
+            base_template = "inicio/base.html"
         prestaciones = prestacionRepo.filter_by_activo()
         prestaciones_count = prestaciones.count()
         return render(
@@ -24,7 +28,9 @@ class PrestacionList(View):
             'prestacion/list.html',
             dict(
                 prestaciones_count=prestaciones_count,
-                prestaciones=prestaciones
+                prestaciones=prestaciones,
+                area=area,
+                base_template=base_template,
             )
         )
     
@@ -32,18 +38,24 @@ class PrestacionList(View):
 class PrestacionCreate(View):
 
     @method_decorator(login_required(login_url='login'))
-    def get(self, request):
+    def get(self, request, area):
+        if area == 1:
+            base_template = "home/base.html"
+        elif area == 2:
+            base_template = "inicio/base.html"
         form = PrestacionForm()
         return render(
             request,
             'prestacion/create.html',
             dict(
-                form=form
+                form=form,
+                area=area,
+                base_template=base_template,
             )
         )
     
     @method_decorator(login_required(login_url='login'))
-    def post(self, request):
+    def post(self, request, area):
         form = PrestacionForm(request.POST)
         try:
             if form.is_valid():
@@ -53,7 +65,7 @@ class PrestacionCreate(View):
                     nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
-                return redirect('prestaciones')
+                return redirect('prestaciones', area)
         except:
             return redirect('error')
         
@@ -61,8 +73,11 @@ class PrestacionCreate(View):
 class PrestacionUpdate(View):
 
     @method_decorator(login_required(login_url='login'))
-    def get(self, request, id, *args, **kwargs):
-
+    def get(self, request, id, area, *args, **kwargs):
+        if area == 1:
+            base_template = "home/base.html"
+        elif area == 2:
+            base_template = "inicio/base.html"
         prestacion = prestacionRepo.get_by_id(id=id)
         form = PrestacionForm(instance=prestacion)
         return render(
@@ -70,11 +85,13 @@ class PrestacionUpdate(View):
             'prestacion/update.html',
             dict(
                 form=form,
+                area=area,
+                base_template=base_template,
             )
         )
     
     @method_decorator(login_required(login_url='login'))
-    def post(self, request, id):
+    def post(self, request, id, area):
         form = PrestacionForm(request.POST)
         prestacion = prestacionRepo.get_by_id(id=id)
         try:
@@ -86,7 +103,7 @@ class PrestacionUpdate(View):
                     nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],
                     )
-                return redirect('prestaciones')
+                return redirect('prestaciones', area)
         except:
             return redirect('error')
         
@@ -94,7 +111,7 @@ class PrestacionUpdate(View):
 class PrestacionDelete(View):
 
     @method_decorator(login_required(login_url='login'))
-    def get(self, request, id):
+    def get(self, request, id, area):
         prestacion = prestacionRepo.get_by_id(id=id)
         prestacionRepo.delete_by_activo(prestacion=prestacion)
-        return redirect ('prestaciones')
+        return redirect ('prestaciones', area)

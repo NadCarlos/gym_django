@@ -127,10 +127,10 @@ obra_social = [
 ]
 
 prestaciones = [
-    path(route='prestaciones/',view=PrestacionList.as_view(), name='prestaciones'),
-    path(route='prestacion_create/',view=PrestacionCreate.as_view(), name='prestacion_create'),
-    path(route='<int:id>/prestacion_update/',view=PrestacionUpdate.as_view(), name='prestacion_update'),
-    path(route='<int:id>/prestacion_delete/',view=PrestacionDelete.as_view(), name='prestacion_delete'),
+    path(route='prestaciones/<int:area>',view=PrestacionList.as_view(), name='prestaciones'),
+    path(route='prestacion_create/<int:area>',view=PrestacionCreate.as_view(), name='prestacion_create'),
+    path(route='<int:id>/prestacion_update/<int:area>',view=PrestacionUpdate.as_view(), name='prestacion_update'),
+    path(route='<int:id>/prestacion_delete/<int:area>',view=PrestacionDelete.as_view(), name='prestacion_delete'),
 ]
 
 asistencias = [
