@@ -120,10 +120,10 @@ prestacion_paciente = [
 ]
 
 obra_social = [
-    path(route='obras_sociales/',view=ObraSocialList.as_view(), name='obras_sociales'),
-    path(route='obra_social_create/',view=ObraSocialCreate.as_view(), name='obra_social_create'),
-    path(route='<int:id>/obra_social_update/',view=ObraSocialUpdate.as_view(), name='obra_social_update'),
-    path(route='<int:id>/obra_social_delete/',view=ObraSocialDelete.as_view(), name='obra_social_delete'),
+    path(route='obras_sociales/<int:area>',view=ObraSocialList.as_view(), name='obras_sociales'),
+    path(route='obra_social_create/<int:area>',view=ObraSocialCreate.as_view(), name='obra_social_create'),
+    path(route='<int:id>/obra_social_update/<int:area>',view=ObraSocialUpdate.as_view(), name='obra_social_update'),
+    path(route='<int:id>/obra_social_delete/<int:area>',view=ObraSocialDelete.as_view(), name='obra_social_delete'),
 ]
 
 prestaciones = [

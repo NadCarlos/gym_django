@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends base_template %}
 
 {% block content %}
 <div class="container mt-4">
@@ -7,7 +7,7 @@
     <div class="row">
         <!-- Primera columna -->
         <div class="col-md-8">
-            <a href="{% url 'obra_social_create' %}" class="btn btn-success mb-4">
+            <a href="{% url 'obra_social_create' area %}" class="btn btn-success mb-4">
                 <i class="bi bi-plus-circle"></i> Nueva Obra Social
             </a>
         </div>
@@ -39,10 +39,10 @@
                     <td>{{ obra_social.nombre }}</td>
                     <td>{{ obra_social.descripcion }}</td>
                     <td>
-                        <a href="{% url 'obra_social_delete' obra_social.id %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'obra_social_delete' obra_social.id area %}" class="btn btn-danger btn-sm me-2">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
-                        <a href="{% url 'obra_social_update' obra_social.id %}" class="btn btn-warning btn-sm">
+                        <a href="{% url 'obra_social_update' obra_social.id area %}" class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                     </td>
