@@ -14,6 +14,9 @@ class AltaRepository:
     def filter_by_id(self, id) -> Optional[Alta]:
         return Alta.objects.filter(id=id).first()
     
+    def filter_by_paciente_rehab_id(self, id_paciente_rehab) -> Optional[Alta]:
+        return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab)
+    
     def create(
         self,
         fecha: str,

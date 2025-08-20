@@ -69,8 +69,38 @@
                 </div>
             </div>
         </div>
-    </div>
-
+        <div style="
+            position: fixed; 
+            top: 80px; 
+            right: 20px; 
+            width: 290px; 
+            max-height: 80vh; 
+            overflow-y: auto; 
+            z-index: 1050;">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-2">
+                    <h6 class="mb-0 text-center">Altas</h6>
+                </div>
+                <div class="card-body p-2">
+                    {% if altas %}
+                        {% for alta in altas %}
+                            <div class="mb-2 p-2 text-white rounded 
+                                        {% if alta.dado_alta %}
+                                            bg-danger
+                                        {% else %}
+                                            bg-success
+                                        {% endif %}">
+                                <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
+                                <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico.nombre }}</p>
+                                <p class="mb-0"><strong>Dado de Alta:</strong> {{ alta.dado_alta }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center mb-0"><em>No hay altas registradas</em></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     <!-- Acciones -->
     <div class="row mt-4">
         <div class="col-md-3 mb-3">

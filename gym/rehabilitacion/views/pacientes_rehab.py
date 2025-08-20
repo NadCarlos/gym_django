@@ -26,6 +26,7 @@ from administracion.repositories.cuota import CuotaRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
 from administracion.repositories.area import AreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
+from rehabilitacion.repositories.alta import AltaRepository
 
 
 pacienteRepo = PacienteRepository()
@@ -41,6 +42,7 @@ cuotaRepo = CuotaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 areaRepo = AreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
+altaRepo = AltaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -82,12 +84,14 @@ class PacienteRehabDetail(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
         return render(
             request,
             'pacientes_rehab/detail.html',
             dict(
                 paciente=paciente,
                 rehabilitacion_paciente=rehabilitacion_paciente,
+                altas=altas,
             )
         )
     
