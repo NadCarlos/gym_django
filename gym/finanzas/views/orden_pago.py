@@ -418,7 +418,6 @@ class OrdenesPagoList(View):
 class OrdenPagoDelete(View):
 
     def get(self, request, id, from_list):
-        print(from_list)
         orden = ordenPagoRepo.filter_by_id(id=id)
         detalles = detalleOrdenRepo.filter_by_orden_id(orden_id=orden.id)
         for detalle in detalles:

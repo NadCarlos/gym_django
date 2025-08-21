@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 from administracion.forms import TratamientoProfesionalCreateForm
 
@@ -69,3 +70,10 @@ class TratamientoProfesionalDelete(View):
         #No elimino, cambio el campo activo a False
         tratamientoProfesionalRepo.delete_by_activo(profesional_tratamiento=tratamiento_profesional)
         return redirect('tratamiento_profesional_list', tratamiento_profesional.id_profesional.id)
+    
+
+class TratamientosPorProfesionalView(View):
+    def get(self, request, profesional_id):
+        tratamientos = tratamientoProfesionalRepo.filter_by_id_profesional_all(id_profesional=profesional_id)
+        data = [{"id": t.id, "nombre": str(t)} for t in tratamientos]
+        return JsonResponse(data, safe=False)
