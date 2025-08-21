@@ -85,6 +85,7 @@ class PacienteRehabDetail(View):
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
+        tiene_pendientes = altaRepo.tiene_alta_activa()
         return render(
             request,
             'pacientes_rehab/detail.html',
@@ -92,6 +93,7 @@ class PacienteRehabDetail(View):
                 paciente=paciente,
                 rehabilitacion_paciente=rehabilitacion_paciente,
                 altas=altas,
+                tiene_pendientes=tiene_pendientes,
             )
         )
     

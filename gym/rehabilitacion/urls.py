@@ -28,6 +28,7 @@ from rehabilitacion.views.alta import(
     AltaCreate,
     DiagnosticosByFamiliaView,
     AltaDetail,
+    AltaTerminate,
 )
 
 
@@ -59,6 +60,7 @@ alta = [
     path(route='alta/create/<int:id>',view=AltaCreate.as_view(), name='alta_create'),
     path(route="diagnosticos/<int:familia_id>/", view=DiagnosticosByFamiliaView.as_view(), name="get_diagnosticos_by_familia"),
     path(route='alta/detail/<int:id>',view=AltaDetail.as_view(), name='alta_detail'),
+    path(route='alta/terminate/<int:id>',view=AltaTerminate.as_view(), name='alta_terminate'),
 ]
 
 urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta

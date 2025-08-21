@@ -1,0 +1,19 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Finalizar Alta</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.dado_alta }}
+
+        <div class="mb-3">
+            <label for="{{ form.fecha.id_for_label }}" class="form-label">Fecha del Alta</label>
+            {{ form.fecha_alta }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="#" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

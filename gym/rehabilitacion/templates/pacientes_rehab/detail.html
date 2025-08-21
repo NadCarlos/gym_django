@@ -84,16 +84,23 @@
                 <div class="card-body p-2">
                     {% if altas %}
                         {% for alta in altas %}
-                            <div class="mb-2 p-2 text-white rounded 
-                                        {% if alta.dado_alta %}
-                                            bg-danger
-                                        {% else %}
-                                            bg-success
-                                        {% endif %}">
+                            {% if alta.dado_alta %}
+                            <div class="mb-2 p-2 text-white rounded bg-success">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
                                 <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico.nombre }}</p>
-                                <p class="mb-0"><strong>Dado de Alta:</strong> {{ alta.dado_alta }}</p>
+                                <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
+                                <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha_alta }}</p>
                             </div>
+                            {% else %}
+                            <div class="mb-2 p-2 text-white rounded bg-warning">
+                                <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
+                                <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico.nombre }}</p>
+                                <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>
+                                <a href="{% url 'alta_terminate' alta.id %}" class="btn btn-sm btn-danger mt-2">
+                                    <i class="bi bi-check-circle"></i> Finalizar
+                                </a>
+                            </div>
+                            {% endif %}
                         {% endfor %}
                     {% else %}
                         <p class="text-muted text-center mb-0"><em>No hay altas registradas</em></p>
@@ -133,7 +140,8 @@
             </div>
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
-                    <a href="{% url 'alta_create' paciente.id %}" class="btn btn-outline-primary">
+                    <a href="{% url 'alta_create' paciente.id %}" 
+                    class="btn btn-outline-primary {% if tiene_pendientes %}disabled{% endif %}">
                         <i class="bi bi-book"></i> Nueva Alta
                     </a>
                 </div>

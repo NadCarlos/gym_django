@@ -118,3 +118,15 @@ class AltaCreateForm(forms.ModelForm):
         widgets = {
             'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class AltaTerminateForm(forms.ModelForm):
+
+    class Meta:
+        model = Alta
+        fields = ['fecha_alta', 'dado_alta']
+
+        widgets = {
+            'fecha_alta': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date', 'type': 'date', 'id': 'fecha_alta'}),
+            'dado_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }

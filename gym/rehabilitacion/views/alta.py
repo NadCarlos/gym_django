@@ -6,6 +6,7 @@ from django.http import JsonResponse
 
 from rehabilitacion.forms import (
     AltaCreateForm,
+    AltaTerminateForm,
 )
 
 from administracion.repositories.paciente import PacienteRepository
@@ -51,7 +52,7 @@ class AltaCreate(View):
                 id_paciente_rehabilitacion=id_paciente_rehabilitacion,
             )
 
-            return redirect('alta_detail', alta_nueva.id)
+            return redirect('paciente_rehab_detail', id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -59,7 +60,6 @@ class AltaDetail(View):
 
     def get(self, request, id):
         alta = altaRepo.filter_by_id(id=id)
-        print(alta)
         return render(
             request,
             'alta/detail.html',
@@ -68,6 +68,33 @@ class AltaDetail(View):
             )
         )
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AltaTerminate(View):
+
+    def get(self, request, id):
+        form = AltaTerminateForm(initial={"dado_alta":True})
+        return render(
+            request,
+            'alta/terminate.html',
+            dict(
+                form=form,
+            )
+        )
+
+    def post(self, request, id):
+        alta = altaRepo.get_by_id(id=id)
+        form = AltaTerminateForm(request.POST)
+        if form.is_valid():
+            fecha_alta=form.cleaned_data['fecha_alta']
+            dado_alta=form.cleaned_data['dado_alta']
+            alta_terminated = altaRepo.terminate(
+                alta=alta,
+                fecha_alta=fecha_alta,
+                dado_alta=dado_alta,
+            )
+
+            return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
 
 class DiagnosticosByFamiliaView(View):
     def get(self, request, familia_id):
