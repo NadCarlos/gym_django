@@ -96,16 +96,19 @@ class PacientesList(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PacientesToCsv(View):
 
-    def get(self, request):
+    def get(self, request, state, area):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=pacientes.xlsx'
-       
+        if area == 1:
+            response['Content-Disposition'] = 'attachment; filename=pacientes_gimnasio.xlsx'
+        else:
+            response['Content-Disposition'] = 'attachment; filename=pacientes_rehabilitacion.xlsx'
+            
         apellido = request.GET.get('apellido')
         id_obra_social = request.GET.get('id_obra_social')
         id_estado_civil = request.GET.get('id_estado_civil')
         id_sexo = request.GET.get('id_sexo')
 
-        pacientes = pacienteRepo.filter_pacientes_area(True)
+        pacientes = pacienteRepo.filter_pacientes_area(state, id_area=area)
 
         if apellido:
             pacientes = pacientes.filter(apellido__icontains=apellido)

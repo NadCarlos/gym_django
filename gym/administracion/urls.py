@@ -102,7 +102,7 @@ from administracion.views.pago import(
 
 pacientes = [
     path(route='pacientes/<state>',view=PacientesList.as_view(), name='pacientes_list'),
-    path(route='pacientes_csv/',view=PacientesToCsv.as_view(), name='pacientes_csv'),
+    path(route='pacientes_csv/<state>/<int:area>',view=PacientesToCsv.as_view(), name='pacientes_csv'),
     path(route='paciente_create/',view=PacienteCreate.as_view(), name='paciente_create'),
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),
     path(route='<int:id>/paciente_update/',view=PacienteUpdate.as_view(), name='paciente_update'),
@@ -142,7 +142,7 @@ asistencias = [
 profesional = [
     path(route='profesional_list/',view=ProfesionalList.as_view(), name='profesional_list'),
     path(route='profesional_create/',view=ProfesionalCreate.as_view(), name='profesional_create'),
-    path(route='profesional_csv/',view=ProfesionalesToCsv.as_view(), name='profesional_csv'),
+    path(route='profesional_csv/<int:area>',view=ProfesionalesToCsv.as_view(), name='profesional_csv'),
     path(route='<int:id>/profesional_detail/',view=ProfesionalDetail.as_view(), name='profesional_detail'),
     path(route='<int:id>/profesional_update/',view=ProfesionalUpdate.as_view(), name='profesional_update'),
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),

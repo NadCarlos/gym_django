@@ -7,8 +7,6 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 
-from administracion.models import Profesional
-
 from administracion.filters import ProfesionalFilter
 
 from administracion.forms import (
@@ -65,14 +63,17 @@ class ProfesionalList(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class ProfesionalesToCsv(View):
 
-    def get(self, request):
+    def get(self, request, area):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=profesionales.xlsx'
-       
+        if area == 1:
+            response['Content-Disposition'] = 'attachment; filename=profesionales_gimnasio.xlsx'
+        else:
+            response['Content-Disposition'] = 'attachment; filename=profesionales_rehabilitacion.xlsx'
+
         apellido = request.GET.get('apellido')
         id_sexo = request.GET.get('id_sexo')
 
-        profesionales = Profesional.objects.filter(activo=True)
+        profesionales = profesionalRepo.filter_profesional_area(id_area=area)
 
         if apellido:
             profesionales = profesionales.filter(apellido__icontains=apellido)

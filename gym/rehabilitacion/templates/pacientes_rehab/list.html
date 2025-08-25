@@ -23,7 +23,7 @@
                 <a href="{% url 'pacientes_rehab_list' False %}" class="btn btn-outline-secondary">
                     <i class="bi bi-eye-slash"></i> Ver Eliminados
                 </a>
-                <a href="#" class="btn btn-outline-success">
+                <a href="{% url 'pacientes_csv' True 2 %}?{{ request.GET.urlencode }}" class="btn btn-outline-success">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL
                 </a>
                 {% endif %}
