@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 
 import json
+import pandas as pd
+import io
 
 from administracion.filters import PacienteFilter
 
@@ -230,3 +232,125 @@ class PacienteRehabCreateFromExistent(View):
         )
 
         return redirect('paciente_rehab_detail', paciente.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteRehabToCsv(View):
+
+    def get(self, request, id):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=paciente_detail.xlsx'
+
+        paciente = pacienteRepo.get_by_id(id=id)
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
+        tiene_pendientes = altaRepo.tiene_alta_activa()
+
+        data_paciente = []
+        data_paciente.append([
+            paciente.nombre,
+            paciente.apellido,
+            paciente.numero_dni,
+            paciente.direccion,
+            paciente.telefono,
+            paciente.celular,
+            paciente.fecha_nacimiento,
+            paciente.observaciones,
+            paciente.activo,
+            paciente.id_obra_social.nombre,
+            paciente.id_estado_civil.nombre,
+            paciente.id_localidad.nombre,
+            paciente.id_sexo.nombre,
+            ])
+
+        df = pd.DataFrame(data_paciente, columns=[
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Direccion',
+            'Telefono',
+            'Celular',
+            'Fecha de nacimiento',
+            'observaciones',
+            'activo',
+            'obra social',
+            'estado civil',
+            'localidad',
+            'sexo',
+            ])
+        
+        data_paciente_rehabilitacion = []
+        data_paciente_rehabilitacion.append([
+            rehabilitacion_paciente.nombre_tutor,
+            rehabilitacion_paciente.celular_tutor,
+            rehabilitacion_paciente.hijos,
+            rehabilitacion_paciente.id_estado_certificado.nombre,
+            rehabilitacion_paciente.vencimiento_certificado,
+            rehabilitacion_paciente.fecha_junta,
+            rehabilitacion_paciente.vencimiento_presupuesto,
+            rehabilitacion_paciente.id_derivador.nombre,
+            rehabilitacion_paciente.id_obra_social.nombre,
+            rehabilitacion_paciente.puerto_esperanza,
+        ])
+        
+        df_rehab = pd.DataFrame(data_paciente_rehabilitacion, columns=[
+            'Nombre Tutor',
+            'Celular',
+            'Hijos',
+            'Estado Certificado',
+            'Vencimiento Certificado',
+            'Fecha Junta',
+            'Vto Presupuesto',
+            'Derivador',
+            'obra social',
+            'Puerto Esperanza',
+            ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Paciente', index=False)
+            df_rehab.to_excel(writer, sheet_name='Datos Rehabilitacion', index=False)
+
+        response.write(output.getvalue())
+
+        return response
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteAltasToCsv(View):
+
+    def get(self, request, id):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=altas_paciente.xlsx'
+
+        paciente = pacienteRepo.get_by_id(id=id)
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
+
+        data = []
+        for alta in altas:
+            data.append([
+                alta.fecha,
+                alta.id_diagnostico.nombre,
+                alta.fecha_alta,
+                alta.dado_alta,
+                ])
+
+        df = pd.DataFrame(data, columns=[
+            'Fecha',
+            'Diagnostico',
+            'Dado Alta',
+            'Fecha Alta',
+            ])
+        
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Altas', index=False)
+
+        response.write(output.getvalue())
+
+        return response

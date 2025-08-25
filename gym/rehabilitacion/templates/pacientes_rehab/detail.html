@@ -135,7 +135,12 @@
             </div>
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
-                    
+                    <a href="{% url 'paciente_rehab_to_csv' paciente.id %}" class="btn btn-outline-success">
+                        <i class="bi bi-floppy"></i> Guardar Datos Excel
+                    </a>
+                    <a href="{% url 'paciente_altas_rehab_to_csv' paciente.id %}" class="btn btn-outline-success">
+                        <i class="bi bi-floppy-fill"></i> Guardar Altas Excel
+                    </a>
                 </div>
             </div>
             <div class="col-md-3 mb-3">

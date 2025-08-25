@@ -10,6 +10,8 @@ from rehabilitacion.views.pacientes_rehab import(
     PacienteRehabCreate,
     PacienteRehabCreateFromExistent,
     PacienteRehabUpdate,
+    PacienteRehabToCsv,
+    PacienteAltasToCsv,
 )
 
 from rehabilitacion.views.profesional_rehab import(
@@ -42,6 +44,8 @@ pacientes = [
     path(route='pacientes/create',view=PacienteRehabCreate.as_view(), name='paciente_rehab_create'),
     path(route='pacientes/create_from_existent',view=PacienteRehabCreateFromExistent.as_view(), name='paciente_rehab_create_from_existent'),
     path(route='pacientes/update/<int:id>',view=PacienteRehabUpdate.as_view(), name='paciente_rehab_update'),
+    path(route='pacientes/to_csv/<int:id>',view=PacienteRehabToCsv.as_view(), name='paciente_rehab_to_csv'),
+    path(route='pacientes/altas_to_csv/<int:id>',view=PacienteAltasToCsv.as_view(), name='paciente_altas_rehab_to_csv'),
 ]
 
 profesionales = [
