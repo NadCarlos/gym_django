@@ -151,10 +151,10 @@ profesional = [
 ]
 
 tratamientos = [
-    path(route='tratamientos/',view=TratamientoList.as_view(), name='tratamientos'),
-    path(route='tratamiento_create/',view=TratamientoCreate.as_view(), name='tratamiento_create'),
-    path(route='<int:id>/tratamiento_update/',view=TratamientoUpdate.as_view(), name='tratamiento_update'),
-    path(route='<int:id>/tratamiento_delete/',view=TratamientoDelete.as_view(), name='tratamiento_delete'),
+    path(route='tratamientos/<int:area>',view=TratamientoList.as_view(), name='tratamientos'),
+    path(route='tratamiento_create/<int:area>',view=TratamientoCreate.as_view(), name='tratamiento_create'),
+    path(route='tratamiento_update/<int:id>/<int:area>',view=TratamientoUpdate.as_view(), name='tratamiento_update'),
+    path(route='tratamiento_delete/<int:id>/<int:area>',view=TratamientoDelete.as_view(), name='tratamiento_delete'),
 ]
 
 tratamiento_profesional = [

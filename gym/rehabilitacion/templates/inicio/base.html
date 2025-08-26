@@ -61,7 +61,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-box-arrow-right"></i> Desconectar</a>
+                        <a class="nav-link text-white" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Desconectar</a>
                     </li>
 
                     {% if request.user|has_group:"Gimnasio" or user.is_staff %}
@@ -71,12 +71,9 @@
                             <i class="bi bi-people-fill"></i> Pacientes
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Ver Pacientes</a></li>
+                            <li><a class="dropdown-item" href="{% url 'pacientes_rehab_list' True %}"><i class="bi bi-person"></i> Ver Pacientes</a></li>
                             <li><a class="dropdown-item" href="{% url 'obras_sociales' 2 %}"><i class="bi bi-shield"></i> Obras Sociales</a></li>
                             <li><a class="dropdown-item" href="{% url 'prestaciones' 2 %}"><i class="bi bi-list-check"></i> Prestaciones</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-calendar-check"></i> Asistencias</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-card-text"></i> Planes</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-journal-bookmark"></i> Cuotas</a></li>
                         </ul>
                     </li>
 
@@ -86,8 +83,8 @@
                             <i class="bi bi-briefcase-fill"></i> Profesionales
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-person"></i> Ver Profesionales</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-shield-check"></i> Tratamientos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profesional_rehab_list' %}"><i class="bi bi-file-earmark-person"></i> Ver Profesionales</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tratamientos' 2 %}"><i class="bi bi-shield-check"></i> Tratamientos</a></li>
                         </ul>
                     </li>
                     {% endif %}

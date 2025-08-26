@@ -1,4 +1,4 @@
-{% extends 'home/base.html' %}
+{% extends base_template %}
 
 {% block content %}
 <div class="container mt-4">
@@ -6,7 +6,7 @@
     <div class="row">
         <!-- Primera columna -->
         <div class="col-md-8">
-            <a href="{% url 'tratamiento_create' %}" class="btn btn-success mb-4">
+            <a href="{% url 'tratamiento_create' area %}" class="btn btn-success mb-4">
                 <i class="bi bi-plus-circle"></i> Nuevo Tratamiento
             </a>
         </div>
@@ -38,10 +38,10 @@
                     <td>{{ tratamiento.nombre }}</td>
                     <td>{{ tratamiento.descripcion }}</td>
                     <td>
-                        <a href="{% url 'tratamiento_delete' tratamiento.id %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'tratamiento_delete' tratamiento.id area %}" class="btn btn-danger btn-sm me-2">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
-                        <a href="{% url 'tratamiento_update' tratamiento.id %}" class="btn btn-warning btn-sm">
+                        <a href="{% url 'tratamiento_update' tratamiento.id area %}" class="btn btn-warning btn-sm">
                             <i class="bi bi-pencil"></i> Editar
                         </a>
                     </td>
