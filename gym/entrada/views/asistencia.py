@@ -93,7 +93,7 @@ class CheckIn(View):
             if form.is_valid():
                 dni = form.cleaned_data['numero_dni']
                 dni=int(dni)
-                paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+                paciente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
                 return redirect ('check_in_confirm', paciente.id)
         except:
             return redirect('check_in_error')
