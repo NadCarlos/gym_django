@@ -82,7 +82,7 @@
                     <h6 class="mb-0 text-center">Altas</h6>
                 </div>
                 <div class="card-body p-2">
-                    {% if altas %}
+                    {% if altas != "None" %}
                         {% for alta in altas %}
                             {% if alta.dado_alta %}
                             <div class="mb-2 p-2 text-white rounded bg-success">
