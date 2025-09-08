@@ -90,7 +90,7 @@ class PacienteRehabDetail(View):
         tiene_pendientes=False
         if rehabilitacion_paciente != None:
             altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
-            tiene_pendientes = altaRepo.tiene_alta_activa()
+            tiene_pendientes = altaRepo.tiene_alta_activa(id_paciente_rehab=rehabilitacion_paciente.id)
         return render(
             request,
             'pacientes_rehab/detail.html',
@@ -357,3 +357,26 @@ class PacienteAltasToCsv(View):
         response.write(output.getvalue())
 
         return response
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacientesAltasToCreateOnlyUseOnce(View):
+    def get(self, request):
+        pacientes = pacienteRepo.get_all_2()
+        area=areaRepo.get_by_id(id=1)
+        user = request.user
+        for paciente in pacientes:
+            pacienteAreaRepo.create(
+                    id_paciente=paciente,
+                    id_area=area,
+                    id_usuario=user,
+                )
+        total = len(pacientes)
+
+        return render(
+            request,
+            'pacientes_rehab/to_delete.html',
+            dict(
+                total=total,
+            )
+        )

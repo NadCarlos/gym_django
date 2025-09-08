@@ -9,6 +9,9 @@ class PacienteRepository:
     def get_all(self) -> List[Paciente]:
         return Paciente.objects.all().order_by('apellido').values()
     
+    def get_all_2(self) -> List[Paciente]:
+        return Paciente.objects.all().order_by('apellido')
+    
     def filter_by_id(self) -> Optional[Paciente]:
         return Paciente.objects.filter(id=id).first()
     
