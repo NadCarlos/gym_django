@@ -29,6 +29,8 @@ from administracion.repositories.paciente_area import PacienteAreaRepository
 from administracion.repositories.area import AreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
+from administracion.repositories.profesional import ProfesionalRepository# DELETE WHEN UP
+from administracion.repositories.profesional_area import ProfesionalAreaRepository# DELETE WHEN UP
 
 
 pacienteRepo = PacienteRepository()
@@ -45,6 +47,8 @@ pacienteAreaRepo = PacienteAreaRepository()
 areaRepo = AreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
+profesionalRepo = ProfesionalRepository()# DELETE WHEN UP
+profesionalAreaRepo = ProfesionalAreaRepository()# DELETE WHEN UP
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -357,8 +361,9 @@ class PacienteAltasToCsv(View):
         response.write(output.getvalue())
 
         return response
-    
 
+
+# DELETE WHEN UP
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class PacientesAltasToCreateOnlyUseOnce(View):
     def get(self, request):
@@ -373,10 +378,21 @@ class PacientesAltasToCreateOnlyUseOnce(View):
                 )
         total = len(pacientes)
 
+        profesionales = profesionalRepo.get_all_2()
+        for profesional in profesionales:
+            profesional_area = profesionalAreaRepo.create(
+                id_profesional=profesional,
+                id_area=area,
+                id_usuario=user,
+            )
+
+        totalProfs = len(profesionales)
+
         return render(
             request,
             'pacientes_rehab/to_delete.html',
             dict(
                 total=total,
+                totalProfs=totalProfs,
             )
         )

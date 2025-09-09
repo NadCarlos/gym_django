@@ -9,6 +9,9 @@ class ProfesionalRepository:
     def get_all(self) -> List[Profesional]:
         return Profesional.objects.all().order_by('apellido').values()
     
+    def get_all_2(self) -> List[Profesional]:
+        return Profesional.objects.all().order_by('apellido')
+
     def filter_by_id(self) -> Optional[Profesional]:
         return Profesional.objects.filter(id=id).first()
     
