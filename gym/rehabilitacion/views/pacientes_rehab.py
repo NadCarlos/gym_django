@@ -161,7 +161,7 @@ class PacienteRehabCreate(View):
                     id_area=area,
                     id_usuario=form.cleaned_data['id_usuario'],
                 )
-                return redirect('paciente_detail', paciente_nuevo.id)
+                return redirect('paciente_rehab_detail', paciente_nuevo.id)
             else:
                 return redirect('error_paciente_existente')
         else:
