@@ -195,7 +195,8 @@ class PacienteDetail(View):
 class PacienteCreate(View):
 
     def get(self, request):
-        pacientes_dni = pacienteRepo.dni_list_segun_area(state=True, id_area=2)
+        pacientes_dni = pacienteRepo.dni_list_segun_area(id_area=2)
+        pacientes_dni_area_actual = pacienteRepo.dni_list_segun_area(id_area=1)
         obra_social = obraSocialRepo.get_by_name(nombre="Particular")
         sexo = sexoRepo.get_by_name(nombre="Masculino")
         estado_civil = estadoCivilRepo.get_by_name(nombre="Soltero")
@@ -214,6 +215,7 @@ class PacienteCreate(View):
             dict(
                 form=form,
                 pacientes_dni=json.dumps(pacientes_dni),
+                pacientes_dni_area_actual=json.dumps(pacientes_dni_area_actual),
             )
         )
 
@@ -378,3 +380,13 @@ class ErrorPacienteExistente(View):
             'pacientes/error_paciente_existente.html',
         )
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteRedirectFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+
+        return redirect('paciente_detail', paciente.id)

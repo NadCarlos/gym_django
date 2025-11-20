@@ -10,6 +10,7 @@ from administracion.views.pacientes import (
     ErrorPacienteExistente,
     PacienteReactivate,
     PacienteCreateFromExistent,
+    PacienteRedirectFromExistent,
     )
 
 from administracion.views.prestacion_paciente import (
@@ -110,6 +111,7 @@ pacientes = [
     path(route='<int:id>/paciente_reactivate/',view=PacienteReactivate.as_view(), name='paciente_reactivate'),
     path(route='error_paciente_existente/',view=ErrorPacienteExistente.as_view(), name='error_paciente_existente'),
     path(route='paciente_create_existente/',view=PacienteCreateFromExistent.as_view(), name='paciente_create_from_existent'),
+    path(route='paciente_redirect_existente/',view=PacienteRedirectFromExistent.as_view(), name='paciente_redirect_existente'),
 ]
 
 prestacion_paciente = [

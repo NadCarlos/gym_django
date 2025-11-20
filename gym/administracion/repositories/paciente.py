@@ -31,9 +31,9 @@ class PacienteRepository:
         # Obtener el queryset de pacientes
         return Paciente.objects.filter(id__in=ids_pacientes).filter(activo=state).order_by('apellido')
     
-    def dni_list_segun_area(self, state, id_area):
+    def dni_list_segun_area(self, id_area):
         ids_pacientes = PacienteArea.objects.filter(id_area=id_area).values_list('id_paciente', flat=True)
-        pacientes = Paciente.objects.filter(id__in=ids_pacientes).filter(activo=state).order_by('apellido')
+        pacientes = Paciente.objects.filter(id__in=ids_pacientes).order_by('apellido')
         return list(pacientes.values_list('numero_dni', flat=True))
 
     def get_by_id(self, id: int) -> Optional[Paciente]:

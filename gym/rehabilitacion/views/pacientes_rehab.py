@@ -107,7 +107,8 @@ class PacienteRehabDetail(View):
 class PacienteRehabCreate(View):
 
     def get(self, request):
-        pacientes_dni = pacienteRepo.dni_list_segun_area(state=True, id_area=1)
+        pacientes_dni = pacienteRepo.dni_list_segun_area(id_area=1)
+        pacientes_dni_area_actual = pacienteRepo.dni_list_segun_area(id_area=2)
         obra_social = obraSocialRepo.get_by_name(nombre="Particular")
         sexo = sexoRepo.get_by_name(nombre="Masculino")
         estado_civil = estadoCivilRepo.get_by_name(nombre="Soltero")
@@ -126,6 +127,7 @@ class PacienteRehabCreate(View):
             dict(
                 form=form,
                 pacientes_dni=json.dumps(pacientes_dni),
+                pacientes_dni_area_actual=json.dumps(pacientes_dni_area_actual),
             )
         )
 
@@ -357,3 +359,14 @@ class PacienteAltasToCsv(View):
         response.write(output.getvalue())
 
         return response
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacienteRehabRedirectFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+
+        return redirect('paciente_rehab_detail', paciente.id)

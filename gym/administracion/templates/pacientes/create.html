@@ -2,6 +2,7 @@
 
 {% block content %}
 <input type="hidden" name="dni_existentes" id="dni_existentes" value="{{ pacientes_dni }}">
+<input type="hidden" name="pacientes_dni_area_actual" id="pacientes_dni_area_actual" value="{{ pacientes_dni_area_actual }}">
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Nuevo Paciente</h2>
     <div class="card p-4 shadow-sm">
@@ -127,6 +128,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const dniInput = document.getElementById('numero_dni');
         const dnisExistentes = JSON.parse(document.getElementById('dni_existentes').value);
+        const dnisExistentesAreaActual = JSON.parse(document.getElementById('pacientes_dni_area_actual').value);
         const botonGuardar = document.getElementById('btn-guardar');
     
         // Crear contenedor de alerta si no existe aún
@@ -141,8 +143,30 @@
             dniAlert.innerHTML = '';
             dniInput.classList.remove('is-invalid');
             botonGuardar.disabled = false;
+
+            if (dnisExistentesAreaActual.includes(dniIngresado)){
+                dniInput.classList.add('is-invalid');
+                botonGuardar.disabled = true;
     
-            if (dnisExistentes.includes(dniIngresado)) {
+                const mensaje = document.createElement('span');
+                mensaje.className = 'text-danger fw-bold me-2';
+                mensaje.textContent = '⚠️ Ya existe un paciente con este DNI en esta area';
+    
+                const usarBtn = document.createElement('button');
+                usarBtn.type = 'button';
+                usarBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+                usarBtn.textContent = 'Ver Detalle';
+                usarBtn.onclick = () => {
+                    const dni = dniInput.value;
+                    const urlBase = "{% url 'paciente_redirect_existente' %}";
+                    window.location.href = `${urlBase}?dni=${dni}`;
+                };
+    
+                dniAlert.appendChild(mensaje);
+                dniAlert.appendChild(usarBtn);
+            }
+    
+            else if (dnisExistentes.includes(dniIngresado)) {
                 dniInput.classList.add('is-invalid');
                 botonGuardar.disabled = true;
     
