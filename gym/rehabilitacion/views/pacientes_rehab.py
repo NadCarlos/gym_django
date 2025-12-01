@@ -338,14 +338,14 @@ class PacienteAltasToCsv(View):
         for alta in altas:
             data.append([
                 alta.fecha,
-                alta.id_diagnostico.nombre,
+                alta.id_diagnostico_etiologico.nombre,
                 alta.fecha_alta,
                 alta.dado_alta,
                 ])
 
         df = pd.DataFrame(data, columns=[
             'Fecha',
-            'Diagnostico',
+            'Diagnostico Etiologico',
             'Dado Alta',
             'Fecha Alta',
             ])

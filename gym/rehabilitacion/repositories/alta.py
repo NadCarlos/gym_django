@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rehabilitacion.models import Alta, PacienteRehabilitacion, Diagnostico
+from rehabilitacion.models import Alta, PacienteRehabilitacion, DiagnosticoEtiologico
 
 
 class AltaRepository:
@@ -23,12 +23,12 @@ class AltaRepository:
     def create(
         self,
         fecha: str,
-        id_diagnostico: Diagnostico,
+        id_diagnostico_etiologico: DiagnosticoEtiologico,
         id_paciente_rehabilitacion: PacienteRehabilitacion,
         ):
         return Alta.objects.create(
             fecha=fecha,
-            id_diagnostico=id_diagnostico,
+            id_diagnostico_etiologico=id_diagnostico_etiologico,
             id_paciente_rehabilitacion=id_paciente_rehabilitacion,
         )
     

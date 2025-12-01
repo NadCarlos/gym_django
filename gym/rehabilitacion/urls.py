@@ -29,7 +29,7 @@ from rehabilitacion.views.rehabilitacion import(
 
 from rehabilitacion.views.alta import(
     AltaCreate,
-    DiagnosticosByFamiliaView,
+    DiagnosticoEtiologicoByTipoDiscapacidadView,
     AltaDetail,
     AltaTerminate,
 )
@@ -64,7 +64,7 @@ rehabilitacion = [
 
 alta = [
     path(route='alta/create/<int:id>',view=AltaCreate.as_view(), name='alta_create'),
-    path(route="diagnosticos/<int:familia_id>/", view=DiagnosticosByFamiliaView.as_view(), name="get_diagnosticos_by_familia"),
+    path(route="diagnosticos_etiologicos/<int:tipo_discapacidad_id>/", view=DiagnosticoEtiologicoByTipoDiscapacidadView.as_view(), name="get_diagnosticos_etiologicos_by_tipo_discapacidad"),
     path(route='alta/detail/<int:id>',view=AltaDetail.as_view(), name='alta_detail'),
     path(route='alta/terminate/<int:id>',view=AltaTerminate.as_view(), name='alta_terminate'),
 ]

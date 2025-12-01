@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, Diagnostico, Familia
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -106,14 +106,14 @@ class AltaCreateForm(forms.ModelForm):
         })
     )
 
-    id_diagnostico = forms.ModelChoiceField(
-        queryset=Diagnostico.objects.all(),
+    id_diagnostico_etiologico = forms.ModelChoiceField(
+        queryset=DiagnosticoEtiologico.objects.all(),
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
     class Meta:
         model = Alta
-        fields = ['fecha', 'id_diagnostico', 'id_paciente_rehabilitacion']
+        fields = ['fecha', 'id_diagnostico_etiologico', 'id_paciente_rehabilitacion']
 
         widgets = {
             'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),

@@ -13,16 +13,14 @@ from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
-from rehabilitacion.repositories.diagnostico import DiagnosticoRepository
-from rehabilitacion.repositories.familia import FamiliaRepository
+from rehabilitacion.repositories.diagnostico_etiologico import DiagnosticoEtiologicoRepository
 
 
 pacienteRepo = PacienteRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
-diagnosticoRepo = DiagnosticoRepository()
-familiaRepo = FamiliaRepository()
+diagnosticoEtiologicoRepo = DiagnosticoEtiologicoRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -45,10 +43,10 @@ class AltaCreate(View):
         if form.is_valid():
             fecha=form.cleaned_data['fecha']
             id_paciente_rehabilitacion=form.cleaned_data['id_paciente_rehabilitacion']
-            id_diagnostico=form.cleaned_data['id_diagnostico']
+            id_diagnostico_etiologico=form.cleaned_data['id_diagnostico_etiologico']
             alta_nueva=altaRepo.create(
                 fecha=fecha,
-                id_diagnostico=id_diagnostico,
+                id_diagnostico_etiologico=id_diagnostico_etiologico,
                 id_paciente_rehabilitacion=id_paciente_rehabilitacion,
             )
 
@@ -96,7 +94,7 @@ class AltaTerminate(View):
 
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
 
-class DiagnosticosByFamiliaView(View):
-    def get(self, request, familia_id):
-        diagnosticos = diagnosticoRepo.filter_by_familia_id_list(id_familia=familia_id)
-        return JsonResponse(list(diagnosticos), safe=False)
+class DiagnosticoEtiologicoByTipoDiscapacidadView(View):
+    def get(self, request, tipo_discapacidad_id):
+        diagnosticos_etiologicos = diagnosticoEtiologicoRepo.filter_by_tipo_discapacidad_id_list(id_tipo_discapacidad=tipo_discapacidad_id)
+        return JsonResponse(list(diagnosticos_etiologicos), safe=False)

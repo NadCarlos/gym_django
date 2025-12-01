@@ -153,38 +153,72 @@ class PacienteRehabilitacion(models.Model):
         blank=False,
     )
 
+    diagnosticoCUD = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name="diagnosticoCUD",
+    )
+
     def __str__(self):
         return  self.id_paciente_area.id_area.nombre
 
 
-class Familia(models.Model):
+class TipoDiscapacidad(models.Model):
 
     nombre = models.CharField(
         max_length=100,
         null=False,
         blank=False,
-        verbose_name="Nombre_familia",
+        verbose_name="nombre_tipo_discapacidad",
     )
 
     def __str__(self):
         return  self.nombre
 
 
-class Diagnostico(models.Model):
+class DiagnosticoEtiologico(models.Model):
 
     nombre = models.CharField(
         max_length=100,
         null=False,
         blank=False,
-        verbose_name="Nombre_diagnostico",
+        verbose_name="Nombre_diagnostico_etiologico",
     )
 
-    id_familia = models.ForeignKey(
-        Familia,
+    id_tipo_discapacidad = models.ForeignKey(
+        TipoDiscapacidad,
         blank=False, 
         null=True,
         on_delete=models.SET_NULL,
-        related_name='id_familia',
+        related_name='id_tipo_discapacidad',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    def __str__(self):
+        return  self.nombre
+    
+
+class DiagnosticoFuncional(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_diagnostico_funcional",
+    )
+
+    id_diagnostico_etiologico = models.ForeignKey(
+        DiagnosticoEtiologico,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_diagnostico_etiologico_en_funcional',
     )
 
     activo = models.BooleanField(
@@ -205,12 +239,12 @@ class Alta(models.Model):
         verbose_name='fecha_',
     )
 
-    id_diagnostico = models.ForeignKey(
-        Diagnostico,
+    id_diagnostico_etiologico = models.ForeignKey(
+        DiagnosticoEtiologico,
         blank=False, 
         null=True,
         on_delete=models.SET_NULL,
-        related_name='id_diagnostico_alta',
+        related_name='id_diagnostico_etiologico_alta',
     )
 
     id_paciente_rehabilitacion = models.ForeignKey(
@@ -232,3 +266,46 @@ class Alta(models.Model):
         null=False,
         blank=False,
     )
+
+
+class AltaFuncional(models.Model):
+
+    id_diagnostico_funcional = models.ForeignKey(
+        DiagnosticoFuncional,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_diagnostico_funcional',
+    )
+
+    id_alta = models.ForeignKey(
+        Alta,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_diagnostico_funcional',
+    )
+
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones_alta_funcional",
+        )
+    
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='usuario_alta_funcional',
+    )
+
+    def __str__(self):
+        return  self.id_diagnostico_funcional.nombre

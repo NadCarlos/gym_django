@@ -4,8 +4,8 @@ from rehabilitacion.models import(
     EstadoCertificado,
     Derivador,
     PacienteRehabilitacion,
-    Familia,
-    Diagnostico,
+    TipoDiscapacidad,
+    DiagnosticoEtiologico,
     Alta,
 )
 
@@ -31,15 +31,15 @@ class PacienteRehabilitacionAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Familia)
-class FamiliaAdmin(admin.ModelAdmin):
+@admin.register(TipoDiscapacidad)
+class TipoDiscapacidadAdmin(admin.ModelAdmin):
     list_display = (
         'nombre',
     )
 
 
-@admin.register(Diagnostico)
-class DiagnosticoAdmin(admin.ModelAdmin):
+@admin.register(DiagnosticoEtiologico)
+class DiagnosticoEtiologicoAdmin(admin.ModelAdmin):
     list_display = (
         'nombre',
     )
