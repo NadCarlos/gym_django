@@ -110,14 +110,19 @@ class AltaCreateForm(forms.ModelForm):
         })
     )
 
+    tipo_discapacidad = forms.ModelChoiceField(
+        queryset=TipoDiscapacidad.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-control','id':'id_tipo_discapacidad'})
+    )
+
     id_diagnostico_etiologico = forms.ModelChoiceField(
         queryset=DiagnosticoEtiologico.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-control','id':'id_diagnostico_etiologico'})
     )
 
     class Meta:
         model = Alta
-        fields = ['fecha', 'id_diagnostico_etiologico', 'id_paciente_rehabilitacion']
+        fields = ['fecha', 'id_diagnostico_etiologico', 'tipo_discapacidad', 'id_paciente_rehabilitacion']
 
         widgets = {
             'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),

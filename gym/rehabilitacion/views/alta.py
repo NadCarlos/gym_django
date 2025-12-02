@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 
+import json
+
 from rehabilitacion.forms import (
     AltaCreateForm,
     AltaTerminateForm,
@@ -29,12 +31,14 @@ class AltaCreate(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         id_paciente_rehabilitacion = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        diagnosticos_etiologicos = diagnosticoEtiologicoRepo.get_all_dict()
         form = AltaCreateForm(initial={'id_paciente_rehabilitacion':id_paciente_rehabilitacion.id})
         return render(
             request,
             'alta/create.html',
             dict(
                 form=form,
+                diagnosticos_json=json.dumps(diagnosticos_etiologicos),
             )
         )
     

@@ -8,6 +8,20 @@ class DiagnosticoEtiologicoRepository:
     def get_all(self) -> List[DiagnosticoEtiologico]:
         return DiagnosticoEtiologico.objects.all()
     
+    def get_all_dict(self) -> dict:
+        diagnosticos = DiagnosticoEtiologico.objects.all()
+        diagnosticos_dict = {}
+
+        for d in diagnosticos:
+            key = str(d.id_tipo_discapacidad.id)
+            diagnosticos_dict.setdefault(key, []).append({
+                "id": d.id,
+                "nombre": d.nombre
+            })
+
+        return diagnosticos_dict
+
+    
     def get_by_id(self, id: int) -> Optional[DiagnosticoEtiologico]:
         return DiagnosticoEtiologico.objects.get(id=id)
     

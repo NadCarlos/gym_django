@@ -86,14 +86,14 @@
                     {% if altas != "None" %}
                         {% for alta in altas %}
                             {% if alta.dado_alta %}
-                            <div class="mb-2 p-2 text-white rounded bg-success">
+                            <div class="mb-2 p-2 text-white rounded bg-warning">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
                                 <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
                                 <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha_alta }}</p>
                             </div>
                             {% else %}
-                            <div class="mb-2 p-2 text-white rounded bg-warning">
+                            <div class="mb-2 p-2 text-white rounded bg-success">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
                                 <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
                                 <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>

@@ -1,6 +1,7 @@
 {% extends 'inicio/base.html' %}
 
 {% block content %}
+<input type="hidden" name="diagnosticos_json" id="diagnosticos_json" value="{{ diagnosticos_json }}">
 <div class="container mt-4">
     <h2 class="mb-4">Nueva Alta</h2>
     <form method="post">
@@ -13,17 +14,67 @@
         </div>
 
         <div class="mb-3">
-            <label for="{{ form.id_diagnostico_etiologico.id_for_label }}" class="form-label">Diagnóstico</label>
-            {{ form.id_diagnostico_etiologico }}
+            <label for="{{ form.tipo_discapacidad.id_for_label }}" class="form-label">
+                Tipo de Discapacidad
+            </label>
+            {{ form.tipo_discapacidad }}
         </div>
 
-        <div class="mb-3" id="nuevo_diagnostico_etiologico_container" style="display:none;">
-            <label for="nuevo_diagnostico_etiologico" class="form-label">Nombre del nuevo diagnóstico</label>
-            <input type="text" name="nuevo_diagnostico_etiologico" id="nuevo_diagnostico_etiologico" class="form-control" placeholder="Ingrese diagnóstico etiologico">
+        <div class="mb-3">
+            <label for="{{ form.id_diagnostico_etiologico.id_for_label }}" class="form-label">
+                Diagnóstico Etiologico
+            </label>
+            {{ form.id_diagnostico_etiologico }}
         </div>
 
         <button type="submit" class="btn btn-primary">Guardar</button>
         <a href="#" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const tipoSelect = document.getElementById("id_tipo_discapacidad");
+        const diagSelect = document.getElementById("id_diagnostico_etiologico");
+
+        // JSON generado desde Django (ver vista)
+        const diagnosticos = JSON.parse(document.getElementById('diagnosticos_json').value);
+        console.log(diagnosticos)
+
+        // Deshabilitar diagnóstico al inicio
+        diagSelect.disabled = true;
+
+        // Limpiar select
+        function cleanDiagnosticos() {
+            diagSelect.innerHTML = '<option value="">---------</option>';
+        }
+
+        tipoSelect.addEventListener("change", function () {
+            const tipoId = tipoSelect.value;
+            console.log(tipoId)
+
+            cleanDiagnosticos();
+
+            if (!tipoId) {
+                diagSelect.disabled = true;
+                return;
+            }
+            const lista = diagnosticos[tipoId] || [];
+            console.log(lista)
+            
+
+            lista.forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.id;
+                option.textContent = item.nombre;
+                diagSelect.appendChild(option);
+            });
+            
+            diagSelect.disabled = false;
+        });
+
+    });
+</script>
+
 {% endblock %}
