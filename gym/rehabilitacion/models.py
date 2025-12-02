@@ -81,6 +81,7 @@ class PacienteRehabilitacion(models.Model):
     hijos = models.IntegerField(
         null=False,
         blank=False,
+        default=0,
     )
 
     id_estado_certificado = models.ForeignKey(

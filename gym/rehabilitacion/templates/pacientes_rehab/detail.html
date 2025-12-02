@@ -48,6 +48,7 @@
                         {% else %}
                             <p><strong>Estado Certificado:</strong> <span class="badge bg-success">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
                             <p><strong>Vencimiento Certificado:</strong> {{ rehabilitacion_paciente.vencimiento_certificado }}</p>
+                            <p><strong>Diagnostico CUD:</strong> {{ rehabilitacion_paciente.diagnosticoCUD }}</p>
                         {% endif %}
                         {% if rehabilitacion_paciente.ven_presupuesto == False %}
                             <p><strong>Presupuesto Vigente:</strong><span class="badge bg-danger"> NO</span></p>

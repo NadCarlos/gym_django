@@ -41,6 +41,7 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             'puerto_esperanza',
             'id_obra_social',
             'id_usuario',
+            'diagnosticoCUD',
             ]
         
         widgets = {
@@ -57,6 +58,7 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             #'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
         }
 
 
@@ -80,6 +82,7 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'id_derivador',
             'puerto_esperanza',
             'id_obra_social',
+            'diagnosticoCUD',
         ]
         widgets = {
             'nombre_tutor': forms.TextInput(attrs={'class': 'form-control custom-class'}),
@@ -93,6 +96,7 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'id_derivador': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
         }
 
 

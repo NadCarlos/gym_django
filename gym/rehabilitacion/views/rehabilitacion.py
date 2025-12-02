@@ -61,6 +61,7 @@ class RehabilitacionCreate(View):
                 puerto_esperanza=form.cleaned_data['puerto_esperanza'],
                 id_obra_social=form.cleaned_data['id_obra_social'],
                 id_usuario=form.cleaned_data['id_usuario'],
+                diagnosticoCUD=form.cleaned_data['diagnosticoCUD'],
             )
             return redirect('paciente_rehab_detail', paciente.id)
         else:
@@ -102,6 +103,7 @@ class RehabilitacionUpdate(View):
                 id_derivador=form.cleaned_data['id_derivador'],
                 puerto_esperanza=form.cleaned_data['puerto_esperanza'],
                 id_obra_social=form.cleaned_data['id_obra_social'],
+                diagnosticoCUD=form.cleaned_data['diagnosticoCUD'],
             )
             return redirect('paciente_rehab_detail', paciente.id)
 """        else:

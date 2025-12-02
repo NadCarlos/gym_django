@@ -30,13 +30,17 @@
                 </div>
                 <div class="col-md-6 mb-3">
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label for="{{ form.id_estado_certificado.id_for_label }}" class="form-label">Estado Certificado</label>
                     {{ form.id_estado_certificado }}
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-3 mb-3">
                     <label for="{{ form.vencimiento_certificado.id_for_label }}" class="form-label">Vencimiento Certificado</label>
                     {{ form.vencimiento_certificado }}
+                </div>
+                <div class="col-md-5 mb-3">
+                    <label for="{{ form.diagnosticoCUD.id_for_label }}" class="form-label">Diagnostico Certificado Unico de Discapacidad</label>
+                    {{ form.diagnosticoCUD }}
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.ven_presupuesto.id_for_label }}" class="form-label">Vencimiento Presupuesto</label>
@@ -70,13 +74,16 @@
         let vencimientoCert = document.getElementById("id_vencimiento_certificado");
         let ven_presupuesto = document.getElementById("ven_presupuesto");
         let vencimiento_presupuesto = document.getElementById("vencimiento_presupuesto");
+        let diagnosticoCUD = document.getElementById("diagnosticoCUD");
     
         function toggleFechas() {
             let valor = estadoSelect.value;
             if (valor == 2) {
                 vencimientoCert.disabled = false;
+                diagnosticoCUD.disabled = false;
             } else {
                 vencimientoCert.disabled = true;
+                diagnosticoCUD.disabled = true;
             }
         }
 
