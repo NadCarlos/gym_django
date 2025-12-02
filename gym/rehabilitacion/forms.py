@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -138,4 +138,22 @@ class AltaTerminateForm(forms.ModelForm):
         widgets = {
             'fecha_alta': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date', 'type': 'date', 'id': 'fecha_alta'}),
             'dado_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class AltaFuncionalCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = AltaFuncional
+
+        fields = [
+            'id_alta',
+            'observaciones',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'id_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }

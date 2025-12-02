@@ -9,6 +9,7 @@ import json
 from rehabilitacion.forms import (
     AltaCreateForm,
     AltaTerminateForm,
+    AltaFuncionalCreateForm,
 )
 
 from administracion.repositories.paciente import PacienteRepository
@@ -16,6 +17,8 @@ from administracion.repositories.paciente_area import PacienteAreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
 from rehabilitacion.repositories.diagnostico_etiologico import DiagnosticoEtiologicoRepository
+from rehabilitacion.repositories.diagnostico_funcional import DiagnosticoFuncionalRepository
+from rehabilitacion.repositories.alta_funcional import AltaFuncionalRepository
 
 
 pacienteRepo = PacienteRepository()
@@ -23,6 +26,8 @@ pacienteAreaRepo = PacienteAreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
 diagnosticoEtiologicoRepo = DiagnosticoEtiologicoRepository()
+diagnosticoFuncionalRepo = DiagnosticoFuncionalRepository()
+altaFuncionalRepo = AltaFuncionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -98,7 +103,48 @@ class AltaTerminate(View):
 
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
 
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class DiagnosticoEtiologicoByTipoDiscapacidadView(View):
+
     def get(self, request, tipo_discapacidad_id):
         diagnosticos_etiologicos = diagnosticoEtiologicoRepo.filter_by_tipo_discapacidad_id_list(id_tipo_discapacidad=tipo_discapacidad_id)
         return JsonResponse(list(diagnosticos_etiologicos), safe=False)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AltaFuncionalCreate(View):
+
+    def get(self, request, alta_id):
+        alta = altaRepo.get_by_id(id=alta_id)
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id)
+        form = AltaFuncionalCreateForm(initial={'id_usuario': request.user, 'id_alta': alta})
+
+        return render(
+            request,
+            'alta_funcional/create.html',
+            dict(
+                form=form,
+                diagnosticos_funcionales = diagnosticos_funcionales,
+            )
+        )
+    
+    def post(self, request, alta_id):
+        alta = altaRepo.get_by_id(id=alta_id)
+        diagnostico_funcional = request.POST.get('select-diagnostico-funcional')
+        diagnostico_funcional = int(diagnostico_funcional)
+        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(diagnostico_funcional)
+        form = AltaFuncionalCreateForm(request.POST)
+        if form.is_valid():
+            id_alta=form.cleaned_data['id_alta']
+            observaciones=form.cleaned_data['observaciones']
+            id_usuario=form.cleaned_data['id_usuario']
+
+            altaFuncionalRepo.create(
+                id_alta=id_alta,
+                id_diagnostico_funcional=diagnostico_funcional,
+                observaciones=observaciones,
+                id_usuario=id_usuario,
+            )
+
+        return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )

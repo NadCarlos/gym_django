@@ -32,6 +32,7 @@ from rehabilitacion.views.alta import(
     DiagnosticoEtiologicoByTipoDiscapacidadView,
     AltaDetail,
     AltaTerminate,
+    AltaFuncionalCreate,
 )
 
 
@@ -67,6 +68,7 @@ alta = [
     path(route="diagnosticos_etiologicos/<int:tipo_discapacidad_id>/", view=DiagnosticoEtiologicoByTipoDiscapacidadView.as_view(), name="get_diagnosticos_etiologicos_by_tipo_discapacidad"),
     path(route='alta/detail/<int:id>',view=AltaDetail.as_view(), name='alta_detail'),
     path(route='alta/terminate/<int:id>',view=AltaTerminate.as_view(), name='alta_terminate'),
+    path(route='alta_funcional/create/<int:alta_id>',view=AltaFuncionalCreate.as_view(), name='alta_funcional_create'),
 ]
 
 urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta

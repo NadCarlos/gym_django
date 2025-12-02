@@ -7,6 +7,8 @@ from rehabilitacion.models import(
     TipoDiscapacidad,
     DiagnosticoEtiologico,
     Alta,
+    DiagnosticoFuncional,
+    AltaFuncional,
 )
 
 
@@ -49,4 +51,18 @@ class DiagnosticoEtiologicoAdmin(admin.ModelAdmin):
 class AltaAdmin(admin.ModelAdmin):
     list_display = (
         'id_paciente_rehabilitacion',
+    )
+
+
+@admin.register(DiagnosticoFuncional)
+class DiagnosticoFuncionalAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
+    )
+
+
+@admin.register(AltaFuncional)
+class AltaFuncionalAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_alta',
     )

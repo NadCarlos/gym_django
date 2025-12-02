@@ -1,0 +1,30 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Nuevo Diagnostico Funcional</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.id_alta }}
+        {{ form.id_usuario }}
+
+        <label for="{{ form.observaciones.id_for_label }}" class="form-label">Seleccione un diagnostico</label>
+        <select class="form-control custom-class" id="select-diagnostico-funcional" name="select-diagnostico-funcional">
+            <option style="font-weight: 100;" value="">--------------</option>
+                {% for diagnostico in diagnosticos_funcionales %}
+                    <option value="{{ diagnostico.id }}">{{ diagnostico.nombre }}</option>
+                {% endfor %}
+        </select>
+
+        <div class="mb-3">
+            <label for="{{ form.observaciones.id_for_label }}" class="form-label">
+                Observaciones
+            </label>
+            {{ form.observaciones }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="#" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
