@@ -15,6 +15,9 @@ class AltaFuncionalRepository:
     def filter_by_id(self, id) -> Optional[AltaFuncional]:
         return AltaFuncional.objects.filter(id=id).first()
     
+    def filter_by_alta_id(self, alta_id) -> Optional[AltaFuncional]:
+        return AltaFuncional.objects.filter(id_alta=alta_id)
+    
     def create(
         self,
         id_alta: Alta,

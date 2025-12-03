@@ -97,11 +97,20 @@
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
                                 <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
                                 <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>
+                                <p class="mb-0"><strong>Diags Funcionales:</strong></p>
+                                <ul class="mb-0">
+                                    {% for alta_funcional in altas_funcionales %}
+                                        <li><strong>{{ alta_funcional.id_diagnostico_funcional.nombre }}</strong></li>
+                                    {% endfor %}
+                                </ul>
                                 <a href="{% url 'alta_terminate' alta.id %}" class="btn btn-sm btn-danger mt-2">
                                     <i class="bi bi-check-circle"></i> Finalizar
                                 </a>
                                 <a href="{% url 'alta_funcional_create' alta.id %}" class="btn btn-sm btn-primary mt-2">
                                     <i class="bi bi-plus"></i> Diag Funcional
+                                </a>
+                                <a href="#" class="btn btn-sm btn-warning mt-2">
+                                    <i class="bi bi-chevron-double-right"></i>
                                 </a>
                             </div>
                             {% endif %}
