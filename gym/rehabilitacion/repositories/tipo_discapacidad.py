@@ -13,3 +13,11 @@ class TipoDiscapacidadRepository:
     
     def filter_by_diagnostico_etiologico_id(self, id_diagnostico_etiologico) -> Optional[TipoDiscapacidad]:
         return TipoDiscapacidad.objects.filter(id_diagnostico_etiologico=id_diagnostico_etiologico).first()
+
+    def create(
+        self,
+        nombre: str,
+    ):
+        return TipoDiscapacidad.objects.create(
+            nombre=nombre,
+        )

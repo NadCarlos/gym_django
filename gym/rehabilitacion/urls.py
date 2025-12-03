@@ -2,6 +2,7 @@ from django.urls import path
 
 from rehabilitacion.views.inicio.index import(
     IndexView,
+    DiagnosticosIndex,
 )
 
 from rehabilitacion.views.pacientes_rehab import(
@@ -35,9 +36,25 @@ from rehabilitacion.views.alta import(
     AltaFuncionalCreate,
 )
 
+from rehabilitacion.views.tipos_discapacidad import(
+    TipoDiscapacidadList,
+    TipoDiscapacidadCreate,
+)
+
+from rehabilitacion.views.diagnosticos_etiologicos import(
+    DiagnosticosEtiologicosList,
+    DiagnosticoEtiologicoCreate,
+)
+
+from rehabilitacion.views.diagnosticos_funcionales import(
+    DiagnosticoFuncionalList,
+    DiagnosticoFuncionalCreate,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
+    path(route='diagnosticos_index',view=DiagnosticosIndex.as_view(), name='diagnosticos_index'),
 ]
 
 pacientes = [
@@ -71,4 +88,19 @@ alta = [
     path(route='alta_funcional/create/<int:alta_id>',view=AltaFuncionalCreate.as_view(), name='alta_funcional_create'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta
+tipos_discapacidad = [
+    path(route='diagnosticos/tipo_discapacidad/list',view=TipoDiscapacidadList.as_view(), name='tipo_discapacidad_list'),
+    path(route='diagnosticos/tipo_discapacidad/create',view=TipoDiscapacidadCreate.as_view(), name='tipo_discapacidad_create'),
+]
+
+diagnosticos_etiologicos = [
+    path(route='diagnosticos/diagnosticos_etiologicos/list',view=DiagnosticosEtiologicosList.as_view(), name='diagnosticos_etiologicos_list'),
+    path(route='diagnosticos/diagnosticos_etiologicos/create',view=DiagnosticoEtiologicoCreate.as_view(), name='diagnosticos_etiologicos_create'),
+]
+
+diagnosticos_funcionales = [
+    path(route='diagnosticos/diagnosticos_funcionales/list',view=DiagnosticoFuncionalList.as_view(), name='diagnosticos_funcionales_list'),
+    path(route='diagnosticos/diagnosticos_funcionales/create',view=DiagnosticoFuncionalCreate.as_view(), name='diagnosticos_funcionales_create'),
+]
+
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales

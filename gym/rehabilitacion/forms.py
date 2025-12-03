@@ -157,3 +157,56 @@ class AltaFuncionalCreateForm(forms.ModelForm):
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class TipoDiscapacidadCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = TipoDiscapacidad
+
+        fields = [
+            'nombre',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class DiagnosticoEtiologicoCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = DiagnosticoEtiologico
+
+        fields = [
+            'nombre',
+            'id_tipo_discapacidad',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'id_tipo_discapacidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class DiagnosticoFuncionalCreateForm(forms.ModelForm):
+
+    id_diagnostico_etiologico = forms.ModelChoiceField(
+        queryset=DiagnosticoEtiologico.objects.select_related("id_tipo_discapacidad").all(),
+        widget=forms.Select(attrs={'class': 'form-control custom-class'})
+    )
+
+    class Meta:
+        model = DiagnosticoFuncional
+        fields = ['nombre', 'id_diagnostico_etiologico']
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Cambiar el texto que se muestra en el select
+        self.fields['id_diagnostico_etiologico'].label_from_instance = (
+            lambda obj: f"{obj.nombre} — {obj.id_tipo_discapacidad.nombre}"
+        )
