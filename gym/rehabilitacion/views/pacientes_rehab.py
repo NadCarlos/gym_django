@@ -90,6 +90,7 @@ class PacienteRehabDetail(View):
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         altas = "None"
         tiene_pendientes=False
+        altas_funcionales = "None"
         if rehabilitacion_paciente != None:
             altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
             alta_activa = altaRepo.filter_by_id_activa()

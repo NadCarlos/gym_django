@@ -12,60 +12,69 @@
     <!-- Datos del paciente + rehabilitación -->
     <div class="card shadow-sm border-0">
         <div class="card-header">
-            <h5 class="card-title text-center mb-4">
+            <h3 class="card-title">
                 {{ paciente.nombre }}, {{ paciente.apellido }}
-            </h5>
+            </h3>
         </div>
         <div class="card-body">
             <div class="row mb-3">
-                <!-- Columna izquierda: Paciente -->
-                <div class="col-md-6">
+                <!-- DATOS PERSONALES - Columna 1 -->
+                <div class="col-md-3">
                     <h5 class="text-primary mb-3"><i class="bi bi-person"></i> Datos Personales</h5>
                     <p><strong>DNI:</strong> {{ paciente.numero_dni }}</p>
                     <p><strong>Dirección:</strong> {{ paciente.direccion }}</p>
                     <p><strong>Teléfono:</strong> {{ paciente.telefono }}</p>
                     <p><strong>Celular:</strong> {{ paciente.celular }}</p>
+                    <p><strong>Localidad:</strong> {{ paciente.id_localidad.nombre }}</p>
+                </div>
+                <!-- DATOS PERSONALES - Columna 2 -->
+                <div class="col-md-3">
+                    <h5 class="text-primary mb-3 invisible">.</h5> <!-- Mantiene alineado -->
                     <p><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento }}</p>
                     <p><strong>Obra Social:</strong> {{ paciente.id_obra_social.nombre }}</p>
                     <p><strong>Estado Civil:</strong> {{ paciente.id_estado_civil.nombre }}</p>
                     <p><strong>Sexo:</strong> {{ paciente.id_sexo.nombre }}</p>
-                    <p><strong>Localidad:</strong> {{ paciente.id_localidad.nombre }}</p>
                 </div>
-
-                <!-- Columna derecha: Rehabilitación -->
-                <div class="col-md-6">
-                    <h5 class="text-success mb-3"><i class="bi bi-heart-pulse"></i> Datos de Rehabilitación</h5>
+                <!-- REHABILITACIÓN - Columna 3 -->
+                <div class="col-md-3">
+                    <h5 class="text-success mb-3"><i class="bi bi-heart-pulse"></i> Rehabilitación</h5>
                     {% if rehabilitacion_paciente %}
-                        <p><strong>Nombre del Tutor:</strong> {{ rehabilitacion_paciente.nombre_tutor }}</p>
+                        <p><strong>Nombre Tutor:</strong> {{ rehabilitacion_paciente.nombre_tutor }}</p>
                         <p><strong>Celular Tutor:</strong> {{ rehabilitacion_paciente.celular_tutor }}</p>
                         <p><strong>Hijos:</strong> {{ rehabilitacion_paciente.hijos }}</p>
                         <p><strong>Obra Social:</strong> {{ rehabilitacion_paciente.id_obra_social.nombre }}</p>
-                        <p><strong>Fecha de Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
+                        <p><strong>Fecha Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
+                    {% else %}
+                        <p class="text-muted"><em>No hay datos de rehabilitación</em></p>
+                    {% endif %}
+                </div>
+                <!-- REHABILITACIÓN - Columna 4 -->
+                <div class="col-md-3">
+                    <h5 class="text-success mb-3 invisible">.</h5> <!-- Alinear con la columna izquierda -->
+                    {% if rehabilitacion_paciente %}
                         {% if rehabilitacion_paciente.id_estado_certificado.nombre == "NO" %}
-                            <p><strong>Estado Certificado:</strong><span class="badge bg-danger">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                            <p><strong>Estado Certificado:</strong> <span class="badge bg-danger">NO</span></p>
                         {% elif rehabilitacion_paciente.id_estado_certificado.nombre == "EN TRAMITE" %}
-                            <p><strong>Estado Certificado:</strong><span class="badge bg-warning">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                            <p><strong>Estado Certificado:</strong> <span class="badge bg-warning">EN TRÁMITE</span></p>
                         {% else %}
-                            <p><strong>Estado Certificado:</strong> <span class="badge bg-success">{{ rehabilitacion_paciente.id_estado_certificado.nombre }}</span></p>
+                            <p><strong>Estado Certificado:</strong> <span class="badge bg-success">SI</span></p>
                             <p><strong>Vencimiento Certificado:</strong> {{ rehabilitacion_paciente.vencimiento_certificado }}</p>
-                            <p><strong>Diagnostico CUD:</strong> {{ rehabilitacion_paciente.diagnosticoCUD }}</p>
+                            <p><strong>Diagnóstico CUD:</strong> {{ rehabilitacion_paciente.diagnosticoCUD }}</p>
                         {% endif %}
-                        {% if rehabilitacion_paciente.ven_presupuesto == False %}
-                            <p><strong>Presupuesto Vigente:</strong><span class="badge bg-danger"> NO</span></p>
+                        {% if rehabilitacion_paciente.ven_presupuesto %}
+                            <p><strong>Presupuesto Vigente:</strong> <span class="badge bg-success">SI</span></p>
+                            <p><strong>Vencimiento Presupuesto:</strong> {{ rehabilitacion_paciente.vencimiento_presupuesto }}</p>
                         {% else %}
-                            <p><strong>Presupuesto Vigente:</strong> <span class="badge bg-success"> SI</span></p>
-                            <p><strong>Fecha de Vencimiento Presupuesto:</strong> {{ rehabilitacion_paciente.vencimiento_presupuesto }}</p>
+                            <p><strong>Presupuesto Vigente:</strong> <span class="badge bg-danger">NO</span></p>
                         {% endif %}
                         <p><strong>Derivador:</strong> {{ rehabilitacion_paciente.id_derivador.nombre }}</p>
-                        <p><strong>Puerto Esperanza:</strong> 
+                        <p><strong>Puerto Esperanza:</strong>
                             {% if rehabilitacion_paciente.puerto_esperanza %}
                                 <span class="badge bg-success">SI</span>
                             {% else %}
                                 <span class="badge bg-danger">NO</span>
                             {% endif %}
                         </p>
-                    {% else %}
-                        <p class="text-muted"><em>No hay datos de rehabilitación cargados</em></p>
                     {% endif %}
                 </div>
             </div>

@@ -51,6 +51,6 @@ class DiagnosticoFuncionalCreate(View):
                 nombre=nombre,
                 id_diagnostico_etiologico=id_diagnostico_etiologico,
             )
-            return redirect('tipo_discapacidad_list')
+            return redirect('diagnosticos_funcionales_list')
         else:
             return redirect('error')

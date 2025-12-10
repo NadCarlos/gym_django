@@ -81,11 +81,13 @@ class AltaTerminate(View):
 
     def get(self, request, id):
         form = AltaTerminateForm(initial={"dado_alta":True})
+        alta = altaRepo.get_by_id(id=id)
         return render(
             request,
             'alta/terminate.html',
             dict(
                 form=form,
+                alta=alta,
             )
         )
 
