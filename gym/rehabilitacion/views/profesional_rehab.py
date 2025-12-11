@@ -154,3 +154,44 @@ class ProfesionalRehabCreateFromExistent(View):
         )
 
         return redirect('profesional_rehab_detail', profesional.id)
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class ProfesionalRehabUpdate(View):
+
+    def get(self, request, id):
+        profesional = profesionalRepo.get_by_id(id=id)
+        form = ProfesionalUpdateForm(instance=profesional)
+        return render(
+            request,
+            'profesional_rehab/update.html',
+            dict(
+                form=form,
+                profesional=profesional,
+            )
+        )
+
+    def post(self, request, id):
+        form = ProfesionalUpdateForm(request.POST)
+        profesional = profesionalRepo.get_by_id(id=id)
+        try:
+            if form.is_valid():
+                nombre = form.cleaned_data['nombre']
+                nombre = nombre.upper()
+                apellido = form.cleaned_data['apellido']
+                apellido = apellido.upper()
+                profesionalRepo.update(
+                    profesional=profesional,
+                    nombre=nombre,
+                    apellido=apellido,
+                    numero_dni=form.cleaned_data['numero_dni'],
+                    matricula=form.cleaned_data['matricula'],
+                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+                    sexo=form.cleaned_data['id_sexo'],
+                    localidad=form.cleaned_data['id_localidad'],
+                    direccion=form.cleaned_data['direccion'],
+                    celular=form.cleaned_data['celular'],
+                    )
+                return redirect('profesional_rehab_detail', profesional.id)
+        except:
+            return redirect('error')

@@ -2,14 +2,26 @@
 
 {% block content %}
 <div class="container mt-4">
+    {% if area == 1 %}
     <h2 class="mb-4">Lista de Tratamientos</h2>
+    {% else %}
+    <h2 class="mb-4">Lista de Prestaciones</h2>
+    {% endif %}
     <div class="row">
         <!-- Primera columna -->
+        {% if area == 1 %}
         <div class="col-md-8">
             <a href="{% url 'tratamiento_create' area %}" class="btn btn-success mb-4">
                 <i class="bi bi-plus-circle"></i> Nuevo Tratamiento
             </a>
         </div>
+        {% else %}
+        <div class="col-md-8">
+            <a href="{% url 'tratamiento_create' area %}" class="btn btn-success mb-4">
+                <i class="bi bi-plus-circle"></i> Nueva Prestacion
+            </a>
+        </div>
+        {% endif %}
         <!-- Segunda columna -->
         <div class="col-md-2">
         </div>

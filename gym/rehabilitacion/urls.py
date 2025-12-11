@@ -21,6 +21,13 @@ from rehabilitacion.views.profesional_rehab import(
     ProfesionalRehabDetail,
     ProfesionalRehabCreate,
     ProfesionalRehabCreateFromExistent,
+    ProfesionalRehabUpdate,
+)
+
+from rehabilitacion.views.tratamiento_profesional_rehab import(
+    TratamientoProfesionaRehablList,
+    TratamientoProfesionalRehabCreate,
+    TratamientoProfesionalRehabDelete,
 )
 
 from rehabilitacion.views.rehabilitacion import(
@@ -73,6 +80,14 @@ profesionales = [
     path(route='profesionales/detail/<int:id>',view=ProfesionalRehabDetail.as_view(), name='profesional_rehab_detail'),
     path(route='profesionales/create',view=ProfesionalRehabCreate.as_view(), name='profesional_rehab_create'),
     path(route='profesional/create_from_existent',view=ProfesionalRehabCreateFromExistent.as_view(), name='profesional_rehab_create_from_existent'),
+    path(route='profesional/update/<int:id>',view=ProfesionalRehabUpdate.as_view(), name='profesional_rehab_update'),
+]
+
+tratamiento_profesional = [
+    path(route='tratamiento_profesional/list/<int:id>',view=TratamientoProfesionaRehablList.as_view(), name='tratamiento_profesional_rehab_list'),
+    path(route='tratamiento_profesional/create/<int:id>',view=TratamientoProfesionalRehabCreate.as_view(), name='tratamiento_profesional_rehab_create'),
+    path(route='tratamiento_profesional/delete/<int:id>',view=TratamientoProfesionalRehabDelete.as_view(), name='tratamiento_profesional_rehab_delete'),
+    #path(route='tratamientos/<int:profesional_id>/',view=TratamientosPorProfesionalView.as_view(), name='tratamientos_por_profesional'),
 ]
 
 rehabilitacion = [
@@ -103,4 +118,4 @@ diagnosticos_funcionales = [
     path(route='diagnosticos/diagnosticos_funcionales/create',view=DiagnosticoFuncionalCreate.as_view(), name='diagnosticos_funcionales_create'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional
