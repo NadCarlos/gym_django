@@ -16,7 +16,11 @@ class AltaFuncionalRepository:
         return AltaFuncional.objects.filter(id=id).first()
     
     def filter_by_alta_id(self, alta_id) -> Optional[AltaFuncional]:
-        return AltaFuncional.objects.filter(id_alta=alta_id)
+        return AltaFuncional.objects.filter(id_alta=alta_id).filter(activo=True)
+    
+    def delete_by_activo(self, alta_funcional: AltaFuncional):
+        alta_funcional.activo=False
+        alta_funcional.save()
     
     def create(
         self,

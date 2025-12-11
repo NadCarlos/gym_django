@@ -10,6 +10,7 @@ from rehabilitacion.forms import (
     AltaCreateForm,
     AltaTerminateForm,
     AltaFuncionalCreateForm,
+    DiagnosticoFuncionalCreateForm,
 )
 
 from administracion.repositories.paciente import PacienteRepository
@@ -128,6 +129,7 @@ class AltaFuncionalCreate(View):
             dict(
                 form=form,
                 diagnosticos_funcionales = diagnosticos_funcionales,
+                alta=alta,
             )
         )
     
@@ -150,3 +152,32 @@ class AltaFuncionalCreate(View):
             )
 
         return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AltaFuncionalList(View):
+
+    def get(self, request, alta_id):
+        alta = altaRepo.get_by_id(id=alta_id)
+        altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta.id)
+        paciente = pacienteRepo.get_by_id(id=alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id)
+
+        return render(
+            request,
+            'alta_funcional/list.html',
+            dict(
+                altas_funcionales = altas_funcionales,
+                alta=alta,
+                paciente=paciente,
+            )
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class DiagnosticoFuncionalRemove(View):
+
+    def get(self, request, alta_id):
+
+        alta_funcional = altaFuncionalRepo.get_by_id(id=alta_id)
+        altaFuncionalRepo.delete_by_activo(alta_funcional=alta_funcional)
+        return redirect('alta_funcional_list', alta_funcional.id_alta.id )

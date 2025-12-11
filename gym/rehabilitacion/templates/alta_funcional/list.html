@@ -1,0 +1,32 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Lista de Diagnosticos Funcionales Alta {{ paciente.nombre }}, {{ paciente.apellido }}</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for alta in altas_funcionales %}
+                <tr>
+                    <td>{{ alta.id_diagnostico_funcional.nombre }}</td>
+                    <td>{{ alta.id_diagnostico_funcional.descripcion }}</td>
+                    <td>
+                        <a href="{% url 'alta_funcional_remove' alta.id %}" class="btn btn-danger btn-sm me-2">
+                            <i class="bi bi-trash"></i> Borrar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
