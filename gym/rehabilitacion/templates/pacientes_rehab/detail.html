@@ -8,7 +8,6 @@
             <i class="bi bi-person-vcard-fill me-2"></i>Detalles del Paciente
         </h2>
     </div>
-
     <!-- Datos del paciente + rehabilitación -->
     <div class="card shadow-sm border-0">
         <div class="card-header">
@@ -79,28 +78,27 @@
                 </div>
             </div>
         </div>
-        <div style="
-            position: fixed; 
-            top: 80px; 
-            right: 20px; 
-            width: 290px; 
-            max-height: 80vh; 
-            overflow-y: auto; 
-            z-index: 1050;">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white py-2">
-                    <h6 class="mb-0 text-center">Altas</h6>
+        <div style="position: fixed;top: 80px;right: 20px;width: 290px;max-height: 80vh;overflow-y: auto;z-index: 1050;" class="collapse" id="altasPanel">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">Altas</h6>
+                    <button class="btn btn-sm btn-light"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#altasPanel">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
-                <div class="card-body p-2">
+
+                <div class="card-body p-2" style="max-height: 60vh; overflow-y: auto;">
                     {% if altas != "None" %}
                         {% for alta in altas %}
                             {% if alta.dado_alta %}
-                            <div class="mb-2 p-2 text-white rounded bg-warning">
-                                <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
-                                <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
-                                <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
-                                <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha_alta }}</p>
-                            </div>
+                                <div class="mb-2 p-2 text-white rounded bg-warning">
+                                    <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
+                                    <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
+                                    <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
+                                    <p class="mb-0"><strong>Fecha Alta:</strong> {{ alta.fecha_alta }}</p>
+                                </div>
                             {% else %}
                             <div class="mb-2 p-2 text-white rounded bg-success">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
@@ -171,6 +169,14 @@
                     class="btn btn-outline-primary {% if tiene_pendientes %}disabled{% endif %}">
                         <i class="bi bi-book"></i> Nueva Alta
                     </a>
+                    <button class="btn btn-outline-primary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#altasPanel"
+                            aria-expanded="false"
+                            aria-controls="altasPanel">
+                        <i class="bi bi-list-check"></i> Mostrar Altas
+                    </button>
                 </div>
             </div>
             {% else %}
