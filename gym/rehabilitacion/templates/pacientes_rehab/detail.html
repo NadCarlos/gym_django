@@ -1,6 +1,16 @@
 {% extends 'inicio/base.html' %}
 
 {% block content %}
+<div style="position: fixed;top: 80px;right: 20px;width: 290px;max-height: 80vh;overflow-y: auto;z-index: 1050;" class="d-flex justify-content-end mb-4">
+    <button class="btn btn-outline-primary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#altasPanel"
+            aria-expanded="false"
+            aria-controls="altasPanel">
+        <i class="bi bi-list-check"></i> Ver Altas
+    </button>
+</div>
 <div class="container mt-2">
     <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-1">
@@ -169,14 +179,6 @@
                     class="btn btn-outline-primary {% if tiene_pendientes %}disabled{% endif %}">
                         <i class="bi bi-book"></i> Nueva Alta
                     </a>
-                    <button class="btn btn-outline-primary"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#altasPanel"
-                            aria-expanded="false"
-                            aria-controls="altasPanel">
-                        <i class="bi bi-list-check"></i> Mostrar Altas
-                    </button>
                 </div>
             </div>
             {% else %}
