@@ -79,34 +79,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectProfesional = document.getElementById("select-profesional");
     const selectTratamiento = document.getElementById("select-tratamiento");
 
-    // Guardamos el tratamiento viejo que vino de Django
     const tratamientoOldId = "{{ tratamiento_old.id|default:'' }}";
 
-    selectProfesional.addEventListener("change", function () {
-        const profesionalId = this.value;
+    function cargarTratamientos() {
+        const profesionalId = selectProfesional.value;
 
-        // URL ABSOLUTA
+        if (!profesionalId) {
+            selectTratamiento.innerHTML = '<option value="">Seleccione un tratamiento</option>';
+            return;
+        }
+
         const url = `/administracion/tratamientos/${profesionalId}/`;
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                // limpiar opciones previas
                 selectTratamiento.innerHTML = "";
 
-                // opción por defecto
                 const defaultOption = document.createElement("option");
                 defaultOption.value = "";
                 defaultOption.textContent = "Seleccione un tratamiento";
                 selectTratamiento.appendChild(defaultOption);
 
-                // recorrer y agregar nuevas opciones
                 data.forEach(tratamiento => {
                     const option = document.createElement("option");
                     option.value = tratamiento.id;
                     option.textContent = tratamiento.nombre;
 
-                    // si es el tratamiento viejo, lo dejamos seleccionado
                     if (tratamiento.id.toString() === tratamientoOldId) {
                         option.selected = true;
                     }
@@ -117,7 +116,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Error al cargar tratamientos:", error);
             });
-    });
+    }
+
+    // evento normal
+    selectProfesional.addEventListener("change", cargarTratamientos);
+
+    // 🔥 EJECUCIÓN AUTOMÁTICA AL ENTRAR A LA PÁGINA
+    if (selectProfesional.value) {
+        cargarTratamientos();
+    }
 });
 </script>
 {% endblock %}

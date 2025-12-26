@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from administracion.models import (
     PacienteArea,
     ObraSocial,
+    PrestacionPaciente,
+    ProfesionalTratamiento,
+    Dia,
 )
 
 
@@ -310,3 +313,77 @@ class AltaFuncional(models.Model):
 
     def __str__(self):
         return  self.id_diagnostico_funcional.nombre
+    
+
+class AgendaRehab(models.Model):
+
+    fecha = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Fecha_rehab',
+    )
+
+    fecha_fin = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha_rehab',
+    )
+
+    hora_inicio = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Inicio rehab",
+    )
+
+    hora_fin = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Fin rehab",
+    )
+
+    id_prestacion_paciente = models.ForeignKey(
+        PrestacionPaciente,
+        on_delete=models.RESTRICT,
+        related_name='prestacion_paciente_agenda_rehab',
+    )
+
+    id_profesional_tratamiento = models.ForeignKey(
+        ProfesionalTratamiento,
+        on_delete=models.RESTRICT,
+        related_name='profesional_tratamiento_agenda_rehab',
+    )
+
+    id_dia = models.ForeignKey(
+        Dia,
+        on_delete=models.RESTRICT,
+        related_name='dia_agenda_rehab'
+    )
+
+    tiempo = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        null=False,
+        blank=False,
+        verbose_name='tiempo_rehab'
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_agenda_rehab',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    def __str__(self):
+        return  self.id_profesional_tratamiento.id_profesional.apellido

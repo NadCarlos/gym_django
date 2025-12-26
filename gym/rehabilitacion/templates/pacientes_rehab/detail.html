@@ -179,6 +179,9 @@
                     class="btn btn-outline-primary {% if tiene_pendientes %}disabled{% endif %}">
                         <i class="bi bi-book"></i> Nueva Alta
                     </a>
+                    <a href="{% url 'agenta_paciente_rehab' paciente.id %}" class="btn btn-primary">
+                        <i class="bi bi-calendar"></i> Ver Agenda
+                    </a>
                 </div>
             </div>
             {% else %}

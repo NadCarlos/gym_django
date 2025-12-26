@@ -55,7 +55,7 @@ class AgendaPacienteCreate(View):
             return redirect('error_prestacion_paciente')
         date = datetime.datetime.now()
         dateSTR = date.strftime("%d-%m-%Y")
-        profesionales = profesionalRepo.filter_by_activo()
+        profesionales = profesionalRepo.filter_profesional_area(id_area=1)
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
         form = AgendaCreateForm(
             initial = {
@@ -111,7 +111,7 @@ class AgendaPacienteUpdate(View):
     def get(self, request, id):
         agenda = agendaRepo.get_by_id(id=id)
         paciente = agenda.id_prestacion_paciente.id_paciente
-        profesionales = profesionalRepo.filter_by_activo()
+        profesionales = profesionalRepo.filter_profesional_area(id_area=1)
         profesional_old = agenda.id_profesional_tratamiento.id_profesional
         tratamiento_old = agenda.id_profesional_tratamiento
         tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()

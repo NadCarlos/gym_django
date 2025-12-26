@@ -1,0 +1,389 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Primera columna -->
+            <div class="col-md-1">
+                <a href="{% url 'profesional_rehab_detail' profesional.id %}" class="btn btn-secondary mb-4">
+                    <i class="bi bi-arrow-left-circle me-2"></i> Volver
+                </a>
+            </div>
+            <!-- Segunda columna -->
+            <div class="col-md-10">
+                <h2 class="text-dark text-center">Agenda {{profesional.apellido}}, {{profesional.nombre}}</h2>
+            </div>
+            <!-- Tercera columna -->
+            <div class="col-md-1">
+                <a href="{% url 'agenda_profesional_csv' profesional.id %}" class="btn btn-primary mb-4">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Guardar
+                </a>
+            </div>
+        </div>
+        <div class="row d-flex">
+            <div class="flex-col">
+                <div class="card-box p-0">
+                    <h3 class="text-dark text-center">Lunes</h3>
+                    <div class="table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="width: 15%;">Inicio</th>
+                                    <th style="width: 15%;">Fin</th>
+                                    <th style="width: 70%;">Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Mañana</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class="mb-0"><i class="bi bi-pencil me-2"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class="mb-0"><i class="bi bi-trash me-2"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box p-0">
+                    <h3 class="text-dark text-center">Martes</h3>
+                    <div class="table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="width: 15%;">Inicio</th>
+                                    <th style="width: 15%;">Fin</th>
+                                    <th style="width: 70%;">Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Mañana</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box p-0">
+                    <h3 class="text-dark text-center">Miercoles</h3>
+                    <div class="table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="width: 15%;">Inicio</th>
+                                    <th style="width: 15%;">Fin</th>
+                                    <th style="width: 70%;">Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Mañana</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box p-0">
+                    <h3 class="text-dark text-center">Jueves</h3>
+                    <div class="table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="width: 15%;">Inicio</th>
+                                    <th style="width: 15%;">Fin</th>
+                                    <th style="width: 70%;">Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Mañana</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-col">
+                <div class="card-box p-0">
+                    <h3 class="text-dark text-center">Viernes</h3>
+                    <div class="table-bordered">
+                        <table class="table table-striped table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="width: 15%;">Inicio</th>
+                                    <th style="width: 15%;">Fin</th>
+                                    <th style="width: 70%;">Paciente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Mañana</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-center table-secondary">Tarde</th>
+                                </tr>
+                                <tr class="fill-height">
+                                    <td colspan="5">
+                                        <div class="fixed-height">
+                                            <table class="table table-borderless">
+                                                <tbody>
+                                                    {% for x in agenda %}
+                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                            <tr>
+                                                                <td style="width: 15%;">{{ x.hora_inicio }}</td>
+                                                                <td style="width: 15%;">{{ x.hora_fin }}</td>
+                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
+                                                                <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .flex-col {
+        flex: 1 1 20%;
+        padding: 1px;
+    }
+    .card-box {
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .header-title {
+        font-family: Arial, sans-serif;
+        font-weight: 600;
+        font-size: 1.2em;
+        color: #343a40;
+    }
+    .text-center {
+        margin: 0;
+    }
+    .fixed-height {
+        max-height: 300px; /* Ajusta este valor según necesites */
+        overflow-y: auto; /* Permite desplazamiento si el contenido excede el alto fijo */
+    }
+    .table-borderless {
+        margin-bottom: 0;
+    }
+    .fill-height{
+        height: 317px;
+    }
+
+</style>
+{% endblock %}
