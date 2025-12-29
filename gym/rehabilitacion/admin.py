@@ -9,6 +9,7 @@ from rehabilitacion.models import(
     Alta,
     DiagnosticoFuncional,
     AltaFuncional,
+    AgendaRehab,
 )
 
 
@@ -65,4 +66,11 @@ class DiagnosticoFuncionalAdmin(admin.ModelAdmin):
 class AltaFuncionalAdmin(admin.ModelAdmin):
     list_display = (
         'id_alta',
+    )
+
+
+@admin.register(AgendaRehab)
+class AgendaRehabAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_paciente_area',
     )

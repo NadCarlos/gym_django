@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from administracion.models import (
     PacienteArea,
     ObraSocial,
-    PrestacionPaciente,
-    ProfesionalTratamiento,
+    Tratamiento,
+    ProfesionalArea,
     Dia,
 )
 
@@ -341,22 +341,34 @@ class AgendaRehab(models.Model):
         verbose_name="Hora de Fin rehab",
     )
 
-    id_prestacion_paciente = models.ForeignKey(
-        PrestacionPaciente,
-        on_delete=models.RESTRICT,
-        related_name='prestacion_paciente_agenda_rehab',
-    )
-
-    id_profesional_tratamiento = models.ForeignKey(
-        ProfesionalTratamiento,
-        on_delete=models.RESTRICT,
-        related_name='profesional_tratamiento_agenda_rehab',
-    )
-
     id_dia = models.ForeignKey(
         Dia,
         on_delete=models.RESTRICT,
         related_name='dia_agenda_rehab'
+    )
+
+    id_tratamiento_rehab = models.ForeignKey(
+        Tratamiento,
+        on_delete=models.RESTRICT,
+        related_name='tratamiento_agenda_rehab',
+        null=True,
+        blank=True,
+    )
+
+    id_paciente_area = models.ForeignKey(
+        PacienteArea,
+        on_delete=models.RESTRICT,
+        related_name='id_paciente_area_agenda_rehab',
+        null=True,
+        blank=True,
+    )
+
+    id_profesional_area = models.ForeignKey(
+        ProfesionalArea,
+        on_delete=models.RESTRICT,
+        related_name='id_profesional_area_agenda_rehab',
+        null=True,
+        blank=True,
     )
 
     tiempo = models.DecimalField(
@@ -384,6 +396,3 @@ class AgendaRehab(models.Model):
         null=False,
         blank=False,
     )
-
-    def __str__(self):
-        return  self.id_profesional_tratamiento.id_profesional.apellido

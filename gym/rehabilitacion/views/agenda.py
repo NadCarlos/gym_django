@@ -25,7 +25,7 @@ tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-class AgendaPaciente(View):
+class AgendaPacienteRehab(View):
 
     def get(self, request, id):
         path = request.session['uid'] = request.path
