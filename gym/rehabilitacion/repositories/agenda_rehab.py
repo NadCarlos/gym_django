@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Dia, PrestacionPaciente, ProfesionalTratamiento
+from administracion.models import Dia, Tratamiento, PacienteArea, ProfesionalArea
 from rehabilitacion.models import AgendaRehab
 
 
@@ -19,8 +19,11 @@ class AgendaRehabRepository:
     def filter_by_id_paciente_exist(self, id_prestacion_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_prestacion_paciente=AgendaRehab).filter(activo=True).exists()
     
-    def filter_by_id_profesional(self, id_profesional_tratamiento) -> Optional[AgendaRehab]:
-        return AgendaRehab.objects.filter(id_profesional_tratamiento=id_profesional_tratamiento).filter(activo=True)
+    def filter_by_paciente_area(self, id_paciente_area) -> Optional[AgendaRehab]:
+        return AgendaRehab.objects.filter(id_paciente_area=id_paciente_area).filter(activo=True)
+    
+    def filter_by_id_profesional_area(self, id_profesional_area) -> Optional[AgendaRehab]:
+        return AgendaRehab.objects.filter(id_profesional_area=id_profesional_area).filter(activo=True)
     
     def filter_by_id_prestacion_paciente(self, id_prestacion_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True)
@@ -62,20 +65,22 @@ class AgendaRehabRepository:
         fecha: str,
         hora_inicio: int,
         hora_fin: int,
-        id_prestacion_paciente: PrestacionPaciente,
-        id_profesional_tratamiento: ProfesionalTratamiento,
         id_dia: Dia,
         tiempo: int,
+        id_tratamiento_rehab: Tratamiento,
+        id_paciente_area: PacienteArea,
+        id_profesional_area: ProfesionalArea,
     ):
         return AgendaRehab.objects.create(
             id_usuario=id_usuario,
             fecha=fecha,
             hora_inicio=hora_inicio,
             hora_fin=hora_fin,
-            id_prestacion_paciente=id_prestacion_paciente,
-            id_profesional_tratamiento=id_profesional_tratamiento,
             id_dia=id_dia,
             tiempo=tiempo,
+            id_tratamiento_rehab=id_tratamiento_rehab,
+            id_paciente_area=id_paciente_area,
+            id_profesional_area=id_profesional_area,
         )
     
     def update(
@@ -83,14 +88,12 @@ class AgendaRehabRepository:
         agenda: AgendaRehab,
         hora_inicio: int,
         hora_fin: int,
-        id_profesional_tratamiento: ProfesionalTratamiento,
         id_dia: Dia,
         tiempo: int,
     ) -> AgendaRehab:
 
         agenda.hora_inicio = hora_inicio
         agenda.hora_fin = hora_fin
-        agenda.id_profesional_tratamiento=id_profesional_tratamiento
         agenda.id_dia = id_dia
         tiempo=tiempo,
 

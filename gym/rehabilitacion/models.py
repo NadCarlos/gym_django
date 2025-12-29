@@ -326,7 +326,7 @@ class AgendaRehab(models.Model):
     fecha_fin = models.DateField(
         null=True,
         blank=True,
-        verbose_name='Fecha_rehab',
+        verbose_name='Fecha_fin_rehab',
     )
 
     hora_inicio = models.TimeField(

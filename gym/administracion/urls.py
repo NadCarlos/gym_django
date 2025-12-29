@@ -63,6 +63,7 @@ from administracion.views.tratamiento_profesional import (
     TratamientoProfesionalCreate,
     TratamientoProfesionalDelete,
     TratamientosPorProfesionalView,
+    ProfesionalesPorTratamientoView,
 )
 
 from administracion.views.agenda import(
@@ -164,6 +165,7 @@ tratamiento_profesional = [
     path(route='<int:id>/tratamiento_profesional_create/',view=TratamientoProfesionalCreate.as_view(), name='tratamiento_profesional_create'),
     path(route='<int:id>/tratamiento_profesional_delete/',view=TratamientoProfesionalDelete.as_view(), name='tratamiento_profesional_delete'),
     path(route='tratamientos/<int:profesional_id>/',view=TratamientosPorProfesionalView.as_view(), name='tratamientos_por_profesional'),
+    path(route='tratamientos_p/<int:id_tratamiento>/',view=ProfesionalesPorTratamientoView.as_view(), name='profesionales_por_tratamiento'),
 ]
 
 agenda = [

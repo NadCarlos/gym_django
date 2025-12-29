@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from administracion.models import ProfesionalTratamiento, Tratamiento, Profesional
+from administracion.models import ProfesionalTratamiento, Tratamiento, Profesional, ProfesionalArea
 
 
 class TratamientoProfesionalRepository:
@@ -16,6 +16,11 @@ class TratamientoProfesionalRepository:
     
     def filter_by_id_profesional_all(self, id_profesional) -> Optional[ProfesionalTratamiento]:
         return ProfesionalTratamiento.objects.filter(id_profesional=id_profesional).all()
+    
+    def filter_by_id_tratamiento_all(self, id_tratamiento, id_area) -> Optional[ProfesionalTratamiento]:
+        ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
+        profesionales = Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True)
+        return ProfesionalTratamiento.objects.filter(id_profesional__in=profesionales).filter(id_tratamiento=id_tratamiento).filter(activo=True).all()
     
     def filter_by_id_profesional_activo(self, id_profesional) -> Optional[ProfesionalTratamiento]:
         return ProfesionalTratamiento.objects.filter(id_profesional=id_profesional).filter(activo=True)

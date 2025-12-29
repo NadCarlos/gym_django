@@ -1,0 +1,105 @@
+{% extends "inicio/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">Gestionar Agenda</h2>
+    <div class="card p-4 shadow-sm">
+        <form id="form-tratamiento" method="post">
+            {% csrf_token %}
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Fecha:</label>
+                <div class="col-sm-6">
+                    {{ form.fecha }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Hora Inicio:</label>
+                <div class="col-sm-6">
+                    {{ form.hora_inicio }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Hora Fin:</label>
+                <div class="col-sm-6">
+                    {{ form.hora_fin }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Dia:</label>
+                <div class="col-sm-6">
+                    {{ form.id_dia }}
+                </div>
+                <div class="col-sm-4">
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Tratamiento:</label>
+                <div class="col-sm-6">
+                    <select class="form-control custom-class" id="select-tratamiento" name="id_tratamiento">
+                        <option value="">Seleccione un tratamiento</option>
+                        {% for tratamiento in tratamientosActivos %}
+                            <option value="{{ tratamiento.id }}">{{ tratamiento.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
+                <div class="col-sm-6">
+                    <select class="form-control custom-class" id="select-profesional" name="profesional" disabled>
+                        <option value="">Seleccione un profesional</option>
+                    </select>
+                </div>
+            </div>
+            
+            {{ form.id_usuario }}
+            <div class="d-flex justify-content-center">
+                <button type="submit" class=" btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const selectTratamiento = document.getElementById("select-tratamiento");
+    const selectProfesional = document.getElementById("select-profesional");
+
+    selectTratamiento.addEventListener("change", function () {
+        const tratamientoId = this.value;
+
+        // Reset profesionales
+        selectProfesional.innerHTML = '<option value="">Seleccione un profesional</option>';
+        selectProfesional.disabled = true;
+
+        if (!tratamientoId) {
+            return;
+        }
+
+        fetch(`/administracion/tratamientos_p/${tratamientoId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(profesional => {
+                    const option = document.createElement("option");
+                    option.value = profesional.id;
+                    option.textContent = profesional.nombre;
+                    selectProfesional.appendChild(option);
+                });
+                selectProfesional.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error al cargar profesionales:", error);
+            });
+    });
+});
+</script>
+{% endblock %}

@@ -44,11 +44,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 1 and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -68,11 +68,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 1 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 1 and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class="mb-0"><i class="bi bi-pencil me-2"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class="mb-0"><i class="bi bi-trash me-2"></i></a></td>
                                                             </tr>
@@ -110,11 +110,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 2 and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -134,11 +134,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 2 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 2 and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -176,11 +176,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 3 and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -200,11 +200,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 3 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 3 and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -242,11 +242,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 4 and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -266,11 +266,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 4 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 4 and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -308,11 +308,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio < hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 5 and x.hora_inicio < hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -332,11 +332,11 @@
                                             <table class="table table-borderless">
                                                 <tbody>
                                                     {% for x in agenda %}
-                                                        {% if x.id_dia.id == 5 and x.id_profesional_tratamiento.id_profesional.id == profesional.id and x.hora_inicio >= hora_limite_tarde %}
+                                                        {% if x.id_dia.id == 5 and x.hora_inicio >= hora_limite_tarde %}
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_prestacion_paciente.id_paciente.apellido }}</td>
+                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>

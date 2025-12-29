@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -210,3 +210,26 @@ class DiagnosticoFuncionalCreateForm(forms.ModelForm):
         self.fields['id_diagnostico_etiologico'].label_from_instance = (
             lambda obj: f"{obj.nombre} — {obj.id_tipo_discapacidad.nombre}"
         )
+
+
+class AgendaRehabCreateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = AgendaRehab
+
+        fields = [
+            'fecha',
+            'hora_inicio',
+            'hora_fin',
+            'id_dia',
+            'id_usuario',
+            ]
+        
+        widgets = {
+            'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'readonly':'readonly', 'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'hora_inicio': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }

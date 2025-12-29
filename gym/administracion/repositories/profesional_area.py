@@ -11,6 +11,9 @@ class ProfesionalAreaRepository:
     
     def filter_by_id(self, id) -> Optional[ProfesionalArea]:
         return ProfesionalArea.objects.filter(id=id).first()
+    
+    def filter_by_profesional_id(self, id_profesional, id_area) -> Optional[ProfesionalArea]:
+        return ProfesionalArea.objects.filter(id_profesional=id_profesional).filter(id_area=id_area).first()
 
     def create_default(
         self,

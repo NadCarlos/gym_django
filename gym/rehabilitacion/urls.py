@@ -63,6 +63,7 @@ from rehabilitacion.views.diagnosticos_funcionales import(
 from rehabilitacion.views.agenda import (
     AgendaProfesionalRehab,
     AgendaPacienteRehab,
+    AgendaPacienteRehabCreate,
 )
 
 
@@ -129,7 +130,8 @@ diagnosticos_funcionales = [
 
 agenda = [
     path(route='agenda_profesional_rehab/<int:id>',view=AgendaProfesionalRehab.as_view(), name='agenda_profesional_rehab'),
-    path(route='agenta_paciente_rehab/<int:id>',view=AgendaPacienteRehab.as_view(), name='agenta_paciente_rehab'),
+    path(route='agenda_paciente_rehab/<int:id>',view=AgendaPacienteRehab.as_view(), name='agenda_paciente_rehab'),
+    path(route='agenda_paciente_rehab_create/<int:id>',view=AgendaPacienteRehabCreate.as_view(), name='agenda_paciente_rehab_create'),
 ]
 
 urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda

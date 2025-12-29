@@ -12,16 +12,20 @@ from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
-from administracion.repositories.tratamiento_profesional import TratamientoProfesionalRepository
+from administracion.repositories.tratamiento import TratamientoRepository
+from administracion.repositories.profesional_area import ProfesionalAreaRepository
+from administracion.repositories.paciente_area import PacienteAreaRepository
 
-from administracion.forms import AgendaCreateForm, AgendaUpdateForm
+from rehabilitacion.forms import AgendaRehabCreateForm
 
 
 pacienteRepo = PacienteRepository()
 profesionalRepo = ProfesionalRepository()
 agendaRehabRepo = AgendaRehabRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
-tratamientoProfesionalRepo = TratamientoProfesionalRepository()
+tratamientoRepo = TratamientoRepository()
+profesionalAreaRepo = ProfesionalAreaRepository()
+pacienteAreaRepo = PacienteAreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -30,19 +34,79 @@ class AgendaPacienteRehab(View):
     def get(self, request, id):
         path = request.session['uid'] = request.path
         paciente = pacienteRepo.get_by_id(id=id)
-        prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
-        if prestacion is None:
-            return redirect('error_prestacion_paciente')
-        agenda = agendaRehabRepo.filter_by_id_paciente(id_prestacion_paciente=prestacion.id)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
+        agenda = agendaRehabRepo.filter_by_paciente_area(id_paciente_area=pacienteArea.id)
         return render(
             request,
-            'agenda/agenda_paciente.html',
+            'agenda/agenda_paciente_rehab.html',
             dict(
                 path=path,
                 paciente=paciente,
                 agenda=agenda,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class AgendaPacienteRehabCreate(View):
+
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        date = datetime.datetime.now()
+        dateSTR = date.strftime("%d-%m-%Y")
+        tratamientosActivos = tratamientoRepo.filter_by_activo()
+        form = AgendaRehabCreateForm(
+            initial = {
+                'id_usuario': request.user,
+                'fecha': date,
+            }
+        )
+        return render(
+            request,
+            'agenda/rehab_create.html',
+            dict(
+                paciente=paciente,
+                tratamientosActivos=tratamientosActivos,
+                dateSTR=dateSTR,
+                form=form,
+            )
+        )
+    
+    def post(self, request, id):
+        form = AgendaRehabCreateForm(request.POST)
+        if form.is_valid():
+            paciente = pacienteRepo.get_by_id(id=id)
+            pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
+
+            tratamiento_id = request.POST.get('id_tratamiento')
+            tratamiento = tratamientoRepo.get_by_id(id=tratamiento_id)
+
+            profesional_area = request.POST.get('profesional')
+            profesionalArea = profesionalAreaRepo.filter_by_id(id=profesional_area)
+
+            hora_inicio=form.cleaned_data['hora_inicio'],
+            hora_fin=form.cleaned_data['hora_fin'],
+            # Convierte horas y minutos a minutos totales para ambos tiempos
+            hora_inicio_total_minutos = hora_inicio[0].hour * 60 + hora_inicio[0].minute
+            hora_fin_total_minutos = hora_fin[0].hour * 60 + hora_fin[0].minute
+            if hora_fin_total_minutos <= hora_inicio_total_minutos:
+                return redirect('error_hora')
+            diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
+            diferencia_horas = diferencia_minutos / 60
+            
+            agendaRehabRepo.create(
+                id_usuario=form.cleaned_data['id_usuario'],
+                fecha=form.cleaned_data['fecha'],
+                hora_inicio=form.cleaned_data['hora_inicio'],
+                hora_fin=form.cleaned_data['hora_fin'],
+                id_dia=form.cleaned_data['id_dia'],
+                tiempo=diferencia_horas,
+                id_tratamiento_rehab=tratamiento,
+                id_paciente_area=pacienteArea,
+                id_profesional_area=profesionalArea,
+            )
+
+            return redirect('agenda_paciente_rehab', paciente.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -51,7 +115,9 @@ class AgendaProfesionalRehab(View):
     def get(self, request, id):
         path = request.session['uid'] = request.path
         profesional = profesionalRepo.get_by_id(id=id)
-        agenda = agendaRehabRepo.filter_by_activo(state=True)
+        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
+        agenda = agendaRehabRepo.filter_by_id_profesional_area(id_profesional_area=profesionalArea.id)
+        print(agenda)
         return render(
             request,
             'agenda/agenda_profesional_rehab.html',
