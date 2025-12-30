@@ -233,3 +233,22 @@ class AgendaRehabCreateForm(forms.ModelForm):
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class AgendaRehabUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = AgendaRehab
+
+        fields = [
+            'hora_inicio',
+            'hora_fin',
+            'id_dia',
+            ]
+        
+        widgets = {
+            'hora_inicio': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
+        }

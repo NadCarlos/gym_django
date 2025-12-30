@@ -396,3 +396,6 @@ class AgendaRehab(models.Model):
         null=False,
         blank=False,
     )
+
+    def __str__(self):
+        return  self.id_paciente_area.id_paciente.nombre

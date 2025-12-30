@@ -1,0 +1,127 @@
+{% extends "inicio/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="d-flex justify-content-center mb-4">
+        Gestionar Agenda: {{ paciente.nombre }}, {{ paciente.apellido }}
+    </h2>
+
+    <div class="card p-4 shadow-sm">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Hora inicio -->
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Hora Inicio:</label>
+                <div class="col-sm-6">
+                    {{ form.hora_inicio }}
+                </div>
+            </div>
+
+            <!-- Hora fin -->
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Hora Fin:</label>
+                <div class="col-sm-6">
+                    {{ form.hora_fin }}
+                </div>
+            </div>
+
+            <!-- Día -->
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Día:</label>
+                <div class="col-sm-6">
+                    {{ form.id_dia }}
+                </div>
+            </div>
+
+            <!-- TRATAMIENTO -->
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Tratamiento:</label>
+                <div class="col-sm-6">
+                    <select
+                        class="form-control custom-class"
+                        id="select-tratamiento"
+                        name="id_tratamiento"
+                        data-tratamiento-old="{{ tratamiento_old.id }}"
+                    >
+                        <option value="">Seleccione un tratamiento</option>
+                        {% for tratamiento in tratamientosActivos %}
+                            <option value="{{ tratamiento.id }}"
+                                {% if tratamiento.id == tratamiento_old.id %}selected{% endif %}>
+                                {{ tratamiento.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- PROFESIONAL -->
+            <div class="mb-2 row">
+                <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
+                <div class="col-sm-6">
+                    <select
+                        class="form-control custom-class"
+                        id="select-profesional"
+                        name="profesional"
+                        data-profesional-old="{{ profesional_old.id }}"
+                        disabled
+                    >
+                        <option value="">Seleccione un profesional</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- BOTÓN -->
+            <div class="d-flex justify-content-center mt-3">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const selectTratamiento = document.getElementById("select-tratamiento");
+    const selectProfesional = document.getElementById("select-profesional");
+
+    const profesionalOldId = selectProfesional.dataset.profesionalOld;
+
+    function cargarProfesionales() {
+        const tratamientoId = selectTratamiento.value;
+
+        selectProfesional.innerHTML = '<option value="">Seleccione un profesional</option>';
+        selectProfesional.disabled = true;
+
+        if (!tratamientoId) return;
+
+        fetch(`/administracion/tratamientos_p/${tratamientoId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(profesional => {
+                    const option = document.createElement("option");
+                    option.value = profesional.id;
+                    option.textContent = profesional.nombre;
+
+                    if (profesional.id.toString() === profesionalOldId) {
+                        option.selected = true;
+                    }
+
+                    selectProfesional.appendChild(option);
+                });
+                selectProfesional.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error al cargar profesionales:", error);
+            });
+    }
+
+    // Ejecutar al entrar
+    cargarProfesionales();
+
+    // Ejecutar al cambiar tratamiento
+    selectTratamiento.addEventListener("change", cargarProfesionales);
+});
+</script>
+{% endblock %}

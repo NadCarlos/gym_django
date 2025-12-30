@@ -8,7 +8,7 @@ class TratamientoRepository:
     def get_all(self) -> List[Tratamiento]:
         return Tratamiento.objects.all()
     
-    def filter_by_id(self) -> Optional[Tratamiento]:
+    def filter_by_id(self, id) -> Optional[Tratamiento]:
         return Tratamiento.objects.filter(id=id).first()
     
     def filter_by_activo(self) -> List[Tratamiento]:

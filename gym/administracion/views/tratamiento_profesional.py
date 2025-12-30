@@ -82,6 +82,5 @@ class TratamientosPorProfesionalView(View):
 class ProfesionalesPorTratamientoView(View):
     def get(self, request, id_tratamiento):
         profesionales = tratamientoProfesionalRepo.filter_by_id_tratamiento_all(id_tratamiento=id_tratamiento, id_area=2)
-        data = [{"id": p.id, "nombre": f"{p.id_profesional.apellido}, {p.id_profesional.nombre}"} for p in profesionales]
-        print(data)
+        data = [{"id": p.id_profesional.pk, "nombre": f"{p.id_profesional.apellido}, {p.id_profesional.nombre}"} for p in profesionales]
         return JsonResponse(data, safe=False)

@@ -90,12 +90,16 @@ class AgendaRehabRepository:
         hora_fin: int,
         id_dia: Dia,
         tiempo: int,
+        id_tratamiento_rehab: Tratamiento,
+        id_profesional_area: ProfesionalArea,
     ) -> AgendaRehab:
 
         agenda.hora_inicio = hora_inicio
         agenda.hora_fin = hora_fin
         agenda.id_dia = id_dia
-        tiempo=tiempo,
+        agenda.tiempo=tiempo
+        agenda.id_tratamiento_rehab=id_tratamiento_rehab
+        agenda.id_profesional_area=id_profesional_area
 
         agenda.save()
 

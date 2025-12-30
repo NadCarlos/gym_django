@@ -818,7 +818,7 @@ class PacienteArea(models.Model):
     )
 
     def __str__(self):
-        return  self.id_area.nombre
+        return  self.id_area.nombre + self.id_paciente.nombre
     
 
 class ProfesionalArea(models.Model):
@@ -851,4 +851,4 @@ class ProfesionalArea(models.Model):
     )
 
     def __str__(self):
-        return  self.id_area.nombre
+        return  self.id_area.nombre + self.id_profesional.nombre
