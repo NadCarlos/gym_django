@@ -351,24 +351,24 @@ class AgendaRehab(models.Model):
         Tratamiento,
         on_delete=models.RESTRICT,
         related_name='tratamiento_agenda_rehab',
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
     )
 
     id_paciente_area = models.ForeignKey(
         PacienteArea,
         on_delete=models.RESTRICT,
         related_name='id_paciente_area_agenda_rehab',
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
     )
 
     id_profesional_area = models.ForeignKey(
         ProfesionalArea,
         on_delete=models.RESTRICT,
         related_name='id_profesional_area_agenda_rehab',
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
     )
 
     tiempo = models.DecimalField(
