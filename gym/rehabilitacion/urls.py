@@ -65,6 +65,7 @@ from rehabilitacion.views.agenda import (
     AgendaPacienteRehab,
     AgendaPacienteRehabCreate,
     AgendaPacienteRehabUpdate,
+    AgendaRehabDelete,
 )
 
 
@@ -134,6 +135,7 @@ agenda = [
     path(route='agenda_paciente_rehab/<int:id>',view=AgendaPacienteRehab.as_view(), name='agenda_paciente_rehab'),
     path(route='agenda_paciente_rehab_create/<int:id>',view=AgendaPacienteRehabCreate.as_view(), name='agenda_paciente_rehab_create'),
     path(route='agenda_paciente_rehab_update/<int:id>',view=AgendaPacienteRehabUpdate.as_view(), name='agenda_paciente_rehab_update'),
+    path(route='agenda_paciente_rehab_delete/<int:id>',view=AgendaRehabDelete.as_view(), name='agenda_paciente_rehab_delete'),
 ]
 
 urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda

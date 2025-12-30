@@ -167,6 +167,22 @@ class AgendaPacienteRehabUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+class AgendaRehabDelete(View):
+
+    def get(self, request, id, *args, **kwargs):
+        path = request.session.get('uid')
+        agenda = agendaRehabRepo.get_by_id(id=id)
+        today = date.today()
+        agendaRehabRepo.end_date(
+            agenda=agenda,
+            fecha_fin=today,
+            )
+        #No elimino, cambio el campo activo a False
+        agendaRehabRepo.delete_by_activo(agenda=agenda)
+        return redirect( path )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class AgendaProfesionalRehab(View):
 
     def get(self, request, id):
@@ -174,7 +190,6 @@ class AgendaProfesionalRehab(View):
         profesional = profesionalRepo.get_by_id(id=id)
         profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
         agenda = agendaRehabRepo.filter_by_id_profesional_area(id_profesional_area=profesionalArea.id)
-        print(agenda)
         return render(
             request,
             'agenda/agenda_profesional_rehab.html',
