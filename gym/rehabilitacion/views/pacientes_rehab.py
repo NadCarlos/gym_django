@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, HttpResponse
 import json
 import pandas as pd
 import io
+from datetime import datetime
 
 from administracion.filters import PacienteFilter
 
@@ -31,6 +32,11 @@ from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRep
 from rehabilitacion.repositories.alta import AltaRepository
 from rehabilitacion.repositories.alta_funcional import AltaFuncionalRepository
 
+from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
+from rehabilitacion.repositories.derivador import DerivadorRepository
+
+estadoCertificadoRepo = EstadoCertificadoRepository()
+derivadorRepo = DerivadorRepository()
 
 pacienteRepo = PacienteRepository()
 obraSocialRepo = ObraSocialRepository()
@@ -47,6 +53,112 @@ areaRepo = AreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
 altaFuncionalRepo = AltaFuncionalRepository()
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class PacientesRehabBulkAdd(View):
+    def get(self, request):
+        return render(
+            request,
+            'pacientes_rehab/bulk_add.html',
+        )
+    
+    def post(self, request):
+        try:
+            file = request.FILES['file']
+        except:
+            return redirect('error')
+        excel = pd.read_excel(file)
+        cleaned_data = []
+
+        # [0]=id???,[1]=apellido,[2]=nombre,[3]=documento,[4]=direccion,[5]=telefono,[6]=celular,[7]=localidad,[8]=f.nac,[9]=idOSoc,[10]=eCiv,[11]=ideCiv,[12]=sex
+        area = areaRepo.get_by_id(id=2)
+        for data in excel.values:
+            apellido = data[1]
+            nombre = data[2]
+            documento = data[3]
+            direccion = data[4]
+            telefono = data[5]
+            celular = data[6]
+            nombre_localidad = data[7]
+            f_nacimiento = data[8]
+            id_obra_social = data[9]
+            id_estado_civil = data[11]
+            id_sexo = data[12]
+
+            obra_social = obraSocialRepo.get_by_id(id=id_obra_social)
+            estado_civil = estadoCivilRepo.get_by_id(id=id_estado_civil)
+            sexo = sexoRepo.get_by_id(id=id_sexo)
+            try:
+                localidad = localidadRepo.get_by_name(nombre=nombre_localidad)
+            except:
+                localidad = localidadRepo.get_by_name(nombre="Rio Cuarto")
+
+            paciente_nuevo = pacienteRepo.create(
+                    id_usuario=request.user,
+                    nombre=nombre,
+                    apellido=apellido,
+                    numero_dni=documento,
+                    fecha_nacimiento=f_nacimiento,
+                    id_obra_social=obra_social,
+                    id_estado_civil=estado_civil,
+                    id_sexo=sexo,
+                    id_localidad=localidad,
+                    direccion=direccion,
+                    telefono=telefono,
+                    celular=celular,
+                    observaciones="",
+                    )
+            
+            paciente_area = pacienteAreaRepo.create(
+                    id_paciente=paciente_nuevo,
+                    id_area=area,
+                    id_usuario=request.user,
+                )
+            
+            #[13]=famTut,[14]=hijos,[15]=estado_cert,[16]=venc_cud,[17]=ven_pres,[18]=pres_vigen,[19]=deriv,[20]=id_diag,[21]=fec_alta,[22]=prueba,[23]=alta,[24]=mutual,[25]=id_mutual
+
+            tutor = data[14]
+            hijos = data[15]
+            id_estado_cert = data[16]
+            venc_cud = data[17]
+            ven_pres = data[18]
+            pres_vigen = data[19]
+            deriv = data[20]
+            id_diag=[21]
+            fec_alta=[22]
+            prueba=[23]
+            alta=[24]
+            id_mutual=[26]
+
+            obra_social_rehab = obraSocialRepo.get_by_id(id=id_mutual)
+            estado_certificado = estadoCertificadoRepo.filter_by_id(id=id_estado_cert)
+            try:
+                derivador = derivadorRepo.get_by_name(nombre=deriv)
+            except:
+                derivador = derivadorRepo.create(
+                    id_usuario=request.user,
+                    nombre=deriv,
+                )
+
+            rehabilitacion_nueva = pacienteRehabRepo.create(
+                id_paciente_area=paciente_area,
+                nombre_tutor=tutor,
+                celular_tutor=0,
+                hijos=hijos,
+                id_estado_certificado=estado_certificado,
+                vencimiento_certificado=venc_cud,
+                fecha_junta="2026-01-01",
+                ven_presupuesto=ven_pres,
+                vencimiento_presupuesto="2026-01-01",
+                id_derivador=derivador,
+                puerto_esperanza=0,
+                id_obra_social=obra_social_rehab,
+                id_usuario=request.user,
+                diagnosticoCUD="",
+            )
+
+            return redirect('inicio_rehab')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
