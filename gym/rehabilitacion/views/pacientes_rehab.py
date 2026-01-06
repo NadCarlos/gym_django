@@ -158,7 +158,7 @@ class PacientesRehabBulkAdd(View):
                 diagnosticoCUD="",
             )
 
-            return redirect('inicio_rehab')
+        return redirect('inicio_rehab')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
