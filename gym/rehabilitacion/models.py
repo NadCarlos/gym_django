@@ -391,6 +391,13 @@ class AgendaRehab(models.Model):
         related_name='usuario_agenda_rehab',
     )
 
+    observaciones = models.CharField(
+        max_length=1,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones_agenda_rehab",
+        )
+
     activo = models.BooleanField(
         default=1,
         null=False,
