@@ -60,7 +60,7 @@ class ObraSocialCreate(View):
         try:
             if form.is_valid():
                 nombre=form.cleaned_data['nombre']
-                nombre=nombre.upper()
+                nombre=nombre.r()
                 obraSocialRepo.create(
                     nombre=nombre,
                     descripcion=form.cleaned_data['descripcion'],

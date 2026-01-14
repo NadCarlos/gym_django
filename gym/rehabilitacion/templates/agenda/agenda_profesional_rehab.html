@@ -31,7 +31,8 @@
                                 <tr>
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
-                                    <th style="width: 70%;">Paciente</th>
+                                    <th style="width: 15%;">Paciente</th>
+                                    <th style="width: 60%;"><i class="bi bi-info-circle"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -48,7 +49,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -72,7 +78,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class="mb-0"><i class="bi bi-pencil me-2"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class="mb-0"><i class="bi bi-trash me-2"></i></a></td>
                                                             </tr>
@@ -97,7 +108,8 @@
                                 <tr>
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
-                                    <th style="width: 70%;">Paciente</th>
+                                    <th style="width: 15%;">Paciente</th>
+                                    <th style="width: 60%;"><i class="bi bi-info-circle"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -114,7 +126,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -138,7 +155,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -163,7 +185,8 @@
                                 <tr>
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
-                                    <th style="width: 70%;">Paciente</th>
+                                    <th style="width: 15%;">Paciente</th>
+                                    <th style="width: 60%;"><i class="bi bi-info-circle"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -180,7 +203,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -204,7 +232,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -229,7 +262,8 @@
                                 <tr>
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
-                                    <th style="width: 70%;">Paciente</th>
+                                    <th style="width: 15%;">Paciente</th>
+                                    <th style="width: 60%;"><i class="bi bi-info-circle"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -246,7 +280,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -270,7 +309,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -295,7 +339,8 @@
                                 <tr>
                                     <th style="width: 15%;">Inicio</th>
                                     <th style="width: 15%;">Fin</th>
-                                    <th style="width: 70%;">Paciente</th>
+                                    <th style="width: 15%;">Paciente</th>
+                                    <th style="width: 60%;"><i class="bi bi-info-circle"></i></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -312,7 +357,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>
@@ -336,7 +386,12 @@
                                                             <tr>
                                                                 <td style="width: 15%;">{{ x.hora_inicio }}</td>
                                                                 <td style="width: 15%;">{{ x.hora_fin }}</td>
-                                                                <td style="width: 60%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                <td style="width: 15%;">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                                {% if x.observaciones == None %}
+                                                                    <td style="width: 60%;"></td>
+                                                                {% else %}
+                                                                    <td style="width: 60%;">{{ x.observaciones }}</td>
+                                                                {% endif %}
                                                                 <td style="width: 5%;"><a href="{% url 'agenda_paciente_rehab_update' x.id %}" class=""><i class="bi bi-pencil"></i></a></td>
                                                                 <td style="width: 5%;"><a onclick="return confirm('Seguro que quieres quitar este turno?');" href="{% url 'agenda_paciente_rehab_delete' x.id %}" class=""><i class="bi bi-trash"></i></a></td>
                                                             </tr>

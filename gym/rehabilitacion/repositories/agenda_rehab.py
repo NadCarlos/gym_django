@@ -70,6 +70,7 @@ class AgendaRehabRepository:
         id_tratamiento_rehab: Tratamiento,
         id_paciente_area: PacienteArea,
         id_profesional_area: ProfesionalArea,
+        observaciones: str,
     ):
         return AgendaRehab.objects.create(
             id_usuario=id_usuario,
@@ -81,6 +82,7 @@ class AgendaRehabRepository:
             id_tratamiento_rehab=id_tratamiento_rehab,
             id_paciente_area=id_paciente_area,
             id_profesional_area=id_profesional_area,
+            observaciones=observaciones,
         )
     
     def update(
@@ -92,6 +94,7 @@ class AgendaRehabRepository:
         tiempo: int,
         id_tratamiento_rehab: Tratamiento,
         id_profesional_area: ProfesionalArea,
+        observaciones: str,
     ) -> AgendaRehab:
 
         agenda.hora_inicio = hora_inicio
@@ -100,6 +103,7 @@ class AgendaRehabRepository:
         agenda.tiempo=tiempo
         agenda.id_tratamiento_rehab=id_tratamiento_rehab
         agenda.id_profesional_area=id_profesional_area
+        agenda.observaciones=observaciones
 
         agenda.save()
 

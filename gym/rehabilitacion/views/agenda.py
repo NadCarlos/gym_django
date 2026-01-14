@@ -84,7 +84,6 @@ class AgendaPacienteRehabCreate(View):
             profesional_area = request.POST.get('profesional')
             profesionalArea = profesionalAreaRepo.filter_by_id(id=profesional_area)
 
-
             hora_inicio=form.cleaned_data['hora_inicio'],
             hora_fin=form.cleaned_data['hora_fin'],
             # Convierte horas y minutos a minutos totales para ambos tiempos
@@ -94,6 +93,9 @@ class AgendaPacienteRehabCreate(View):
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
             diferencia_horas = diferencia_minutos / 60
+
+            observaciones=form.cleaned_data['observaciones']
+            observaciones=observaciones.upper()
             
             agendaRehabRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],
@@ -105,6 +107,7 @@ class AgendaPacienteRehabCreate(View):
                 id_tratamiento_rehab=tratamiento,
                 id_paciente_area=pacienteArea,
                 id_profesional_area=profesionalArea,
+                observaciones=observaciones,
             )
 
             return redirect('agenda_paciente_rehab', paciente.id)
@@ -152,6 +155,9 @@ class AgendaPacienteRehabUpdate(View):
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
             diferencia_horas = diferencia_minutos / 60
+
+            observaciones=form.cleaned_data['observaciones']
+            observaciones=observaciones.upper()
             
             agendaRehabRepo.update(
                 agenda=agenda,
@@ -161,6 +167,7 @@ class AgendaPacienteRehabUpdate(View):
                 tiempo=diferencia_horas,
                 id_tratamiento_rehab=tratamiento,
                 id_profesional_area=profesionalArea,
+                observaciones=observaciones,
             )
 
             return redirect( path )
