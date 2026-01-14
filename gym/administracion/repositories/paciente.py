@@ -124,3 +124,16 @@ class PacienteRepository:
         paciente.id_localidad = localidad
 
         paciente.save()
+
+
+    def update_o_soc_e_civ(
+        self, 
+        paciente: Paciente,
+        obra_social: ObraSocial,
+        estado_civil: EstadoCivil,
+    ) -> Paciente:
+
+        paciente.id_obra_social = obra_social
+        paciente.id_estado_civil = estado_civil
+
+        paciente.save()
