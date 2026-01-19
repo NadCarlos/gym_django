@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from utils.decorators import requiere_areas
 
 from administracion.forms import (
     PagoForm,
@@ -22,6 +23,7 @@ cuotaRepo = CuotaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PagoList(View):
     template_name = 'pago/list.html'
     context_object_name = 'detalles_pago'
@@ -60,6 +62,7 @@ class PagoList(View):
          
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PagoCreate(View):
 
     def get(self, request, id, id_c):
@@ -101,6 +104,7 @@ class PagoCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PagoDelete(View):
      
     def get(self, request, id):

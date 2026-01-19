@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
 
 import json
 import pandas as pd
@@ -56,6 +57,7 @@ altaFuncionalRepo = AltaFuncionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacientesRehabBulkAdd(View):
     def get(self, request):
         return render(
@@ -98,6 +100,7 @@ class PacientesRehabBulkAdd(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacientesRehabList(View):
     template_name = 'pacientes_rehab/list.html'
     context_object_name = 'pacientes_rehab'
@@ -131,6 +134,7 @@ class PacientesRehabList(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabDetail(View):
 
     def get(self, request, id):
@@ -160,6 +164,7 @@ class PacienteRehabDetail(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabCreate(View):
 
     def get(self, request):
@@ -227,6 +232,7 @@ class PacienteRehabCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabUpdate(View):
 
     def get(self, request, id):
@@ -277,6 +283,7 @@ class PacienteRehabUpdate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabCreateFromExistent(View):
 
     def get(self, request):
@@ -296,6 +303,7 @@ class PacienteRehabCreateFromExistent(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabToCsv(View):
 
     def get(self, request, id):
@@ -380,6 +388,7 @@ class PacienteRehabToCsv(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteAltasToCsv(View):
 
     def get(self, request, id):
@@ -418,6 +427,7 @@ class PacienteAltasToCsv(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabRedirectFromExistent(View):
 
     def get(self, request):

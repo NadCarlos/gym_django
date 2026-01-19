@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from utils.decorators import requiere_areas
 
 from administracion.forms import (
     PrestacionForm,
@@ -13,9 +14,10 @@ from administracion.repositories.prestacion import PrestacionRepository
 prestacionRepo = PrestacionRepository()
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PrestacionList(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, area):
         if area == 1:
             base_template = "home/base.html"
@@ -35,9 +37,10 @@ class PrestacionList(View):
         )
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PrestacionCreate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, area):
         if area == 1:
             base_template = "home/base.html"
@@ -54,7 +57,6 @@ class PrestacionCreate(View):
             )
         )
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, area):
         form = PrestacionForm(request.POST)
         try:
@@ -70,9 +72,10 @@ class PrestacionCreate(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PrestacionUpdate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, area, *args, **kwargs):
         if area == 1:
             base_template = "home/base.html"
@@ -89,8 +92,7 @@ class PrestacionUpdate(View):
                 base_template=base_template,
             )
         )
-    
-    @method_decorator(login_required(login_url='login'))
+
     def post(self, request, id, area):
         form = PrestacionForm(request.POST)
         prestacion = prestacionRepo.get_by_id(id=id)
@@ -108,9 +110,10 @@ class PrestacionUpdate(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PrestacionDelete(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, area):
         prestacion = prestacionRepo.get_by_id(id=id)
         prestacionRepo.delete_by_activo(prestacion=prestacion)

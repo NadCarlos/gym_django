@@ -6,6 +6,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
 
 from administracion.filters import ProfesionalFilter
 
@@ -28,6 +29,7 @@ areaRepo = AreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalList(View):
     template_name = 'profesional/list.html'
     context_object_name = 'profesional'
@@ -61,6 +63,7 @@ class ProfesionalList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalesToCsv(View):
 
     def get(self, request, area):
@@ -119,6 +122,7 @@ class ProfesionalesToCsv(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalDetail(View):
 
     def get(self, request, id):
@@ -133,6 +137,7 @@ class ProfesionalDetail(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalCreate(View):
 
     def get(self, request):
@@ -194,6 +199,7 @@ class ProfesionalCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalCreateFromExistent(View):
 
     def get(self, request):
@@ -213,6 +219,7 @@ class ProfesionalCreateFromExistent(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalUpdate(View):
 
     def get(self, request, id):
@@ -254,6 +261,7 @@ class ProfesionalUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ProfesionalDelete(View):
 
     def get(self, request, id):
@@ -264,6 +272,7 @@ class ProfesionalDelete(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ErrorProfesionalExistente(View):
 
     def get(self, request):

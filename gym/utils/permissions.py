@@ -1,10 +1,14 @@
 from django.contrib.auth.models import User
 
-def es_admin_o_finanzas(user: User) -> bool:
-    return user.is_superuser or user.groups.filter(name="Finanzas").exists()
+def tiene_area(user: User, *areas: str) -> bool:
+    if user.is_superuser:
+        return True
+    return user.groups.filter(name__in=areas).exists()
 
-def es_admin_o_gimnasio(user: User) -> bool:
-    return user.is_superuser or user.groups.filter(name="Gimnasio").exists()
 
-def es_admin_o_rehabilitacion(user: User) -> bool:
-    return user.is_superuser or user.groups.filter(name="Rehabilitacion").exists()
+def solo_areas(user: User, permitidas: list[str]) -> bool:
+    if user.is_superuser:
+        return True
+
+    grupos_usuario = set(user.groups.values_list("name", flat=True))
+    return grupos_usuario.issubset(set(permitidas))

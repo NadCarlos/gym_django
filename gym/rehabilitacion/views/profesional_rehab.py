@@ -1,13 +1,10 @@
-import pandas as pd
-import io
 import json
 
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
-
-from administracion.models import Profesional
+from django.shortcuts import render, redirect
+from utils.decorators import requiere_areas
 
 from administracion.filters import ProfesionalFilter
 
@@ -30,6 +27,7 @@ areaRepo = AreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ProfesionalRehabList(View):
     template_name = 'profesional_rehab/list.html'
     context_object_name = 'profesional_rehab'
@@ -63,6 +61,7 @@ class ProfesionalRehabList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ProfesionalRehabDetail(View):
 
     def get(self, request, id):
@@ -77,6 +76,7 @@ class ProfesionalRehabDetail(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ProfesionalRehabCreate(View):
 
     def get(self, request):
@@ -138,6 +138,7 @@ class ProfesionalRehabCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ProfesionalRehabCreateFromExistent(View):
 
     def get(self, request):
@@ -157,6 +158,7 @@ class ProfesionalRehabCreateFromExistent(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ProfesionalRehabUpdate(View):
 
     def get(self, request, id):

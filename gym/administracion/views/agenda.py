@@ -7,6 +7,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
 
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
@@ -25,6 +26,7 @@ tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaPaciente(View):
 
     def get(self, request, id):
@@ -46,6 +48,7 @@ class AgendaPaciente(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaPacienteCreate(View):
 
     def get(self, request, id):
@@ -106,6 +109,7 @@ class AgendaPacienteCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaPacienteUpdate(View):
 
     def get(self, request, id):
@@ -158,6 +162,7 @@ class AgendaPacienteUpdate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaDelete(View):
 
     def get(self, request, id, *args, **kwargs):
@@ -174,6 +179,7 @@ class AgendaDelete(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaProfesional(View):
 
     def get(self, request, id):
@@ -193,6 +199,7 @@ class AgendaProfesional(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AgendaProfesionalToCsv(View):
 
     def get(self, request, id):
@@ -282,6 +289,7 @@ class AgendaProfesionalToCsv(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ErrorPrestacionFaltante(View):
 
     def get(self, request):
@@ -292,6 +300,7 @@ class ErrorPrestacionFaltante(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ErrorHora(View):
 
     def get(self, request):

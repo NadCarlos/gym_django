@@ -7,8 +7,8 @@ from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from utils.decorators import requiere_areas
 
-from utils.permissions import es_admin_o_finanzas
 
 from finanzas.forms import (
     OrdenPagoCreateForm,
@@ -34,8 +34,8 @@ beneficiarioRepo = BeneficiarioRepository()
 locale.setlocale(locale.LC_ALL, '')
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoCreate(View):
 
     def get(self, request):
@@ -62,8 +62,8 @@ class OrdenPagoCreate(View):
                 return redirect('orden_pago_populate', orden.id)
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoPopulate(View):
 
     def get(self, request, id):
@@ -140,8 +140,8 @@ class OrdenPagoPopulate(View):
         return redirect('detail', id, from_list)
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoEdit(View):
 
     def get(self, request, id, from_list):
@@ -321,8 +321,8 @@ class OrdenPagoEdit(View):
         return redirect('detail', id, from_list)
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoDetail(View):
 
     def get(self, request, id, from_list):
@@ -360,8 +360,8 @@ class OrdenPagoDetail(View):
         )
     
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenesPagoList(View):
     context_object_name = 'ordenes'
 
@@ -413,8 +413,8 @@ class OrdenesPagoList(View):
         )
     
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoDelete(View):
 
     def get(self, request, id, from_list):
@@ -430,8 +430,8 @@ class OrdenPagoDelete(View):
             return redirect('list')
     
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class OrdenPagoCreateFromList(View):
 
     def post(self, request):

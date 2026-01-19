@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from utils.decorators import requiere_areas
 
 from administracion.forms import TratamientoProfesionalCreateForm
 
@@ -15,6 +16,7 @@ tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class TratamientoProfesionalList(View):
 
     def get(self, request, id):
@@ -34,6 +36,7 @@ class TratamientoProfesionalList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class TratamientoProfesionalCreate(View):
 
     def get(self, request, id):
@@ -62,6 +65,7 @@ class TratamientoProfesionalCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class TratamientoProfesionalDelete(View):
 
     @method_decorator(login_required(login_url='login'))
@@ -72,6 +76,7 @@ class TratamientoProfesionalDelete(View):
         return redirect('tratamiento_profesional_list', tratamiento_profesional.id_profesional.id)
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class TratamientosPorProfesionalView(View):
     def get(self, request, profesional_id):
         tratamientos = tratamientoProfesionalRepo.filter_by_id_profesional_all(id_profesional=profesional_id)
@@ -79,6 +84,7 @@ class TratamientosPorProfesionalView(View):
         return JsonResponse(data, safe=False)
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class ProfesionalesPorTratamientoView(View):
     def get(self, request, id_tratamiento):
         profesionales = tratamientoProfesionalRepo.filter_by_id_tratamiento_all(id_tratamiento=id_tratamiento, id_area=2)

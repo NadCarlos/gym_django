@@ -1,49 +1,53 @@
-from django.contrib.auth import (
-    login,
-)
-
+from django.contrib.auth import login
 from django.shortcuts import redirect, render
 from django.views import View
 from usuarios.forms import LoginForm
-
-from utils.permissions import es_admin_o_finanzas, es_admin_o_gimnasio, es_admin_o_rehabilitacion
+from utils.permissions import tiene_area, solo_areas
+from utils.roles import COMBINACIONES_VALIDAS, AREAS
 
 
 class LoginView(View):
 
     def get(self, request):
-        form = LoginForm()
+        return render(request, 'usuarios/login.html', {
+            "form": LoginForm()
+        })
 
-        return render(
-            request,
-            'usuarios/login.html',
-            dict(
-                form=form
-            )
-        )
-    
     def post(self, request):
         form = LoginForm(request.POST or None)
-        if request.POST and form.is_valid():
+
+        if form.is_valid():
             user = form.login(request)
-            if user:
-                permiso_gym = es_admin_o_gimnasio(user)
-                permiso_fina = es_admin_o_finanzas(user)
-                permiso_rehab = es_admin_o_rehabilitacion(user)
-                if permiso_gym == True:
-                    login(request, user)
-                    return redirect ('inicio')
-                elif permiso_fina == True:
-                    login(request, user)
-                    return redirect ('index')
-                elif permiso_rehab == True:
-                    login(request, user)
-                    return redirect ('inicio_rehab')
-                
-        return render(
-            request,
-            'usuarios/login.html',
-            dict(
-                form=form,
-            )
-        )
+
+            if not user:
+                return render(request, 'usuarios/login.html', {"form": form})
+
+            if not tiene_area(
+                user,
+                AREAS["GIMNASIO"],
+                AREAS["REHAB"],
+                AREAS["FINANZAS"],
+            ):
+                form.add_error(None, "No tiene permisos para acceder al sistema")
+                return render(request, 'usuarios/login.html', {"form": form})
+
+            login(request, user)
+
+            if (
+                solo_areas(user, COMBINACIONES_VALIDAS["gym_rehab"])
+                and tiene_area(user, AREAS["GIMNASIO"], AREAS["REHAB"])
+            ):
+                return redirect("inicio")
+
+            if solo_areas(user, COMBINACIONES_VALIDAS["gym"]):
+                return redirect("inicio")
+
+            if solo_areas(user, COMBINACIONES_VALIDAS["rehab"]):
+                return redirect("inicio_rehab")
+
+            if tiene_area(user, AREAS["FINANZAS"]):
+                return redirect("index")
+
+            form.add_error(None, "Configuración de permisos inválida")
+        
+        return render(request, 'usuarios/login.html', {"form": form})

@@ -7,8 +7,8 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
 
-from utils.permissions import es_admin_o_finanzas
 
 from finanzas.filters import FacturasFilter
 
@@ -28,8 +28,8 @@ descuentoRepo = DescuentoRepository()
 locale.setlocale(locale.LC_ALL, '')
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class Index(View):
 
     def get(self, request):
@@ -39,8 +39,8 @@ class Index(View):
         )
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class CargaView(View):
 
     def get(self, request):
@@ -88,8 +88,8 @@ class CargaView(View):
         return redirect('list')
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class FacturasList(View):
     context_object_name = 'facturas'
 
@@ -142,8 +142,8 @@ class FacturasList(View):
         )
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class FacturasToCsv(View):
     def get(self, request):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -213,8 +213,8 @@ class FacturasToCsv(View):
         return response
 
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class BalanceList(View):
     context_object_name = 'BalanceList'
 
@@ -281,8 +281,8 @@ class BalanceList(View):
         )
     
 
-@method_decorator(user_passes_test(es_admin_o_finanzas, login_url='login'), name='dispatch')
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Finanzas"), name="dispatch")
 class BalanceListAll(View):
     context_object_name = 'BalanceListAll'
 

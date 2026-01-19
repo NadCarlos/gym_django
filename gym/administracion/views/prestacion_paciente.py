@@ -4,6 +4,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from utils.decorators import requiere_areas
 
 from administracion.forms import (
     PrestacionCreateForm,
@@ -24,9 +25,10 @@ agendaRepo = AgendaRepository()
 pacientePlanRepo = PacientePlanRepository()
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class NuevaPrestacionPaciente(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         paciente_id = paciente.id
@@ -44,7 +46,6 @@ class NuevaPrestacionPaciente(View):
             return redirect('active_error')
         
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, *args, **kwargs):
         form = PrestacionCreateForm(request.POST)
         try:
@@ -60,9 +61,10 @@ class NuevaPrestacionPaciente(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ListPrestacionPaciente(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         paciente_id = paciente.id
@@ -79,9 +81,10 @@ class ListPrestacionPaciente(View):
         )
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class PrestacionPacienteUpdate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id):
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
         form = PrestacionUpdateForm(instance=prestacionPaciente)
@@ -94,7 +97,6 @@ class PrestacionPacienteUpdate(View):
             )
         )
 
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id):
         form = PrestacionUpdateForm(request.POST)
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
@@ -112,9 +114,10 @@ class PrestacionPacienteUpdate(View):
             return redirect('error')
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class DeletePrestacionPaciente(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, *args, **kwargs):
         prestacionPaciente = prestacionPacienteRepo.get_by_id(id=id)
         paciente = pacienteRepo.get_by_id(id=prestacionPaciente.id_paciente.id)
@@ -140,6 +143,8 @@ class DeletePrestacionPaciente(View):
         return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
     
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ActiveError(View):
 
     def get(self, request):

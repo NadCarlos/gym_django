@@ -7,6 +7,8 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
+
 
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
@@ -29,6 +31,7 @@ pacienteAreaRepo = PacienteAreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaPacienteRehab(View):
 
     def get(self, request, id):
@@ -48,6 +51,7 @@ class AgendaPacienteRehab(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaPacienteRehabCreate(View):
 
     def get(self, request, id):
@@ -114,6 +118,7 @@ class AgendaPacienteRehabCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaPacienteRehabUpdate(View):
 
     def get(self, request, id):
@@ -174,6 +179,7 @@ class AgendaPacienteRehabUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaRehabDelete(View):
 
     def get(self, request, id, *args, **kwargs):
@@ -190,6 +196,7 @@ class AgendaRehabDelete(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaProfesionalRehab(View):
 
     def get(self, request, id):

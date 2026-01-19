@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
+from utils.decorators import requiere_areas
 
 import json
 
@@ -32,6 +33,7 @@ altaFuncionalRepo = AltaFuncionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AltaCreate(View):
 
     def get(self, request, id):
@@ -64,6 +66,7 @@ class AltaCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AltaDetail(View):
 
     def get(self, request, id):
@@ -78,6 +81,7 @@ class AltaDetail(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AltaTerminate(View):
 
     def get(self, request, id):
@@ -116,6 +120,7 @@ class DiagnosticoEtiologicoByTipoDiscapacidadView(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AltaFuncionalCreate(View):
 
     def get(self, request, alta_id):
@@ -155,6 +160,7 @@ class AltaFuncionalCreate(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AltaFuncionalList(View):
 
     def get(self, request, alta_id):
@@ -174,6 +180,7 @@ class AltaFuncionalList(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class DiagnosticoFuncionalRemove(View):
 
     def get(self, request, alta_id):

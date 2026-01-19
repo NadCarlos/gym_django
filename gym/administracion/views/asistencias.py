@@ -6,6 +6,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
+from utils.decorators import requiere_areas
 
 from administracion.filters import AsistenciasFilter
 
@@ -18,6 +19,7 @@ asistenciaRepo = AsistenciaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AsistenciasList(View):
     template_name = 'asistencias/list.html'
     context_object_name = 'asistencias'
@@ -57,9 +59,10 @@ class AsistenciasList(View):
         )
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class AsistenciasToCsv(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request):
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         response['Content-Disposition'] = 'attachment; filename=asistencias.xlsx'

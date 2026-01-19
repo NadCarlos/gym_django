@@ -2,7 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from utils.decorators import requiere_areas
 
 from administracion.forms import TratamientoProfesionalCreateForm
 
@@ -15,6 +15,7 @@ tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class TratamientoProfesionaRehablList(View):
 
     def get(self, request, id):
@@ -34,6 +35,7 @@ class TratamientoProfesionaRehablList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class TratamientoProfesionalRehabCreate(View):
 
     def get(self, request, id):
@@ -62,6 +64,7 @@ class TratamientoProfesionalRehabCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class TratamientoProfesionalRehabDelete(View):
 
     @method_decorator(login_required(login_url='login'))

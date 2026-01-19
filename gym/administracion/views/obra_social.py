@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from utils.decorators import requiere_areas
 
 from administracion.forms import (
     ObraSocialForm,
@@ -13,9 +14,10 @@ from administracion.repositories.obra_social import ObraSocialRepository
 obraSocialRepo = ObraSocialRepository()
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ObraSocialList(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, area):
         if area == 1:
             base_template="home/base.html"
@@ -35,9 +37,10 @@ class ObraSocialList(View):
         )
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ObraSocialCreate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, area):
         if area == 1:
             base_template="home/base.html"
@@ -54,7 +57,6 @@ class ObraSocialCreate(View):
             )
         )
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, area):
         form = ObraSocialForm(request.POST)
         try:
@@ -70,9 +72,10 @@ class ObraSocialCreate(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ObraSocialUpdate(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, area, *args, **kwargs):
         if area == 1:
             base_template="home/base.html"
@@ -90,7 +93,6 @@ class ObraSocialUpdate(View):
             )
         )
     
-    @method_decorator(login_required(login_url='login'))
     def post(self, request, id, area):
         form = ObraSocialForm(request.POST)
         obra_social = obraSocialRepo.get_by_id(id=id)
@@ -108,9 +110,10 @@ class ObraSocialUpdate(View):
             return redirect('error')
         
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
 class ObraSocialDelete(View):
 
-    @method_decorator(login_required(login_url='login'))
     def get(self, request, id, area):
         obra_social = obraSocialRepo.get_by_id(id=id)
         obraSocialRepo.delete_by_activo(obra_social=obra_social)
