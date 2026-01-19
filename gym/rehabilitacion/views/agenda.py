@@ -1,12 +1,10 @@
-import pandas as pd
-import io
 import datetime
 from datetime import time, date
 
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
 
 
@@ -85,8 +83,9 @@ class AgendaPacienteRehabCreate(View):
             tratamiento_id = request.POST.get('id_tratamiento')
             tratamiento = tratamientoRepo.get_by_id(id=tratamiento_id)
 
-            profesional_area = request.POST.get('profesional')
-            profesionalArea = profesionalAreaRepo.filter_by_id(id=profesional_area)
+            profesional = request.POST.get('profesional')
+            profesional = profesionalRepo.filter_by_id(id=profesional)
+            profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
 
             hora_inicio=form.cleaned_data['hora_inicio'],
             hora_fin=form.cleaned_data['hora_fin'],
@@ -99,7 +98,10 @@ class AgendaPacienteRehabCreate(View):
             diferencia_horas = diferencia_minutos / 60
 
             observaciones=form.cleaned_data['observaciones']
-            observaciones=observaciones.upper()
+            try:
+                observaciones=observaciones.upper()
+            except:
+                pass
             
             agendaRehabRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],
@@ -148,8 +150,9 @@ class AgendaPacienteRehabUpdate(View):
             tratamiento_id = request.POST.get('id_tratamiento')
             tratamiento = tratamientoRepo.filter_by_id(id=tratamiento_id)
 
-            profesional_area = request.POST.get('profesional')
-            profesionalArea = profesionalAreaRepo.filter_by_id(id=profesional_area)
+            profesional = request.POST.get('profesional')
+            profesional = profesionalRepo.filter_by_id(id=profesional)
+            profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
 
             hora_inicio=form.cleaned_data['hora_inicio'],
             hora_fin=form.cleaned_data['hora_fin'],

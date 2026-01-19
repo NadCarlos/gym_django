@@ -12,7 +12,7 @@ class ProfesionalRepository:
     def get_all_2(self) -> List[Profesional]:
         return Profesional.objects.all().order_by('apellido')
 
-    def filter_by_id(self) -> Optional[Profesional]:
+    def filter_by_id(self, id) -> Optional[Profesional]:
         return Profesional.objects.filter(id=id).first()
     
     def filter_by_dni(self, numero_dni) -> Optional[Profesional]:
