@@ -7,7 +7,7 @@ from utils.decorators import requiere_areas
 import json
 import pandas as pd
 import io
-from datetime import datetime
+from datetime import datetime, date
 
 from administracion.filters import PacienteFilter
 
@@ -23,7 +23,7 @@ from administracion.repositories.prestacion import PrestacionRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.estado_civil import EstadoCivilRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
-from administracion.repositories.agenda import AgendaRepository
+#from administracion.repositories.agenda import AgendaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente_plan import PacientePlanRepository
 from administracion.repositories.cuota import CuotaRepository
@@ -35,6 +35,7 @@ from rehabilitacion.repositories.alta_funcional import AltaFuncionalRepository
 
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
+from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
@@ -46,7 +47,7 @@ prestacionRepo = PrestacionRepository()
 localidadRepo = LocalidadRepository()
 estadoCivilRepo = EstadoCivilRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
-agendaRepo = AgendaRepository()
+#agendaRepo = AgendaRepository()
 pacientePlanRepo = PacientePlanRepository()
 cuotaRepo = CuotaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
@@ -54,6 +55,7 @@ areaRepo = AreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
 altaFuncionalRepo = AltaFuncionalRepository()
+agendaRepo = AgendaRehabRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -280,6 +282,35 @@ class PacienteRehabUpdate(View):
                     return redirect('error_paciente_existente')
         except:
             return redirect('error')
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
+class PacienteRehabDelete(View):
+
+    def get(self, request, id, *args, **kwargs):
+        paciente = pacienteRepo.get_by_id(id=id)
+        today = date.today()
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
+        agendas = agendaRepo.filter_by_paciente_area(id_paciente_area=pacienteArea.id)
+        if agendas != None:
+            for agenda in agendas:
+                agendaRepo.end_date(
+                    agenda=agenda,
+                    fecha_fin=today,
+                )
+                agendaRepo.delete_by_activo(agenda=agenda)
+
+        paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=id)
+        if paciente_plan != None:
+            pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
+        
+        """cuota = cuotaRepo.filter_by_paciente_id_mes(id_paciente=id,year=today.year,month=today.month)
+        if cuota:
+            cuotaRepo.delete_by_activo(cuota=cuota)"""
+
+        pacienteRepo.delete_by_activo(paciente=paciente)
+        return redirect('pacientes_rehab_list', True)
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

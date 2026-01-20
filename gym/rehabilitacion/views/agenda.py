@@ -165,7 +165,10 @@ class AgendaPacienteRehabUpdate(View):
             diferencia_horas = diferencia_minutos / 60
 
             observaciones=form.cleaned_data['observaciones']
-            observaciones=observaciones.upper()
+            try:
+                observaciones=observaciones.upper()
+            except:
+                pass
             
             agendaRehabRepo.update(
                 agenda=agenda,

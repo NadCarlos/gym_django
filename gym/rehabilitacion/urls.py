@@ -15,6 +15,7 @@ from rehabilitacion.views.pacientes_rehab import(
     PacienteAltasToCsv,
     PacienteRehabRedirectFromExistent,
     PacientesRehabBulkAdd,
+    PacienteRehabDelete,
 )
 
 from rehabilitacion.views.profesional_rehab import(
@@ -85,6 +86,7 @@ pacientes = [
     path(route='pacientes/altas_to_csv/<int:id>',view=PacienteAltasToCsv.as_view(), name='paciente_altas_rehab_to_csv'),
     path(route='pacientes/redirect_from_existent',view=PacienteRehabRedirectFromExistent.as_view(), name='paciente_rehab_redirect_from_existent'),
     path(route='pacientes/bulk_add',view=PacientesRehabBulkAdd.as_view(), name='bulk_add'),
+    path(route='pacientes/delete/<int:id>',view=PacienteRehabDelete.as_view(), name='paciente_rehab_delete'),
 ]
 
 profesionales = [
