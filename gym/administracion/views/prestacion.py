@@ -15,7 +15,7 @@ prestacionRepo = PrestacionRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PrestacionList(View):
 
     def get(self, request, area):
@@ -38,7 +38,7 @@ class PrestacionList(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PrestacionCreate(View):
 
     def get(self, request, area):
@@ -73,7 +73,7 @@ class PrestacionCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PrestacionUpdate(View):
 
     def get(self, request, id, area, *args, **kwargs):
@@ -111,7 +111,7 @@ class PrestacionUpdate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PrestacionDelete(View):
 
     def get(self, request, id, area):

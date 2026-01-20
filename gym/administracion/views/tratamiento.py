@@ -15,7 +15,7 @@ tratamientoRepo = TratamientoRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class TratamientoList(View):
 
     def get(self, request, area):
@@ -38,7 +38,7 @@ class TratamientoList(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class TratamientoCreate(View):
 
     def get(self, request, area):
@@ -72,7 +72,7 @@ class TratamientoCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class TratamientoUpdate(View):
 
     def get(self, request, id, area, *args, **kwargs):
@@ -109,7 +109,7 @@ class TratamientoUpdate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class TratamientoDelete(View):
 
     def get(self, request, id, area):

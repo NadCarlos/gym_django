@@ -315,7 +315,7 @@ class PacienteUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteDelete(View):
 
     def get(self, request, id, *args, **kwargs):
@@ -351,7 +351,7 @@ class PacienteDelete(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteCreateFromExistent(View):
 
     def get(self, request):
@@ -371,7 +371,7 @@ class PacienteCreateFromExistent(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteReactivate(View):
 
     def get(self, request, id, *args, **kwargs):
@@ -381,7 +381,7 @@ class PacienteReactivate(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ErrorPacienteExistente(View):
 
     def get(self, request):
@@ -392,7 +392,7 @@ class ErrorPacienteExistente(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteRedirectFromExistent(View):
 
     def get(self, request):

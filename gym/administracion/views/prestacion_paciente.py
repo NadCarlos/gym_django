@@ -26,7 +26,7 @@ pacientePlanRepo = PacientePlanRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class NuevaPrestacionPaciente(View):
 
     def get(self, request, id):
@@ -62,7 +62,7 @@ class NuevaPrestacionPaciente(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ListPrestacionPaciente(View):
 
     def get(self, request, id):
@@ -82,7 +82,7 @@ class ListPrestacionPaciente(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PrestacionPacienteUpdate(View):
 
     def get(self, request, id):
@@ -115,7 +115,7 @@ class PrestacionPacienteUpdate(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class DeletePrestacionPaciente(View):
 
     def get(self, request, id, *args, **kwargs):
@@ -144,7 +144,7 @@ class DeletePrestacionPaciente(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ActiveError(View):
 
     def get(self, request):

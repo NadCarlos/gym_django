@@ -15,7 +15,7 @@ obraSocialRepo = ObraSocialRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ObraSocialList(View):
 
     def get(self, request, area):
@@ -38,7 +38,7 @@ class ObraSocialList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ObraSocialCreate(View):
 
     def get(self, request, area):
@@ -73,7 +73,7 @@ class ObraSocialCreate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ObraSocialUpdate(View):
 
     def get(self, request, id, area, *args, **kwargs):
@@ -111,7 +111,7 @@ class ObraSocialUpdate(View):
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ObraSocialDelete(View):
 
     def get(self, request, id, area):

@@ -261,7 +261,7 @@ class ProfesionalUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ProfesionalDelete(View):
 
     def get(self, request, id):
@@ -272,7 +272,7 @@ class ProfesionalDelete(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class ErrorProfesionalExistente(View):
 
     def get(self, request):
