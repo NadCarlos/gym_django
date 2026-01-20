@@ -111,7 +111,7 @@
                     </div>
                     {% endif %}
 
-                    {% if  user.is_staff %}
+                    {% if  user.is_staff or request.user|has_group:"Rehabilitacion" %}
                     <a class="navbar-brand" href="{% url 'inicio_rehab' %}">
                         <img class="imagen" style="width: 30px; height: 30px;"
                             src="{% static 'public/cermed_sin_fondo_white.png' %}" alt="E"> Rehabilitacion
