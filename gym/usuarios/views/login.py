@@ -33,17 +33,17 @@ class LoginView(View):
 
             login(request, user)
 
-            if (
-                solo_areas(user, COMBINACIONES_VALIDAS["gym_rehab"])
-                and tiene_area(user, AREAS["GIMNASIO"], AREAS["REHAB"])
-            ):
-                return redirect("inicio")
-
             if solo_areas(user, COMBINACIONES_VALIDAS["gym"]):
                 return redirect("inicio")
 
             if solo_areas(user, COMBINACIONES_VALIDAS["rehab"]):
                 return redirect("inicio_rehab")
+            
+            if (
+                solo_areas(user, COMBINACIONES_VALIDAS["gym_rehab"])
+                and tiene_area(user, AREAS["GIMNASIO"], AREAS["REHAB"])
+            ):
+                return redirect("inicio")
 
             if tiene_area(user, AREAS["FINANZAS"]):
                 return redirect("index")
