@@ -406,3 +406,39 @@ class AgendaRehab(models.Model):
 
     def __str__(self):
         return  self.id_paciente_area.id_paciente.nombre
+
+
+class AsistenciaRehab(models.Model):
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Fecha Asistencia Rehab",
+        )
+
+    hora = models.TimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Hora Asistencia Rehab",
+        )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Momento de carga",
+        )
+
+    id_agenda_rehab = models.ForeignKey(
+        AgendaRehab,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.RESTRICT,
+        related_name='agenda_rehab',
+    )
+
+    def __str__(self):
+        return  self.id_prestacion_paciente.id_paciente.nombre
