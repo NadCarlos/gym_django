@@ -1,5 +1,6 @@
 from django import forms
 from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab
+from administracion.models import Paciente
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -255,4 +256,15 @@ class AgendaRehabUpdateForm(forms.ModelForm):
             'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class AsistenciaRehabPublicCreateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Paciente
+        fields = ['numero_dni',]
+        widgets = {
+            'numero_dni': forms.NumberInput(attrs={'class': 'form-control custom-class'}),
         }

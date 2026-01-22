@@ -1,0 +1,23 @@
+{% extends "home/check_in_base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="row">
+        <div class="card text-center shadow">
+            <div class="card-header bg-warning text-white">
+                <h1 class="mb-0">Atencion</h1>
+            </div>
+            <div class="card-body">
+                <h2 class="card-text">Su asistencia del dia ya esta registrada</h2>
+                <h3 class="mt-3">Redireccionando...</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function () {
+        window.location.href = "{% url 'check_in_rehab' %}";
+    }, 4000);
+</script>
+{% endblock %}

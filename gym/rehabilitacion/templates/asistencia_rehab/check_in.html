@@ -1,0 +1,171 @@
+{% extends "home/check_in_base.html" %}
+
+{% block content %}
+{% load static %}
+
+<body class="body">
+    <div class="container d-flex justify-content-center align-items-center">
+        <img style="width: 300px; height: 300px;" class="imagen" src="{% static 'public/cermed_sin_fondo.png' %}" alt="E">
+    </div>
+    <div class="container d-flex justify-content-center align-items-center vh-50">
+        <div class="row">
+            <div class="card">
+                <div style="background-color: #009f95;" class="card-header text-center">
+                    <p class="h2">CHECK IN REHAB</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="#">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="numero_dni" class="form-label"><p class="h2">INGRESA TU DNI:</p></label>
+                            <input style="font-size: 28px;" required value="" type="number" id="numero_dni" class="form-control" name="numero_dni" value="{{ form.numero_dni.value }}">
+                        </div>
+
+                        <div class="container text-center mb-4">
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">1</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">2</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">3</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">4</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">5</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">6</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">7</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">8</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">9</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete clear-all"><i class="bi bi-x-octagon-fill"></i></button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-primary btn-lg num">0</button>
+                                </div>
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-outline-danger btn-lg delete delete-one"><i class="bi bi-backspace-fill"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button style="background-color: #009f95;" type="submit" class="btn btn-primary w-100"><p class="h2">INGRESAR</p></button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dniInput = document.querySelector('input[name="numero_dni"]');
+            const botones = document.querySelectorAll('.num');
+            const deleteOneBtn = document.querySelector('.delete-one');
+            const clearAllBtn = document.querySelector('.clear-all');
+            const maxLength = 8;
+
+            botones.forEach(boton => {
+                boton.addEventListener('click', () => {
+                    if (dniInput.value.length < maxLength) {
+                        dniInput.value += boton.textContent.trim();
+                    }
+                });
+            });
+
+            deleteOneBtn.addEventListener('click', () => {
+                dniInput.value = dniInput.value.slice(0, -1);
+            });
+
+            clearAllBtn.addEventListener('click', () => {
+                dniInput.value = '';
+            });
+
+            dniInput.addEventListener('input', () => {
+                if (dniInput.value.length > maxLength) {
+                    dniInput.value = dniInput.value.slice(0, maxLength);
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .body {
+            background-image: url('https://etenonfitness.com/wp-content/uploads/2023/05/cabecera-diseno-integral-gimnasio_s.jpg');
+        }
+
+        .card {
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 20px;
+        }
+
+        .card-body {
+            padding: 40px;
+        }
+
+        .num {
+            font-size: 2rem;
+            padding: 20px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .num:hover {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+
+        .delete {
+            background-color: #dc3545;
+            color: white;
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .imagen {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+    {% endblock %}

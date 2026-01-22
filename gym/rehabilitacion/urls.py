@@ -70,6 +70,14 @@ from rehabilitacion.views.agenda import (
     AgendaRehabDelete,
 )
 
+from rehabilitacion.views.asistencia import (
+    CheckInRehab,
+    CheckInRehabErrorDni,
+    CheckInRehabErrorAgendaActiva,
+    CheckInRehabErrorAsistenciaRegistrada,
+    CheckInRehabErrorDiaIncorrecto,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
@@ -142,4 +150,12 @@ agenda = [
     path(route='agenda_paciente_rehab_delete/<int:id>',view=AgendaRehabDelete.as_view(), name='agenda_paciente_rehab_delete'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda
+asistencia = [
+    path(route='check_in_rehab/',view=CheckInRehab.as_view(), name='check_in_rehab'),
+    path(route='check_in_rehab_error_dni/',view=CheckInRehabErrorDni.as_view(), name='check_in_error_dni'),
+    path(route='check_in_error_agenda_activa/',view=CheckInRehabErrorAgendaActiva.as_view(), name='check_in_error_agenda_activa'),
+    path(route='check_in_error_asistencia_registrada/',view=CheckInRehabErrorAsistenciaRegistrada.as_view(), name='check_in_error_asistencia_registrada'),
+    path(route='check_in_error_dia_incorrecto/<int:id>',view=CheckInRehabErrorDiaIncorrecto.as_view(), name='check_in_error_dia_incorrecto'),
+]
+
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda + asistencia

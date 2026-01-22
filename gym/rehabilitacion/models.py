@@ -441,4 +441,4 @@ class AsistenciaRehab(models.Model):
     )
 
     def __str__(self):
-        return  self.id_prestacion_paciente.id_paciente.nombre
+        return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
