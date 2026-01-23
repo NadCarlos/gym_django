@@ -442,3 +442,33 @@ class AsistenciaRehab(models.Model):
 
     def __str__(self):
         return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
+    
+
+class AsistenciaRehabTeorica(models.Model):
+
+    id_agenda_rehab = models.ForeignKey(
+        AgendaRehab,
+        blank=True,
+        null=True,
+        default=None,
+        on_delete=models.RESTRICT,
+        related_name='agenda_rehab_teorica',
+    )
+
+    tiempo = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        null=False,
+        blank=False,
+        verbose_name='tiempo_rehab_agenda_teorica'
+    )
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Fecha Asistencia Rehab",
+        )
+    
+    def __str__(self):
+        return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
