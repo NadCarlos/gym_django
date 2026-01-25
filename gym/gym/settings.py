@@ -160,7 +160,10 @@ def custom_backup_filename(databasename, datetime, *args, **kwargs):
 DBBACKUP_FILENAME_TEMPLATE = custom_backup_filename
 
 
-CRONJOBS = [("0 2 * * *", "gym.cron_backup.daily_database_backup")]
+CRONJOBS = [
+    ("0 2 * * *", "gym.cron_backup.daily_database_backup"),
+    ("0 22 * * 1-5", "rehabilitacion.management.commands.daily_agenda_teorica.daily_agenda_teorica_func"),
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

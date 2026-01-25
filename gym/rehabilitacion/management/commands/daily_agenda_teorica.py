@@ -1,13 +1,14 @@
-from django.core.management.base import BaseCommand
-from datetime import date
+from rehabilitacion.repositories.asistencia_teorica import AsistenciaRehabRepository
+from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 
-class Command(BaseCommand):
-    help = "Agenda Teorica Diaria"
 
-    def handle(self, *args, **options):
-        today = date.today()
-        self.stdout.write(
-            self.style.SUCCESS(f"Tarea diaria ejecutada: {today}")
+asistenciaTeoricaRepo = AsistenciaRehabRepository()
+agendaRehabRepo = AgendaRehabRepository()
+
+
+def daily_agenda_teorica_func():
+    agendas = agendaRehabRepo.filter_by_dia(id_dia=1)
+    for agenda in agendas:
+        asistenciaTeoricaRepo.create(
+            id_agenda_rehab=agenda
         )
-
-        print("saas")

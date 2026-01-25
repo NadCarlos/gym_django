@@ -11,6 +11,7 @@ from rehabilitacion.models import(
     AltaFuncional,
     AgendaRehab,
     AsistenciaRehab,
+    AsistenciaRehabTeorica,
 )
 
 
@@ -79,6 +80,13 @@ class AgendaRehabAdmin(admin.ModelAdmin):
 
 @admin.register(AsistenciaRehab)
 class AsistenciaRehabAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_agenda_rehab',
+    )
+
+
+@admin.register(AsistenciaRehabTeorica)
+class AsistenciaRehabTeoricaAdmin(admin.ModelAdmin):
     list_display = (
         'id_agenda_rehab',
     )

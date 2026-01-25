@@ -13,6 +13,9 @@ class AgendaRehabRepository:
     def filter_by_id(self, id) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id=id).first()
     
+    def filter_by_dia(self, id_dia) -> Optional[AgendaRehab]:
+        return AgendaRehab.objects.filter(id_dia__id = id_dia).filter(activo=True)
+    
     def filter_by_id_paciente(self, id_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).order_by("id_dia__id")
     

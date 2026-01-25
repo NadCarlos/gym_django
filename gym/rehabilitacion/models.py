@@ -455,14 +455,6 @@ class AsistenciaRehabTeorica(models.Model):
         related_name='agenda_rehab_teorica',
     )
 
-    tiempo = models.DecimalField(
-        max_digits=10,
-        decimal_places=0,
-        null=False,
-        blank=False,
-        verbose_name='tiempo_rehab_agenda_teorica'
-    )
-
     fecha = models.DateField(
         auto_now_add=True,
         blank=False,
