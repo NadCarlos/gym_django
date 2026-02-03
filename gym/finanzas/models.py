@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from administracion.models import Paciente
 
 
 class Beneficiario(models.Model):
@@ -78,6 +79,14 @@ class Factura(models.Model):
         null=False,
         blank=False,
         related_name='id_beneficiario',
+    )
+
+    id_paciente = models.ForeignKey(
+        Paciente,
+        on_delete=models.RESTRICT,
+        null=True,
+        blank=True,
+        related_name='id_paciente_factura',
     )
 
     def __str__(self):
