@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from finanzas.models import Factura, Beneficiario
+from administracion.models import Paciente
 
 
 class FacturaRepository:
@@ -50,6 +51,7 @@ class FacturaRepository:
         fecha: str,
         importe: float,
         id_beneficiario: Beneficiario,
+        id_paciente: Paciente,
     ):
         return Factura.objects.create(
             tipo=tipo,
@@ -58,4 +60,5 @@ class FacturaRepository:
             fecha=fecha,
             importe=importe,
             id_beneficiario=id_beneficiario,
+            id_paciente=id_paciente,
         )

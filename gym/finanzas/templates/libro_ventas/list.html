@@ -91,6 +91,11 @@
             <option value="false" {% if request.GET.pago == "false" %}selected{% endif %}>Impagas</option>
         </select>
 
+        <div class="d-flex align-items-center">
+            <label class="me-2 fw-bold">Paciente:</label>
+            {{ form.id_paciente__nombre }}
+        </div>
+
         <button type="submit" class="btn btn-success btn-sm ms-3">
             <i class="bi bi-filter-square"></i> Filtrar
         </button>
@@ -135,6 +140,16 @@
                             {% if request.GET.ordering == 'tipo' %}
                                 <i class="bi bi-caret-down-fill"></i>
                             {% elif request.GET.ordering == '-tipo' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_paciente__nombre' %}-id_paciente__nombre{% else %}id_paciente__nombre{% endif %}">
+                            Paciente
+                            {% if request.GET.ordering == 'id_paciente__nombre' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_paciente__nombre' %}
                                 <i class="bi bi-caret-up-fill"></i>
                             {% endif %}
                         </a>
@@ -191,6 +206,7 @@
                     <td>{{ factura.id_beneficiario.numero_cuit }}</td>
                     <td>{{ factura.fecha }}</td>
                     <td>{{ factura.tipo }}</td>
+                    <td>{{ factura.id_paciente.nombre }}</td>
                     {% if factura.pago == True %}
                         <td class="text-success">{{ factura.pto_vta }}</td>
                         <td class="text-success">{{ factura.numero }}</td>

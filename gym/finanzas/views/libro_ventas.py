@@ -17,6 +17,7 @@ from finanzas.repositories.facturas import FacturaRepository
 from finanzas.repositories.detalle_orden_pago import DetalleOrdenRepo
 from finanzas.repositories.orden_pago import OrdenPagoRepository
 from finanzas.repositories.descuentos import DescuentoRepository
+from administracion.repositories.paciente import PacienteRepository
 
 
 beneficiarioRepo = BeneficiarioRepository()
@@ -24,6 +25,7 @@ facturaRepo = FacturaRepository()
 detalleOrdenRepo = DetalleOrdenRepo()
 ordenPagoRepo = OrdenPagoRepository()
 descuentoRepo = DescuentoRepository()
+pacienteRepo = PacienteRepository()
 
 locale.setlocale(locale.LC_ALL, '')
 
@@ -60,7 +62,7 @@ class CargaView(View):
             if isinstance(fila[0], datetime):
                 cleaned_data.append(fila)
 
-        # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=Importe
+        # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=id_paciente,[7]=Importe
         for data in cleaned_data:
             facturaExist = facturaRepo.filter_by_numero_fact(fact_numero=data[3], pto_vta=data[2])
             if facturaExist is None:
@@ -70,10 +72,9 @@ class CargaView(View):
                         nombre=data[4],
                         numero_cuit=data[5],
                     )
-
                     beneficiarioExist = nuevoBeneficiario
-
-                importe = float(data[6])
+                paciente = pacienteRepo.get_by_id(id=data[6])
+                importe = float(data[7])
                 facturaRepo.create(
                     tipo=data[1],
                     pto_vta=data[2],
@@ -81,6 +82,7 @@ class CargaView(View):
                     fecha=data[0],
                     importe=importe,
                     id_beneficiario=beneficiarioExist,
+                    id_paciente=paciente,
                 )
             else:
                 pass
