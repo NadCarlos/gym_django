@@ -5,6 +5,7 @@ from administracion.models import Paciente, Asistencia, ObraSocial, Prestacion, 
 
 class PacienteFilter(django_filters.FilterSet):
     apellido = django_filters.CharFilter(lookup_expr='icontains')
+    numero_dni = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
         model = Paciente
@@ -13,6 +14,7 @@ class PacienteFilter(django_filters.FilterSet):
             'id_obra_social',
             'id_estado_civil',
             'id_sexo',
+            'numero_dni',
             }
 
 
