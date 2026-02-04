@@ -113,6 +113,11 @@ class FacturasList(View):
             factura.pago = factura_paga_exists
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
+            if factura_paga_exists == True:
+                factura.orden_pago = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
+
+            else:
+                factura.orden_pago = False
 
         filtros_pago = {
             'true': lambda f: f.pago is True,

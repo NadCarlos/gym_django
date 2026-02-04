@@ -137,7 +137,7 @@ class OrdenPagoPopulate(View):
             total=total,
         )
 
-        return redirect('detail', id, from_list)
+        return redirect('orden_pago_detail', id, from_list)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -318,7 +318,7 @@ class OrdenPagoEdit(View):
         if from_list == "True":
             messages.success(request, "Orden de pago creada correctamente desde la lista.")
 
-        return redirect('detail', id, from_list)
+        return redirect('orden_pago_detail', id, from_list)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

@@ -8,6 +8,7 @@ class FacturasFilter(django_filters.FilterSet):
 
     fecha = django_filters.DateFromToRangeFilter()
     id_beneficiario__nombre = django_filters.CharFilter(lookup_expr='icontains')
+    id_paciente__apellido = django_filters.CharFilter(lookup_expr='icontains')
     id_beneficiario__numero_cuit = django_filters.CharFilter(lookup_expr='icontains')
 
     class Meta:
@@ -15,6 +16,7 @@ class FacturasFilter(django_filters.FilterSet):
         fields = [
             'fecha',
             'id_beneficiario__nombre',
+            'id_paciente__apellido',
             'id_beneficiario__numero_cuit',
         ]
 
