@@ -102,6 +102,11 @@ class AltaTerminate(View):
         if form.is_valid():
             fecha_alta=form.cleaned_data['fecha_alta']
             dado_alta=form.cleaned_data['dado_alta']
+            altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta.id)
+            for alta_funcional in altas_funcionales:
+                altaFuncionalRepo.delete_by_activo(
+                    alta_funcional=alta_funcional,
+                )
             alta_terminated = altaRepo.terminate(
                 alta=alta,
                 fecha_alta=fecha_alta,
