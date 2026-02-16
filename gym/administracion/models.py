@@ -741,6 +741,12 @@ class Cuota(models.Model):
         blank=False,
     )
 
+    activo = models.BooleanField(
+        default=True,
+        null=False,
+        blank=False,
+    )
+
 
 class DetallePago(models.Model):
 
