@@ -93,6 +93,7 @@ from administracion.views.paciente_plan import(
 from administracion.views.cuota import(
     GenerateCuotas,
     CuotasList,
+    CuotaDeleteActivo,
 )
 
 from administracion.views.pago import(
@@ -195,6 +196,7 @@ paciente_plan = [
 cuotas = [
     path(route='generate_cuotas/',view=GenerateCuotas.as_view(), name='generate_cuotas'),
     path(route='cuotas_list/<state>',view=CuotasList.as_view(), name='cuotas_list'),
+    path(route='cuota_delete/<int:id>',view=CuotaDeleteActivo.as_view(), name='cuota_delete'),
 ]
 
 pagos = [

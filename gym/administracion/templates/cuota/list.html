@@ -88,6 +88,15 @@
                         </a>
                     </th>
                     <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_paciente_plan__id_plan__nombre' %}-id_paciente_plan__id_plan__nombre{% else %}id_paciente_plan__id_plan__nombre{% endif %}">
+                            Plan
+                            {% if request.GET.ordering == 'id_paciente_plan__id_plan__nombre' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_paciente_plan__id_plan__nombre' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                    </th>
+                    <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'valor' %}-valor{% else %}valor{% endif %}">
                             Valor
                             {% if request.GET.ordering == 'valor' %}
@@ -115,6 +124,7 @@
                 {% for cuota in cuotas %}
                 <tr>
                     <td>{{ cuota.id_paciente_plan.id_paciente.apellido }}, {{ cuota.id_paciente_plan.id_paciente.nombre }}</td>
+                    <td>{{ cuota.id_paciente_plan.id_plan.nombre }}</td>
                     <td>{{ cuota.valor }}</td>
                     <td>{{ cuota.imputado }}</td>
                     <td>
@@ -124,6 +134,11 @@
                         <a href="{% url 'pago_list' cuota.id_paciente_plan.id_paciente.id %}" class="btn btn-info btn-sm">
                             <i class="bi bi-eye-fill"></i> Ver Pagos
                         </a>
+                        {% if cuota.anulado == False %}
+                        <a href="{% url 'cuota_delete' cuota.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Esto va borrar esta cuota!');">
+                            <i class="bi bi-trash me-2"></i> Borrar Cuota
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

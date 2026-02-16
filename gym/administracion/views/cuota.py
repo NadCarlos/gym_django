@@ -76,3 +76,13 @@ class CuotasList(View):
                 total=total,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+class CuotaDeleteActivo(View):
+
+    def get(self, request, id):
+        cuota = cuotaRepo.get_by_id(id=id)
+        cuotaRepo.delete_by_activo(cuota=cuota)
+        return redirect ('cuotas_list', False)

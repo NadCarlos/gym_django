@@ -18,19 +18,19 @@ class CuotaRepository:
         return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id)
     
     def filter_by_paciente_id_mes(self,id_paciente, year, month) -> List[Cuota]:
-        return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).first()
+        return Cuota.objects.filter(activo=True).filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).first()
     
     def filter_by_anulado(self, state) -> List[Cuota]:
-        return Cuota.objects.filter(anulado=state).order_by('id_paciente_plan__id_paciente__apellido')
+        return Cuota.objects.filter(activo=True).filter(anulado=state).order_by('id_paciente_plan__id_paciente__apellido')
     
     def filter_by_anulado_dates(self, state, start_date, end_date) -> Optional[Cuota]:
         return Cuota.objects.filter(anulado=state, imputado__gte=start_date, imputado__lt=end_date).order_by('id_paciente_plan__id_paciente__apellido')
     
     def cuota_exist(self,id_paciente, year, month) -> List[Cuota]:
-        return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).filter(id_paciente_plan__activo=True).exists()
+        return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).filter(activo=True).exists()
     
     def delete_by_activo(self, cuota: Cuota):
-        cuota.activo=True
+        cuota.activo=False
         cuota.save()
     
     def create(
