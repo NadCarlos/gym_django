@@ -164,6 +164,12 @@ class PacienteRehabilitacion(models.Model):
         verbose_name="diagnosticoCUD",
     )
 
+    pre_ingreso = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
     def __str__(self):
         return  self.id_paciente_area.id_area.nombre
 

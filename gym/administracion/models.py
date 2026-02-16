@@ -170,6 +170,13 @@ class Paciente(models.Model):
         null=True,
         verbose_name="Numero Celular",
         )
+    
+    email = models.EmailField(
+        max_length=254,
+        unique=True,
+        null=True,
+        blank=True,
+    )
 
     fecha_nacimiento = models.DateField(
         null=False,
@@ -331,6 +338,13 @@ class Profesional(models.Model):
         blank=True,
         null=True,
         verbose_name="Numero Celular",
+    )
+
+    email = models.EmailField(
+        max_length=254,
+        unique=True,
+        null=True,
+        blank=True,
     )
     
     fecha_nacimiento = models.DateField(
