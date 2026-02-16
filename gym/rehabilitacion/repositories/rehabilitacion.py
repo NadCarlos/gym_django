@@ -38,6 +38,7 @@ class PacienteRehabilitacionRepository:
         id_obra_social:ObraSocial,
         id_usuario: User,
         diagnosticoCUD: str,
+        pre_ingreso: bool,
     ):
         return PacienteRehabilitacion.objects.create(
             id_paciente_area=id_paciente_area,
@@ -54,6 +55,7 @@ class PacienteRehabilitacionRepository:
             id_obra_social=id_obra_social,
             id_usuario=id_usuario,
             diagnosticoCUD=diagnosticoCUD,
+            pre_ingreso=pre_ingreso,
         )
     
     def update(
@@ -71,6 +73,7 @@ class PacienteRehabilitacionRepository:
         puerto_esperanza: bool,
         id_obra_social:ObraSocial,
         diagnosticoCUD: str,
+        pre_ingreso: bool,
     )-> PacienteRehabilitacion:
         
         rehabilitacion_paciente.nombre_tutor=nombre_tutor
@@ -85,5 +88,6 @@ class PacienteRehabilitacionRepository:
         rehabilitacion_paciente.puerto_esperanza=puerto_esperanza
         rehabilitacion_paciente.id_obra_social=id_obra_social
         rehabilitacion_paciente.diagnosticoCUD=diagnosticoCUD
+        rehabilitacion_paciente.pre_ingreso=pre_ingreso
 
         rehabilitacion_paciente.save()

@@ -15,6 +15,11 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-control custom-class'})
     )
 
+    pre_ingreso = forms.ChoiceField(
+        choices=SI_NO_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control custom-class'})
+    )
+
     ven_presupuesto = forms.ChoiceField(
         choices=SI_NO_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control custom-class','id':'ven_presupuesto'})
@@ -43,6 +48,7 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             'id_obra_social',
             'id_usuario',
             'diagnosticoCUD',
+            'pre_ingreso',
             ]
         
         widgets = {
@@ -84,6 +90,7 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'puerto_esperanza',
             'id_obra_social',
             'diagnosticoCUD',
+            'pre_ingreso',
         ]
         widgets = {
             'nombre_tutor': forms.TextInput(attrs={'class': 'form-control custom-class'}),
@@ -98,8 +105,9 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
             'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
             'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
-        }
+            'pre_ingreso': forms.Select(attrs={'class': 'form-control custom-class'}),
 
+        }
 
 
 class AltaCreateForm(forms.ModelForm):

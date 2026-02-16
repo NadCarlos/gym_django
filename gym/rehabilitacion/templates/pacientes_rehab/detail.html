@@ -55,6 +55,11 @@
                         <p><strong>Hijos:</strong> {{ rehabilitacion_paciente.hijos }}</p>
                         <p><strong>Obra Social:</strong> {{ rehabilitacion_paciente.id_obra_social.nombre }}</p>
                         <p><strong>Fecha Junta:</strong> {{ rehabilitacion_paciente.fecha_junta }}</p>
+                        {% if rehabilitacion_paciente.pre_ingreso == False %}
+                            <p><strong>Pre-Ingreso:</strong> No</p>
+                        {% else %}
+                            <p><strong>Pre-Ingreso:</strong> Si</p>
+                        {% endif %}
                     {% else %}
                         <p class="text-muted"><em>No hay datos de rehabilitación</em></p>
                     {% endif %}

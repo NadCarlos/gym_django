@@ -15,6 +15,7 @@ from administracion.repositories.prestacion_paciente import PrestacionPacienteRe
 from administracion.repositories.tratamiento import TratamientoRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
+from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 
 from rehabilitacion.forms import AgendaRehabCreateForm, AgendaRehabUpdateForm
 
@@ -26,6 +27,7 @@ prestacionPacienteRepo = PrestacionPacienteRepository()
 tratamientoRepo = TratamientoRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
+pacienteRehabRepo = PacienteRehabilitacionRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -102,6 +104,10 @@ class AgendaPacienteRehabCreate(View):
                 observaciones=observaciones.upper()
             except:
                 pass
+
+            paciente_rehab = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=paciente.id)
+            if paciente_rehab.pre_ingreso == 1:
+                observaciones="R"
             
             agendaRehabRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],

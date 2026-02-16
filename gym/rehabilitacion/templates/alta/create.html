@@ -40,7 +40,6 @@
 
         // JSON generado desde Django (ver vista)
         const diagnosticos = JSON.parse(document.getElementById('diagnosticos_json').value);
-        console.log(diagnosticos)
 
         // Deshabilitar diagnóstico al inicio
         diagSelect.disabled = true;
@@ -52,7 +51,6 @@
 
         tipoSelect.addEventListener("change", function () {
             const tipoId = tipoSelect.value;
-            console.log(tipoId)
 
             cleanDiagnosticos();
 
@@ -61,8 +59,6 @@
                 return;
             }
             const lista = diagnosticos[tipoId] || [];
-            console.log(lista)
-            
 
             lista.forEach(item => {
                 const option = document.createElement("option");

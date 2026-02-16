@@ -165,7 +165,8 @@ class PacienteRehabilitacion(models.Model):
     )
 
     pre_ingreso = models.BooleanField(
-        default=1,
+        choices=SI_NO_CHOICES,
+        default=0,
         null=False,
         blank=False,
     )
