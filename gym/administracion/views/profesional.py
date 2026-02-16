@@ -185,6 +185,7 @@ class ProfesionalCreate(View):
                         id_localidad=form.cleaned_data['id_localidad'],
                         direccion=form.cleaned_data['direccion'],
                         celular=form.cleaned_data['celular'],
+                        email=form.cleaned_data['email'],
                         )
                     profesional_area = profesionalAreaRepo.create(
                         id_profesional=profesional_nuevo,
@@ -254,6 +255,7 @@ class ProfesionalUpdate(View):
                     localidad=form.cleaned_data['id_localidad'],
                     direccion=form.cleaned_data['direccion'],
                     celular=form.cleaned_data['celular'],
+                    email=form.cleaned_data['email'],
                     )
                 return redirect('profesional_detail', profesional.id)
         except:

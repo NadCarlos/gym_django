@@ -249,6 +249,7 @@ class PacienteCreate(View):
                     direccion=form.cleaned_data['direccion'],
                     telefono=form.cleaned_data['telefono'],
                     celular=form.cleaned_data['celular'],
+                    email=form.cleaned_data['email'],
                     observaciones=form.cleaned_data['observaciones'],
                     )
                 paciente_area = pacienteAreaRepo.create(
@@ -300,6 +301,7 @@ class PacienteUpdate(View):
                         direccion=form.cleaned_data['direccion'],
                         telefono=form.cleaned_data['telefono'],
                         celular=form.cleaned_data['celular'],
+                        email=form.cleaned_data['email'],
                         observaciones=form.cleaned_data['observaciones'],
                         fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
                         obra_social=form.cleaned_data['id_obra_social'],

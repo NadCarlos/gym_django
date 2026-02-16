@@ -74,6 +74,7 @@ class PacienteRepository:
         id_localidad: Localidad,
         direccion: Optional[str] = None,
         celular: Optional[str] = None,
+        email: Optional[str] = None,
         telefono: Optional[str] = None,
         observaciones: Optional[str] = None,
     ):
@@ -89,6 +90,7 @@ class PacienteRepository:
             id_localidad=id_localidad,
             direccion=direccion,
             celular=celular,
+            email=email,
             telefono=telefono,
             observaciones=observaciones,
         )
@@ -102,6 +104,7 @@ class PacienteRepository:
         direccion: str,
         telefono: str,
         celular: str,
+        email: str,
         observaciones: str,
         fecha_nacimiento: str,
         obra_social: ObraSocial,
@@ -116,6 +119,7 @@ class PacienteRepository:
         paciente.direccion = direccion
         paciente.telefono = telefono
         paciente.celular = celular
+        paciente.email = email
         paciente.observaciones=observaciones
         paciente.fecha_nacimiento = fecha_nacimiento
         paciente.id_obra_social = obra_social

@@ -69,6 +69,7 @@ class ProfesionalRepository:
         id_sexo: Sexo,
         direccion: Optional[str] = None,
         celular: Optional[str] = None,
+        email: Optional[str] = None,
     ):
         return Profesional.objects.create(
             id_usuario=id_usuario,
@@ -81,6 +82,7 @@ class ProfesionalRepository:
             id_sexo=id_sexo,
             direccion=direccion,
             celular=celular,
+            email=email,
         )
     
     def update(
@@ -92,6 +94,7 @@ class ProfesionalRepository:
         matricula: str,
         direccion: str,
         celular: str,
+        email: str,
         fecha_nacimiento: str,
         sexo: Sexo,
         localidad: Localidad,
@@ -103,6 +106,7 @@ class ProfesionalRepository:
         profesional.matricula = matricula
         profesional.direccion = direccion
         profesional.celular = celular
+        profesional.email = email
         profesional.fecha_nacimiento = fecha_nacimiento
         profesional.id_sexo = sexo
         profesional.id_localidad = localidad
