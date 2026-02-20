@@ -7,6 +7,8 @@ from administracion.models import (
     Tratamiento,
     ProfesionalArea,
     Dia,
+    Profesional,
+    Paciente,
 )
 
 
@@ -471,3 +473,58 @@ class AsistenciaRehabTeorica(models.Model):
     
     def __str__(self):
         return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
+
+
+class Informe(models.Model):
+
+    fecha = models.DateField(
+        auto_now_add=True,
+        blank=False,
+        null=False,
+        verbose_name="Fecha Informe Rehab",
+    )
+    
+    id_profesional = models.ForeignKey(
+        Profesional,
+        blank=False,
+        null=False,
+        on_delete=models.RESTRICT,
+        related_name='profesional_informe',
+    )
+
+    id_paciente = models.ForeignKey(
+        Paciente,
+        blank=False,
+        null=False,
+        on_delete=models.RESTRICT,
+        related_name='paciente_informe',
+    )
+
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones_alta_funcional",
+    )
+
+    def __str__(self):
+        return self.id_paciente.nombre
+
+
+class Archivo(models.Model):
+
+    archivo = models.FileField(
+        upload_to='informes_rehab/',
+    )
+    
+    id_informe = models.ForeignKey(
+        Informe,
+        blank=False,
+        null=False,
+        default=None,
+        on_delete=models.RESTRICT,
+        related_name='id_informe',
+    )
+
+    def __str__(self):
+        return self.id_informe.id_paciente.nombre
