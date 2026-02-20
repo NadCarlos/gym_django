@@ -12,6 +12,8 @@ from rehabilitacion.models import(
     AgendaRehab,
     AsistenciaRehab,
     AsistenciaRehabTeorica,
+    Informe,
+    Archivo,
 )
 
 
@@ -89,4 +91,18 @@ class AsistenciaRehabAdmin(admin.ModelAdmin):
 class AsistenciaRehabTeoricaAdmin(admin.ModelAdmin):
     list_display = (
         'id_agenda_rehab',
+    )
+
+
+@admin.register(Informe)
+class InformeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_paciente',
+    )
+
+
+@admin.register(Archivo)
+class ArchivoAdmin(admin.ModelAdmin):
+    list_display = (
+        'archivo',
     )

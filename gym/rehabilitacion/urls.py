@@ -78,6 +78,10 @@ from rehabilitacion.views.asistencia import (
     CheckInRehabErrorDiaIncorrecto,
 )
 
+from rehabilitacion.views.informe import(
+    InformesList,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
@@ -158,4 +162,8 @@ asistencia = [
     path(route='check_in_error_dia_incorrecto/<int:id>',view=CheckInRehabErrorDiaIncorrecto.as_view(), name='check_in_error_dia_incorrecto'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda + asistencia
+informes = [
+    path(route='informes/<int:id>',view=InformesList.as_view(), name='informes'),
+]
+
+urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda + asistencia + informes
