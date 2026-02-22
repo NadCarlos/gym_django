@@ -478,10 +478,9 @@ class AsistenciaRehabTeorica(models.Model):
 class Informe(models.Model):
 
     fecha = models.DateField(
-        auto_now_add=True,
-        blank=False,
         null=False,
-        verbose_name="Fecha Informe Rehab",
+        blank=False,
+        verbose_name='Fecha_informe_rehab',
     )
     
     id_profesional = models.ForeignKey(

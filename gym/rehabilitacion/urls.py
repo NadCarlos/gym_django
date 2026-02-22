@@ -14,7 +14,7 @@ from rehabilitacion.views.pacientes_rehab import(
     PacienteRehabToCsv,
     PacienteAltasToCsv,
     PacienteRehabRedirectFromExistent,
-    PacientesRehabBulkAdd,
+    #PacientesRehabBulkAdd,
     PacienteRehabDelete,
 )
 
@@ -80,6 +80,8 @@ from rehabilitacion.views.asistencia import (
 
 from rehabilitacion.views.informe import(
     InformesList,
+    InformeCreate,
+    InformeDetail,
 )
 
 
@@ -164,6 +166,8 @@ asistencia = [
 
 informes = [
     path(route='informes/<int:id>',view=InformesList.as_view(), name='informes'),
+    path(route='informe_create/<int:id>',view=InformeCreate.as_view(), name='informe_create'),
+    path(route='informe_detail/<int:id>',view=InformeDetail.as_view(), name='informe_detail'),
 ]
 
 urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda + asistencia + informes

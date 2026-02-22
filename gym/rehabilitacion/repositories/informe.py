@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from rehabilitacion.models import Informe 
+from rehabilitacion.models import Informe
+from administracion.models import Paciente, Profesional
 
 
 class InformeRepository:
@@ -12,16 +13,21 @@ class InformeRepository:
         return Informe.objects.get(id=id)
     
     def filter_by_id(self, id) -> Optional[Informe]:
-        return Informe.objects.filter(id=id)
+        return Informe.objects.filter(id=id).first()
     
     def filter_by_paciente_id(self, paciente_id) -> Optional[Informe]:
         return Informe.objects.filter(id_paciente=paciente_id)
     
     def create(
         self,
-        nombre: str,
-        id: Informe,
+        fecha: str,
+        id_profesional: Profesional,
+        id_paciente: Paciente,
+        observaciones: str,
         ):
         return Informe.objects.create(
-            nombre=nombre,
+            fecha=fecha,
+            id_profesional=id_profesional,
+            id_paciente=id_paciente,
+            observaciones=observaciones,
         )
