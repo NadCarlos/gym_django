@@ -7,13 +7,16 @@ from utils.decorators import requiere_areas
 
 from rehabilitacion.forms import(
     InformeCreateForm,
+    ArchivoCreateForm,
 )
 
 from rehabilitacion.repositories.informe import InformeRepository
+from rehabilitacion.repositories.archivo import ArchivoRepository
 from administracion.repositories.paciente import PacienteRepository
 
 
 informeRepo = InformeRepository()
+archivoRepo = ArchivoRepository()
 pacienteRepo = PacienteRepository()
 
 
@@ -71,11 +74,42 @@ class InformeDetail(View):
 
     def get(self, request, id):
         informe = informeRepo.filter_by_id(id=id)
-        print(informe)
+        archivos = archivoRepo.filter_by_informe_id(informe_id=informe.id)
         return render(
             request,
             'informes/detail.html',
             dict(
                 informe=informe,
+                archivos=archivos,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class ArchivoCreate(View):
+
+    def get(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        form = ArchivoCreateForm(initial = {
+            'id_informe': informe.id,
+            }
+        )
+        return render(
+            request,
+            'informes/archivo/create.html',
+            dict(
+                informe=informe,
+                form=form,
+            )
+        )
+
+    def post(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        form = ArchivoCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            archivo = form.save(commit=False)
+            archivo.id_informe = informe
+            archivo.save()
+
+            return redirect('informe_detail', id=id)

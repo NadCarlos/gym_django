@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo
 from administracion.models import Paciente
 
 
@@ -296,4 +296,20 @@ class InformeCreateForm(forms.ModelForm):
             'id_profesional': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class ArchivoCreateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Archivo
+
+        fields = [
+            'archivo',
+            'id_informe',
+            ]
+        
+        widgets = {
+            'id_informe': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }

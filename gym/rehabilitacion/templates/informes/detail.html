@@ -42,7 +42,7 @@
 
     <!-- Botón Nuevo Archivo -->
     <div class="d-flex justify-content-end mb-3">
-        <a href="#" class="btn btn-success btn-sm">
+        <a href="{% url 'archivo_create' informe.id %}" class="btn btn-success btn-sm">
             <i class="bi bi-plus-circle me-1"></i> Nuevo Archivo
         </a>
     </div>
@@ -60,7 +60,12 @@
                     <tbody>
                         {% for archivo in archivos %}
                             <tr>
-                                <td>{{ archivo }}</td>
+                                <td>
+                                    <a href="{{ archivo.archivo.url }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-file-earmark-arrow-down me-1"></i>
+                                        {{ archivo.archivo.name|cut:"archivos/" }}
+                                    </a>
+                                </td>
                             </tr>
                         {% empty %}
                             <tr>
@@ -82,6 +87,5 @@
             <i class="bi bi-arrow-left-circle me-1"></i> Volver
         </a>
     </div>
-
 </div>
 {% endblock %}

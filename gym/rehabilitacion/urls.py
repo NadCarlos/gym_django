@@ -82,6 +82,7 @@ from rehabilitacion.views.informe import(
     InformesList,
     InformeCreate,
     InformeDetail,
+    ArchivoCreate,
 )
 
 
@@ -168,6 +169,19 @@ informes = [
     path(route='informes/<int:id>',view=InformesList.as_view(), name='informes'),
     path(route='informe_create/<int:id>',view=InformeCreate.as_view(), name='informe_create'),
     path(route='informe_detail/<int:id>',view=InformeDetail.as_view(), name='informe_detail'),
+    path(route='archivo_create/<int:id>',view=ArchivoCreate.as_view(), name='archivo_create'),
 ]
 
-urlpatterns = inicio + pacientes + profesionales + rehabilitacion + alta + tipos_discapacidad + diagnosticos_etiologicos + diagnosticos_funcionales + tratamiento_profesional + agenda + asistencia + informes
+urlpatterns = (
+    inicio + 
+    pacientes + 
+    profesionales + 
+    rehabilitacion + 
+    alta + tipos_discapacidad + 
+    diagnosticos_etiologicos + 
+    diagnosticos_funcionales + 
+    tratamiento_profesional + 
+    agenda + 
+    asistencia + 
+    informes
+    )
