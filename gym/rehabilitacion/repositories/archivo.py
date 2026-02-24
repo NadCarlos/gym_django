@@ -26,3 +26,6 @@ class ArchivoRepository:
             archivo=archivo,
             id_informe=id_informe,
         )
+    
+    def delete(self, archivo: Archivo):
+        return archivo.delete()

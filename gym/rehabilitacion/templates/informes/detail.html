@@ -55,6 +55,7 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Archivo</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,6 +65,11 @@
                                     <a href="{{ archivo.archivo.url }}" target="_blank" class="text-decoration-none">
                                         <i class="bi bi-file-earmark-arrow-down me-1"></i>
                                         {{ archivo.archivo.name|cut:"archivos/" }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{% url 'archivo_delete' archivo.id informe.id %}" onclick="return confirm('Esto va a eliminar el archivo!');" class="btn btn-danger btn-sm me-2">
+                                        <i class="bi bi-trash"></i> Eliminar
                                     </a>
                                 </td>
                             </tr>

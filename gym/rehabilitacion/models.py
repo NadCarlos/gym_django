@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
 
 from administracion.models import (
     PacienteArea,
@@ -524,6 +525,12 @@ class Archivo(models.Model):
         on_delete=models.RESTRICT,
         related_name='id_informe',
     )
+
+    def delete(self, *args, **kwargs):
+        if self.archivo and os.path.isfile(self.archivo.path):
+            os.remove(self.archivo.path)
+
+        super().delete(*args, **kwargs)
 
     def __str__(self):
         return self.id_informe.id_paciente.nombre

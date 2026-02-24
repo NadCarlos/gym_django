@@ -113,3 +113,13 @@ class ArchivoCreate(View):
             archivo.save()
 
             return redirect('informe_detail', id=id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class ArchivoDelete(View):
+
+    def get(self, request, id_archivo, id_informe):
+        archivo = archivoRepo.get_by_id(id=id_archivo)
+        archivoRepo.delete(archivo=archivo)
+        return redirect('informe_detail', id_informe )
