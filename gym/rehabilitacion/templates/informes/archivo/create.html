@@ -20,7 +20,10 @@
                 {{ form.id_informe }}
                 <div class="row mb-3 align-items-center">
                     <div class="col-md-4">
-                        {{ form.archivo }}
+                        <input type="file" name="archivo" class="form-control" multiple required>
+                        {% if error_archivo %}
+                            <small class="text-danger">{{ error_archivo }}</small>
+                        {% endif %}
                     </div>
                 </div>
 

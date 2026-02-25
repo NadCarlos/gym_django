@@ -112,13 +112,24 @@ class ArchivoCreate(View):
         informe = informeRepo.filter_by_id(id=id)
         if not informe:
             return redirect('inicio_rehab')
-        form = ArchivoCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            archivo = form.save(commit=False)
-            archivo.id_informe = informe
-            archivo.save()
-
+        archivos = request.FILES.getlist('archivo')
+        for archivo in archivos:
+            archivoRepo.create(
+                archivo=archivo,
+                id_informe=informe,
+            )
+        if archivos:
             return redirect('informe_detail', id=id)
+        form = ArchivoCreateForm(initial={'id_informe': informe.id})
+        return render(
+            request,
+            'informes/archivo/create.html',
+            dict(
+                informe=informe,
+                form=form,
+                error_archivo='Debes seleccionar al menos un archivo.',
+            ),
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
