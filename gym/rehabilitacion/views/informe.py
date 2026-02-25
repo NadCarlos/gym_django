@@ -74,6 +74,8 @@ class InformeDetail(View):
 
     def get(self, request, id):
         informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
         archivos = archivoRepo.filter_by_informe_id(informe_id=informe.id)
         return render(
             request,
@@ -91,6 +93,8 @@ class ArchivoCreate(View):
 
     def get(self, request, id):
         informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
         form = ArchivoCreateForm(initial = {
             'id_informe': informe.id,
             }
@@ -106,6 +110,8 @@ class ArchivoCreate(View):
 
     def post(self, request, id):
         informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
         form = ArchivoCreateForm(request.POST, request.FILES)
         if form.is_valid():
             archivo = form.save(commit=False)
@@ -123,3 +129,14 @@ class ArchivoDelete(View):
         archivo = archivoRepo.get_by_id(id=id_archivo)
         archivoRepo.delete(archivo=archivo)
         return redirect('informe_detail', id_informe )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class InformeDelete(View):
+
+    def get(self, request, id):
+        informe = informeRepo.get_by_id(id=id)
+        paciente_id = informe.id_paciente.id
+        informeRepo.delete(informe=informe)
+        return redirect('informes', paciente_id)

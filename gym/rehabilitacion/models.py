@@ -507,6 +507,13 @@ class Informe(models.Model):
         verbose_name="Obseraciones_alta_funcional",
     )
 
+    activo = models.BooleanField(
+        default=True,
+        null=False,
+        blank=False,
+        verbose_name="Activo",
+    )
+
     def __str__(self):
         return self.id_paciente.nombre
 
