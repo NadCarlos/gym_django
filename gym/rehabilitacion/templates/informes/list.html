@@ -28,6 +28,7 @@
                         <tr>
                             <th>Fecha</th>
                             <th>Profesional</th>
+                            <th>Observaciones</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -36,6 +37,27 @@
                             <tr>
                                 <td>{{ informe.fecha }}</td>
                                 <td>{{ informe.id_profesional.apellido }}, {{ informe.id_profesional.nombre }}</td>
+                                <td style="max-width: 250px;">
+                                    {% if informe.observaciones %}
+                                        <span class="obs-short">
+                                            {{ informe.observaciones|slice:":40" }}
+                                            {% if informe.observaciones|length > 40 %}...{% endif %}
+                                        </span>
+
+                                        {% if informe.observaciones|length > 40 %}
+                                            <span class="obs-full d-none">
+                                                {{ informe.observaciones }}
+                                            </span>
+
+                                            <button type="button"
+                                                    class="btn btn-link btn-sm p-0 ms-1 toggle-obs">
+                                                Ver más
+                                            </button>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Sin observaciones</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-center">
                                     <a href="{% url 'informe_detail' informe.id %}" 
                                        class="btn btn-outline-primary btn-sm">
@@ -70,4 +92,26 @@
     </div>
 
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-obs").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const td = this.closest("td");
+            const shortText = td.querySelector(".obs-short");
+            const fullText = td.querySelector(".obs-full");
+            const isHidden = fullText.classList.contains("d-none");
+
+            if (isHidden) {
+                shortText.classList.add("d-none");
+                fullText.classList.remove("d-none");
+                this.textContent = "Ver menos";
+            } else {
+                shortText.classList.remove("d-none");
+                fullText.classList.add("d-none");
+                this.textContent = "Ver más";
+            }
+        });
+    });
+});
+</script>
 {% endblock %}

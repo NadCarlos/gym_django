@@ -37,10 +37,10 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
                 <div class="col-sm-6">
                     <select class="form-control custom-class" id="select-profesional" name="select">
-                        <option value="{{ profesional_old.id }}">{{ profesional_old.apellido }}</option>
+                        <option value="{{ profesional_old.id }}">{{ profesional_old.apellido }}, {{ profesional_old.nombre }}</option>
                         {% for profesional in profesionales %}
                             {% if profesional.id != profesional_old.id %}
-                                <option value="{{ profesional.id }}">{{ profesional.apellido }}</option>
+                                <option value="{{ profesional.id }}">{{ profesional.apellido }}, {{ profesional.nombre }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>                    

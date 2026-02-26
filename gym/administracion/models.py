@@ -388,7 +388,7 @@ class Profesional(models.Model):
     )
 
     def __str__(self):
-        return  self.apellido
+        return f"{self.apellido}, {self.nombre}"
     
 
 class Tratamiento(models.Model):
