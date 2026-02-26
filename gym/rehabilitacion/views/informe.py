@@ -70,6 +70,44 @@ class InformeCreate(View):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class InformeUpdate(View):
+
+    def get(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
+        form = InformeCreateForm(instance=informe)
+        return render(
+            request,
+            'informes/update.html',
+            dict(
+                informe=informe,
+                paciente=informe.id_paciente,
+                form=form,
+            )
+        )
+
+    def post(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
+        form = InformeCreateForm(request.POST, instance=informe)
+        if form.is_valid():
+            informe_actualizado = form.save()
+            return redirect('informe_detail', informe_actualizado.id)
+        return render(
+            request,
+            'informes/update.html',
+            dict(
+                informe=informe,
+                paciente=informe.id_paciente,
+                form=form,
+            )
+        )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class InformeDetail(View):
 
     def get(self, request, id):

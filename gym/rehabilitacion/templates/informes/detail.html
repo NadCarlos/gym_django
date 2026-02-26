@@ -24,7 +24,7 @@
 
                 <div class="col-md-4">
                     <strong>Profesional:</strong><br>
-                    {{ informe.id_profesional.nombre }}
+                    {{ informe.id_profesional.apellido }}, {{ informe.id_profesional.nombre }}
                 </div>
             </div>
 
@@ -41,9 +41,12 @@
     </div>
 
     <!-- Botón Nuevo Archivo -->
-    <div class="d-flex justify-content-end mb-3">
+    <div class="text-left mb-3">
         <a href="{% url 'archivo_create' informe.id %}" class="btn btn-success btn-sm">
             <i class="bi bi-plus-circle me-1"></i> Nuevo Archivo
+        </a>
+        <a href="{% url 'informe_update' informe.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-pencil-square me-1"></i> Editar
         </a>
     </div>
 

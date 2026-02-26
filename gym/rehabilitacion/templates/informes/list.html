@@ -35,7 +35,7 @@
                         {% for informe in informes %}
                             <tr>
                                 <td>{{ informe.fecha }}</td>
-                                <td>{{ informe.id_profesional }}</td>
+                                <td>{{ informe.id_profesional.apellido }}, {{ informe.id_profesional.nombre }}</td>
                                 <td class="text-center">
                                     <a href="{% url 'informe_detail' informe.id %}" 
                                        class="btn btn-outline-primary btn-sm">

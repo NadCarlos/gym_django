@@ -82,6 +82,7 @@ from rehabilitacion.views.asistencia import (
 from rehabilitacion.views.informe import(
     InformesList,
     InformeCreate,
+    InformeUpdate,
     InformeDetail,
     ArchivoCreate,
     ArchivoDelete,
@@ -172,6 +173,7 @@ asistencia = [
 informes = [
     path(route='informes/<int:id>',view=InformesList.as_view(), name='informes'),
     path(route='informe_create/<int:id>',view=InformeCreate.as_view(), name='informe_create'),
+    path(route='informe_update/<int:id>',view=InformeUpdate.as_view(), name='informe_update'),
     path(route='informe_detail/<int:id>',view=InformeDetail.as_view(), name='informe_detail'),
     path(route='informe_delete/<int:id>',view=InformeDelete.as_view(), name='informe_delete'),
     path(route='archivo_create/<int:id>',view=ArchivoCreate.as_view(), name='archivo_create'),
