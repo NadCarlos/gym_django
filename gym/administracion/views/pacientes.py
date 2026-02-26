@@ -145,10 +145,10 @@ class PacientesToCsv(View):
                 paciente.fecha_nacimiento,
                 paciente.observaciones,
                 paciente.activo,
-                paciente.id_obra_social.nombre,
-                paciente.id_estado_civil.nombre,
-                paciente.id_localidad.nombre,
-                paciente.id_sexo.nombre,
+                paciente.id_obra_social.nombre if paciente.id_obra_social else '',
+                paciente.id_estado_civil.nombre if paciente.id_estado_civil else '',
+                paciente.id_localidad.nombre if paciente.id_localidad else '',
+                paciente.id_sexo.nombre if paciente.id_sexo else '',
                 tiene_prestacion_activa,
                 ])
 

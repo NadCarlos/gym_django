@@ -344,8 +344,6 @@ class PacienteRehabToCsv(View):
 
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
-        altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
-        #tiene_pendientes = altaRepo.tiene_alta_activa()
 
         data_paciente = []
         data_paciente.append([
@@ -358,10 +356,10 @@ class PacienteRehabToCsv(View):
             paciente.fecha_nacimiento,
             paciente.observaciones,
             paciente.activo,
-            paciente.id_obra_social.nombre,
-            paciente.id_estado_civil.nombre,
-            paciente.id_localidad.nombre,
-            paciente.id_sexo.nombre,
+            paciente.id_obra_social.nombre if paciente.id_obra_social else '',
+            paciente.id_estado_civil.nombre if paciente.id_estado_civil else '',
+            paciente.id_localidad.nombre if paciente.id_localidad else '',
+            paciente.id_sexo.nombre if paciente.id_sexo else '',
             ])
 
         df = pd.DataFrame(data_paciente, columns=[
@@ -381,18 +379,19 @@ class PacienteRehabToCsv(View):
             ])
         
         data_paciente_rehabilitacion = []
-        data_paciente_rehabilitacion.append([
-            rehabilitacion_paciente.nombre_tutor,
-            rehabilitacion_paciente.celular_tutor,
-            rehabilitacion_paciente.hijos,
-            rehabilitacion_paciente.id_estado_certificado.nombre,
-            rehabilitacion_paciente.vencimiento_certificado,
-            rehabilitacion_paciente.fecha_junta,
-            rehabilitacion_paciente.vencimiento_presupuesto,
-            rehabilitacion_paciente.id_derivador.nombre,
-            rehabilitacion_paciente.id_obra_social.nombre,
-            rehabilitacion_paciente.puerto_esperanza,
-        ])
+        if rehabilitacion_paciente is not None:
+            data_paciente_rehabilitacion.append([
+                rehabilitacion_paciente.nombre_tutor,
+                rehabilitacion_paciente.celular_tutor,
+                rehabilitacion_paciente.hijos,
+                rehabilitacion_paciente.id_estado_certificado.nombre if rehabilitacion_paciente.id_estado_certificado else '',
+                rehabilitacion_paciente.vencimiento_certificado,
+                rehabilitacion_paciente.fecha_junta,
+                rehabilitacion_paciente.vencimiento_presupuesto,
+                rehabilitacion_paciente.id_derivador.nombre if rehabilitacion_paciente.id_derivador else '',
+                rehabilitacion_paciente.id_obra_social.nombre if rehabilitacion_paciente.id_obra_social else '',
+                rehabilitacion_paciente.puerto_esperanza,
+            ])
         
         df_rehab = pd.DataFrame(data_paciente_rehabilitacion, columns=[
             'Nombre Tutor',
@@ -433,25 +432,56 @@ class PacienteAltasToCsv(View):
 
         data = []
         for alta in altas:
+            tipo_discapacidad = ""
+            if (
+                alta.id_diagnostico_etiologico is not None
+                and alta.id_diagnostico_etiologico.id_tipo_discapacidad is not None
+            ):
+                tipo_discapacidad = alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre
             data.append([
                 alta.fecha,
                 alta.id_diagnostico_etiologico.nombre,
-                alta.fecha_alta,
+                tipo_discapacidad,
                 alta.dado_alta,
+                alta.fecha_alta,
                 ])
 
         df = pd.DataFrame(data, columns=[
             'Fecha',
             'Diagnostico Etiologico',
+            'Tipo Discapacidad',
             'Dado Alta',
             'Fecha Alta',
             ])
+
+        alta_activa = altaRepo.filter_by_id_activa(id_paciente_rehab=rehabilitacion_paciente.id)
+        data_diagnosticos_funcionales = []
+        if alta_activa is not None:
+            altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            for alta_funcional in altas_funcionales:
+                data_diagnosticos_funcionales.append([
+                    alta_funcional.id_diagnostico_funcional.nombre,
+                    alta_funcional.observaciones,
+                ])
+
+        df_diagnosticos_funcionales = pd.DataFrame(
+            data_diagnosticos_funcionales,
+            columns=[
+                'Diagnostico Funcional',
+                'Observaciones',
+            ],
+        )
         
         # Use an in-memory output stream to avoid file system I/O
         output = io.BytesIO()
 
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name='Altas', index=False)
+            df_diagnosticos_funcionales.to_excel(
+                writer,
+                sheet_name='Diagnosticos funcionales',
+                index=False,
+            )
 
         response.write(output.getvalue())
 

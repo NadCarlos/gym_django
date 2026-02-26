@@ -126,7 +126,7 @@
                                 <p class="mb-0"><strong>Diags Funcionales:</strong></p>
                                 <ul class="mb-0">
                                     {% for alta_funcional in altas_funcionales %}
-                                        <li><strong>{{ alta_funcional.id_diagnostico_funcional.nombre }}</strong></li>
+                                        <li>{{ alta_funcional.id_diagnostico_funcional.nombre }}</li>
                                     {% empty %}
                                         <li><em>Sin diagnósticos funcionales</em></li>
                                     {% endfor %}
