@@ -182,6 +182,58 @@ class AltaFuncionalList(View):
                 paciente=paciente,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class AltaFuncionalUpdate(View):
+
+    def get(self, request, alta_funcional_id):
+        alta_funcional = altaFuncionalRepo.get_by_id(id=alta_funcional_id)
+        alta = alta_funcional.id_alta
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
+            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
+        )
+
+        form = AltaFuncionalCreateForm(initial={
+            'id_usuario': request.user,
+            'id_alta': alta,
+            'observaciones': alta_funcional.observaciones,
+        })
+
+        return render(
+            request,
+            'alta_funcional/update.html',
+            dict(
+                form=form,
+                alta=alta,
+                alta_funcional=alta_funcional,
+                diagnosticos_funcionales=diagnosticos_funcionales,
+            ),
+        )
+
+    def post(self, request, alta_funcional_id):
+        alta_funcional = altaFuncionalRepo.get_by_id(id=alta_funcional_id)
+        alta = alta_funcional.id_alta
+
+        diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')
+        if not diagnostico_funcional_id:
+            return redirect('alta_funcional_update', alta_funcional_id=alta_funcional.id)
+
+        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(int(diagnostico_funcional_id))
+        if not diagnostico_funcional:
+            return redirect('alta_funcional_update', alta_funcional_id=alta_funcional.id)
+
+        form = AltaFuncionalCreateForm(request.POST)
+        if form.is_valid():
+            observaciones = form.cleaned_data['observaciones']
+            altaFuncionalRepo.update(
+                alta_funcional=alta_funcional,
+                id_diagnostico_funcional=diagnostico_funcional,
+                observaciones=observaciones,
+            )
+
+        return redirect('alta_funcional_list', alta_id=alta.id)
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

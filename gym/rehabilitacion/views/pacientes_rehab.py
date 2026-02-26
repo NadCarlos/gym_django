@@ -142,14 +142,13 @@ class PacienteRehabDetail(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
-        altas = "None"
+        altas = []
         tiene_pendientes=False
-        altas_funcionales = "None"
+        altas_funcionales = []
         if rehabilitacion_paciente != None:
             altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
-            alta_activa = altaRepo.filter_by_id_activa()
+            alta_activa = altaRepo.filter_by_id_activa(id_paciente_rehab=rehabilitacion_paciente.id)
             tiene_pendientes = altaRepo.tiene_alta_activa(id_paciente_rehab=rehabilitacion_paciente.id)
-            altas_funcionales = "None"
             if alta_activa != None:
                 altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta_activa.id)
         return render(

@@ -2,31 +2,60 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Lista de Diagnosticos Funcionales Alta {{ paciente.nombre }}, {{ paciente.apellido }}</h2>
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+        <h2 class="text-primary mb-0">
+            <i class="bi bi-clipboard2-pulse me-2"></i>
+            Diagnósticos funcionales: {{ paciente.apellido }}, {{ paciente.nombre }}
+        </h2>
+        <a href="{% url 'alta_funcional_create' alta.id %}" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo
+        </a>
+    </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for alta in altas_funcionales %}
-                <tr>
-                    <td>{{ alta.id_diagnostico_funcional.nombre }}</td>
-                    <td>{{ alta.id_diagnostico_funcional.descripcion }}</td>
-                    <td>
-                        <a href="{% url 'alta_funcional_remove' alta.id %}" class="btn btn-danger btn-sm me-2">
-                            <i class="bi bi-trash"></i> Borrar
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Diagnóstico</th>
+                            <th>Observaciones</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alta in altas_funcionales %}
+                            <tr>
+                                <td>{{ alta.id_diagnostico_funcional.nombre }}</td>
+                                <td>{{ alta.observaciones|default:'-' }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'alta_funcional_update' alta.id %}" class="btn btn-outline-primary btn-sm me-1">
+                                        <i class="bi bi-pencil me-1"></i> Editar
+                                    </a>
+                                    <a href="{% url 'alta_funcional_remove' alta.id %}"
+                                       onclick="return confirm('¿Seguro que desea eliminar este diagnóstico funcional?');"
+                                       class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash me-1"></i> Borrar
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    No hay diagnósticos funcionales cargados.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'paciente_rehab_detail' paciente.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left-circle me-1"></i> Volver
+        </a>
     </div>
 </div>
 {% endblock %}

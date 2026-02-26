@@ -35,3 +35,14 @@ class AltaFuncionalRepository:
             observaciones=observaciones,
             id_usuario=id_usuario,
         )
+
+    def update(
+        self,
+        alta_funcional: AltaFuncional,
+        id_diagnostico_funcional: DiagnosticoFuncional,
+        observaciones: str,
+    ):
+        alta_funcional.id_diagnostico_funcional = id_diagnostico_funcional
+        alta_funcional.observaciones = observaciones
+        alta_funcional.save()
+        return alta_funcional

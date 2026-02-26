@@ -44,6 +44,7 @@ from rehabilitacion.views.alta import(
     AltaTerminate,
     AltaFuncionalCreate,
     AltaFuncionalList,
+    AltaFuncionalUpdate,
     DiagnosticoFuncionalRemove,
 )
 
@@ -133,6 +134,7 @@ alta = [
     path(route='alta/terminate/<int:id>',view=AltaTerminate.as_view(), name='alta_terminate'),
     path(route='alta_funcional/create/<int:alta_id>',view=AltaFuncionalCreate.as_view(), name='alta_funcional_create'),
     path(route='alta_funcional/list/<int:alta_id>',view=AltaFuncionalList.as_view(), name='alta_funcional_list'),
+    path(route='alta_funcional/update/<int:alta_funcional_id>',view=AltaFuncionalUpdate.as_view(), name='alta_funcional_update'),
     path(route='alta_funcional/remove/<int:alta_id>',view=DiagnosticoFuncionalRemove.as_view(), name='alta_funcional_remove'),
 ]
 

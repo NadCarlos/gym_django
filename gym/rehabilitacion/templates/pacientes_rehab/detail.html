@@ -107,11 +107,12 @@
                 </div>
 
                 <div class="card-body p-2" style="max-height: 60vh; overflow-y: auto;">
-                    {% if altas != "None" %}
+                    {% if altas %}
                         {% for alta in altas %}
                             {% if alta.dado_alta %}
                                 <div class="mb-2 p-2 text-white rounded bg-warning">
                                     <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
+                                    <p class="mb-0"><strong>Tipo Discapacidad:</strong> {{ alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre }}</p>
                                     <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
                                     <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
                                     <p class="mb-0"><strong>Fecha Alta:</strong> {{ alta.fecha_alta }}</p>
@@ -119,12 +120,15 @@
                             {% else %}
                             <div class="mb-2 p-2 text-white rounded bg-success">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
+                                <p class="mb-0"><strong>Tipo Discapacidad:</strong> {{ alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre }}</p>
                                 <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
                                 <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>
                                 <p class="mb-0"><strong>Diags Funcionales:</strong></p>
                                 <ul class="mb-0">
                                     {% for alta_funcional in altas_funcionales %}
                                         <li><strong>{{ alta_funcional.id_diagnostico_funcional.nombre }}</strong></li>
+                                    {% empty %}
+                                        <li><em>Sin diagnósticos funcionales</em></li>
                                     {% endfor %}
                                 </ul>
                                 <a href="{% url 'alta_terminate' alta.id %}" class="btn btn-sm btn-danger mt-2">
@@ -134,7 +138,7 @@
                                     <i class="bi bi-plus"></i> Diag Funcional
                                 </a>
                                 <a href="{% url 'alta_funcional_list' alta.id %}" class="btn btn-sm btn-warning mt-2">
-                                    <i class="bi bi-chevron-double-right"></i>
+                                    <i class="bi bi-chevron-double-right me-1"></i>
                                 </a>
                             </div>
                             {% endif %}

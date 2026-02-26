@@ -59,13 +59,13 @@ class InformeCreate(View):
     def post(self, request, id):
         form = InformeCreateForm(request.POST)
         if form.is_valid():
-            informeRepo.create(
+            nuevo_informe = informeRepo.create(
                 fecha=form.cleaned_data['fecha'],
                 id_profesional=form.cleaned_data['id_profesional'],
                 id_paciente=form.cleaned_data['id_paciente'],
                 observaciones=form.cleaned_data['observaciones'],
             )
-        return redirect('informes', id)
+        return redirect('informe_detail', nuevo_informe.id)
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
