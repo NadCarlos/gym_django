@@ -6,6 +6,15 @@
         <h2 class="text-primary mb-0"><i class="bi bi-person-fill-exclamation"></i> Lista de Diagnosticos Funcionales</h2>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <!-- Botones principales -->
     <div class="row">
         <!-- Primera columna -->
@@ -26,6 +35,7 @@
                     <th>Nombre</th>
                     <th>Diagnostico Etiologico</th>
                     <th>Tipo Discapacidad</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -34,6 +44,21 @@
                         <td>{{ diagnostico.nombre }}</td>
                         <td>{{ diagnostico.id_diagnostico_etiologico.nombre }}</td>
                         <td>{{ diagnostico.id_diagnostico_etiologico.id_tipo_discapacidad.nombre }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'diagnosticos_funcionales_update' diagnostico.id %}"
+                               class="btn btn-outline-primary btn-sm me-1">
+                                <i class="bi bi-pencil me-1"></i> Editar
+                            </a>
+                            <a href="{% url 'diagnosticos_funcionales_delete' diagnostico.id %}"
+                               onclick="return confirm('¿Seguro que desea eliminar este diagnóstico funcional?');"
+                               class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Borrar
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">No hay diagnósticos funcionales cargados.</td>
                     </tr>
                 {% endfor %}
             </tbody>

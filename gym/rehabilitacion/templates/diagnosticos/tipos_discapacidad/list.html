@@ -6,6 +6,15 @@
         <h2 class="text-primary mb-0"><i class="bi bi-universal-access"></i> Lista de Tipos de Discapacidad</h2>
     </div>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <!-- Botones principales -->
     <div class="row">
         <!-- Primera columna -->
@@ -24,12 +33,28 @@
             <thead class="table-dark">
                 <tr>
                     <th>Nombre</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for tipo_discapacidad in tipos_discapacidad %}
                     <tr>   
                         <td>{{ tipo_discapacidad.nombre }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'tipo_discapacidad_update' tipo_discapacidad.id %}"
+                               class="btn btn-outline-primary btn-sm me-1">
+                                <i class="bi bi-pencil me-1"></i> Editar
+                            </a>
+                            <a href="{% url 'tipo_discapacidad_delete' tipo_discapacidad.id %}"
+                               onclick="return confirm('¿Seguro que desea eliminar este tipo de discapacidad?');"
+                               class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash me-1"></i> Borrar
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2" class="text-center text-muted py-4">No hay tipos de discapacidad cargados.</td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rehabilitacion.models import DiagnosticoFuncional, DiagnosticoEtiologico
+from rehabilitacion.models import DiagnosticoFuncional, DiagnosticoEtiologico, AltaFuncional
 
 
 class DiagnosticoFuncionalRepository:
@@ -29,3 +29,23 @@ class DiagnosticoFuncionalRepository:
             nombre=nombre,
             id_diagnostico_etiologico=id_diagnostico_etiologico,
         )
+
+    def update(
+        self,
+        diagnostico_funcional: DiagnosticoFuncional,
+        nombre: str,
+        id_diagnostico_etiologico: DiagnosticoEtiologico,
+    ):
+        diagnostico_funcional.nombre = nombre
+        diagnostico_funcional.id_diagnostico_etiologico = id_diagnostico_etiologico
+        diagnostico_funcional.save()
+        return diagnostico_funcional
+
+    def has_alta_funcional_relation(self, diagnostico_funcional: DiagnosticoFuncional) -> bool:
+        return AltaFuncional.objects.filter(
+            id_diagnostico_funcional=diagnostico_funcional,
+            activo=True,
+        ).exists()
+
+    def delete(self, diagnostico_funcional: DiagnosticoFuncional):
+        diagnostico_funcional.delete()

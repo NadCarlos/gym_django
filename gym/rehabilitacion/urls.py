@@ -51,16 +51,22 @@ from rehabilitacion.views.alta import(
 from rehabilitacion.views.tipos_discapacidad import(
     TipoDiscapacidadList,
     TipoDiscapacidadCreate,
+    TipoDiscapacidadUpdate,
+    TipoDiscapacidadDelete,
 )
 
 from rehabilitacion.views.diagnosticos_etiologicos import(
     DiagnosticosEtiologicosList,
     DiagnosticoEtiologicoCreate,
+    DiagnosticoEtiologicoUpdate,
+    DiagnosticoEtiologicoDelete,
 )
 
 from rehabilitacion.views.diagnosticos_funcionales import(
     DiagnosticoFuncionalList,
     DiagnosticoFuncionalCreate,
+    DiagnosticoFuncionalUpdate,
+    DiagnosticoFuncionalDelete,
 )
 
 from rehabilitacion.views.agenda import (
@@ -142,16 +148,22 @@ alta = [
 tipos_discapacidad = [
     path(route='diagnosticos/tipo_discapacidad/list',view=TipoDiscapacidadList.as_view(), name='tipo_discapacidad_list'),
     path(route='diagnosticos/tipo_discapacidad/create',view=TipoDiscapacidadCreate.as_view(), name='tipo_discapacidad_create'),
+    path(route='diagnosticos/tipo_discapacidad/update/<int:id>',view=TipoDiscapacidadUpdate.as_view(), name='tipo_discapacidad_update'),
+    path(route='diagnosticos/tipo_discapacidad/delete/<int:id>',view=TipoDiscapacidadDelete.as_view(), name='tipo_discapacidad_delete'),
 ]
 
 diagnosticos_etiologicos = [
     path(route='diagnosticos/diagnosticos_etiologicos/list',view=DiagnosticosEtiologicosList.as_view(), name='diagnosticos_etiologicos_list'),
     path(route='diagnosticos/diagnosticos_etiologicos/create',view=DiagnosticoEtiologicoCreate.as_view(), name='diagnosticos_etiologicos_create'),
+    path(route='diagnosticos/diagnosticos_etiologicos/update/<int:id>',view=DiagnosticoEtiologicoUpdate.as_view(), name='diagnosticos_etiologicos_update'),
+    path(route='diagnosticos/diagnosticos_etiologicos/delete/<int:id>',view=DiagnosticoEtiologicoDelete.as_view(), name='diagnosticos_etiologicos_delete'),
 ]
 
 diagnosticos_funcionales = [
     path(route='diagnosticos/diagnosticos_funcionales/list',view=DiagnosticoFuncionalList.as_view(), name='diagnosticos_funcionales_list'),
     path(route='diagnosticos/diagnosticos_funcionales/create',view=DiagnosticoFuncionalCreate.as_view(), name='diagnosticos_funcionales_create'),
+    path(route='diagnosticos/diagnosticos_funcionales/update/<int:id>',view=DiagnosticoFuncionalUpdate.as_view(), name='diagnosticos_funcionales_update'),
+    path(route='diagnosticos/diagnosticos_funcionales/delete/<int:id>',view=DiagnosticoFuncionalDelete.as_view(), name='diagnosticos_funcionales_delete'),
 ]
 
 agenda = [
