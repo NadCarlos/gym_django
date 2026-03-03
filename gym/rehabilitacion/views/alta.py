@@ -145,10 +145,25 @@ class AltaFuncionalCreate(View):
     
     def post(self, request, alta_id):
         alta = altaRepo.get_by_id(id=alta_id)
-        diagnostico_funcional = request.POST.get('select-diagnostico-funcional')
-        diagnostico_funcional = int(diagnostico_funcional)
-        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(diagnostico_funcional)
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id)
         form = AltaFuncionalCreateForm(request.POST)
+        diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')
+
+        if not diagnostico_funcional_id:
+            return render(
+                request,
+                'alta_funcional/create.html',
+                dict(
+                    form=form,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    alta=alta,
+                    selected_diagnostico_funcional_id='',
+                    error_message='Debe seleccionar un diagnóstico funcional.',
+                ),
+            )
+
+        diagnostico_funcional_id_int = int(diagnostico_funcional_id)
+        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(diagnostico_funcional_id_int)
         if form.is_valid():
             id_alta=form.cleaned_data['id_alta']
             observaciones=form.cleaned_data['observaciones']
@@ -160,8 +175,7 @@ class AltaFuncionalCreate(View):
                 observaciones=observaciones,
                 id_usuario=id_usuario,
             )
-
-        return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
+            return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id )
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

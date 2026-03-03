@@ -125,7 +125,7 @@
                                 <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>
                                 <p class="mb-0"><strong>Diags Funcionales:</strong></p>
                                 <ul class="mb-0">
-                                    {% for alta_funcional in altas_funcionales %}
+                                    {% for alta_funcional in alta.altas_funcionales %}
                                         <li>{{ alta_funcional.id_diagnostico_funcional.nombre }}</li>
                                     {% empty %}
                                         <li><em>Sin diagnósticos funcionales</em></li>
@@ -187,7 +187,7 @@
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
                     <a href="{% url 'alta_create' paciente.id %}" 
-                    class="btn btn-outline-primary {% if tiene_pendientes %}disabled{% endif %}">
+                    class="btn btn-outline-primary">
                         <i class="bi bi-book"></i> Nueva Alta
                     </a>
                     <a href="{% url 'agenda_paciente_rehab' paciente.id %}" class="btn btn-primary">

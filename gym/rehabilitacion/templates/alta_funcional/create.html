@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Nuevo Diagnostico Funcional</h2>
+    {% if error_message %}
+        <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.id_alta }}
@@ -12,7 +17,9 @@
         <select class="form-control custom-class" id="select-diagnostico-funcional" name="select-diagnostico-funcional">
             <option style="font-weight: 100;" value="">--------------</option>
                 {% for diagnostico in diagnosticos_funcionales %}
-                    <option value="{{ diagnostico.id }}">{{ diagnostico.nombre }}</option>
+                    <option value="{{ diagnostico.id }}" {% if selected_diagnostico_funcional_id == diagnostico.id|stringformat:"s" %}selected{% endif %}>
+                        {{ diagnostico.nombre }}
+                    </option>
                 {% endfor %}
         </select>
 
