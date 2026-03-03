@@ -3,6 +3,7 @@ from pathlib import Path
 
 import environ # type: ignore
 import sentry_sdk # type: ignore
+from django.contrib.messages import constants as message_constants
 
 sentry_sdk.init(
     dsn="https://a8c704adad13e0007ed22f78b69d4714@o4507817863610368.ingest.us.sentry.io/4507817865445376",
@@ -98,6 +99,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+MESSAGE_TAGS = {
+    message_constants.ERROR: "danger",
+}
 
 ROOT_URLCONF = "gym.urls"
 

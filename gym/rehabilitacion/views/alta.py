@@ -130,7 +130,7 @@ class AltaFuncionalCreate(View):
 
     def get(self, request, alta_id):
         alta = altaRepo.get_by_id(id=alta_id)
-        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id)
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.get_all_list()
         form = AltaFuncionalCreateForm(initial={'id_usuario': request.user, 'id_alta': alta})
 
         return render(
@@ -145,9 +145,7 @@ class AltaFuncionalCreate(View):
     
     def post(self, request, alta_id):
         alta = altaRepo.get_by_id(id=alta_id)
-        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
-            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
-        )
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.get_all_list()
         form = AltaFuncionalCreateForm(request.POST)
         diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')
 
@@ -223,9 +221,7 @@ class AltaFuncionalUpdate(View):
     def get(self, request, alta_funcional_id):
         alta_funcional = altaFuncionalRepo.get_by_id(id=alta_funcional_id)
         alta = alta_funcional.id_alta
-        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
-            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
-        )
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.get_all_list()
 
         form = AltaFuncionalCreateForm(initial={
             'id_usuario': request.user,
@@ -247,9 +243,7 @@ class AltaFuncionalUpdate(View):
     def post(self, request, alta_funcional_id):
         alta_funcional = altaFuncionalRepo.get_by_id(id=alta_funcional_id)
         alta = alta_funcional.id_alta
-        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
-            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
-        )
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.get_all_list()
         form = AltaFuncionalCreateForm(request.POST)
 
         diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')

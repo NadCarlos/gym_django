@@ -19,6 +19,9 @@ class DiagnosticoFuncionalRepository:
     
     def filter_by_tipo_diagnostico_etiologico_id_list(self, id_diagnostico_etiologico) -> Optional[DiagnosticoFuncional]:
         return DiagnosticoFuncional.objects.filter(id_diagnostico_etiologico=id_diagnostico_etiologico).values("id", "nombre")
+
+    def get_all_list(self) -> Optional[DiagnosticoFuncional]:
+        return DiagnosticoFuncional.objects.values("id", "nombre").order_by("nombre")
     
     def create(
         self,
