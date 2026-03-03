@@ -17,6 +17,21 @@ class AltaFuncionalRepository:
     
     def filter_by_alta_id(self, alta_id) -> Optional[AltaFuncional]:
         return AltaFuncional.objects.filter(id_alta=alta_id).filter(activo=True)
+
+    def exists_active_by_alta_and_diagnostico(
+        self,
+        alta_id: int,
+        diagnostico_funcional_id: int,
+        exclude_alta_funcional_id: Optional[int] = None,
+    ) -> bool:
+        query = AltaFuncional.objects.filter(
+            id_alta=alta_id,
+            id_diagnostico_funcional=diagnostico_funcional_id,
+            activo=True,
+        )
+        if exclude_alta_funcional_id is not None:
+            query = query.exclude(id=exclude_alta_funcional_id)
+        return query.exists()
     
     def delete_by_activo(self, alta_funcional: AltaFuncional):
         alta_funcional.activo=False

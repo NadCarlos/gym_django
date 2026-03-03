@@ -145,7 +145,9 @@ class AltaFuncionalCreate(View):
     
     def post(self, request, alta_id):
         alta = altaRepo.get_by_id(id=alta_id)
-        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id)
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
+            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
+        )
         form = AltaFuncionalCreateForm(request.POST)
         diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')
 
@@ -161,8 +163,24 @@ class AltaFuncionalCreate(View):
                     error_message='Debe seleccionar un diagnóstico funcional.',
                 ),
             )
-
+        
         diagnostico_funcional_id_int = int(diagnostico_funcional_id)
+        if altaFuncionalRepo.exists_active_by_alta_and_diagnostico(
+            alta_id=alta.id,
+            diagnostico_funcional_id=diagnostico_funcional_id_int,
+        ):
+            return render(
+                request,
+                'alta_funcional/create.html',
+                dict(
+                    form=form,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    alta=alta,
+                    selected_diagnostico_funcional_id=diagnostico_funcional_id,
+                    error_message='Ese diagnóstico funcional ya está cargado para esta alta.',
+                ),
+            )
+
         diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(diagnostico_funcional_id_int)
         if form.is_valid():
             id_alta=form.cleaned_data['id_alta']
@@ -229,16 +247,75 @@ class AltaFuncionalUpdate(View):
     def post(self, request, alta_funcional_id):
         alta_funcional = altaFuncionalRepo.get_by_id(id=alta_funcional_id)
         alta = alta_funcional.id_alta
+        diagnosticos_funcionales = diagnosticoFuncionalRepo.filter_by_tipo_diagnostico_etiologico_id_list(
+            id_diagnostico_etiologico=alta.id_diagnostico_etiologico.id,
+        )
+        form = AltaFuncionalCreateForm(request.POST)
 
         diagnostico_funcional_id = request.POST.get('select-diagnostico-funcional')
         if not diagnostico_funcional_id:
-            return redirect('alta_funcional_update', alta_funcional_id=alta_funcional.id)
+            return render(
+                request,
+                'alta_funcional/update.html',
+                dict(
+                    form=form,
+                    alta=alta,
+                    alta_funcional=alta_funcional,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    selected_diagnostico_funcional_id='',
+                    error_message='Debe seleccionar un diagnóstico funcional.',
+                ),
+            )
 
-        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(int(diagnostico_funcional_id))
+        try:
+            diagnostico_funcional_id_int = int(diagnostico_funcional_id)
+        except (TypeError, ValueError):
+            return render(
+                request,
+                'alta_funcional/update.html',
+                dict(
+                    form=form,
+                    alta=alta,
+                    alta_funcional=alta_funcional,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    selected_diagnostico_funcional_id='',
+                    error_message='El diagnóstico funcional seleccionado no es válido.',
+                ),
+            )
+
+        if altaFuncionalRepo.exists_active_by_alta_and_diagnostico(
+            alta_id=alta.id,
+            diagnostico_funcional_id=diagnostico_funcional_id_int,
+            exclude_alta_funcional_id=alta_funcional.id,
+        ):
+            return render(
+                request,
+                'alta_funcional/update.html',
+                dict(
+                    form=form,
+                    alta=alta,
+                    alta_funcional=alta_funcional,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    selected_diagnostico_funcional_id=diagnostico_funcional_id,
+                    error_message='Ese diagnóstico funcional ya está cargado para esta alta.',
+                ),
+            )
+
+        diagnostico_funcional = diagnosticoFuncionalRepo.filter_by_id(diagnostico_funcional_id_int)
         if not diagnostico_funcional:
-            return redirect('alta_funcional_update', alta_funcional_id=alta_funcional.id)
+            return render(
+                request,
+                'alta_funcional/update.html',
+                dict(
+                    form=form,
+                    alta=alta,
+                    alta_funcional=alta_funcional,
+                    diagnosticos_funcionales=diagnosticos_funcionales,
+                    selected_diagnostico_funcional_id='',
+                    error_message='El diagnóstico funcional seleccionado no es válido.',
+                ),
+            )
 
-        form = AltaFuncionalCreateForm(request.POST)
         if form.is_valid():
             observaciones = form.cleaned_data['observaciones']
             altaFuncionalRepo.update(
@@ -246,8 +323,18 @@ class AltaFuncionalUpdate(View):
                 id_diagnostico_funcional=diagnostico_funcional,
                 observaciones=observaciones,
             )
-
-        return redirect('alta_funcional_list', alta_id=alta.id)
+            return redirect('alta_funcional_list', alta_id=alta.id)
+        return render(
+            request,
+            'alta_funcional/update.html',
+            dict(
+                form=form,
+                alta=alta,
+                alta_funcional=alta_funcional,
+                diagnosticos_funcionales=diagnosticos_funcionales,
+                selected_diagnostico_funcional_id=diagnostico_funcional_id,
+            ),
+        )
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
