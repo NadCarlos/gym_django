@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
 
+from rehabilitacion.models import PacienteRehabilitacion
+
 from rehabilitacion.forms import(
     PacienteRehabilitacionCreateForm,
     PacienteRehabilitacionUpdateForm,
@@ -47,8 +49,8 @@ class RehabilitacionCreate(View):
         paciente = pacienteRepo.get_by_id(id=id)
         form = PacienteRehabilitacionCreateForm(request.POST)
         if form.is_valid():
-            nombre_tutor = form.cleaned_data['nombre_tutor']
-            nombre_tutor = nombre_tutor.upper()
+            nombre_tutor_default = PacienteRehabilitacion._meta.get_field('nombre_tutor').default
+            nombre_tutor = (form.cleaned_data.get('nombre_tutor') or nombre_tutor_default).upper()
             rehabilitacion_nueva = pacienteRehabRepo.create(
                 id_paciente_area=form.cleaned_data['id_paciente_area'],
                 nombre_tutor=nombre_tutor,
@@ -92,8 +94,8 @@ class RehabilitacionUpdate(View):
         id_paciente_rehabilitacion = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         form = PacienteRehabilitacionUpdateForm(request.POST)
         if form.is_valid():
-            nombre_tutor = form.cleaned_data['nombre_tutor']
-            nombre_tutor = nombre_tutor.upper()
+            nombre_tutor_default = PacienteRehabilitacion._meta.get_field('nombre_tutor').default
+            nombre_tutor = (form.cleaned_data.get('nombre_tutor') or nombre_tutor_default).upper()
             pacienteRehabRepo.update(
                 rehabilitacion_paciente=id_paciente_rehabilitacion,
                 nombre_tutor=nombre_tutor,

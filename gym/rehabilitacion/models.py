@@ -72,8 +72,9 @@ class PacienteRehabilitacion(models.Model):
 
     nombre_tutor = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
+        default="NO",
         verbose_name="nombre_tutor",
     )
 
