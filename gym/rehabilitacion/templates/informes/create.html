@@ -42,6 +42,16 @@
                     </div>
                 </div>
 
+                <!-- ProfesionalTratamiento -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-md-2 col-form-label fw-semibold">
+                        Prestacion
+                    </label>
+                    <div class="col-md-6">
+                        {{ form.id_profesional_tratamiento }}
+                    </div>
+                </div>
+
                 <!-- Observaciones -->
                 <div class="row mb-4">
                     <label class="col-md-2 col-form-label fw-semibold">
@@ -69,4 +79,52 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const selectProfesional = document.getElementById("id_id_profesional");
+    const selectPrestacion = document.getElementById("id_id_profesional_tratamiento");
+    const prestacionActual = selectPrestacion.value;
+
+    function resetPrestaciones() {
+        selectPrestacion.innerHTML = '<option value="">---------</option>';
+        selectPrestacion.disabled = true;
+    }
+
+    function cargarPrestaciones(profesionalId, selectedId = "") {
+        if (!profesionalId) {
+            resetPrestaciones();
+            return;
+        }
+
+        fetch(`/administracion/tratamientos/${profesionalId}/`)
+            .then((response) => response.json())
+            .then((data) => {
+                selectPrestacion.innerHTML = '<option value="">---------</option>';
+                data.forEach((prestacion) => {
+                    const option = document.createElement("option");
+                    option.value = prestacion.id;
+                    option.textContent = prestacion.nombre;
+                    if (String(prestacion.id) === String(selectedId)) {
+                        option.selected = true;
+                    }
+                    selectPrestacion.appendChild(option);
+                });
+                selectPrestacion.disabled = false;
+            })
+            .catch(() => {
+                resetPrestaciones();
+            });
+    }
+
+    selectProfesional.addEventListener("change", function() {
+        cargarPrestaciones(this.value);
+    });
+
+    if (selectProfesional.value) {
+        cargarPrestaciones(selectProfesional.value, prestacionActual);
+    } else {
+        resetPrestaciones();
+    }
+});
+</script>
 {% endblock %}

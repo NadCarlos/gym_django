@@ -79,7 +79,7 @@ class TratamientoProfesionalDelete(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class TratamientosPorProfesionalView(View):
     def get(self, request, profesional_id):
-        tratamientos = tratamientoProfesionalRepo.filter_by_id_profesional_all(id_profesional=profesional_id)
+        tratamientos = tratamientoProfesionalRepo.filter_by_id_profesional_activo(id_profesional=profesional_id)
         data = [{"id": t.id, "nombre": str(t)} for t in tratamientos]
         return JsonResponse(data, safe=False)
     

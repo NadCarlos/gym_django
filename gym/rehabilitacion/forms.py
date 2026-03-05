@@ -1,6 +1,10 @@
 from django import forms
 from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link
-from administracion.models import Paciente
+from administracion.models import Paciente, ProfesionalTratamiento
+from administracion.repositories.profesional import ProfesionalRepository
+
+
+profesionalRepo = ProfesionalRepository()
 
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
@@ -280,6 +284,44 @@ class AsistenciaRehabPublicCreateForm(forms.ModelForm):
 
 class InformeCreateForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_profesional'].queryset = profesionalRepo.filter_profesional_area(id_area=2)
+
+        # Por defecto no se muestran prestaciones hasta elegir profesional.
+        self.fields['id_profesional_tratamiento'].queryset = ProfesionalTratamiento.objects.none()
+        self.fields['id_profesional_tratamiento'].widget.attrs['disabled'] = 'disabled'
+
+        profesional_id = None
+        if self.is_bound:
+            profesional_id = self.data.get('id_profesional')
+        elif self.instance and self.instance.pk:
+            profesional_id = self.instance.id_profesional_id
+
+        if profesional_id:
+            queryset = ProfesionalTratamiento.objects.filter(
+                id_profesional_id=profesional_id,
+                activo=True,
+            )
+            self.fields['id_profesional_tratamiento'].queryset = queryset
+            self.fields['id_profesional_tratamiento'].widget.attrs.pop('disabled', None)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        profesional = cleaned_data.get('id_profesional')
+        profesional_tratamiento = cleaned_data.get('id_profesional_tratamiento')
+
+        if profesional and profesional_tratamiento:
+            if (
+                profesional_tratamiento.id_profesional_id != profesional.id
+                or not profesional_tratamiento.activo
+            ):
+                self.add_error(
+                    'id_profesional_tratamiento',
+                    'La prestación seleccionada no corresponde al profesional o no está activa.',
+                )
+        return cleaned_data
+
     class Meta:
 
         model = Informe
@@ -287,6 +329,7 @@ class InformeCreateForm(forms.ModelForm):
         fields = [
             'fecha',
             'id_profesional',
+            'id_profesional_tratamiento',
             'id_paciente',
             'observaciones',
             ]
@@ -294,6 +337,7 @@ class InformeCreateForm(forms.ModelForm):
         widgets = {
             'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
             'id_profesional': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'id_profesional_tratamiento': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }

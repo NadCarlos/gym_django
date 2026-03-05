@@ -10,6 +10,7 @@ from administracion.models import (
     Dia,
     Profesional,
     Paciente,
+    ProfesionalTratamiento,
 )
 
 
@@ -491,6 +492,12 @@ class Informe(models.Model):
         null=False,
         on_delete=models.RESTRICT,
         related_name='profesional_informe',
+    )
+
+    id_profesional_tratamiento = models.ForeignKey(
+        ProfesionalTratamiento,
+        on_delete=models.RESTRICT,
+        related_name='profesional_tratamiento_informe',
     )
 
     id_paciente = models.ForeignKey(
