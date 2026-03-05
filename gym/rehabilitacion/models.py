@@ -56,6 +56,25 @@ class Derivador(models.Model):
 
     def __str__(self):
         return  self.nombre
+    
+
+class Conocer(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_conocer",
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    def __str__(self):
+        return  self.nombre
 
 
 class PacienteRehabilitacion(models.Model):
@@ -154,6 +173,15 @@ class PacienteRehabilitacion(models.Model):
         User,
         on_delete=models.RESTRICT,
         related_name='usuario_pac_rehabilitacion',
+    )
+
+    id_conocer = models.ForeignKey(
+        Conocer,
+        blank=False, 
+        null=False,
+        default=1,
+        on_delete=models.RESTRICT,
+        related_name='id_conocer_pac_rehab',
     )
 
     activo = models.BooleanField(
