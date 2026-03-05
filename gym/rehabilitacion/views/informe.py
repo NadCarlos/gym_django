@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
 from utils.decorators import requiere_areas
 
+from rehabilitacion.filters import InformeFilter
 from rehabilitacion.forms import(
     InformeCreateForm,
     ArchivoCreateForm,
@@ -29,13 +30,29 @@ class InformesList(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
-        informes = informeRepo.filter_by_paciente_id(paciente_id=id)
+        filterset = InformeFilter(request.GET, informeRepo.filter_by_paciente_id(paciente_id=id))
+
+        ordering = request.GET.get('ordering', '-fecha')
+        allowed_ordering = {
+            'fecha',
+            '-fecha',
+            'id_tipo_informe__nombre',
+            '-id_tipo_informe__nombre',
+            'id_profesional__apellido',
+            '-id_profesional__apellido',
+        }
+        if ordering not in allowed_ordering:
+            ordering = '-fecha'
+
+        informes = filterset.qs.order_by(ordering)
         return render(
             request,
             'informes/list.html',
             dict(
                 paciente=paciente,
                 informes=informes,
+                form=filterset.form,
+                ordering=ordering,
             )
         )
 
@@ -72,6 +89,14 @@ class InformeCreate(View):
                 observaciones=form.cleaned_data['observaciones'],
             )
             return redirect('informe_detail', nuevo_informe.id)
+        return render(
+            request,
+            'informes/create.html',
+            dict(
+                paciente=paciente,
+                form=form,
+            )
+        )
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
