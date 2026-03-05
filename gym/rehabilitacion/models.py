@@ -476,6 +476,19 @@ class AsistenciaRehabTeorica(models.Model):
     
     def __str__(self):
         return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
+    
+
+class TipoInforme(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_link",
+    )
+
+    def __str__(self):
+        return self.nombre
 
 
 class Informe(models.Model):
@@ -498,6 +511,15 @@ class Informe(models.Model):
         ProfesionalTratamiento,
         on_delete=models.RESTRICT,
         related_name='profesional_tratamiento_informe',
+    )
+
+    id_tipo_informe = models.ForeignKey(
+        TipoInforme,
+        blank=False,
+        null=False,
+        default=1,
+        on_delete=models.RESTRICT,
+        related_name='id_tipo_informe',
     )
 
     id_paciente = models.ForeignKey(

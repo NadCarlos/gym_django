@@ -65,6 +65,7 @@ class InformeCreate(View):
         if form.is_valid():
             nuevo_informe = informeRepo.create(
                 fecha=form.cleaned_data['fecha'],
+                id_tipo_informe=form.cleaned_data['id_tipo_informe'],
                 id_profesional=form.cleaned_data['id_profesional'],
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_paciente=form.cleaned_data['id_paciente'],

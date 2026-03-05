@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link, TipoInforme
 from administracion.models import Paciente, ProfesionalTratamiento
 from administracion.repositories.profesional import ProfesionalRepository
 
@@ -287,6 +287,7 @@ class InformeCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['id_profesional'].queryset = profesionalRepo.filter_profesional_area(id_area=2)
+        self.fields['id_tipo_informe'].queryset = TipoInforme.objects.all().order_by('nombre')
 
         # Por defecto no se muestran prestaciones hasta elegir profesional.
         self.fields['id_profesional_tratamiento'].queryset = ProfesionalTratamiento.objects.none()
@@ -328,6 +329,7 @@ class InformeCreateForm(forms.ModelForm):
 
         fields = [
             'fecha',
+            'id_tipo_informe',
             'id_profesional',
             'id_profesional_tratamiento',
             'id_paciente',
@@ -336,6 +338,7 @@ class InformeCreateForm(forms.ModelForm):
         
         widgets = {
             'fecha': forms.DateInput(format=('%Y-%m-%d'),attrs={'class': 'form-control', 'placeholder': 'Select a date','type': 'date'}),
+            'id_tipo_informe': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_profesional': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_profesional_tratamiento': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_paciente': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),

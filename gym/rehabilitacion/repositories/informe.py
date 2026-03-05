@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from rehabilitacion.models import Informe
+from rehabilitacion.models import Informe, TipoInforme
 from rehabilitacion.repositories.archivo import ArchivoRepository
 from rehabilitacion.repositories.link import LinkRepository
 from administracion.models import Paciente, Profesional, ProfesionalTratamiento
@@ -25,6 +25,7 @@ class InformeRepository:
     def create(
         self,
         fecha: str,
+        id_tipo_informe: TipoInforme,
         id_profesional: Profesional,
         id_profesional_tratamiento: ProfesionalTratamiento,
         id_paciente: Paciente,
@@ -32,6 +33,7 @@ class InformeRepository:
         ):
         return Informe.objects.create(
             fecha=fecha,
+            id_tipo_informe=id_tipo_informe,
             id_profesional=id_profesional,
             id_profesional_tratamiento=id_profesional_tratamiento,
             id_paciente=id_paciente,

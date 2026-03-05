@@ -27,6 +27,7 @@
                     <thead class="table-dark">
                         <tr>
                             <th>Fecha</th>
+                            <th>Tipo</th>
                             <th>Profesional</th>
                             <th>Observaciones</th>
                             <th class="text-center">Acciones</th>
@@ -36,6 +37,7 @@
                         {% for informe in informes %}
                             <tr>
                                 <td>{{ informe.fecha }}</td>
+                                <td>{{ informe.id_tipo_informe.nombre }}</td>
                                 <td>{{ informe.id_profesional.apellido }}, {{ informe.id_profesional.nombre }}</td>
                                 <td style="max-width: 250px;">
                                     {% if informe.observaciones %}
@@ -72,7 +74,7 @@
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="3" class="text-center text-muted py-4">
+                                <td colspan="5" class="text-center text-muted py-4">
                                     No hay informes cargados
                                 </td>
                             </tr>
