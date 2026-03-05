@@ -531,7 +531,7 @@ class Archivo(models.Model):
         null=False,
         default=None,
         on_delete=models.RESTRICT,
-        related_name='id_informe',
+        related_name='id_informe_archivo',
     )
 
     def delete(self, *args, **kwargs):
@@ -540,5 +540,38 @@ class Archivo(models.Model):
 
         super().delete(*args, **kwargs)
 
+    @property
+    def nombre_archivo(self):
+        return os.path.basename(self.archivo.name)
+
     def __str__(self):
         return self.id_informe.id_paciente.nombre
+    
+
+class Link(models.Model):
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+        verbose_name="Nombre_link",
+    )
+
+    url = models.URLField(
+        max_length=300,
+        null=False,
+        blank=False,
+        verbose_name="url",
+    )
+
+    id_informe = models.ForeignKey(
+        Informe,
+        blank=False,
+        null=False,
+        default=None,
+        on_delete=models.RESTRICT,
+        related_name='id_informe_link',
+    )
+
+    def __str__(self):
+        return self.id_informe.id_paciente.nombre + self.nombre

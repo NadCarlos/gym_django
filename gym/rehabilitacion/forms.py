@@ -1,5 +1,5 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link
 from administracion.models import Paciente
 
 
@@ -311,5 +311,24 @@ class ArchivoCreateForm(forms.ModelForm):
             ]
         
         widgets = {
+            'id_informe': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class LinkCreateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Link
+
+        fields = [
+            'nombre',
+            'url',
+            'id_informe',
+            ]
+        
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'url': forms.URLInput(attrs={'class': 'form-control custom-class'}),
             'id_informe': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }

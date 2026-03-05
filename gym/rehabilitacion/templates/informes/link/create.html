@@ -1,0 +1,62 @@
+{% extends "inicio/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+        <h2 class="text-primary mb-0">
+            <i class="bi bi-file-earmark-plus me-2"></i>
+            Nuevo Link
+        </h2>
+        <span class="fw-semibold">
+            Paciente: {{ paciente.apellido }}, {{ paciente.nombre }}
+        </span>
+    </div>
+
+    <!-- Card Formulario -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.id_informe }}
+
+                <!-- Fecha -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-md-2 col-form-label fw-semibold">
+                        Nombre
+                    </label>
+                    <div class="col-md-4">
+                        {{ form.nombre }}
+                    </div>
+                </div>
+
+                <!-- Profesional -->
+                <div class="row mb-3 align-items-center">
+                    <label class="col-md-2 col-form-label fw-semibold">
+                        URL
+                    </label>
+                    <div class="col-md-6">
+                        {{ form.url }}
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a href="{% url 'informe_detail' informe.id %}" 
+                       class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" 
+                            id="btn-guardar"
+                            class="btn btn-success btn-sm">
+                        <i class="bi bi-save me-1"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

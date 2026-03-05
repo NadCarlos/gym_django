@@ -14,6 +14,7 @@ from rehabilitacion.models import(
     AsistenciaRehabTeorica,
     Informe,
     Archivo,
+    Link,
 )
 
 
@@ -105,4 +106,11 @@ class InformeAdmin(admin.ModelAdmin):
 class ArchivoAdmin(admin.ModelAdmin):
     list_display = (
         'archivo',
+    )
+
+
+@admin.register(Link)
+class LinkAdmin(admin.ModelAdmin):
+    list_display = (
+        'nombre',
     )

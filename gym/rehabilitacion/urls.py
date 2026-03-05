@@ -93,6 +93,8 @@ from rehabilitacion.views.informe import(
     ArchivoCreate,
     ArchivoDelete,
     InformeDelete,
+    LinkCreate,
+    LinkDelete,
 )
 
 
@@ -190,6 +192,8 @@ informes = [
     path(route='informe_delete/<int:id>',view=InformeDelete.as_view(), name='informe_delete'),
     path(route='archivo_create/<int:id>',view=ArchivoCreate.as_view(), name='archivo_create'),
     path(route='archivo_delete/<int:id_archivo>/<int:id_informe>',view=ArchivoDelete.as_view(), name='archivo_delete'),
+    path(route='link_create/<int:id>',view=LinkCreate.as_view(), name='link_create'),
+    path(route='link_delete/<int:id_link>/<int:id_informe>',view=LinkDelete.as_view(), name='link_delete'),
 ]
 
 urlpatterns = (

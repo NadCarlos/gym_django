@@ -8,15 +8,18 @@ from utils.decorators import requiere_areas
 from rehabilitacion.forms import(
     InformeCreateForm,
     ArchivoCreateForm,
+    LinkCreateForm,
 )
 
 from rehabilitacion.repositories.informe import InformeRepository
 from rehabilitacion.repositories.archivo import ArchivoRepository
+from rehabilitacion.repositories.link import LinkRepository
 from administracion.repositories.paciente import PacienteRepository
 
 
 informeRepo = InformeRepository()
 archivoRepo = ArchivoRepository()
+linkRepo = LinkRepository()
 pacienteRepo = PacienteRepository()
 
 
@@ -115,14 +118,27 @@ class InformeDetail(View):
         if not informe:
             return redirect('inicio_rehab')
         archivos = archivoRepo.filter_by_informe_id(informe_id=informe.id)
+        links = linkRepo.filter_by_informe_id(informe_id=informe.id)
         return render(
             request,
             'informes/detail.html',
             dict(
                 informe=informe,
                 archivos=archivos,
+                links=links,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class InformeDelete(View):
+
+    def get(self, request, id):
+        informe = informeRepo.get_by_id(id=id)
+        paciente_id = informe.id_paciente.id
+        informeRepo.delete(informe=informe)
+        return redirect('informes', paciente_id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -178,14 +194,46 @@ class ArchivoDelete(View):
         archivo = archivoRepo.get_by_id(id=id_archivo)
         archivoRepo.delete(archivo=archivo)
         return redirect('informe_detail', id_informe )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class LinkCreate(View):
+
+    def get(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
+        form = LinkCreateForm(initial = {
+            'id_informe': informe.id,
+            }
+        )
+        return render(
+            request,
+            'informes/link/create.html',
+            dict(
+                informe=informe,
+                form=form,
+            )
+        )
+
+    def post(self, request, id):
+        informe = informeRepo.filter_by_id(id=id)
+        form = LinkCreateForm(request.POST)
+        if form.is_valid():
+            linkRepo.create(
+                nombre=form.cleaned_data['nombre'],
+                url=form.cleaned_data['url'],
+                id_informe=form.cleaned_data['id_informe'],
+            )
+            return redirect('informe_detail', informe.id )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
-class InformeDelete(View):
+class LinkDelete(View):
 
-    def get(self, request, id):
-        informe = informeRepo.get_by_id(id=id)
-        paciente_id = informe.id_paciente.id
-        informeRepo.delete(informe=informe)
-        return redirect('informes', paciente_id)
+    def get(self, request, id_link, id_informe):
+        link = linkRepo.get_by_id(id=id_link)
+        linkRepo.delete(link=link)
+        return redirect('informe_detail', id_informe )
