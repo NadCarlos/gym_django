@@ -33,6 +33,20 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
         super(PacienteRehabilitacionCreateForm, self).__init__(*args, **kwargs)
         self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
         self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
+        self.fields['id_derivador'].initial = None
+        self.fields['id_derivador'].empty_label = "Seleccione una opcion"
+        self.fields['id_conocer'].initial = None
+        self.fields['id_conocer'].empty_label = "Seleccione una opcion"
+        required_fields = [
+            'celular_tutor',
+            'id_obra_social',
+            'fecha_junta',
+            'id_derivador',
+            'id_conocer',
+        ]
+        for field_name in required_fields:
+            self.fields[field_name].required = True
+            self.fields[field_name].error_messages['required'] = "Este campo es obligatorio."
 
     class Meta:
 
@@ -82,6 +96,16 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
         super(PacienteRehabilitacionUpdateForm, self).__init__(*args, **kwargs)
         self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
         self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
+        required_fields = [
+            'celular_tutor',
+            'id_obra_social',
+            'fecha_junta',
+            'id_derivador',
+            'id_conocer',
+        ]
+        for field_name in required_fields:
+            self.fields[field_name].required = True
+            self.fields[field_name].error_messages['required'] = "Este campo es obligatorio."
 
     class Meta:
         model = PacienteRehabilitacion

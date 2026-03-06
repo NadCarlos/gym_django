@@ -14,13 +14,11 @@ from rehabilitacion.forms import(
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
-from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 
 pacienteRepo = PacienteRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 estadoCertificadoRepo = EstadoCertificadoRepository()
-derivadorRepo = DerivadorRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 
 
@@ -31,11 +29,9 @@ class RehabilitacionCreate(View):
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         id_paciente_area = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=id)
-        derivador = derivadorRepo.filter_by_id(id=1)
         form = PacienteRehabilitacionCreateForm(initial={
             'id_usuario': request.user,
             'id_paciente_area': id_paciente_area.id,
-            'id_derivador': derivador.id,
         })
         return render(
             request,
@@ -115,5 +111,5 @@ class RehabilitacionUpdate(View):
                 pre_ingreso=form.cleaned_data['pre_ingreso'],
             )
             return redirect('paciente_rehab_detail', paciente.id)
-"""        else:
-            return redirect('error')"""
+        else:
+            return redirect('error')
