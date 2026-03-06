@@ -60,7 +60,7 @@ class RehabilitacionCreate(View):
                 id_derivador=form.cleaned_data['id_derivador'],
                 puerto_esperanza=form.cleaned_data['puerto_esperanza'],
                 id_obra_social=form.cleaned_data['id_obra_social'],
-                # id_conocer=form.cleaned_data['id_conocer'],
+                id_conocer=form.cleaned_data['id_conocer'],
                 id_usuario=form.cleaned_data['id_usuario'],
                 diagnosticoCUD=form.cleaned_data['diagnosticoCUD'],
                 pre_ingreso=form.cleaned_data['pre_ingreso'],
@@ -106,7 +106,7 @@ class RehabilitacionUpdate(View):
                 id_derivador=form.cleaned_data['id_derivador'],
                 puerto_esperanza=form.cleaned_data['puerto_esperanza'],
                 id_obra_social=form.cleaned_data['id_obra_social'],
-                # id_conocer=form.cleaned_data['id_conocer'],
+                id_conocer=form.cleaned_data['id_conocer'],
                 diagnosticoCUD=form.cleaned_data['diagnosticoCUD'],
                 pre_ingreso=form.cleaned_data['pre_ingreso'],
             )
