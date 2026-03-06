@@ -175,14 +175,14 @@ class PacienteRehabilitacion(models.Model):
         related_name='usuario_pac_rehabilitacion',
     )
 
-    id_conocer = models.ForeignKey(
+    """id_conocer = models.ForeignKey(
         Conocer,
         blank=True, 
         null=True,
         default=1,
         on_delete=models.SET_NULL,
         related_name='id_conocer_pac_rehab',
-    )
+    )"""
 
     activo = models.BooleanField(
         default=1,

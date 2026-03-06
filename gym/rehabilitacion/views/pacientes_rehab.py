@@ -391,7 +391,7 @@ class PacienteRehabToCsv(View):
                 rehabilitacion_paciente.fecha_junta,
                 rehabilitacion_paciente.vencimiento_presupuesto,
                 rehabilitacion_paciente.id_derivador.nombre if rehabilitacion_paciente.id_derivador else '',
-                rehabilitacion_paciente.id_conocer.nombre if rehabilitacion_paciente.id_conocer else '',
+                # rehabilitacion_paciente.id_conocer.nombre if rehabilitacion_paciente.id_conocer else '',
                 rehabilitacion_paciente.id_obra_social.nombre if rehabilitacion_paciente.id_obra_social else '',
                 rehabilitacion_paciente.puerto_esperanza,
             ])
@@ -405,7 +405,7 @@ class PacienteRehabToCsv(View):
             'Fecha Junta',
             'Vto Presupuesto',
             'Derivador',
-            'Conocio por',
+            # 'Conocio por',
             'obra social',
             'Puerto Esperanza',
             ])
