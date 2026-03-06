@@ -177,10 +177,10 @@ class PacienteRehabilitacion(models.Model):
 
     id_conocer = models.ForeignKey(
         Conocer,
-        blank=False, 
-        null=False,
+        blank=True, 
+        null=True,
         default=1,
-        on_delete=models.RESTRICT,
+        on_delete=models.SET_NULL,
         related_name='id_conocer_pac_rehab',
     )
 
