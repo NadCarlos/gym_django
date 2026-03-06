@@ -16,7 +16,7 @@ from rehabilitacion.models import(
     Archivo,
     Link,
     TipoInforme,
-    Conocer,
+    #Conocer,
 )
 
 
@@ -125,8 +125,8 @@ class TipoInformeAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(Conocer)
+"""@admin.register(Conocer)
 class ConocerAdmin(admin.ModelAdmin):
     list_display = (
         'nombre',
-    )
+    )"""

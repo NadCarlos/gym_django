@@ -1,5 +1,6 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link, TipoInforme, Conocer
+from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link, TipoInforme
+# from rehabilitacion.models import Conocer
 from administracion.models import Paciente, ProfesionalTratamiento
 from administracion.repositories.profesional import ProfesionalRepository
 
@@ -32,17 +33,17 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PacienteRehabilitacionCreateForm, self).__init__(*args, **kwargs)
         self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
-        self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
+        # self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
         self.fields['id_derivador'].initial = None
         self.fields['id_derivador'].empty_label = "Seleccione una opcion"
-        self.fields['id_conocer'].initial = None
-        self.fields['id_conocer'].empty_label = "Seleccione una opcion"
+        # self.fields['id_conocer'].initial = None
+        # self.fields['id_conocer'].empty_label = "Seleccione una opcion"
         required_fields = [
             'celular_tutor',
             'id_obra_social',
             'fecha_junta',
             'id_derivador',
-            'id_conocer',
+            # 'id_conocer',
         ]
         for field_name in required_fields:
             self.fields[field_name].required = True
@@ -65,7 +66,7 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             'id_derivador',
             'puerto_esperanza',
             'id_obra_social',
-            'id_conocer',
+            # 'id_conocer',
             'id_usuario',
             'diagnosticoCUD',
             'pre_ingreso',
@@ -84,7 +85,7 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
             'id_derivador': forms.Select(attrs={'class': 'form-control custom-class'}),
             #'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
-            'id_conocer': forms.Select(attrs={'class': 'form-control custom-class'}),
+            # 'id_conocer': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
             'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
         }
@@ -95,13 +96,13 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PacienteRehabilitacionUpdateForm, self).__init__(*args, **kwargs)
         self.fields['id_obra_social'].queryset = ObraSocial.objects.filter(activo=True)
-        self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
+        # self.fields['id_conocer'].queryset = Conocer.objects.filter(activo=True)
         required_fields = [
             'celular_tutor',
             'id_obra_social',
             'fecha_junta',
             'id_derivador',
-            'id_conocer',
+            # 'id_conocer',
         ]
         for field_name in required_fields:
             self.fields[field_name].required = True
@@ -121,7 +122,7 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'id_derivador',
             'puerto_esperanza',
             'id_obra_social',
-            'id_conocer',
+            # 'id_conocer',
             'diagnosticoCUD',
             'pre_ingreso',
         ]
@@ -136,7 +137,7 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'vencimiento_presupuesto': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date', 'type': 'date', 'id': 'vencimiento_presupuesto'}),
             'id_derivador': forms.Select(attrs={'class': 'form-control custom-class'}),
             'id_obra_social': forms.Select(attrs={'class': 'form-control custom-class'}),
-            'id_conocer': forms.Select(attrs={'class': 'form-control custom-class'}),
+            # 'id_conocer': forms.Select(attrs={'class': 'form-control custom-class'}),
             'puerto_esperanza': forms.Select(attrs={'class': 'form-control custom-class'}),
             'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
             'pre_ingreso': forms.Select(attrs={'class': 'form-control custom-class'}),

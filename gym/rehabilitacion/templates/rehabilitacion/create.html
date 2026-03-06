@@ -66,13 +66,14 @@
                         <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.id_derivador.errors.0 }}</div>
                     {% endif %}
                 </div>
-                <div class="col-md-6 mb-3">
+                {# Bloque Conocer comentado #}
+                {# <div class="col-md-6 mb-3">
                     <label for="{{ form.id_conocer.id_for_label }}" class="form-label">Como Contacto?</label>
                     {{ form.id_conocer }}
                     {% if form.id_conocer.errors %}
                         <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.id_conocer.errors.0 }}</div>
                     {% endif %}
-                </div>
+                </div> #}
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.puerto_esperanza.id_for_label }}" class="form-label">Puerto Esperanza</label>
                     {{ form.puerto_esperanza }}
