@@ -510,9 +510,10 @@ class TipoInforme(models.Model):
 
     nombre = models.CharField(
         max_length=100,
-        null=False,
-        blank=False,
-        verbose_name="Nombre_link",
+        null=True,
+        blank=True,
+        default=1,
+        verbose_name="Nombre_tipo_informe",
     )
 
     def __str__(self):
