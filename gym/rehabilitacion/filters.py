@@ -1,4 +1,4 @@
-import django_filters
+"""import django_filters
 from django import forms
 
 from rehabilitacion.models import Informe, TipoInforme
@@ -30,3 +30,4 @@ class InformeFilter(django_filters.FilterSet):
             "id_tipo_informe",
             "id_profesional",
         ]
+"""
