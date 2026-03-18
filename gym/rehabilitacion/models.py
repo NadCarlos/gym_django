@@ -232,7 +232,7 @@ class DiagnosticoEtiologico(models.Model):
 
     id_tipo_discapacidad = models.ForeignKey(
         TipoDiscapacidad,
-        blank=False, 
+        blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name='id_tipo_discapacidad',
@@ -259,7 +259,7 @@ class DiagnosticoFuncional(models.Model):
 
     id_diagnostico_etiologico = models.ForeignKey(
         DiagnosticoEtiologico,
-        blank=False, 
+        blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name='id_diagnostico_etiologico_en_funcional',
@@ -285,7 +285,7 @@ class Alta(models.Model):
 
     id_diagnostico_etiologico = models.ForeignKey(
         DiagnosticoEtiologico,
-        blank=False, 
+        blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name='id_diagnostico_etiologico_alta',
@@ -316,7 +316,7 @@ class AltaFuncional(models.Model):
 
     id_diagnostico_funcional = models.ForeignKey(
         DiagnosticoFuncional,
-        blank=False, 
+        blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name='id_diagnostico_funcional',
