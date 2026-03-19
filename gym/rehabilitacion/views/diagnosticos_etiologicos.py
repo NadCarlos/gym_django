@@ -49,10 +49,8 @@ class DiagnosticoEtiologicoCreate(View):
         if form.is_valid():
             nombre = form.cleaned_data['nombre']
             nombre = nombre.upper()
-            id_tipo_discapacidad = form.cleaned_data['id_tipo_discapacidad']
             diagnosticoEtiologicoRepo.create(
                 nombre=nombre,
-                id_tipo_discapacidad=id_tipo_discapacidad,
             )
             return redirect('diagnosticos_etiologicos_list')
         else:
@@ -88,7 +86,6 @@ class DiagnosticoEtiologicoUpdate(View):
             diagnosticoEtiologicoRepo.update(
                 diagnostico_etiologico=diagnostico_etiologico,
                 nombre=form.cleaned_data['nombre'].upper(),
-                id_tipo_discapacidad=form.cleaned_data['id_tipo_discapacidad'],
             )
             messages.success(request, 'Diagnóstico etiológico actualizado correctamente.')
             return redirect('diagnosticos_etiologicos_list')
@@ -112,18 +109,10 @@ class DiagnosticoEtiologicoDelete(View):
             messages.error(request, 'No se encontró el diagnóstico etiológico.')
             return redirect('diagnosticos_etiologicos_list')
 
-        if diagnosticoEtiologicoRepo.has_diagnostico_funcional_relation(diagnostico_etiologico):
-            messages.error(
-                request,
-                'No se puede eliminar porque tiene diagnósticos funcionales relacionados. '
-                'Primero debe eliminar el diagnóstico relacionado.'
-            )
-            return redirect('diagnosticos_etiologicos_list')
-
         if diagnosticoEtiologicoRepo.has_alta_relation(diagnostico_etiologico):
             messages.error(
                 request,
-                'No se puede eliminar porque está relacionado a un alta. '
+                'No se puede eliminar porque está relacionado a un alta activa. '
                 'Primero debe quitar esa relación.'
             )
             return redirect('diagnosticos_etiologicos_list')

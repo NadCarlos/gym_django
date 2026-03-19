@@ -1,12 +1,16 @@
 from typing import List, Optional
 
-from rehabilitacion.models import DiagnosticoEtiologico, TipoDiscapacidad, Alta
+from rehabilitacion.models import Alta, DiagnosticoEtiologico, TipoDiscapacidad
+from rehabilitacion.repositories.alta_etiologico import AltaEtiologicoRepository
+
+
+altaEtiologicoRepo = AltaEtiologicoRepository()
 
 
 class DiagnosticoEtiologicoRepository:
 
     def get_all(self) -> List[DiagnosticoEtiologico]:
-        return DiagnosticoEtiologico.objects.all()
+        return DiagnosticoEtiologico.objects.all().order_by("nombre")
     
     def get_all_dict(self) -> dict:
         diagnosticos = DiagnosticoEtiologico.objects.all()
@@ -37,7 +41,7 @@ class DiagnosticoEtiologicoRepository:
     def create(
         self,
         nombre: str,
-        id_tipo_discapacidad: TipoDiscapacidad,
+        id_tipo_discapacidad: Optional[TipoDiscapacidad] = None,
         ):
         return DiagnosticoEtiologico.objects.create(
             nombre=nombre,
@@ -48,7 +52,7 @@ class DiagnosticoEtiologicoRepository:
         self,
         diagnostico_etiologico: DiagnosticoEtiologico,
         nombre: str,
-        id_tipo_discapacidad: TipoDiscapacidad,
+        id_tipo_discapacidad: Optional[TipoDiscapacidad] = None,
     ):
         diagnostico_etiologico.nombre = nombre
         diagnostico_etiologico.id_tipo_discapacidad = id_tipo_discapacidad
@@ -59,7 +63,10 @@ class DiagnosticoEtiologicoRepository:
         return diagnostico_etiologico.id_diagnostico_etiologico_en_funcional.exists()
 
     def has_alta_relation(self, diagnostico_etiologico: DiagnosticoEtiologico) -> bool:
-        return Alta.objects.filter(id_diagnostico_etiologico=diagnostico_etiologico).exists()
+        return (
+            Alta.objects.filter(id_diagnostico_etiologico=diagnostico_etiologico).exists()
+            or altaEtiologicoRepo.has_active_diagnostico_relation(diagnostico_etiologico)
+        )
 
     def delete(self, diagnostico_etiologico: DiagnosticoEtiologico):
         diagnostico_etiologico.delete()

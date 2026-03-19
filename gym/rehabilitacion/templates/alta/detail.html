@@ -6,17 +6,45 @@
 
     <div class="card shadow-sm p-4 rounded-3">
         <div class="mb-3">
-            <strong>📅 Fecha:</strong>
+            <strong>Fecha:</strong>
             <span>{{ alta.fecha }}</span>
         </div>
 
         <div class="mb-3">
-            <strong>🩺 Diagnóstico:</strong>
-            <span>{{ alta.id_diagnostico_etiologico.nombre }}</span>
+            <strong>Tipos de discapacidad:</strong>
+            <ul class="mb-0">
+                {% for item in altas_tipo_discapacidad %}
+                    <li>{{ item.id_tipo_discapacidad.nombre }}{% if item.observaciones %} - {{ item.observaciones }}{% endif %}</li>
+                {% empty %}
+                    <li><em>Sin tipos de discapacidad</em></li>
+                {% endfor %}
+            </ul>
         </div>
 
         <div class="mb-3">
-            <strong>📅 Fecha de Alta:</strong>
+            <strong>Diagnósticos etiológicos:</strong>
+            <ul class="mb-0">
+                {% for item in altas_etiologicos %}
+                    <li>{{ item.id_diagnostico_etiologico.nombre }}{% if item.observaciones %} - {{ item.observaciones }}{% endif %}</li>
+                {% empty %}
+                    <li><em>Sin diagnósticos etiológicos</em></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="mb-3">
+            <strong>Diagnósticos funcionales:</strong>
+            <ul class="mb-0">
+                {% for item in altas_funcionales %}
+                    <li>{{ item.id_diagnostico_funcional.nombre }}{% if item.observaciones %} - {{ item.observaciones }}{% endif %}</li>
+                {% empty %}
+                    <li><em>Sin diagnósticos funcionales</em></li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="mb-3">
+            <strong>Fecha de Alta:</strong>
             <span>
                 {% if alta.fecha_alta %}
                     {{ alta.fecha_alta }}
@@ -26,8 +54,8 @@
             </span>
         </div>
 
-        <div class="mb-3">
-            <strong>✅ Dado de Alta:</strong>
+        <div class="mb-0">
+            <strong>Dado de Alta:</strong>
             {% if alta.dado_alta %}
                 <span class="badge bg-success">Sí</span>
             {% else %}
@@ -37,8 +65,7 @@
     </div>
 
     <div class="mt-4">
-        <a href="#" class="btn btn-primary">Editar</a>
-        <a href="#" class="btn btn-secondary">Volver</a>
+        <a href="{% url 'paciente_rehab_detail' alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id %}" class="btn btn-secondary">Volver</a>
     </div>
 </div>
 {% endblock %}

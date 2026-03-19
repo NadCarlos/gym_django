@@ -6,7 +6,7 @@ from rehabilitacion.models import DiagnosticoFuncional, DiagnosticoEtiologico, A
 class DiagnosticoFuncionalRepository:
 
     def get_all(self) -> List[DiagnosticoFuncional]:
-        return DiagnosticoFuncional.objects.all()
+        return DiagnosticoFuncional.objects.all().order_by("nombre")
     
     def get_by_id(self, id: int) -> Optional[DiagnosticoFuncional]:
         return DiagnosticoFuncional.objects.get(id=id)
@@ -26,7 +26,7 @@ class DiagnosticoFuncionalRepository:
     def create(
         self,
         nombre: str,
-        id_diagnostico_etiologico: DiagnosticoEtiologico,
+        id_diagnostico_etiologico: Optional[DiagnosticoEtiologico] = None,
         ):
         return DiagnosticoFuncional.objects.create(
             nombre=nombre,
@@ -37,7 +37,7 @@ class DiagnosticoFuncionalRepository:
         self,
         diagnostico_funcional: DiagnosticoFuncional,
         nombre: str,
-        id_diagnostico_etiologico: DiagnosticoEtiologico,
+        id_diagnostico_etiologico: Optional[DiagnosticoEtiologico] = None,
     ):
         diagnostico_funcional.nombre = nombre
         diagnostico_funcional.id_diagnostico_etiologico = id_diagnostico_etiologico

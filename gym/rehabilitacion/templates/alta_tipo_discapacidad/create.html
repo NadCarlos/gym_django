@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Nuevo Diagnóstico Funcional</h2>
+    <h2 class="mb-4">Nuevo Tipo de Discapacidad</h2>
     {% if error_message %}
         <div class="alert alert-danger" role="alert">
             {{ error_message }}
@@ -14,8 +14,8 @@
         {{ form.id_usuario }}
 
         <div class="mb-3">
-            <label for="{{ form.id_diagnostico_funcional.id_for_label }}" class="form-label">Seleccione un diagnóstico</label>
-            {{ form.id_diagnostico_funcional }}
+            <label for="{{ form.id_tipo_discapacidad.id_for_label }}" class="form-label">Seleccione un tipo de discapacidad</label>
+            {{ form.id_tipo_discapacidad }}
         </div>
 
         <div class="mb-3">

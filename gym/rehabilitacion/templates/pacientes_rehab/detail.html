@@ -18,6 +18,14 @@
             <i class="bi bi-person-vcard-fill me-2"></i>Detalles del Paciente
         </h2>
     </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
     <!-- Datos del paciente + rehabilitación -->
     <div class="card shadow-sm border-0">
         <div class="card-header">
@@ -113,18 +121,57 @@
                             {% if alta.dado_alta %}
                                 <div class="mb-2 p-2 text-white rounded bg-warning">
                                     <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
-                                    <p class="mb-0"><strong>Tipo Discapacidad:</strong> {{ alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre }}</p>
-                                    <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
+                                    <p class="mb-0"><strong>Tipos Discapacidad:</strong></p>
+                                    <ul class="mb-0">
+                                        {% for alta_tipo in alta.altas_tipo_discapacidad %}
+                                            <li>{{ alta_tipo.id_tipo_discapacidad.nombre }}</li>
+                                        {% empty %}
+                                            <li><em>Sin tipos de discapacidad</em></li>
+                                        {% endfor %}
+                                    </ul>
+                                    <p class="mb-0 mt-1"><strong>Diagnósticos Etiológicos:</strong></p>
+                                    <ul class="mb-0">
+                                        {% for alta_etiologico in alta.altas_etiologicos %}
+                                            <li>{{ alta_etiologico.id_diagnostico_etiologico.nombre }}</li>
+                                        {% empty %}
+                                            <li><em>Sin diagnósticos etiológicos</em></li>
+                                        {% endfor %}
+                                    </ul>
+                                    <p class="mb-0 mt-1"><strong>Diags Funcionales:</strong></p>
+                                    <ul class="mb-0">
+                                        {% for alta_funcional in alta.altas_funcionales %}
+                                            <li>{{ alta_funcional.id_diagnostico_funcional.nombre }}</li>
+                                        {% empty %}
+                                            <li><em>Sin diagnósticos funcionales</em></li>
+                                        {% endfor %}
+                                    </ul>
                                     <p class="mb-0"><strong>Dado de Alta:</strong> SI</p>
                                     <p class="mb-0"><strong>Fecha Alta:</strong> {{ alta.fecha_alta }}</p>
+                                    <a href="{% url 'alta_detail' alta.id %}" class="btn btn-sm btn-light mt-2">
+                                        <i class="bi bi-eye"></i> Ver detalle
+                                    </a>
                                 </div>
                             {% else %}
                             <div class="mb-2 p-2 text-white rounded bg-success">
                                 <p class="mb-0"><strong>Fecha:</strong> {{ alta.fecha }}</p>
-                                <p class="mb-0"><strong>Tipo Discapacidad:</strong> {{ alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre }}</p>
-                                <p class="mb-0"><strong>Diagnóstico:</strong> {{ alta.id_diagnostico_etiologico.nombre }}</p>
+                                <p class="mb-0"><strong>Tipos Discapacidad:</strong></p>
+                                <ul class="mb-0">
+                                    {% for alta_tipo in alta.altas_tipo_discapacidad %}
+                                        <li>{{ alta_tipo.id_tipo_discapacidad.nombre }}</li>
+                                    {% empty %}
+                                        <li><em>Sin tipos de discapacidad</em></li>
+                                    {% endfor %}
+                                </ul>
+                                <p class="mb-0 mt-1"><strong>Diagnósticos Etiológicos:</strong></p>
+                                <ul class="mb-0">
+                                    {% for alta_etiologico in alta.altas_etiologicos %}
+                                        <li>{{ alta_etiologico.id_diagnostico_etiologico.nombre }}</li>
+                                    {% empty %}
+                                        <li><em>Sin diagnósticos etiológicos</em></li>
+                                    {% endfor %}
+                                </ul>
                                 <p class="mb-0"><strong>Dado de Alta:</strong> NO</p>
-                                <p class="mb-0"><strong>Diags Funcionales:</strong></p>
+                                <p class="mb-0 mt-1"><strong>Diags Funcionales:</strong></p>
                                 <ul class="mb-0">
                                     {% for alta_funcional in alta.altas_funcionales %}
                                         <li>{{ alta_funcional.id_diagnostico_funcional.nombre }}</li>
@@ -138,8 +185,23 @@
                                 <a href="{% url 'alta_funcional_create' alta.id %}" class="btn btn-sm btn-primary mt-2">
                                     <i class="bi bi-plus"></i> Diag Funcional
                                 </a>
+                                <a href="{% url 'alta_tipo_discapacidad_create' alta.id %}" class="btn btn-sm btn-primary mt-2">
+                                    <i class="bi bi-plus"></i> Tipo Disc.
+                                </a>
+                                <a href="{% url 'alta_etiologico_create' alta.id %}" class="btn btn-sm btn-primary mt-2">
+                                    <i class="bi bi-plus"></i> Diag Etiológico
+                                </a>
+                                <a href="{% url 'alta_tipo_discapacidad_list' alta.id %}" class="btn btn-sm btn-warning mt-2">
+                                    <i class="bi bi-list"></i> Tipos
+                                </a>
+                                <a href="{% url 'alta_etiologico_list' alta.id %}" class="btn btn-sm btn-warning mt-2">
+                                    <i class="bi bi-list"></i> Etiológicos
+                                </a>
                                 <a href="{% url 'alta_funcional_list' alta.id %}" class="btn btn-sm btn-warning mt-2">
                                     <i class="bi bi-chevron-double-right me-1"></i>
+                                </a>
+                                <a href="{% url 'alta_detail' alta.id %}" class="btn btn-sm btn-light mt-2">
+                                    <i class="bi bi-eye"></i> Ver detalle
                                 </a>
                             </div>
                             {% endif %}
@@ -187,10 +249,16 @@
             </div>
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
-                    <a href="{% url 'alta_create' paciente.id %}" 
-                    class="btn btn-outline-primary">
-                        <i class="bi bi-book"></i> Nueva Alta
-                    </a>
+                    {% if not tiene_pendientes %}
+                        <a href="{% url 'alta_create' paciente.id %}" 
+                        class="btn btn-outline-primary">
+                            <i class="bi bi-book"></i> Nueva Alta
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-outline-secondary" disabled>
+                            <i class="bi bi-book"></i> Alta activa existente
+                        </button>
+                    {% endif %}
                     <a href="{% url 'agenda_paciente_rehab' paciente.id %}" class="btn btn-primary">
                         <i class="bi bi-calendar"></i> Ver Agenda
                     </a>

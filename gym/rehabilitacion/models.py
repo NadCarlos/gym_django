@@ -288,7 +288,7 @@ class Alta(models.Model):
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='id_diagnostico_etiologico_alta',
+        related_name='id_diagnostico_etiologico_alta_to_delete',
     )
 
     id_paciente_rehabilitacion = models.ForeignKey(
@@ -310,6 +310,92 @@ class Alta(models.Model):
         null=False,
         blank=False,
     )
+
+
+class AltaTipoDiscapacidad(models.Model):
+
+    id_tipo_discapacidad = models.ForeignKey(
+        TipoDiscapacidad,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_tipo_discapacidad_alta',
+    )
+
+    id_alta = models.ForeignKey(
+        Alta,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_alta_tipo_discapacidad',
+    )
+
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones_alta_tipo_discapacidad",
+        )
+    
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='usuario_alta_tipo_discapacidad',
+    )
+
+    def __str__(self):
+        return  self.id_tipo_discapacidad.nombre
+
+
+class AltaEtiologico(models.Model):
+
+    id_diagnostico_etiologico = models.ForeignKey(
+        DiagnosticoEtiologico,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_diagnostico_etiologico_alta',
+    )
+
+    id_alta = models.ForeignKey(
+        Alta,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='id_alta_etiologico',
+    )
+
+    observaciones = models.CharField(
+        max_length=200,
+        null=True,
+        blank=True,
+        verbose_name="Obseraciones_alta_etiologico",
+        )
+    
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        blank=False, 
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='usuario_alta_etiologico',
+    )
+
+    def __str__(self):
+        return  self.id_diagnostico_etiologico.nombre
 
 
 class AltaFuncional(models.Model):

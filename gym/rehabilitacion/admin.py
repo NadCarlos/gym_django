@@ -7,8 +7,10 @@ from rehabilitacion.models import(
     TipoDiscapacidad,
     DiagnosticoEtiologico,
     Alta,
+    AltaEtiologico,
     DiagnosticoFuncional,
     AltaFuncional,
+    AltaTipoDiscapacidad,
     AgendaRehab,
     AsistenciaRehab,
     AsistenciaRehabTeorica,
@@ -59,6 +61,24 @@ class DiagnosticoEtiologicoAdmin(admin.ModelAdmin):
 class AltaAdmin(admin.ModelAdmin):
     list_display = (
         'id_paciente_rehabilitacion',
+    )
+
+
+@admin.register(AltaTipoDiscapacidad)
+class AltaTipoDiscapacidadAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_alta',
+        'id_tipo_discapacidad',
+        'activo',
+    )
+
+
+@admin.register(AltaEtiologico)
+class AltaEtiologicoAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_alta',
+        'id_diagnostico_etiologico',
+        'activo',
     )
 
 

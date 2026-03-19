@@ -1,5 +1,22 @@
 from django import forms
-from rehabilitacion.models import PacienteRehabilitacion, ObraSocial, Alta, DiagnosticoEtiologico, TipoDiscapacidad, AltaFuncional, DiagnosticoFuncional, AgendaRehab, Informe, Archivo, Link, TipoInforme, Conocer
+
+from rehabilitacion.models import (
+    AgendaRehab,
+    Alta,
+    AltaEtiologico,
+    AltaFuncional,
+    AltaTipoDiscapacidad,
+    Archivo,
+    Conocer,
+    DiagnosticoEtiologico,
+    DiagnosticoFuncional,
+    Informe,
+    Link,
+    ObraSocial,
+    PacienteRehabilitacion,
+    TipoDiscapacidad,
+    TipoInforme,
+)
 from administracion.models import Paciente, ProfesionalTratamiento
 from administracion.repositories.profesional import ProfesionalRepository
 
@@ -133,19 +150,26 @@ class AltaCreateForm(forms.ModelForm):
         })
     )
 
-    tipo_discapacidad = forms.ModelChoiceField(
-        queryset=TipoDiscapacidad.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control','id':'id_tipo_discapacidad'})
+    tipos_discapacidad = forms.ModelMultipleChoiceField(
+        queryset=TipoDiscapacidad.objects.none(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control', 'size': 8}),
+        required=True,
     )
 
-    id_diagnostico_etiologico = forms.ModelChoiceField(
-        queryset=DiagnosticoEtiologico.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control','id':'id_diagnostico_etiologico'})
+    diagnosticos_etiologicos = forms.ModelMultipleChoiceField(
+        queryset=DiagnosticoEtiologico.objects.none(),
+        widget=forms.SelectMultiple(attrs={'class': 'form-control', 'size': 8}),
+        required=True,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['tipos_discapacidad'].queryset = TipoDiscapacidad.objects.all().order_by('nombre')
+        self.fields['diagnosticos_etiologicos'].queryset = DiagnosticoEtiologico.objects.all().order_by('nombre')
 
     class Meta:
         model = Alta
-        fields = ['fecha', 'id_diagnostico_etiologico', 'tipo_discapacidad', 'id_paciente_rehabilitacion']
+        fields = ['fecha', 'id_paciente_rehabilitacion']
 
         widgets = {
             'id_paciente_rehabilitacion': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
@@ -166,17 +190,74 @@ class AltaTerminateForm(forms.ModelForm):
 
 class AltaFuncionalCreateForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_diagnostico_funcional'].queryset = DiagnosticoFuncional.objects.all().order_by('nombre')
+        self.fields['id_diagnostico_funcional'].empty_label = "Seleccione una opcion"
+
     class Meta:
         model = AltaFuncional
 
         fields = [
             'id_alta',
+            'id_diagnostico_funcional',
             'observaciones',
             'id_usuario',
             ]
         
         widgets = {
             'id_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_diagnostico_funcional': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class AltaTipoDiscapacidadCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_tipo_discapacidad'].queryset = TipoDiscapacidad.objects.all().order_by('nombre')
+        self.fields['id_tipo_discapacidad'].empty_label = "Seleccione una opcion"
+
+    class Meta:
+        model = AltaTipoDiscapacidad
+
+        fields = [
+            'id_alta',
+            'id_tipo_discapacidad',
+            'observaciones',
+            'id_usuario',
+        ]
+
+        widgets = {
+            'id_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_tipo_discapacidad': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
+            'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+        }
+
+
+class AltaEtiologicoCreateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['id_diagnostico_etiologico'].queryset = DiagnosticoEtiologico.objects.all().order_by('nombre')
+        self.fields['id_diagnostico_etiologico'].empty_label = "Seleccione una opcion"
+
+    class Meta:
+        model = AltaEtiologico
+
+        fields = [
+            'id_alta',
+            'id_diagnostico_etiologico',
+            'observaciones',
+            'id_usuario',
+        ]
+
+        widgets = {
+            'id_alta': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
+            'id_diagnostico_etiologico': forms.Select(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
             'id_usuario': forms.HiddenInput(attrs={'class': 'form-control custom-class'}),
         }
@@ -203,36 +284,21 @@ class DiagnosticoEtiologicoCreateForm(forms.ModelForm):
 
         fields = [
             'nombre',
-            'id_tipo_discapacidad',
             ]
         
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
-            'id_tipo_discapacidad': forms.Select(attrs={'class': 'form-control custom-class'}),
         }
 
 
 class DiagnosticoFuncionalCreateForm(forms.ModelForm):
 
-    id_diagnostico_etiologico = forms.ModelChoiceField(
-        queryset=DiagnosticoEtiologico.objects.select_related("id_tipo_discapacidad").all(),
-        widget=forms.Select(attrs={'class': 'form-control custom-class'})
-    )
-
     class Meta:
         model = DiagnosticoFuncional
-        fields = ['nombre', 'id_diagnostico_etiologico']
+        fields = ['nombre']
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Cambiar el texto que se muestra en el select
-        self.fields['id_diagnostico_etiologico'].label_from_instance = (
-            lambda obj: f"{obj.nombre} — {obj.id_tipo_discapacidad.nombre}"
-        )
 
 
 class AgendaRehabCreateForm(forms.ModelForm):

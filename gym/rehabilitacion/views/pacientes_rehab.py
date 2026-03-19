@@ -31,7 +31,9 @@ from administracion.repositories.paciente_area import PacienteAreaRepository
 from administracion.repositories.area import AreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
+from rehabilitacion.repositories.alta_etiologico import AltaEtiologicoRepository
 from rehabilitacion.repositories.alta_funcional import AltaFuncionalRepository
+from rehabilitacion.repositories.alta_tipo_discapacidad import AltaTipoDiscapacidadRepository
 
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
@@ -54,8 +56,19 @@ pacienteAreaRepo = PacienteAreaRepository()
 areaRepo = AreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 altaRepo = AltaRepository()
+altaEtiologicoRepo = AltaEtiologicoRepository()
 altaFuncionalRepo = AltaFuncionalRepository()
+altaTipoDiscapacidadRepo = AltaTipoDiscapacidadRepository()
 agendaRepo = AgendaRehabRepository()
+
+
+def nombres_relacionados(relaciones, attr_name):
+    nombres = []
+    for relacion in relaciones:
+        objeto_relacionado = getattr(relacion, attr_name, None)
+        if objeto_relacionado is not None:
+            nombres.append(objeto_relacionado.nombre)
+    return ", ".join(nombres)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -149,10 +162,11 @@ class PacienteRehabDetail(View):
             altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
             tiene_pendientes = altaRepo.tiene_alta_activa(id_paciente_rehab=rehabilitacion_paciente.id)
             for alta in altas:
-                if alta.dado_alta:
-                    continue
-                alta.altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta.id)
-                altas_funcionales.extend(alta.altas_funcionales)
+                alta.altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_all_by_alta_id(alta_id=alta.id)
+                alta.altas_etiologicos = altaEtiologicoRepo.filter_all_by_alta_id(alta_id=alta.id)
+                alta.altas_funcionales = altaFuncionalRepo.filter_all_by_alta_id(alta_id=alta.id)
+                if not alta.dado_alta:
+                    altas_funcionales.extend(alta.altas_funcionales)
         return render(
             request,
             'pacientes_rehab/detail.html',
@@ -436,37 +450,68 @@ class PacienteAltasToCsv(View):
 
         data = []
         for alta in altas:
-            tipo_discapacidad = ""
-            if (
-                alta.id_diagnostico_etiologico is not None
-                and alta.id_diagnostico_etiologico.id_tipo_discapacidad is not None
-            ):
-                tipo_discapacidad = alta.id_diagnostico_etiologico.id_tipo_discapacidad.nombre
+            altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_all_by_alta_id(alta_id=alta.id)
+            altas_etiologicos = altaEtiologicoRepo.filter_all_by_alta_id(alta_id=alta.id)
+            altas_funcionales = altaFuncionalRepo.filter_all_by_alta_id(alta_id=alta.id)
             data.append([
                 alta.fecha,
-                alta.id_diagnostico_etiologico.nombre,
-                tipo_discapacidad,
+                nombres_relacionados(altas_etiologicos, 'id_diagnostico_etiologico'),
+                nombres_relacionados(altas_tipo_discapacidad, 'id_tipo_discapacidad'),
+                nombres_relacionados(altas_funcionales, 'id_diagnostico_funcional'),
                 alta.dado_alta,
                 alta.fecha_alta,
                 ])
 
         df = pd.DataFrame(data, columns=[
             'Fecha',
-            'Diagnostico Etiologico',
-            'Tipo Discapacidad',
+            'Diagnosticos Etiologicos',
+            'Tipos Discapacidad',
+            'Diagnosticos Funcionales',
             'Dado Alta',
             'Fecha Alta',
             ])
 
         alta_activa = altaRepo.filter_by_id_activa(id_paciente_rehab=rehabilitacion_paciente.id)
+        data_tipos_discapacidad = []
+        data_diagnosticos_etiologicos = []
         data_diagnosticos_funcionales = []
         if alta_activa is not None:
+            altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            for alta_tipo_discapacidad in altas_tipo_discapacidad:
+                data_tipos_discapacidad.append([
+                    alta_tipo_discapacidad.id_tipo_discapacidad.nombre,
+                    alta_tipo_discapacidad.observaciones,
+                ])
+
+            altas_etiologicos = altaEtiologicoRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            for alta_etiologico in altas_etiologicos:
+                data_diagnosticos_etiologicos.append([
+                    alta_etiologico.id_diagnostico_etiologico.nombre,
+                    alta_etiologico.observaciones,
+                ])
+
             altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta_activa.id)
             for alta_funcional in altas_funcionales:
                 data_diagnosticos_funcionales.append([
                     alta_funcional.id_diagnostico_funcional.nombre,
                     alta_funcional.observaciones,
                 ])
+
+        df_tipos_discapacidad = pd.DataFrame(
+            data_tipos_discapacidad,
+            columns=[
+                'Tipo Discapacidad',
+                'Observaciones',
+            ],
+        )
+
+        df_diagnosticos_etiologicos = pd.DataFrame(
+            data_diagnosticos_etiologicos,
+            columns=[
+                'Diagnostico Etiologico',
+                'Observaciones',
+            ],
+        )
 
         df_diagnosticos_funcionales = pd.DataFrame(
             data_diagnosticos_funcionales,
@@ -481,6 +526,16 @@ class PacienteAltasToCsv(View):
 
         with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
             df.to_excel(writer, sheet_name='Altas', index=False)
+            df_tipos_discapacidad.to_excel(
+                writer,
+                sheet_name='Tipos discapacidad',
+                index=False,
+            )
+            df_diagnosticos_etiologicos.to_excel(
+                writer,
+                sheet_name='Diag etiologicos',
+                index=False,
+            )
             df_diagnosticos_funcionales.to_excel(
                 writer,
                 sheet_name='Diagnosticos funcionales',

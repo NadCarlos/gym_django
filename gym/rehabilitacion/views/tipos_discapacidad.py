@@ -11,11 +11,7 @@ from rehabilitacion.forms import(
 
 
 from rehabilitacion.repositories.tipo_discapacidad import TipoDiscapacidadRepository
-from rehabilitacion.repositories.diagnostico_etiologico import DiagnosticoEtiologicoRepository
-
-
 tipoDiscapacidadRepo = TipoDiscapacidadRepository()
-diagnosticoEtiologicoRepo = DiagnosticoEtiologicoRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -113,14 +109,11 @@ class TipoDiscapacidadDelete(View):
             messages.error(request, 'No se encontró el tipo de discapacidad.')
             return redirect('tipo_discapacidad_list')
 
-        diagnostico_etiologico_relacionado = diagnosticoEtiologicoRepo.filter_by_tipo_discapacidad_id(
-            id_tipo_discapacidad=tipo_discapacidad.id
-        )
-        if diagnostico_etiologico_relacionado is not None:
+        if tipoDiscapacidadRepo.has_alta_relation(tipo_discapacidad):
             messages.error(
                 request,
-                'No se puede eliminar porque tiene diagnósticos etiológicos relacionados. '
-                'Primero debe eliminar el diagnóstico relacionado.'
+                'No se puede eliminar porque tiene una relación activa con un alta. '
+                'Primero debe quitar esa relación.'
             )
             return redirect('tipo_discapacidad_list')
 

@@ -50,10 +50,8 @@ class DiagnosticoFuncionalCreate(View):
         if form.is_valid():
             nombre = form.cleaned_data['nombre']
             nombre = nombre.upper()
-            id_diagnostico_etiologico = form.cleaned_data['id_diagnostico_etiologico']
             diagnosticoFuncionalRepo.create(
                 nombre=nombre,
-                id_diagnostico_etiologico=id_diagnostico_etiologico,
             )
             return redirect('diagnosticos_funcionales_list')
         else:
@@ -89,7 +87,6 @@ class DiagnosticoFuncionalUpdate(View):
             diagnosticoFuncionalRepo.update(
                 diagnostico_funcional=diagnostico_funcional,
                 nombre=form.cleaned_data['nombre'].upper(),
-                id_diagnostico_etiologico=form.cleaned_data['id_diagnostico_etiologico'],
             )
             messages.success(request, 'Diagnóstico funcional actualizado correctamente.')
             return redirect('diagnosticos_funcionales_list')

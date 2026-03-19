@@ -42,10 +42,18 @@ from rehabilitacion.views.alta import(
     DiagnosticoEtiologicoByTipoDiscapacidadView,
     AltaDetail,
     AltaTerminate,
+    AltaTipoDiscapacidadCreate,
+    AltaTipoDiscapacidadList,
+    AltaTipoDiscapacidadUpdate,
+    AltaTipoDiscapacidadRemove,
+    AltaEtiologicoCreate,
+    AltaEtiologicoList,
+    AltaEtiologicoUpdate,
+    AltaEtiologicoRemove,
     AltaFuncionalCreate,
     AltaFuncionalList,
     AltaFuncionalUpdate,
-    DiagnosticoFuncionalRemove,
+    AltaFuncionalRemove,
 )
 
 from rehabilitacion.views.tipos_discapacidad import(
@@ -141,10 +149,18 @@ alta = [
     path(route="diagnosticos_etiologicos/<int:tipo_discapacidad_id>/", view=DiagnosticoEtiologicoByTipoDiscapacidadView.as_view(), name="get_diagnosticos_etiologicos_by_tipo_discapacidad"),
     path(route='alta/detail/<int:id>',view=AltaDetail.as_view(), name='alta_detail'),
     path(route='alta/terminate/<int:id>',view=AltaTerminate.as_view(), name='alta_terminate'),
+    path(route='alta_tipo_discapacidad/create/<int:alta_id>',view=AltaTipoDiscapacidadCreate.as_view(), name='alta_tipo_discapacidad_create'),
+    path(route='alta_tipo_discapacidad/list/<int:alta_id>',view=AltaTipoDiscapacidadList.as_view(), name='alta_tipo_discapacidad_list'),
+    path(route='alta_tipo_discapacidad/update/<int:alta_tipo_discapacidad_id>',view=AltaTipoDiscapacidadUpdate.as_view(), name='alta_tipo_discapacidad_update'),
+    path(route='alta_tipo_discapacidad/remove/<int:alta_tipo_discapacidad_id>',view=AltaTipoDiscapacidadRemove.as_view(), name='alta_tipo_discapacidad_remove'),
+    path(route='alta_etiologico/create/<int:alta_id>',view=AltaEtiologicoCreate.as_view(), name='alta_etiologico_create'),
+    path(route='alta_etiologico/list/<int:alta_id>',view=AltaEtiologicoList.as_view(), name='alta_etiologico_list'),
+    path(route='alta_etiologico/update/<int:alta_etiologico_id>',view=AltaEtiologicoUpdate.as_view(), name='alta_etiologico_update'),
+    path(route='alta_etiologico/remove/<int:alta_etiologico_id>',view=AltaEtiologicoRemove.as_view(), name='alta_etiologico_remove'),
     path(route='alta_funcional/create/<int:alta_id>',view=AltaFuncionalCreate.as_view(), name='alta_funcional_create'),
     path(route='alta_funcional/list/<int:alta_id>',view=AltaFuncionalList.as_view(), name='alta_funcional_list'),
     path(route='alta_funcional/update/<int:alta_funcional_id>',view=AltaFuncionalUpdate.as_view(), name='alta_funcional_update'),
-    path(route='alta_funcional/remove/<int:alta_id>',view=DiagnosticoFuncionalRemove.as_view(), name='alta_funcional_remove'),
+    path(route='alta_funcional/remove/<int:alta_funcional_id>',view=AltaFuncionalRemove.as_view(), name='alta_funcional_remove'),
 ]
 
 tipos_discapacidad = [

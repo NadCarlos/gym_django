@@ -1,12 +1,16 @@
 from typing import List, Optional
 
 from rehabilitacion.models import TipoDiscapacidad
+from rehabilitacion.repositories.alta_tipo_discapacidad import AltaTipoDiscapacidadRepository
+
+
+altaTipoDiscapacidadRepo = AltaTipoDiscapacidadRepository()
 
 
 class TipoDiscapacidadRepository:
 
     def get_all(self) -> List[TipoDiscapacidad]:
-        return TipoDiscapacidad.objects.all()
+        return TipoDiscapacidad.objects.all().order_by("nombre")
     
     def get_by_id(self, id: int) -> Optional[TipoDiscapacidad]:
         return TipoDiscapacidad.objects.get(id=id)
@@ -36,3 +40,6 @@ class TipoDiscapacidadRepository:
 
     def delete(self, tipo_discapacidad: TipoDiscapacidad):
         tipo_discapacidad.delete()
+
+    def has_alta_relation(self, tipo_discapacidad: TipoDiscapacidad) -> bool:
+        return altaTipoDiscapacidadRepo.has_active_tipo_relation(tipo_discapacidad)
