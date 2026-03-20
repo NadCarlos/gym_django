@@ -20,7 +20,7 @@ class AltaEtiologicoRepository:
         return AltaEtiologico.objects.filter(id_alta=alta_id, activo=True)
 
     def filter_all_by_alta_id(self, alta_id) -> Optional[AltaEtiologico]:
-        return AltaEtiologico.objects.filter(id_alta=alta_id)
+        return AltaEtiologico.objects.filter(id_alta=alta_id, activo=True)
 
     def exists_active_by_alta_and_diagnostico(
         self,

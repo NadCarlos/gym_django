@@ -20,7 +20,7 @@ class AltaTipoDiscapacidadRepository:
         return AltaTipoDiscapacidad.objects.filter(id_alta=alta_id, activo=True)
 
     def filter_all_by_alta_id(self, alta_id) -> Optional[AltaTipoDiscapacidad]:
-        return AltaTipoDiscapacidad.objects.filter(id_alta=alta_id)
+        return AltaTipoDiscapacidad.objects.filter(id_alta=alta_id, activo=True)
 
     def exists_active_by_alta_and_tipo(
         self,

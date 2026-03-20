@@ -283,14 +283,6 @@ class Alta(models.Model):
         verbose_name='fecha_',
     )
 
-    id_diagnostico_etiologico = models.ForeignKey(
-        DiagnosticoEtiologico,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name='id_diagnostico_etiologico_alta_to_delete',
-    )
-
     id_paciente_rehabilitacion = models.ForeignKey(
         PacienteRehabilitacion,
         blank=False, 
