@@ -29,12 +29,10 @@ class AltaRepository:
     def create(
         self,
         fecha: str,
-        id_diagnostico_etiologico: Optional[DiagnosticoEtiologico],
         id_paciente_rehabilitacion: PacienteRehabilitacion,
         ):
         return Alta.objects.create(
             fecha=fecha,
-            id_diagnostico_etiologico=id_diagnostico_etiologico,
             id_paciente_rehabilitacion=id_paciente_rehabilitacion,
         )
     

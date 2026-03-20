@@ -63,12 +63,10 @@ class AltaCreate(View):
             fecha = form.cleaned_data['fecha']
             diagnosticos_etiologicos = list(form.cleaned_data['diagnosticos_etiologicos'])
             tipos_discapacidad = list(form.cleaned_data['tipos_discapacidad'])
-            legacy_diagnostico = diagnosticos_etiologicos[0] if diagnosticos_etiologicos else None
 
             with transaction.atomic():
                 alta_nueva = altaRepo.create(
                     fecha=fecha,
-                    id_diagnostico_etiologico=legacy_diagnostico,
                     id_paciente_rehabilitacion=paciente_rehabilitacion,
                 )
 
