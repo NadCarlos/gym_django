@@ -43,16 +43,20 @@ services:
     container_name: cermed_web
 
   nginx:
-    image: nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
     ports:
       - "80:80"
       - "443:443"
+    command: sh /app/config/entrypoint.nginx.sh
     volumes:
       - ./gym/staticfiles:/app/staticfiles
       - ./gym/media:/app/media
       - ./cermed.conf:/etc/nginx/conf.d/cermed.conf
-      - /etc/letsencrypt/live/cermed.com.ar/fullchain.pem:/etc/nginx/ssl/fullchain.pem
-      - /etc/letsencrypt/live/cermed.com.ar/privkey.pem:/etc/nginx/ssl/privkey.pem
+      - ./config:/app/config
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
     depends_on:
       - web
     container_name: cermed_nginx
