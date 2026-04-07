@@ -156,6 +156,14 @@ class PacienteRehabilitacion(models.Model):
         related_name='obra_social_paciente_rehabilitacion',
     )
 
+    numero_afiliado = models.CharField(
+        max_length=50,
+        blank=False,
+        null=False,
+        verbose_name="numero_afiliado",
+        default=0,
+    )
+
     puerto_esperanza = models.BooleanField(
         choices=SI_NO_CHOICES,
         default=0,

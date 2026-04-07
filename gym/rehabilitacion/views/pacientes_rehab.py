@@ -407,6 +407,7 @@ class PacienteRehabToCsv(View):
                 rehabilitacion_paciente.id_derivador.nombre if rehabilitacion_paciente.id_derivador else '',
                 rehabilitacion_paciente.id_conocer.nombre if rehabilitacion_paciente.id_conocer else '',
                 rehabilitacion_paciente.id_obra_social.nombre if rehabilitacion_paciente.id_obra_social else '',
+                rehabilitacion_paciente.numero_afiliado,
                 rehabilitacion_paciente.puerto_esperanza,
             ])
         
@@ -421,6 +422,7 @@ class PacienteRehabToCsv(View):
             'Derivador',
             'Conocio por',
             'obra social',
+            'numero afiliado',
             'Puerto Esperanza',
             ])
 

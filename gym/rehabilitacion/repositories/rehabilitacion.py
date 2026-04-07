@@ -36,6 +36,7 @@ class PacienteRehabilitacionRepository:
         id_derivador: Derivador,
         puerto_esperanza: bool,
         id_obra_social:ObraSocial,
+        numero_afiliado: str,
         id_conocer: Conocer,
         id_usuario: User,
         diagnosticoCUD: str,
@@ -54,6 +55,7 @@ class PacienteRehabilitacionRepository:
             id_derivador=id_derivador,
             puerto_esperanza=puerto_esperanza,
             id_obra_social=id_obra_social,
+            numero_afiliado=numero_afiliado,
             id_conocer=id_conocer,
             id_usuario=id_usuario,
             diagnosticoCUD=diagnosticoCUD,
@@ -74,6 +76,7 @@ class PacienteRehabilitacionRepository:
         id_derivador: Derivador,
         puerto_esperanza: bool,
         id_obra_social:ObraSocial,
+        numero_afiliado: str,
         id_conocer: Conocer,
         diagnosticoCUD: str,
         pre_ingreso: bool,
@@ -90,6 +93,7 @@ class PacienteRehabilitacionRepository:
         rehabilitacion_paciente.id_derivador=id_derivador
         rehabilitacion_paciente.puerto_esperanza=puerto_esperanza
         rehabilitacion_paciente.id_obra_social=id_obra_social
+        rehabilitacion_paciente.numero_afiliado=numero_afiliado
         rehabilitacion_paciente.id_conocer=id_conocer
         rehabilitacion_paciente.diagnosticoCUD=diagnosticoCUD
         rehabilitacion_paciente.pre_ingreso=pre_ingreso
