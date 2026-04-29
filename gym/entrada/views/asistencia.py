@@ -112,14 +112,11 @@ class CheckInConfirm(View):
                 dia = today.weekday()
                 dia = dia + 1
                 prestacion_paciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
-                agenda_paciente = agendaRepo.filter_by_id_prestacion_paciente_id_dia(id_prestacion_paciente=prestacion_paciente.id, id_dia=dia)
-                
-                # Borrar cuando las agendas esten completas
+                agenda_paciente = agendaRepo.filter_by_id_prestacion_paciente_id_dia(id_prestacion_paciente=prestacion_paciente.id, id_dia=dia)           
                 if len(agenda_paciente) == 0:
-                    agenda_paciente = 1
+                    return redirect('check_in_no_agenda')
                 else:
                     agenda_paciente = agenda_paciente[0].id
-                ###
                 
                 form = AsistenciaCreateForm(
                     initial = {
@@ -186,6 +183,16 @@ class CheckInNotFound(View):
         return render(
             request,
             'asistencia/check_in_not_found.html'
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CheckInNoAgenda(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'asistencia/check_in_no_agenda.html'
         )
     
 

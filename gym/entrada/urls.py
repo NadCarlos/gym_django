@@ -9,6 +9,7 @@ from entrada.views.asistencia import (
     CheckInError,
     CheckInNotFound,
     PrestacionNotFound,
+    CheckInNoAgenda,
 )
 
 
@@ -21,4 +22,5 @@ urlpatterns = [
     path(route='check_in_error/',view=CheckInError.as_view(), name='check_in_error'),
     path(route='check_in_not_found/',view=CheckInNotFound.as_view(), name='check_in_not_found'),
     path(route='<int:id>/error_no_prestacion/',view=PrestacionNotFound.as_view(), name='error_no_prestacion'),
+    path(route='check_in_no_agenda/',view=CheckInNoAgenda.as_view(), name='check_in_no_agenda'),
 ]
