@@ -5,12 +5,19 @@
     <div class="container d-flex justify-content-center align-items-center vh-100">
         <div class="row">
             <div class="card text-center shadow">
+                {% if advertir_cuotas_impagas == True %}
                 <div class="card-header bg-success text-white">
-                    <h1 class="card-title mb-0">ASISTENCIA CARGADA</h2>
+                    <h1 class="card-title mb-0">ASISTENCIA CARGADA</h1>
                 </div>
+                {% endif %}
                 <div class="card-body">
                     <h3 class="card-text">{{ paciente.nombre }}, {{ paciente.apellido }}</h3>
                     <h3 class="card-subtitle text-muted">{{ date }}</h3>
+                    {% if advertir_cuotas_impagas == True %}
+                    <div class="card-header text-white" style="background-color: blueviolet;">
+                        <h2 class="card-title mb-0">ATENCION: HAY CUOTAS SIN PAGAR.</h2>
+                    </div>
+                    {% endif %}
                     <h3 class="mt-3">Redireccionando...</h3>
                 </div>
             </div>

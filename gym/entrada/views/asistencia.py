@@ -15,11 +15,13 @@ from entrada.repositories.asistencia import AsistenciaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.agenda import AgendaRepository
+from administracion.repositories.cuota import CuotaRepository
 
 pacienteRepo = PacienteRepository()
 asistenciaRepo = AsistenciaRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 agendaRepo = AgendaRepository()
+cuotaRepo = CuotaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -156,12 +158,26 @@ class CheckInSuccess(View):
         date = datetime.datetime.now()
         date = date.strftime("Fecha : %w-%m-%Y Hora: %I:%M")
         paciente = pacienteRepo.get_by_id(id=id)
+
+        today = datetime.date.today()
+        cuotas_paciente = cuotaRepo.filter_by_paciente_id_e_imputado(id=paciente.id)
+        if today.day > 10:
+            cuotas_impagas = cuotas_paciente.filter(
+                imputado__year=today.year,
+                imputado__month=today.month,
+            )
+
+        advertir_cuotas_impagas = False
+        if len(cuotas_impagas) != 0:
+            advertir_cuotas_impagas = True
+
         return render(
             request,
             'asistencia/check_in_success.html',
             dict(
                 paciente=paciente,
                 date=date,
+                advertir_cuotas_impagas=advertir_cuotas_impagas,
             )
         )
     

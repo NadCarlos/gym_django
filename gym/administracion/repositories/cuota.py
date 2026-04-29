@@ -17,6 +17,9 @@ class CuotaRepository:
     def filter_by_paciente_id(self, id) -> Optional[Cuota]:
         return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id)
     
+    def filter_by_paciente_id_e_imputado(self, id) -> Optional[Cuota]:
+        return Cuota.objects.filter(activo=True).filter(id_paciente_plan__id_paciente__id=id).filter(anulado=False)
+    
     def filter_by_paciente_id_mes(self,id_paciente, year, month) -> List[Cuota]:
         return Cuota.objects.filter(activo=True).filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).first()
     
