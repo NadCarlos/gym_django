@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 import os
 
 from administracion.models import (
@@ -590,6 +592,84 @@ class AsistenciaRehabTeorica(models.Model):
     
     def __str__(self):
         return  self.id_agenda_rehab.id_paciente_area.id_paciente.nombre
+    
+
+class Turno(models.Model):
+
+    ESTADO_PROGRAMADO = "PROGRAMADO"
+    ESTADO_REALIZADO = "REALIZADO"
+    ESTADO_ANULADO = "ANULADO"
+
+    ESTADO_CHOICES = [
+        (ESTADO_PROGRAMADO, "PROGRAMADO"),
+        (ESTADO_REALIZADO, "REALIZADO"),
+        (ESTADO_ANULADO, "ANULADO"),
+    ]
+
+    paciente_id = models.ForeignKey(
+        Paciente,
+        db_column='paciente_id',
+        on_delete=models.RESTRICT,
+        related_name='turnos_rehabilitacion',
+    )
+
+    profesional_id = models.ForeignKey(
+        Profesional,
+        db_column='profesional_id',
+        on_delete=models.RESTRICT,
+        related_name='turnos_rehabilitacion',
+    )
+
+    tratamiento_id = models.ForeignKey(
+        Tratamiento,
+        db_column='tratamiento_id',
+        on_delete=models.RESTRICT,
+        related_name='turnos_rehabilitacion',
+    )
+
+    fecha = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Fecha turno',
+    )
+
+    hora = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name='Hora turno',
+    )
+
+    estado = models.CharField(
+        max_length=10,
+        choices=ESTADO_CHOICES,
+        default=ESTADO_PROGRAMADO,
+        null=False,
+        blank=False,
+    )
+
+    motivo_anulacion = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name='Motivo anulacion',
+    )
+
+    fecha_anulacion = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name='Fecha anulacion',
+    )
+
+    usuario_anulacion_id = models.ForeignKey(
+        User,
+        db_column='usuario_anulacion_id',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='turnos_anulados_rehabilitacion',
+    )
+
+    def __str__(self):
+        return f"{self.paciente_id} - {self.fecha} {self.hora}"
     
 
 class TipoInforme(models.Model):

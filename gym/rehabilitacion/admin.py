@@ -19,6 +19,7 @@ from rehabilitacion.models import(
     Link,
     TipoInforme,
     Conocer,
+    Turno,
 )
 
 
@@ -114,6 +115,22 @@ class AsistenciaRehabAdmin(admin.ModelAdmin):
 class AsistenciaRehabTeoricaAdmin(admin.ModelAdmin):
     list_display = (
         'id_agenda_rehab',
+    )
+
+
+@admin.register(Turno)
+class TurnoAdmin(admin.ModelAdmin):
+    list_display = (
+        'paciente_id',
+        'profesional_id',
+        'tratamiento_id',
+        'fecha',
+        'hora',
+        'estado',
+    )
+    list_filter = (
+        'estado',
+        'fecha',
     )
 
 
