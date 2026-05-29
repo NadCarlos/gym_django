@@ -85,6 +85,13 @@ from rehabilitacion.views.agenda import (
     AgendaRehabDelete,
 )
 
+from rehabilitacion.views.turno import (
+    TurnoList,
+    TurnoCreate,
+    TurnoEstadoUpdate,
+    TratamientosPorProfesionalRehabView,
+)
+
 from rehabilitacion.views.asistencia import (
     CheckInRehab,
     CheckInRehabErrorDni,
@@ -192,6 +199,13 @@ agenda = [
     path(route='agenda_paciente_rehab_delete/<int:id>',view=AgendaRehabDelete.as_view(), name='agenda_paciente_rehab_delete'),
 ]
 
+turnos = [
+    path(route='turnos/', view=TurnoList.as_view(), name='turnos_rehab'),
+    path(route='turnos/create/', view=TurnoCreate.as_view(), name='turno_rehab_create'),
+    path(route='turnos/update_estado/<int:id>/', view=TurnoEstadoUpdate.as_view(), name='turno_rehab_update_estado'),
+    path(route='turnos/tratamientos/<int:profesional_id>/', view=TratamientosPorProfesionalRehabView.as_view(), name='turnos_tratamientos_por_profesional'),
+]
+
 asistencia = [
     path(route='check_in_rehab/',view=CheckInRehab.as_view(), name='check_in_rehab'),
     path(route='check_in_rehab_error_dni/',view=CheckInRehabErrorDni.as_view(), name='check_in_error_dni'),
@@ -222,6 +236,7 @@ urlpatterns = (
     diagnosticos_funcionales + 
     tratamiento_profesional + 
     agenda + 
+    turnos +
     asistencia + 
     informes
     )

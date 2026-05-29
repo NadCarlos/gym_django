@@ -1,0 +1,127 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark mb-0">Nuevo Turno</h2>
+        <a href="{% url 'turnos_rehab' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Volver
+        </a>
+    </div>
+
+    <div class="card p-4 shadow-sm">
+        <form method="post" id="turno-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Buscar Paciente:</label>
+                <div class="col-sm-7">
+                    <input type="text" id="buscar-paciente" class="form-control" placeholder="Apellido, nombre o DNI">
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Paciente:</label>
+                <div class="col-sm-7">
+                    {{ form.paciente_id }}
+                    {{ form.paciente_id.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Profesional:</label>
+                <div class="col-sm-7">
+                    {{ form.profesional_id }}
+                    {{ form.profesional_id.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Tratamiento:</label>
+                <div class="col-sm-7">
+                    {{ form.tratamiento_id }}
+                    {{ form.tratamiento_id.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Fecha:</label>
+                <div class="col-sm-7">
+                    {{ form.fecha }}
+                    {{ form.fecha.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">Hora:</label>
+                <div class="col-sm-7">
+                    {{ form.hora }}
+                    {{ form.hora.errors }}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Guardar
+                </button>
+                <a href="{% url 'turnos_rehab' %}" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const pacienteSearch = document.getElementById("buscar-paciente");
+    const pacienteSelect = document.getElementById("select-paciente");
+    const pacienteOptions = Array.from(pacienteSelect.options).map(option => option.cloneNode(true));
+    const profesionalSelect = document.getElementById("select-profesional");
+    const tratamientoSelect = document.getElementById("select-tratamiento");
+
+    pacienteSearch.addEventListener("input", function () {
+        const search = this.value.trim().toLowerCase();
+        const selectedValue = pacienteSelect.value;
+        pacienteSelect.innerHTML = "";
+
+        pacienteOptions.forEach(option => {
+            if (!option.value || option.textContent.toLowerCase().includes(search)) {
+                pacienteSelect.appendChild(option.cloneNode(true));
+            }
+        });
+
+        if (selectedValue && Array.from(pacienteSelect.options).some(option => option.value === selectedValue)) {
+            pacienteSelect.value = selectedValue;
+        }
+    });
+
+    profesionalSelect.addEventListener("change", function () {
+        const profesionalId = this.value;
+        tratamientoSelect.innerHTML = '<option value="">Seleccione un tratamiento</option>';
+        tratamientoSelect.disabled = true;
+
+        if (!profesionalId) {
+            return;
+        }
+
+        fetch(`/rehabilitacion/turnos/tratamientos/${profesionalId}/`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(tratamiento => {
+                    const option = document.createElement("option");
+                    option.value = tratamiento.id;
+                    option.textContent = tratamiento.nombre;
+                    tratamientoSelect.appendChild(option);
+                });
+                tratamientoSelect.disabled = data.length === 0;
+            })
+            .catch(error => {
+                console.error("Error al cargar tratamientos:", error);
+            });
+    });
+});
+</script>
+{% endblock %}

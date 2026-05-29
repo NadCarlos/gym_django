@@ -1,0 +1,173 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark mb-0">Agenda de Turnos</h2>
+        <a href="{% url 'turno_rehab_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Turno
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="GET" action="{% url 'turnos_rehab' %}" class="row g-3 align-items-end mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Profesional</label>
+            <select class="form-control custom-class" name="profesional">
+                <option value="">Todos</option>
+                {% for profesional in profesionales %}
+                    <option value="{{ profesional.id }}" {% if profesional_id == profesional.id|stringformat:"s" %}selected{% endif %}>
+                        {{ profesional.apellido }}, {{ profesional.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Fecha</label>
+            <input type="date" class="form-control" name="fecha" value="{{ fecha }}">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-search"></i> Filtrar
+            </button>
+            <a href="{% url 'turnos_rehab' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i> Limpiar
+            </a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Paciente</th>
+                    <th>Obra Social</th>
+                    <th>Profesional</th>
+                    <th>Tratamiento</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turno in turnos %}
+                    <tr>
+                        <td>{{ turno.fecha|date:"d/m/Y" }}</td>
+                        <td>{{ turno.hora|time:"H:i" }}</td>
+                        <td>{{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}</td>
+                        <td>
+                            {% if turno.paciente_id.id_obra_social %}
+                                {{ turno.paciente_id.id_obra_social.nombre }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ turno.profesional_id.apellido }}, {{ turno.profesional_id.nombre }}</td>
+                        <td>{{ turno.tratamiento_id.nombre }}</td>
+                        <td>
+                            {% if turno.estado == 'PROGRAMADO' %}
+                                <span class="badge bg-success">Programado</span>
+                            {% elif turno.estado == 'ANULADO' %}
+                                <span class="badge bg-danger">Anulado</span>
+                            {% elif turno.estado == 'REALIZADO' %}
+                                <span class="badge bg-primary">Realizado</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ turno.estado }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if turno.estado == 'ANULADO' %}
+                                <button type="button" class="btn btn-secondary btn-sm" disabled>
+                                    <i class="bi bi-lock"></i> Editar
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editarTurnoModal{{ turno.id }}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">No hay turnos para los filtros seleccionados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% for turno in turnos %}
+        {% if turno.estado != 'ANULADO' %}
+            <div class="modal fade" id="editarTurnoModal{{ turno.id }}" tabindex="-1" aria-labelledby="editarTurnoModalLabel{{ turno.id }}" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <form method="POST" action="{% url 'turno_rehab_update_estado' turno.id %}" class="turno-estado-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editarTurnoModalLabel{{ turno.id }}">Editar Turno</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-3">
+                                    <strong>{{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}</strong><br>
+                                    {{ turno.fecha|date:"d/m/Y" }} {{ turno.hora|time:"H:i" }} - {{ turno.tratamiento_id.nombre }}
+                                </p>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Accion</label>
+                                    <select class="form-control turno-accion-select" name="accion" required>
+                                        <option value="">Seleccione una opcion</option>
+                                        <option value="ANULADO">Anular</option>
+                                        <option value="REALIZADO">Realizado</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3 turno-motivo-container d-none">
+                                    <label class="form-label">Motivo de anulacion</label>
+                                    <textarea class="form-control turno-motivo-input" name="motivo_anulacion" rows="4"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-save"></i> Guardar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".turno-estado-form").forEach(function (form) {
+        const accionSelect = form.querySelector(".turno-accion-select");
+        const motivoContainer = form.querySelector(".turno-motivo-container");
+        const motivoInput = form.querySelector(".turno-motivo-input");
+
+        accionSelect.addEventListener("change", function () {
+            const requiereMotivo = this.value === "ANULADO";
+            motivoContainer.classList.toggle("d-none", !requiereMotivo);
+            motivoInput.required = requiereMotivo;
+
+            if (!requiereMotivo) {
+                motivoInput.value = "";
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

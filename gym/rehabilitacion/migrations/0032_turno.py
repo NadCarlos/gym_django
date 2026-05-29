@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('fecha', models.DateField(verbose_name='Fecha turno')),
                 ('hora', models.TimeField(verbose_name='Hora turno')),
-                ('estado', models.CharField(choices=[('PROGRAMADO', 'Programado'), ('REALIZADO', 'Realizado'), ('ANULADO', 'Anulado')], default='PROGRAMADO', max_length=10)),
+                ('estado', models.CharField(choices=[('PROGRAMADO', 'PROGRAMADO'), ('REALIZADO', 'REALIZADO'), ('ANULADO', 'ANULADO')], default='PROGRAMADO', max_length=10)),
                 ('motivo_anulacion', models.TextField(blank=True, null=True, verbose_name='Motivo anulacion')),
                 ('fecha_anulacion', models.DateTimeField(blank=True, null=True, verbose_name='Fecha anulacion')),
                 ('paciente_id', models.ForeignKey(db_column='paciente_id', on_delete=django.db.models.deletion.RESTRICT, related_name='turnos_rehabilitacion', to='administracion.paciente')),
