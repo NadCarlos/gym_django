@@ -163,8 +163,12 @@ class CheckInSuccess(View):
         cuotas_paciente = cuotaRepo.filter_by_paciente_id_e_imputado(id=paciente.id)
         if today.day > 10:
             cuotas_impagas = cuotas_paciente.filter(
-                imputado__year=today.year,
-                imputado__month=today.month,
+                imputado__lte=today
+            )
+        else:
+            ultimo_dia_mes_anterior = today.replace(day=1) - datetime.timedelta(days=1)
+            cuotas_impagas = cuotas_paciente.filter(
+                imputado__lte=ultimo_dia_mes_anterior
             )
 
         advertir_cuotas_impagas = False
