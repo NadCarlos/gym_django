@@ -1,6 +1,9 @@
+from datetime import date, datetime, timedelta, time
+
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views import View
@@ -22,12 +25,29 @@ class TurnoList(View):
 
     def get(self, request):
         profesional_id = request.GET.get('profesional')
-        fecha = request.GET.get('fecha')
-        profesionales = profesionalRepo.get_all()
-        turnos = turnoRepo.filter_by_profesional_and_fecha(
+        fecha = date.today()
+        lunes = fecha - timedelta(days=fecha.weekday())
+        viernes = lunes + timedelta(days=4)
+        profesionales = profesionalRepo.filter_profesional_area(id_area=2)
+        turnos = list(turnoRepo.filter_by_profesional_and_rango_fecha(
             profesional_id=profesional_id,
-            fecha=fecha,
-        )
+            fecha_inicio=lunes,
+            fecha_fin=viernes,
+        ))
+
+        nombres_dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"]
+        hora_limite_tarde = time(14, 0)
+
+        agenda_dias = []
+        for index, nombre in enumerate(nombres_dias):
+            fecha_dia = lunes + timedelta(days=index)
+            turnos_dia = [turno for turno in turnos if turno.fecha == fecha_dia]
+            agenda_dias.append({
+                "nombre": nombre,
+                "fecha": fecha_dia,
+                "manana": [turno for turno in turnos_dia if turno.hora < hora_limite_tarde],
+                "tarde": [turno for turno in turnos_dia if turno.hora >= hora_limite_tarde],
+            })
 
         return render(
             request,
@@ -35,10 +55,14 @@ class TurnoList(View):
             dict(
                 profesionales=profesionales,
                 profesional_id=profesional_id,
-                fecha=fecha,
+                fecha=fecha.isoformat(),
+                semana_inicio=lunes,
+                semana_fin=viernes,
+                agenda_dias=agenda_dias,
                 turnos=turnos,
             )
         )
+
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

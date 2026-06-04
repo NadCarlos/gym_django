@@ -32,6 +32,22 @@ class TurnoRepository:
 
         return turnos
 
+    def filter_by_profesional_and_rango_fecha(
+        self,
+        profesional_id=None,
+        fecha_inicio=None,
+        fecha_fin=None,
+    ) -> List[Turno]:
+        turnos = self.get_all()
+
+        if profesional_id:
+            turnos = turnos.filter(profesional_id_id=profesional_id)
+
+        if fecha_inicio and fecha_fin:
+            turnos = turnos.filter(fecha__range=(fecha_inicio, fecha_fin))
+
+        return turnos
+
     def get_by_id(self, id: int) -> Optional[Turno]:
         try:
             turno = Turno.objects.get(id=id)

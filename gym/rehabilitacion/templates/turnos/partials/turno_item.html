@@ -1,0 +1,37 @@
+<div class="turno-item">
+    <div class="turno-linea">
+        <span class="turno-hora">{{ turno.hora|time:"H:i" }}</span>
+        {% if turno.estado == 'PROGRAMADO' %}
+            <span class="badge bg-success">P</span>
+        {% elif turno.estado == 'ANULADO' %}
+            <span class="badge bg-danger">A</span>
+        {% elif turno.estado == 'REALIZADO' %}
+            <span class="badge bg-primary">R</span>
+        {% else %}
+            <span class="badge bg-secondary">{{ turno.estado }}</span>
+        {% endif %}
+
+        <span class="turno-texto turno-paciente">{{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}</span>
+
+        {% if turno.estado == 'ANULADO' %}
+            <button type="button" class="btn btn-secondary btn-sm turno-accion" disabled>
+                <i class="bi bi-lock"></i>
+            </button>
+        {% else %}
+            <button type="button" class="btn btn-outline-primary btn-sm turno-accion" data-bs-toggle="modal" data-bs-target="#editarTurnoModal{{ turno.id }}">
+                <i class="bi bi-pencil"></i>
+            </button>
+        {% endif %}
+    </div>
+
+    <div class="turno-linea small">
+        <span class="turno-texto turno-detalle">
+        {% if turno.paciente_id.id_obra_social %}
+            {{ turno.paciente_id.id_obra_social.nombre }}
+        {% else %}
+            S/OS
+        {% endif %}
+        | {{ turno.tratamiento_id.nombre }} | {{ turno.profesional_id.apellido }}, {{ turno.profesional_id.nombre }}
+        </span>
+    </div>
+</div>
