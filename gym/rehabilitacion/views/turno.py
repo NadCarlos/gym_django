@@ -1,5 +1,4 @@
-from datetime import datetime, timedelta, time, timezone
-
+from datetime import date, datetime, timedelta, time
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -66,11 +65,11 @@ class TurnoList(View):
     
     def get_fecha_referencia(self, fecha):
         if not fecha:
-            return timezone.now().date()
+            return date.today()
         try:
             return datetime.strptime(fecha, "%Y-%m-%d").date()
         except ValueError:
-            return timezone.now().date()
+            return date.today()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
