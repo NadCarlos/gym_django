@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta, time, timezone
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -24,7 +24,7 @@ class TurnoList(View):
 
     def get(self, request):
         profesional_id = request.GET.get('profesional')
-        fecha = datetime.strptime(request.GET.get('fecha'), "%Y-%m-%d").date()
+        fecha = self.get_fecha_referencia(request.GET.get('fecha'))
         lunes = fecha - timedelta(days=fecha.weekday())
         viernes = lunes + timedelta(days=4)
         profesionales = profesionalRepo.filter_profesional_area(id_area=2)
@@ -63,6 +63,14 @@ class TurnoList(View):
                 turnos=turnos,
             )
         )
+    
+    def get_fecha_referencia(self, fecha):
+        if not fecha:
+            return timezone.now().date()
+        try:
+            return datetime.strptime(fecha, "%Y-%m-%d").date()
+        except ValueError:
+            return timezone.now().date()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
