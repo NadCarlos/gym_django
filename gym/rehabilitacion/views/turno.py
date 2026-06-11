@@ -1,9 +1,8 @@
-from datetime import date, datetime, timedelta, time
+from datetime import datetime, timedelta, time
 
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views import View
@@ -25,15 +24,17 @@ class TurnoList(View):
 
     def get(self, request):
         profesional_id = request.GET.get('profesional')
-        fecha = date.today()
+        fecha = datetime.strptime(request.GET.get('fecha'), "%Y-%m-%d").date()
         lunes = fecha - timedelta(days=fecha.weekday())
         viernes = lunes + timedelta(days=4)
         profesionales = profesionalRepo.filter_profesional_area(id_area=2)
-        turnos = list(turnoRepo.filter_by_profesional_and_rango_fecha(
-            profesional_id=profesional_id,
-            fecha_inicio=lunes,
-            fecha_fin=viernes,
-        ))
+        turnos = []
+        if profesional_id:
+            turnos = list(turnoRepo.filter_by_profesional_and_rango_fecha(
+                profesional_id=profesional_id,
+                fecha_inicio=lunes,
+                fecha_fin=viernes,
+            ))
 
         nombres_dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes"]
         hora_limite_tarde = time(14, 0)
@@ -62,7 +63,6 @@ class TurnoList(View):
                 turnos=turnos,
             )
         )
-
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

@@ -126,7 +126,7 @@
         <div class="col-md-4">
             <label class="form-label">Profesional</label>
             <select class="form-control custom-class" name="profesional">
-                <option value="">Todos</option>
+                <option value="">Seleccione un Profesional</option>
                 {% for profesional in profesionales %}
                     <option value="{{ profesional.id }}" {% if profesional_id == profesional.id|stringformat:"s" %}selected{% endif %}>
                         {{ profesional.apellido }}, {{ profesional.nombre }}
@@ -151,6 +151,12 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="text-secondary mb-0">Semana del {{ semana_inicio|date:"d/m/Y" }} al {{ semana_fin|date:"d/m/Y" }}</h5>
     </div>
+
+    {% if not profesional_id %}
+        <div class="alert alert-info" role="alert">
+            Seleccione un profesional para ver sus turnos.
+        </div>
+    {% endif %}
 
     <div class="turnos-agenda-grid">
         {% for dia in agenda_dias %}
