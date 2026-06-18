@@ -115,7 +115,7 @@ class PacientesRehabBulkAdd(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacientesRehabList(View):
     template_name = 'pacientes_rehab/list.html'
     context_object_name = 'pacientes_rehab'
@@ -149,7 +149,7 @@ class PacientesRehabList(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacienteRehabDetail(View):
 
     def get(self, request, id):
@@ -351,7 +351,7 @@ class PacienteRehabCreateFromExistent(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacienteRehabToCsv(View):
 
     def get(self, request, id):
@@ -439,7 +439,7 @@ class PacienteRehabToCsv(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacienteAltasToCsv(View):
 
     def get(self, request, id):

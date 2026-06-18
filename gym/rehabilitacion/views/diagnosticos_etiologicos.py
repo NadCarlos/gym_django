@@ -16,7 +16,7 @@ diagnosticoEtiologicoRepo = DiagnosticoEtiologicoRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class DiagnosticosEtiologicosList(View):
 
     def get(self, request):

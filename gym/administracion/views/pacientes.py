@@ -96,7 +96,7 @@ class PacientesList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Profesional"), name="dispatch")
 class PacientesToCsv(View):
 
     def get(self, request, state, area):

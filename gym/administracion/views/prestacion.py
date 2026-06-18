@@ -15,7 +15,7 @@ prestacionRepo = PrestacionRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion", "Profesional"), name="dispatch")
 class PrestacionList(View):
 
     def get(self, request, area):

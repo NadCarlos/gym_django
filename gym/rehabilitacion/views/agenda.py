@@ -31,7 +31,7 @@ pacienteRehabRepo = PacienteRehabilitacionRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AgendaPacienteRehab(View):
 
     def get(self, request, id):
@@ -208,7 +208,7 @@ class AgendaRehabDelete(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AgendaProfesionalRehab(View):
 
     def get(self, request, id):

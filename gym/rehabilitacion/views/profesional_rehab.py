@@ -27,7 +27,7 @@ areaRepo = AreaRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class ProfesionalRehabList(View):
     template_name = 'profesional_rehab/list.html'
     context_object_name = 'profesional_rehab'
@@ -61,7 +61,7 @@ class ProfesionalRehabList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class ProfesionalRehabDetail(View):
 
     def get(self, request, id):

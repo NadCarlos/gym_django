@@ -15,7 +15,7 @@ obraSocialRepo = ObraSocialRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion", "Profesional"), name="dispatch")
 class ObraSocialList(View):
 
     def get(self, request, area):

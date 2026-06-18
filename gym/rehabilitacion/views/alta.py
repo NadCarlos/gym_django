@@ -100,7 +100,7 @@ class AltaCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AltaDetail(View):
 
     def get(self, request, id):
@@ -224,7 +224,7 @@ class AltaTipoDiscapacidadCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AltaTipoDiscapacidadList(View):
 
     def get(self, request, alta_id):
@@ -358,7 +358,7 @@ class AltaEtiologicoCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AltaEtiologicoList(View):
 
     def get(self, request, alta_id):
@@ -497,7 +497,7 @@ class AltaFuncionalCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class AltaFuncionalList(View):
 
     def get(self, request, alta_id):

@@ -2,6 +2,7 @@ AREAS = {
     "GIMNASIO": "Gimnasio",
     "REHAB": "Rehabilitacion",
     "FINANZAS": "Finanzas",
+    "PROFESIONAL": "Profesional",
 }
 
 COMBINACIONES_VALIDAS = {
@@ -9,4 +10,5 @@ COMBINACIONES_VALIDAS = {
     "rehab": [AREAS["REHAB"]],
     "gym_rehab": [AREAS["GIMNASIO"], AREAS["REHAB"]],
     "finanzas": [AREAS["FINANZAS"]],
+    "profesional": [AREAS["PROFESIONAL"]],
 }

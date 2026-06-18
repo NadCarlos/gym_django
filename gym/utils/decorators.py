@@ -23,6 +23,9 @@ def requiere_areas(*areas_permitidas):
 
             if user.groups.filter(name="Rehabilitacion").exists():
                 return redirect("inicio_rehab")
+            
+            if user.groups.filter(name="Profesional").exists():
+                return redirect("inicio_rehab")
 
             return HttpResponseForbidden("Acceso denegado")
 
