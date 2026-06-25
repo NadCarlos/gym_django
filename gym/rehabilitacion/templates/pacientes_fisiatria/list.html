@@ -1,0 +1,158 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+        <h2 class="text-primary mb-0"><i class="bi bi-people-fill"></i> Lista de Pacientes Fisiatria</h2>
+    </div>
+
+    <!-- Botones principales -->
+    <div class="row">
+        <!-- Primera columna -->
+        <div class="col-md-8">
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <a href="{% url 'paciente_fisiatria_create' %}" class="btn btn-success">
+                    <i class="bi bi-person-plus"></i> Nuevo Paciente
+                </a>
+
+                {% if state == 'False' %}
+                <a href="{% url 'pacientes_fisiatria_list' True %}" class="btn btn-outline-primary">
+                    <i class="bi bi-eye"></i> Ver Activos
+                </a>
+                {% elif state == 'True' %}
+                <a href="{% url 'pacientes_fisiatria_list' False %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye-slash"></i> Ver Eliminados
+                </a>
+                <a href="{% url 'pacientes_csv' True 3 %}?{{ request.GET.urlencode }}" class="btn btn-outline-success">
+                    <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Segunda columna -->
+        <div class="col-md-2">
+        </div>
+        <!-- Tercera columna -->
+        <div class="col-md-2 align-items-end">
+            <div class="text-white bg-dark rounded px-3 py-2 text-center shadow-sm">
+                <strong>Total Registros: {{ pacientes_count }}</strong>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Filtros -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{% url 'pacientes_fisiatria_list' state %}" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Apellido:</label>
+                    {{ form.apellido }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">DNI:</label>
+                    {{ form.numero_dni }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Obra Social:</label>
+                    {{ form.id_obra_social }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Estado Civil:</label>
+                    {{ form.id_estado_civil }}
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Sexo:</label>
+                    {{ form.id_sexo }}
+                </div>
+                <div class="col-md-1 text-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter-square"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover table-bordered align-middle">
+            <thead style="background-color: #009f95; color: white;">
+                <tr>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'apellido' %}-apellido{% else %}apellido{% endif %}">
+                            Apellido
+                            {% if request.GET.ordering == 'apellido' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-apellido' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'nombre' %}-nombre{% else %}nombre{% endif %}">
+                            Nombre
+                            {% if request.GET.ordering == 'nombre' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-nombre' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'numero_dni' %}-numero_dni{% else %}numero_dni{% endif %}">
+                            DNI
+                            {% if request.GET.ordering == 'numero_dni' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-numero_dni' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_obra_social' %}-id_obra_social{% else %}id_obra_social{% endif %}">
+                            Obra Social
+                            {% if request.GET.ordering == 'id_obra_social' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_obra_social' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_sexo' %}-id_sexo{% else %}id_sexo{% endif %}">
+                            Sexo
+                            {% if request.GET.ordering == 'id_sexo' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-id_sexo' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for paciente in pacientes %}
+                <tr>
+                    <td>{{ paciente.apellido }}</td>
+                    <td>{{ paciente.nombre }}</td>
+                    <td>{{ paciente.numero_dni }}</td>
+                    <td>{{ paciente.id_obra_social }}</td>
+                    <td>{{ paciente.id_sexo.nombre }}</td>
+                    <td class="text-center">
+                        <a href="{% url 'paciente_fisiatria_detail' paciente.id %}" class="btn btn-info btn-sm">
+                            <i class="bi bi-info-circle"></i> Detalles
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No se encontraron pacientes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

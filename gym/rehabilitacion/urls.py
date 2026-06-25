@@ -114,6 +114,13 @@ from rehabilitacion.views.informe import(
     LinkDelete,
 )
 
+from rehabilitacion.views.pacitentes_fisiatria import(
+    PacientesFisiatriaList,
+    PacienteFisiatriaDetail,
+    PacienteFisiatriaCreate,
+    PacienteFisiatriaUpdate,
+)
+
 
 inicio = [
     path(route='',view=IndexView.as_view(), name='inicio_rehab'),
@@ -230,6 +237,13 @@ informes = [
     path(route='link_delete/<int:id_link>/<int:id_informe>',view=LinkDelete.as_view(), name='link_delete'),
 ]
 
+pacientes_fisiatria = [
+    path(route='pacientes/fisiatria/list/<state>',view=PacientesFisiatriaList.as_view(), name='pacientes_fisiatria_list'),
+    path(route='pacientes/fisiatria/detail/<int:id>',view=PacienteFisiatriaDetail.as_view(), name='paciente_fisiatria_detail'),
+    path(route='pacientes/fisiatria/create',view=PacienteFisiatriaCreate.as_view(), name='paciente_fisiatria_create'),
+    path(route='pacientes/fisiatria/update/<int:id>',view=PacienteFisiatriaUpdate.as_view(), name='paciente_fisiatria_update'),
+]
+
 urlpatterns = (
     inicio + 
     pacientes + 
@@ -242,5 +256,6 @@ urlpatterns = (
     agenda + 
     turnos +
     asistencia + 
-    informes
+    informes +
+    pacientes_fisiatria
     )
