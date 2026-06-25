@@ -11,7 +11,9 @@
             <span class="badge bg-secondary">{{ turno.estado }}</span>
         {% endif %}
 
-        <span class="turno-texto turno-paciente">{{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}</span>
+        <a href="{% url 'turno_paciente_detail' turno.paciente_id.id %}" class="turno-texto turno-paciente turno-paciente-link">
+            {{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}
+        </a>
 
         {% if turno.estado == 'ANULADO' %}
             <button type="button" class="btn btn-secondary btn-sm turno-accion" disabled>

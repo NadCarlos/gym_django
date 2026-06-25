@@ -44,6 +44,9 @@ class TratamientoProfesionalRepository:
             profesional_tratamiento = None
         return profesional_tratamiento
     
+    def tratamientos_profesional_turnos(self, profesional_id) -> List[ProfesionalTratamiento]:
+        return ProfesionalTratamiento.objects.filter(id_profesional_id=profesional_id, activo=True, id_tratamiento__activo=True,).select_related('id_tratamiento').order_by('id_tratamiento__nombre')
+    
     def delete(self, profesional_tratamiento: ProfesionalTratamiento):
         return profesional_tratamiento.delete()
     

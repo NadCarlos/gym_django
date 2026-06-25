@@ -7,14 +7,19 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 
 from utils.decorators import requiere_areas
-from administracion.models import ProfesionalTratamiento
-from administracion.repositories.profesional import ProfesionalRepository
+
 from rehabilitacion.forms import TurnoCreateForm
+
 from rehabilitacion.repositories.turno import TurnoRepository
+from administracion.repositories.profesional import ProfesionalRepository
+from administracion.repositories.paciente_area import PacienteAreaRepository
+from administracion.repositories.tratamiento_profesional import TratamientoProfesionalRepository
 
 
 turnoRepo = TurnoRepository()
 profesionalRepo = ProfesionalRepository()
+pacienteAreaRepo = PacienteAreaRepository()
+tratamientoProfesionalRepo = TratamientoProfesionalRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -141,14 +146,29 @@ class TurnoEstadoUpdate(View):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class TurnoPacienteDetailRedirect(View):
+
+    def get(self, request, id):
+        prioridades = [
+            (2, 'paciente_rehab_detail'),
+            (3, 'paciente_fisiatria_detail'),
+            (1, 'paciente_detail'),
+        ]
+
+        for area_id, url_name in prioridades:
+            if pacienteAreaRepo.paciente_area_exist(id=id, area_id=area_id):
+                return redirect(url_name, id)
+
+        messages.error(request, 'No se encontro el paciente en Rehabilitacion, Fisiatria ni Gimnasio.')
+        return redirect(request.META.get('HTTP_REFERER') or 'turnos_rehab')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class TratamientosPorProfesionalRehabView(View):
 
     def get(self, request, profesional_id):
-        tratamientos_profesional = ProfesionalTratamiento.objects.filter(
-            id_profesional_id=profesional_id,
-            activo=True,
-            id_tratamiento__activo=True,
-        ).select_related('id_tratamiento').order_by('id_tratamiento__nombre')
+        tratamientos_profesional = tratamientoProfesionalRepo.tratamientos_profesional_turnos(profesional_id=profesional_id)
 
         data = [
             {

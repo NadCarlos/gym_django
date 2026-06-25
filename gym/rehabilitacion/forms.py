@@ -1,5 +1,5 @@
 from django import forms
-
+from django.db.models import Min, Case, When, IntegerField
 from rehabilitacion.models import (
     AgendaRehab,
     Alta,
@@ -357,17 +357,29 @@ class TurnoCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        ids_pacientes_rehab = PacienteArea.objects.filter(
-            id_area=2,
-        ).values_list('id_paciente', flat=True)
-        self.fields['paciente_id'].queryset = Paciente.objects.filter(
-            id__in=ids_pacientes_rehab,
-            activo=True,
-        ).order_by('apellido', 'nombre')
-        self.fields['paciente_id'].empty_label = "Seleccione un paciente"
-        self.fields['paciente_id'].label_from_instance = (
-            lambda paciente: f"{paciente.apellido}, {paciente.nombre} - DNI {paciente.numero_dni}"
+        ids_pacientes = (
+            PacienteArea.objects
+            .annotate(
+                prioridad=Case(
+                    When(id_area=2, then=1),
+                    When(id_area=3, then=2),
+                    When(id_area=1, then=3),
+                    default=99,
+                    output_field=IntegerField(),
+                )
+            )
+            .values('id_paciente')
+            .annotate(min_prioridad=Min('prioridad'))
+            .values_list('id_paciente', flat=True)
         )
+
+        self.fields['paciente_id'].queryset = (
+            Paciente.objects
+            .filter(id__in=ids_pacientes, activo=True)
+            .order_by('apellido', 'nombre')
+        )
+        self.fields['paciente_id'].empty_label = "Seleccione un paciente"
+        self.fields['paciente_id'].label_from_instance = (lambda paciente: f"{paciente.apellido}, {paciente.nombre} - DNI {paciente.numero_dni}")
 
         self.fields['profesional_id'].queryset = Profesional.objects.filter(
             activo=True,
