@@ -72,6 +72,23 @@ class TurnoRepository:
             hora=hora,
             estado=estado,
         )
+    
+    def update(
+        self,
+        turno: Turno,
+        profesional: Profesional,
+        tratamiento: Tratamiento,
+        fecha,
+        hora,
+    ) -> Turno:
+
+        turno.profesional_id = profesional
+        turno.tratamiento_id = tratamiento
+        turno.fecha = fecha
+        turno.hora = hora
+        turno.save()
+
+        return turno
 
     def marcar_realizado(self, turno: Turno) -> Turno:
         if turno.estado == Turno.ESTADO_ANULADO:

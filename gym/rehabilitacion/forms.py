@@ -447,6 +447,79 @@ class TurnoCreateForm(forms.ModelForm):
         }
 
 
+class TurnoUpdateForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['profesional_id'].queryset = Profesional.objects.filter(
+            activo=True,
+            profesional_area__id_area=2,
+        ).distinct().order_by('apellido', 'nombre')
+        self.fields['profesional_id'].empty_label = "Seleccione un profesional"
+        self.fields['profesional_id'].label_from_instance = (
+            lambda profesional: f"{profesional.apellido}, {profesional.nombre}"
+        )
+
+        self.fields['tratamiento_id'].queryset = Tratamiento.objects.none()
+        self.fields['tratamiento_id'].empty_label = "Seleccione un tratamiento"
+        self.fields['tratamiento_id'].widget.attrs['disabled'] = 'disabled'
+
+        profesional_id = None
+
+        if self.is_bound:
+            profesional_id = self.data.get('profesional_id')
+
+        elif self.instance and self.instance.pk:
+            profesional_id = self.instance.profesional_id_id
+
+        if profesional_id:
+            tratamientos_ids = ProfesionalTratamiento.objects.filter(
+                id_profesional_id=profesional_id,
+                activo=True,
+            ).values_list('id_tratamiento_id', flat=True)
+            self.fields['tratamiento_id'].queryset = Tratamiento.objects.filter(
+                id__in=tratamientos_ids,
+                activo=True,
+            ).order_by('nombre')
+            self.fields['tratamiento_id'].widget.attrs.pop('disabled', None)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        profesional = cleaned_data.get('profesional_id')
+        tratamiento = cleaned_data.get('tratamiento_id')
+
+        if profesional and tratamiento:
+            tratamiento_valido = ProfesionalTratamiento.objects.filter(
+                id_profesional=profesional,
+                id_tratamiento=tratamiento,
+                activo=True,
+            ).exists()
+            if not tratamiento_valido:
+                self.add_error(
+                    'tratamiento_id',
+                    'El tratamiento seleccionado no pertenece al profesional elegido.',
+                )
+
+        return cleaned_data
+
+    class Meta:
+        model = Turno
+        fields = [
+            'profesional_id',
+            'tratamiento_id',
+            'fecha',
+            'hora',
+        ]
+
+        widgets = {
+            'profesional_id': forms.Select(attrs={'class': 'form-control custom-class', 'id': 'select-profesional'}),
+            'tratamiento_id': forms.Select(attrs={'class': 'form-control custom-class', 'id': 'select-tratamiento'}),
+            'fecha': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control', 'type': 'date'}),
+            'hora': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+        }
+
+
 class AsistenciaRehabPublicCreateForm(forms.ModelForm):
 
     class Meta:

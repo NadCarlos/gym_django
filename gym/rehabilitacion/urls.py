@@ -90,6 +90,7 @@ from rehabilitacion.views.agenda import (
 from rehabilitacion.views.turno import (
     TurnoList,
     TurnoCreate,
+    TurnoUpdate,
     TurnoEstadoUpdate,
     TurnoPacienteDetailRedirect,
     TratamientosPorProfesionalRehabView,
@@ -214,6 +215,7 @@ agenda = [
 turnos = [
     path(route='turnos/', view=TurnoList.as_view(), name='turnos_rehab'),
     path(route='turnos/create/', view=TurnoCreate.as_view(), name='turno_rehab_create'),
+    path(route='turnos/update/<int:id>/', view=TurnoUpdate.as_view(), name='turno_rehab_update'),
     path(route='turnos/update_estado/<int:id>/', view=TurnoEstadoUpdate.as_view(), name='turno_rehab_update_estado'),
     path(route='turnos/paciente/<int:id>/', view=TurnoPacienteDetailRedirect.as_view(), name='turno_paciente_detail'),
     path(route='turnos/tratamientos/<int:profesional_id>/', view=TratamientosPorProfesionalRehabView.as_view(), name='turnos_tratamientos_por_profesional'),

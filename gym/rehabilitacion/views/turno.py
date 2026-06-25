@@ -8,7 +8,7 @@ from django.views import View
 
 from utils.decorators import requiere_areas
 
-from rehabilitacion.forms import TurnoCreateForm
+from rehabilitacion.forms import TurnoCreateForm, TurnoUpdateForm
 
 from rehabilitacion.repositories.turno import TurnoRepository
 from administracion.repositories.profesional import ProfesionalRepository
@@ -110,6 +110,36 @@ class TurnoCreate(View):
                 form=form,
             )
         )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class TurnoUpdate(View):
+
+    def get(self, request, id):
+        turno = turnoRepo.get_by_id(id=id)
+        print(turno)
+        form = TurnoUpdateForm(instance=turno)
+        return render(
+            request,
+            'turnos/update.html',
+            dict(
+                form=form,
+            )
+        )
+
+    def post(self, request, id):
+        turno = turnoRepo.get_by_id(id=id)
+        form = TurnoUpdateForm(request.POST)
+        if form.is_valid():
+            turnoRepo.update(
+                turno=turno,
+                profesional=form.cleaned_data['profesional_id'],
+                tratamiento=form.cleaned_data['tratamiento_id'],
+                fecha=form.cleaned_data['fecha'],
+                hora=form.cleaned_data['hora'],
+            )
+            return redirect('turnos_rehab')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

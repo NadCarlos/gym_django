@@ -232,10 +232,11 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_update' turno.id %}">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-save"></i> Guardar
-                                </button>
+                                <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
                             </div>
                         </form>
                     </div>
