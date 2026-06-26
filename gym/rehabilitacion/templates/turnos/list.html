@@ -200,7 +200,6 @@
     </div>
 
     {% for turno in turnos %}
-        {% if turno.estado != 'ANULADO' %}
             <div class="modal fade" id="editarTurnoModal{{ turno.id }}" tabindex="-1" aria-labelledby="editarTurnoModalLabel{{ turno.id }}" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -216,7 +215,17 @@
                                     <strong>{{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}</strong><br>
                                     {{ turno.fecha|date:"d/m/Y" }} {{ turno.hora|time:"H:i" }} - {{ turno.tratamiento_id.nombre }}
                                 </p>
-
+                                
+                                {% if turno.estado == 'ANULADO' %}
+                                <p class="mb-3">
+                                    <strong>Turno: </strong>{{ turno.estado}}<br>
+                                </p>
+                                <p class="mb-3">
+                                    <strong>Motivo: </strong>{{ turno.motivo_anulacion}}<br>
+                                </p>
+                                {% endif %}
+                                
+                                {% if turno.estado != 'ANULADO' %}
                                 <div class="mb-3">
                                     <label class="form-label">Accion</label>
                                     <select class="form-control turno-accion-select" name="accion" required>
@@ -225,6 +234,7 @@
                                         <option value="REALIZADO">Realizado</option>
                                     </select>
                                 </div>
+                                {% endif %}
 
                                 <div class="mb-3 turno-motivo-container d-none">
                                     <label class="form-label">Motivo de anulacion</label>
@@ -232,17 +242,23 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <a class="btn btn-danger me-auto" href="{% url 'turno_rehab_delete' turno.id %}" onclick="return confirm('Esto va a eliminar definitivamente el turno!');">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </a>
+                                {% if turno.estado != 'ANULADO' %}
                                 <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_update' turno.id %}">
                                     <i class="bi bi-pencil"></i> Editar
                                 </a>
+                                {% endif %}
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                {% if turno.estado != 'ANULADO' %}
                                 <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar</button>
+                                {% endif %}
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-        {% endif %}
     {% endfor %}
 </div>
 

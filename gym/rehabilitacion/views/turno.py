@@ -172,6 +172,17 @@ class TurnoEstadoUpdate(View):
             )
 
         return redirect(redirect_to)
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class TurnoDelete(View):
+
+    def get(self, request, id, *args, **kwargs):
+        turno = turnoRepo.get_by_id(id=id)
+        #No elimino, cambio el campo activo a False
+        turnoRepo.delete_by_activo(turno=turno)
+        return redirect(request.META.get('HTTP_REFERER') or 'turnos_rehab')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

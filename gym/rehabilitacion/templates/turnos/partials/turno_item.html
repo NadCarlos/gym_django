@@ -16,8 +16,8 @@
         </a>
 
         {% if turno.estado == 'ANULADO' %}
-            <button type="button" class="btn btn-secondary btn-sm turno-accion" disabled>
-                <i class="bi bi-lock"></i>
+            <button type="button" class="btn btn-secondary btn-sm turno-accion" data-bs-toggle="modal" data-bs-target="#editarTurnoModal{{ turno.id }}">
+                <i class="bi bi-eye"></i>
             </button>
         {% else %}
             <button type="button" class="btn btn-outline-primary btn-sm turno-accion" data-bs-toggle="modal" data-bs-target="#editarTurnoModal{{ turno.id }}">

@@ -668,6 +668,21 @@ class Turno(models.Model):
         related_name='turnos_anulados_rehabilitacion',
     )
 
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    usuario_eliminador_id = models.ForeignKey(
+        User,
+        db_column='usuario_eliminador_id',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name='turnos_eliminado_rehabilitacion',
+    )
+
     def __str__(self):
         return f"{self.paciente_id} - {self.fecha} {self.hora}"
     
