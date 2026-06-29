@@ -122,6 +122,8 @@ from rehabilitacion.views.pacitentes_fisiatria import(
     PacienteFisiatriaDetail,
     PacienteFisiatriaCreate,
     PacienteFisiatriaUpdate,
+    PacienteFisiatriaCreateFromExistent,
+    PacienteFisiatriaRedirectFromExistent,
 )
 
 
@@ -248,6 +250,8 @@ pacientes_fisiatria = [
     path(route='pacientes/fisiatria/detail/<int:id>',view=PacienteFisiatriaDetail.as_view(), name='paciente_fisiatria_detail'),
     path(route='pacientes/fisiatria/create',view=PacienteFisiatriaCreate.as_view(), name='paciente_fisiatria_create'),
     path(route='pacientes/fisiatria/update/<int:id>',view=PacienteFisiatriaUpdate.as_view(), name='paciente_fisiatria_update'),
+    path(route='pacientes/fisiatria/create_from_existent',view=PacienteFisiatriaCreateFromExistent.as_view(), name='paciente_fisiatria_create_from_existent'),
+    path(route='pacientes/fisiatria/redirect_from_existent',view=PacienteFisiatriaRedirectFromExistent.as_view(), name='paciente_fisiatria_redirect_from_existent'),
 ]
 
 urlpatterns = (

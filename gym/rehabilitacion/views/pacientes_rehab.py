@@ -185,7 +185,8 @@ class PacienteRehabDetail(View):
 class PacienteRehabCreate(View):
 
     def get(self, request):
-        pacientes_dni = pacienteRepo.dni_list_segun_area(id_area=1)
+        pacientes_dni_gym = pacienteRepo.dni_list_segun_area(id_area=1)
+        pacientes_dni_fisio = pacienteRepo.dni_list_segun_area(id_area=3)
         pacientes_dni_area_actual = pacienteRepo.dni_list_segun_area(id_area=2)
         obra_social = obraSocialRepo.get_by_name(nombre="Particular")
         sexo = sexoRepo.get_by_name(nombre="Masculino")
@@ -204,7 +205,8 @@ class PacienteRehabCreate(View):
             'pacientes_rehab/create.html',
             dict(
                 form=form,
-                pacientes_dni=json.dumps(pacientes_dni),
+                pacientes_dni_gym=json.dumps(pacientes_dni_gym),
+                pacientes_dni_fisio=json.dumps(pacientes_dni_fisio),
                 pacientes_dni_area_actual=json.dumps(pacientes_dni_area_actual),
             )
         )

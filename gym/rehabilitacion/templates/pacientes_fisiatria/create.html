@@ -1,7 +1,8 @@
 {% extends "inicio/base.html" %}
 
 {% block content %}
-<input type="hidden" name="dni_existentes" id="dni_existentes" value="{{ pacientes_dni }}">
+<input type="hidden" name="pacientes_dni_gym" id="pacientes_dni_gym" value="{{ pacientes_dni_gym }}">
+<input type="hidden" name="pacientes_dni_rehab" id="pacientes_dni_rehab" value="{{ pacientes_dni_rehab }}">
 <input type="hidden" name="pacientes_dni_area_actual" id="pacientes_dni_area_actual" value="{{ pacientes_dni_area_actual }}">
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Nuevo Paciente Fisiatria</h2>
@@ -137,7 +138,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const dniInput = document.getElementById('numero_dni');
-        const dnisExistentes = JSON.parse(document.getElementById('dni_existentes').value);
+        const pacientes_dni_gym = JSON.parse(document.getElementById('pacientes_dni_gym').value);
+        const pacientes_dni_rehab = JSON.parse(document.getElementById('pacientes_dni_rehab').value);
         const dnisExistentesAreaActual = JSON.parse(document.getElementById('pacientes_dni_area_actual').value);
         const botonGuardar = document.getElementById('btn-guardar');
     
@@ -168,7 +170,7 @@
                 usarBtn.textContent = 'Ver Detalle';
                 usarBtn.onclick = () => {
                     const dni = dniInput.value;
-                    const urlBase = "{% url 'paciente_rehab_redirect_from_existent' %}";
+                    const urlBase = "{% url 'paciente_fisiatria_redirect_from_existent' %}";
                     window.location.href = `${urlBase}?dni=${dni}`;
                 };
     
@@ -176,13 +178,13 @@
                 dniAlert.appendChild(usarBtn);
             }
 
-            else if (dnisExistentes.includes(dniIngresado)) {
+            else if (pacientes_dni_rehab.includes(dniIngresado)) {
                 dniInput.classList.add('is-invalid');
                 botonGuardar.disabled = true;
     
                 const mensaje = document.createElement('span');
                 mensaje.className = 'text-danger fw-bold me-2';
-                mensaje.textContent = '⚠️ Ya existe un paciente con este DNI en otra area';
+                mensaje.textContent = '⚠️ Ya existe un paciente con este DNI en Rehabilitacion';
     
                 const usarBtn = document.createElement('button');
                 usarBtn.type = 'button';
@@ -190,14 +192,35 @@
                 usarBtn.textContent = 'Crear usando datos existentes';
                 usarBtn.onclick = () => {
                     const dni = dniInput.value;
-                    const urlBase = "{% url 'paciente_rehab_create_from_existent' %}";
+                    const urlBase = "{% url 'paciente_fisiatria_create_from_existent' %}";
                     window.location.href = `${urlBase}?dni=${dni}`;
                 };
     
                 dniAlert.appendChild(mensaje);
                 dniAlert.appendChild(usarBtn);
             }
-            
+
+            else if (pacientes_dni_gym.includes(dniIngresado)) {
+                dniInput.classList.add('is-invalid');
+                botonGuardar.disabled = true;
+    
+                const mensaje = document.createElement('span');
+                mensaje.className = 'text-danger fw-bold me-2';
+                mensaje.textContent = '⚠️ Ya existe un paciente con este DNI en Gimnasio';
+    
+                const usarBtn = document.createElement('button');
+                usarBtn.type = 'button';
+                usarBtn.className = 'btn btn-outline-primary btn-sm ms-2';
+                usarBtn.textContent = 'Crear usando datos existentes';
+                usarBtn.onclick = () => {
+                    const dni = dniInput.value;
+                    const urlBase = "{% url 'paciente_fisiatria_create_from_existent' %}";
+                    window.location.href = `${urlBase}?dni=${dni}`;
+                };
+    
+                dniAlert.appendChild(mensaje);
+                dniAlert.appendChild(usarBtn);
+            }
         });
     });
     </script>

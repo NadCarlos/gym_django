@@ -116,7 +116,8 @@ class PacienteFisiatriaDetail(View):
 class PacienteFisiatriaCreate(View):
 
     def get(self, request):
-        pacientes_dni = pacienteRepo.dni_list_segun_area(id_area=1)
+        pacientes_dni_gym = pacienteRepo.dni_list_segun_area(id_area=1)
+        pacientes_dni_rehab = pacienteRepo.dni_list_segun_area(id_area=2)
         pacientes_dni_area_actual = pacienteRepo.dni_list_segun_area(id_area=3)
         obra_social = obraSocialRepo.get_by_name(nombre="Particular")
         sexo = sexoRepo.get_by_name(nombre="Masculino")
@@ -135,7 +136,8 @@ class PacienteFisiatriaCreate(View):
             'pacientes_fisiatria/create.html',
             dict(
                 form=form,
-                pacientes_dni=json.dumps(pacientes_dni),
+                pacientes_dni_gym=json.dumps(pacientes_dni_gym),
+                pacientes_dni_rehab=json.dumps(pacientes_dni_rehab),
                 pacientes_dni_area_actual=json.dumps(pacientes_dni_area_actual),
             )
         )
@@ -230,3 +232,35 @@ class PacienteFisiatriaUpdate(View):
                     return redirect('error_paciente_existente')
         except:
             return redirect('error')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacienteFisiatriaCreateFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        user = request.user
+        area = areaRepo.get_by_id(id=3)
+        
+        paciente_area = pacienteAreaRepo.create(
+            id_paciente=paciente,
+            id_area=area,
+            id_usuario=user,
+        )
+
+        return redirect('paciente_rehab_detail', paciente.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacienteFisiatriaRedirectFromExistent(View):
+
+    def get(self, request):
+        dni = request.GET.get('dni')
+        dni = int(dni)
+        paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+
+        return redirect('paciente_fisiatria_detail', paciente.id)
