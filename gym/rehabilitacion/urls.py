@@ -16,6 +16,7 @@ from rehabilitacion.views.pacientes_rehab import(
     PacienteRehabRedirectFromExistent,
     #PacientesRehabBulkAdd,
     PacienteRehabDelete,
+    AsistenciasPacientesRehabList,
 )
 
 from rehabilitacion.views.profesional_rehab import(
@@ -103,6 +104,8 @@ from rehabilitacion.views.asistencia import (
     CheckInRehabErrorAgendaActiva,
     CheckInRehabErrorAsistenciaRegistrada,
     CheckInRehabErrorDiaIncorrecto,
+    CheckInRehabManual,
+    CheckInRehabErrorAsistenciaRegistradaManual,
 )
 
 from rehabilitacion.views.informe import(
@@ -143,6 +146,7 @@ pacientes = [
     path(route='pacientes/redirect_from_existent',view=PacienteRehabRedirectFromExistent.as_view(), name='paciente_rehab_redirect_from_existent'),
     #path(route='pacientes/bulk_add',view=PacientesRehabBulkAdd.as_view(), name='bulk_add'),
     path(route='pacientes/delete/<int:id>',view=PacienteRehabDelete.as_view(), name='paciente_rehab_delete'),
+    path(route='pacientes/asistencias_list/',view=AsistenciasPacientesRehabList.as_view(), name='asistencias_rehab_list'),
 ]
 
 profesionales = [
@@ -231,6 +235,8 @@ asistencia = [
     path(route='check_in_error_agenda_activa/',view=CheckInRehabErrorAgendaActiva.as_view(), name='check_in_error_agenda_activa'),
     path(route='check_in_error_asistencia_registrada/',view=CheckInRehabErrorAsistenciaRegistrada.as_view(), name='check_in_error_asistencia_registrada'),
     path(route='check_in_error_dia_incorrecto/<int:id>',view=CheckInRehabErrorDiaIncorrecto.as_view(), name='check_in_error_dia_incorrecto'),
+    path(route='check_in_rehab_manual/<int:id>/<str:fecha>/',view=CheckInRehabManual.as_view(), name='check_in_rehab_manual'),
+    path(route='check_in_error_asistencia_registrada_manual/',view=CheckInRehabErrorAsistenciaRegistradaManual.as_view(), name='check_in_error_asistencia_registrada_manual'),
 ]
 
 informes = [

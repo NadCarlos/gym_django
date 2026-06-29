@@ -29,8 +29,12 @@ class AsistenciaRehabRepository:
     
     def create(
         self,
-        agenda: Optional[AgendaRehab] = None,
+        fecha: str,
+        hora: str,
+        id_agenda_rehab: Optional[AgendaRehab] = None,
     ):
         return AsistenciaRehab.objects.create(
-            id_agenda=agenda,
+            id_agenda_rehab=id_agenda_rehab,
+            fecha=fecha,
+            hora=hora,
         )

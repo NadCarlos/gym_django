@@ -108,6 +108,8 @@ class AgendaRehabAdmin(admin.ModelAdmin):
 class AsistenciaRehabAdmin(admin.ModelAdmin):
     list_display = (
         'id_agenda_rehab',
+        'fecha',
+        'hora',
     )
 
 

@@ -16,6 +16,9 @@ class AgendaRehabRepository:
     def filter_by_dia(self, id_dia) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_dia__id = id_dia).filter(activo=True).exclude(observaciones="R")
     
+    def filter_by_dia_asist_list(self, id_dia) -> Optional[AgendaRehab]:
+        return AgendaRehab.objects.filter(id_dia_id=id_dia,activo=True).values_list('id_paciente_area__id_paciente_id',flat=True)
+    
     def filter_by_id_paciente(self, id_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).order_by("id_dia__id")
     

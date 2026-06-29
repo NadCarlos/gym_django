@@ -150,6 +150,50 @@ class PacientesRehabList(View):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class AsistenciasPacientesRehabList(View):
+    template_name = 'pacientes_rehab/asistencias_list.html'
+    context_object_name = 'pacientes_rehab'
+
+    def get(self, request):
+        fecha_str = request.GET.get("fecha")
+        if fecha_str:
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        else:
+            fecha = date.today()
+        id_dia = fecha.weekday() + 1
+
+        agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia)
+        pacientes_con_agenda = pacienteRepo.filter_pacientes_area(state=True,id_area=2).filter(id__in=agenda)
+        
+        filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
+
+        # Obtener el parámetro de ordenamiento
+        ordering = request.GET.get('ordering', 'apellido')
+
+        # Obtener el queryset filtrado
+        pacientes = filterset.qs
+
+        # Si existe un campo de ordenamiento, aplicarlo
+        if ordering:
+            pacientes = filterset.qs.order_by(ordering)
+
+        pacientes_count = pacientes.count()
+
+        return render(
+            request,
+            self.template_name,
+            dict(
+                pacientes_count = pacientes_count,
+                pacientes=pacientes,
+                form=filterset.form,
+                ordering=ordering,
+                fecha=fecha,
+            )
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacienteRehabDetail(View):
 
     def get(self, request, id):

@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Localidad, PacienteArea
+from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Localidad, PacienteArea, Agenda
 
 
 class PacienteRepository:

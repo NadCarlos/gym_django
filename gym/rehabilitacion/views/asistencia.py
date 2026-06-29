@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -16,6 +16,42 @@ from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 pacienteRepo = PacienteRepository()
 asistenciaRepo = AsistenciaRehabRepository()
 agendaRepo = AgendaRehabRepository()
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CheckInRehabManual(View):
+
+    def post(self, request, id, fecha):
+        paciente = pacienteRepo.get_by_id(id=id)
+        agenda = agendaRepo.filter_by_id_paciente(id_paciente=paciente.id)
+
+        if fecha:
+            fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+        else:
+            fecha = date.today()
+
+        id_dia = fecha.weekday() + 1
+
+        turnos_del_dia = [
+            turno for turno in agenda
+            if turno.id_dia.id == id_dia
+        ]
+
+        tiene_asistencia = asistenciaRepo.filter_by_date(id_paciente=paciente.id,fecha=fecha)
+
+        if len(tiene_asistencia) == 0:
+            now = datetime.now()
+            current_hour = now.hour
+            for turno in turnos_del_dia:
+                asistenciaRepo.create(
+                    id_agenda_rehab=turno,
+                    fecha=fecha,
+                    hora=current_hour,
+                )
+
+            return redirect('asistencias_rehab_list')
+        else:
+            return redirect('check_in_error_asistencia_registrada_manual')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -66,7 +102,23 @@ class CheckInRehab(View):
                 
                 tiene_asistencia_del_dia = asistenciaRepo.filter_by_date(id_paciente=paciente.id, fecha=today)
                 if len(tiene_asistencia_del_dia) == 0:
-                    return HttpResponse("HAPPY HAPPY HAPPY")
+                    now = datetime.now()
+                    current_day = now.day
+                    current_hour = now.hour
+                    for turno in turnosDelDia:
+                        asistenciaRepo.create(
+                            id_agenda_rehab=turno,
+                            fecha=current_day,
+                            hora=current_hour,
+                        )
+                    return render(
+                        request,
+                        'asistencia_rehab/check_in_success.html',
+                        dict(
+                            paciente=paciente,
+                            date=today,
+                        )
+                    )
                 else:
                     return redirect('check_in_error_asistencia_registrada')
 
@@ -99,6 +151,16 @@ class CheckInRehabErrorAsistenciaRegistrada(View):
         return render(
             request,
             'asistencia_rehab/check_in_error_asistencia_registrada.html'
+        )
+    
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+class CheckInRehabErrorAsistenciaRegistradaManual(View):
+
+    def get(self, request):
+        return render(
+            request,
+            'asistencia_rehab/check_in_error_asistencia_registrada_manual.html'
         )
     
 

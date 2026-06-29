@@ -3,34 +3,13 @@
 {% block content %}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
-        <h2 class="text-primary mb-0"><i class="bi bi-people-fill"></i> Lista de Pacientes Rehabilitacion</h2>
+        <h2 class="text-primary mb-0"><i class="bi bi-people-fill"></i> Lista de Pacientes Con Turnos Rehabilitacion</h2>
     </div>
 
     <!-- Botones principales -->
     <div class="row">
         <!-- Primera columna -->
         <div class="col-md-8">
-            <div class="mb-3 d-flex flex-wrap gap-2">
-                <a href="{% url 'paciente_rehab_create' %}" class="btn btn-success">
-                    <i class="bi bi-person-plus"></i> Nuevo Paciente
-                </a>
-
-                {% if state == 'False' %}
-                <a href="{% url 'pacientes_rehab_list' True %}" class="btn btn-outline-primary">
-                    <i class="bi bi-eye"></i> Ver Activos
-                </a>
-                {% elif state == 'True' %}
-                <a href="{% url 'pacientes_rehab_list' False %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-eye-slash"></i> Ver Eliminados
-                </a>
-                <a href="{% url 'pacientes_csv' True 2 %}?{{ request.GET.urlencode }}" class="btn btn-outline-success">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL
-                </a>
-                <a href="{% url 'asistencias_rehab_list' %}" class="btn btn-outline-warning">
-                    <i class="bi bi-file-arrow-up"></i> Cargar Asistencias
-                </a>
-                {% endif %}
-            </div>
         </div>
         <!-- Segunda columna -->
         <div class="col-md-2">
@@ -47,7 +26,14 @@
     <!-- Filtros -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{% url 'pacientes_rehab_list' state %}" class="row g-3 align-items-end">
+            <form method="GET" action="{% url 'asistencias_rehab_list' %}" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <input
+                        type="date"
+                        name="fecha"
+                        class="form-control"
+                        value="{{ fecha|date:'Y-m-d' }}">
+                </div>
                 <div class="col-md-3">
                     <label class="form-label fw-bold">Apellido:</label>
                     {{ form.apellido }}
@@ -55,18 +41,6 @@
                 <div class="col-md-3">
                     <label class="form-label fw-bold">DNI:</label>
                     {{ form.numero_dni }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Obra Social:</label>
-                    {{ form.id_obra_social }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Estado Civil:</label>
-                    {{ form.id_estado_civil }}
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold">Sexo:</label>
-                    {{ form.id_sexo }}
                 </div>
                 <div class="col-md-1 text-end">
                     <button type="submit" class="btn btn-primary w-100">
@@ -112,26 +86,6 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th>
-                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_obra_social' %}-id_obra_social{% else %}id_obra_social{% endif %}">
-                            Obra Social
-                            {% if request.GET.ordering == 'id_obra_social' %}
-                                <i class="bi bi-caret-down-fill"></i>
-                            {% elif request.GET.ordering == '-id_obra_social' %}
-                                <i class="bi bi-caret-up-fill"></i>
-                            {% endif %}
-                        </a>
-                    </th>
-                    <th>
-                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_sexo' %}-id_sexo{% else %}id_sexo{% endif %}">
-                            Sexo
-                            {% if request.GET.ordering == 'id_sexo' %}
-                                <i class="bi bi-caret-down-fill"></i>
-                            {% elif request.GET.ordering == '-id_sexo' %}
-                                <i class="bi bi-caret-up-fill"></i>
-                            {% endif %}
-                        </a>
-                    </th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -141,12 +95,15 @@
                     <td>{{ paciente.apellido }}</td>
                     <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
-                    <td>{{ paciente.id_obra_social }}</td>
-                    <td>{{ paciente.id_sexo.nombre }}</td>
                     <td class="text-center">
-                        <a href="{% url 'paciente_rehab_detail' paciente.id %}" class="btn btn-info btn-sm">
-                            <i class="bi bi-info-circle"></i> Detalles
-                        </a>
+                        <form method="post"
+                            action="{% url 'check_in_rehab_manual' paciente.id fecha %}"
+                            class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-info btn-sm">
+                                <i class="bi bi-plus"></i> Cargar Asistencia
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% empty %}

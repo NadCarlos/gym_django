@@ -1,0 +1,26 @@
+{% extends "home/check_in_base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="row">
+            <div class="card text-center shadow">
+                <div class="card-header bg-success text-white">
+                    <h1 class="card-title mb-0">ASISTENCIA CARGADA</h1>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-text">{{ paciente.nombre }}, {{ paciente.apellido }}</h3>
+                    <h3 class="card-subtitle text-muted">{{ date }}</h3>
+                    <h3 class="mt-3">Redireccionando...</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(function () {
+            window.location.href = "{% url 'check_in' %}";
+        }, 4000);
+    </script>
+</div>
+{% endblock %}
