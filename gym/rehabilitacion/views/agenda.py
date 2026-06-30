@@ -552,6 +552,13 @@ class AgendaProfesionalRehab(View):
         profesional = profesionalRepo.get_by_id(id=id)
         profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
         agenda = agendaRehabRepo.filter_by_id_profesional_area(id_profesional_area=profesionalArea.id)
+        dias = [
+            (1, "Lunes"),
+            (2, "Martes"),
+            (3, "Miércoles"),
+            (4, "Jueves"),
+            (5, "Viernes"),
+        ]
         return render(
             request,
             'agenda/agenda_profesional_rehab.html',
@@ -560,6 +567,7 @@ class AgendaProfesionalRehab(View):
                 profesional=profesional,
                 agenda=agenda,
                 hora_limite_tarde=time(14, 0),
+                dias=dias,
             )
         )
 
