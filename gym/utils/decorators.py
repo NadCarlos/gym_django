@@ -17,6 +17,9 @@ def requiere_areas(*areas_permitidas):
 
             if user.groups.filter(name__in=areas_permitidas).exists():
                 return view_func(request, *args, **kwargs)
+            
+            if user.groups.filter(name="IngresoRehab").exists():
+                return redirect("check_in_rehab")
 
             if user.groups.filter(name="Gimnasio").exists():
                 return redirect("inicio")

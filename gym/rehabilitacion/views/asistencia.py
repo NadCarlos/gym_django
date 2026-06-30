@@ -4,6 +4,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from utils.decorators import requiere_areas
 
 from rehabilitacion.forms import (
     AsistenciaRehabPublicCreateForm,
@@ -19,6 +20,7 @@ agendaRepo = AgendaRehabRepository()
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class CheckInRehabManual(View):
 
     def post(self, request, id, fecha):
@@ -55,6 +57,7 @@ class CheckInRehabManual(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("IngresoRehab"), name="dispatch")
 class CheckInRehab(View):
 
     def get(self, request):
@@ -70,61 +73,63 @@ class CheckInRehab(View):
     def post(self, request):
         form = AsistenciaRehabPublicCreateForm(request.POST or None)
         if form.is_valid():
-                dni = form.cleaned_data['numero_dni']
-                dni=int(dni)
-                paciente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=2)
-                if paciente == None:
-                    return redirect('check_in_error_dni')
-                
-                agenda = agendaRepo.filter_by_id_paciente(id_paciente=paciente.id)
-                if len(agenda) == 0:
-                    return redirect('check_in_error_agenda_activa')
-                
-                dias = [1,2,3,4,5]
-                today = date.today()
-                dia = dias[today.weekday()]
-                turnosDelDia = []
-                for turno in agenda:
-                    if turno.id_dia.id == dia:
-                        turnosDelDia.append(turno)
+            dni = form.cleaned_data['numero_dni']
+            print(dni)
+            dni=int(dni)
+            paciente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=2)
+            if paciente == None:
+                return redirect('check_in_error_dni')
+            
+            agenda = agendaRepo.filter_by_id_paciente(id_paciente=paciente.id)
+            if len(agenda) == 0:
+                return redirect('check_in_error_agenda_activa')
+            
+            dias = [1,2,3,4,5]
+            today = date.today()
+            dia = dias[today.weekday()]
+            turnosDelDia = []
+            for turno in agenda:
+                if turno.id_dia.id == dia:
+                    turnosDelDia.append(turno)
 
-                if len(turnosDelDia) == 0:
+            if len(turnosDelDia) == 0:
+                dia = dia + 1
+                while len(turnosDelDia) == 0:
+                    for turno in agenda:
+                        if turno.id_dia.id == dia:
+                            turnosDelDia.append(turno)
                     dia = dia + 1
-                    while len(turnosDelDia) == 0:
-                        for turno in agenda:
-                            if turno.id_dia.id == dia:
-                                turnosDelDia.append(turno)
-                        dia = dia + 1
-                        if dia >= 6:
-                            dia = 1
-                    turnoSiguiente = turnosDelDia[0]
-                    return redirect('check_in_error_dia_incorrecto', turnoSiguiente.id)
-                
-                tiene_asistencia_del_dia = asistenciaRepo.filter_by_date(id_paciente=paciente.id, fecha=today)
-                if len(tiene_asistencia_del_dia) == 0:
-                    now = datetime.now()
-                    current_day = now.day
-                    current_hour = now.hour
-                    for turno in turnosDelDia:
-                        asistenciaRepo.create(
-                            id_agenda_rehab=turno,
-                            fecha=current_day,
-                            hora=current_hour,
-                        )
-                    return render(
-                        request,
-                        'asistencia_rehab/check_in_success.html',
-                        dict(
-                            paciente=paciente,
-                            date=today,
-                        )
+                    if dia >= 6:
+                        dia = 1
+                turnoSiguiente = turnosDelDia[0]
+                return redirect('check_in_error_dia_incorrecto', turnoSiguiente.id)
+            
+            tiene_asistencia_del_dia = asistenciaRepo.filter_by_date(id_paciente=paciente.id, fecha=today)
+            if len(tiene_asistencia_del_dia) == 0:
+                now = datetime.now()
+                current_day = now.day
+                current_hour = now.hour
+                for turno in turnosDelDia:
+                    asistenciaRepo.create(
+                        id_agenda_rehab=turno,
+                        fecha=current_day,
+                        hora=current_hour,
                     )
-                else:
-                    return redirect('check_in_error_asistencia_registrada')
+                return render(
+                    request,
+                    'asistencia_rehab/check_in_success.html',
+                    dict(
+                        paciente=paciente,
+                        date=today,
+                    )
+                )
+            else:
+                return redirect('check_in_error_asistencia_registrada')
 
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("IngresoRehab"), name="dispatch")
 class CheckInRehabErrorDni(View):
 
     def get(self, request):
@@ -135,6 +140,7 @@ class CheckInRehabErrorDni(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("IngresoRehab"), name="dispatch")
 class CheckInRehabErrorAgendaActiva(View):
 
     def get(self, request):
@@ -145,6 +151,7 @@ class CheckInRehabErrorAgendaActiva(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("IngresoRehab"), name="dispatch")
 class CheckInRehabErrorAsistenciaRegistrada(View):
 
     def get(self, request):
@@ -155,6 +162,7 @@ class CheckInRehabErrorAsistenciaRegistrada(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class CheckInRehabErrorAsistenciaRegistradaManual(View):
 
     def get(self, request):
@@ -165,6 +173,7 @@ class CheckInRehabErrorAsistenciaRegistradaManual(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("IngresoRehab"), name="dispatch")
 class CheckInRehabErrorDiaIncorrecto(View):
 
     def get(self, request, id):

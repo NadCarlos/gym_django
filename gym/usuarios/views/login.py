@@ -28,11 +28,15 @@ class LoginView(View):
                 AREAS["REHAB"],
                 AREAS["FINANZAS"],
                 AREAS["PROFESIONAL"],
+                AREAS["INGRESOREHAB"],
             ):
                 form.add_error(None, "No tiene permisos para acceder al sistema")
                 return render(request, 'usuarios/login.html', {"form": form})
 
             login(request, user)
+
+            if solo_areas(user, COMBINACIONES_VALIDAS["IngresoRehab"]):
+                return redirect("check_in_rehab")
 
             if solo_areas(user, COMBINACIONES_VALIDAS["gym"]):
                 return redirect("inicio")
