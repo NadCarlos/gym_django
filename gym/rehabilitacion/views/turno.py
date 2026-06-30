@@ -100,6 +100,7 @@ class TurnoCreate(View):
                 tratamiento=form.cleaned_data['tratamiento_id'],
                 fecha=form.cleaned_data['fecha'],
                 hora=form.cleaned_data['hora'],
+                motivo=form.cleaned_data['motivo'],
             )
             return redirect('turnos_rehab')
 

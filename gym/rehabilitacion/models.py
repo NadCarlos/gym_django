@@ -639,6 +639,13 @@ class Turno(models.Model):
         verbose_name='Hora turno',
     )
 
+    motivo = models.CharField(
+        max_length=10,
+        null=False,
+        blank=True,
+        verbose_name="Nombre_motivo",
+    )
+
     estado = models.CharField(
         max_length=10,
         choices=ESTADO_CHOICES,

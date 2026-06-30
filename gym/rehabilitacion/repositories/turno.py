@@ -61,6 +61,7 @@ class TurnoRepository:
         tratamiento: Tratamiento,
         fecha,
         hora,
+        motivo,
         estado: str = Turno.ESTADO_PROGRAMADO,
     ) -> Turno:
         return Turno.objects.create(
@@ -70,6 +71,7 @@ class TurnoRepository:
             fecha=fecha,
             hora=hora,
             estado=estado,
+            motivo=motivo,
         )
     
     def update(
@@ -79,12 +81,14 @@ class TurnoRepository:
         tratamiento: Tratamiento,
         fecha,
         hora,
+        motivo,
     ) -> Turno:
 
         turno.profesional_id = profesional
         turno.tratamiento_id = tratamiento
         turno.fecha = fecha
         turno.hora = hora
+        turno.motivo = motivo
         turno.save()
 
         return turno

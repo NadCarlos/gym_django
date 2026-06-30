@@ -49,6 +49,13 @@
                 </div>
             </div>
 
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label text-sm-end">motivo:</label>
+                <div class="col-sm-7">
+                    {{ form.motivo }}
+                </div>
+            </div>
+
             <div class="d-flex justify-content-center gap-2">
                 <button type="submit" class="btn btn-success">
                     <i class="bi bi-save"></i> Guardar
@@ -63,6 +70,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const profesionalSelect = document.getElementById("select-profesional");
     const tratamientoSelect = document.getElementById("select-tratamiento");
+    const motivoInput = document.getElementById("motivoInput");
 
     profesionalSelect.addEventListener("change", function () {
         const profesionalId = this.value;
@@ -87,6 +95,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Error al cargar tratamientos:", error);
             });
+    });
+    motivoInput.addEventListener('input', () => {
+        if (motivoInput.value.length > maxLength) {
+            motivoInput.value = motivoInput.value.slice(0, maxLength);
+        }
     });
 });
 </script>
