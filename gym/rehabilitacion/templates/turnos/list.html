@@ -155,6 +155,12 @@
             <a href="{% url 'turnos_rehab' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-clockwise"></i> Limpiar
             </a>
+            <button
+                type="submit"
+                formaction="{% url 'profesional_turnos_to_pdf' %}"
+                class="btn btn-success">
+                <i class="bi bi-file-earmark-pdf"></i> PDF
+            </button>
         </div>
     </form>
 
@@ -279,6 +285,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+    const profesional = document.querySelector('select[name="profesional"]');
+    const fecha = document.querySelector('input[name="fecha"]');
+
+    function actualizarCamposPDF() {
+        document.getElementById("pdf_profesional").value = profesional.value;
+        document.getElementById("pdf_fecha").value = fecha.value;
+    }
+
+    actualizarCamposPDF();
+
+    profesional.addEventListener("change", actualizarCamposPDF);
+    fecha.addEventListener("change", actualizarCamposPDF);
 });
 </script>
 {% endblock %}

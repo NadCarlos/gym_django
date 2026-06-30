@@ -512,6 +512,7 @@ class TurnoUpdateForm(forms.ModelForm):
             'tratamiento_id',
             'fecha',
             'hora',
+            'motivo',
         ]
 
         widgets = {
@@ -519,6 +520,7 @@ class TurnoUpdateForm(forms.ModelForm):
             'tratamiento_id': forms.Select(attrs={'class': 'form-control custom-class', 'id': 'select-tratamiento'}),
             'fecha': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control', 'type': 'date'}),
             'hora': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'motivo': forms.TextInput(attrs={'class': 'form-control custom-class', 'id': 'motivoInput'}),
         }
 
 
