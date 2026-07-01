@@ -3,24 +3,29 @@
 {% block content %}
 <div class="content">
     <div class="container-fluid">
-        <div class="row">
-            <!-- Primera columna -->
-            <div class="col-md-1">
-                <a href="{% url 'profesional_rehab_detail' profesional.id %}" class="btn btn-secondary mb-4">
+        <div class="row align-items-center mb-3">
+
+            <div class="col-12 col-lg-2 mb-2 mb-lg-0">
+                <a href="{% url 'profesional_rehab_detail' profesional.id %}"
+                class="btn btn-secondary w-100">
                     <i class="bi bi-arrow-left-circle me-2"></i> Volver
                 </a>
             </div>
-            <!-- Segunda columna -->
-            <div class="col-md-10">
-                <h2 class="text-dark text-center">Agenda {{profesional.apellido}}, {{profesional.nombre}}</h2>
+
+            <div class="col-12 col-lg-8 text-center mb-2 mb-lg-0">
+                <h2 class="text-dark mb-0">
+                    Agenda {{ profesional.apellido }}, {{ profesional.nombre }}
+                </h2>
             </div>
-            <!-- Tercera columna -->
-            <div class="col-md-1">
-                <a href="{% url 'agenda_profesional_rehab_to_pdf' profesional.id %}" target="_blank" class="btn btn-success mb-2">
-                    <i class="bi bi-file-earmark-pdf"></i>
-                    PDF
+
+            <div class="col-12 col-lg-2 text-lg-end">
+                <a href="{% url 'agenda_profesional_rehab_to_pdf' profesional.id %}"
+                target="_blank"
+                class="btn btn-success w-100 w-lg-auto">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF
                 </a>
             </div>
+
         </div>
         <div class="row d-flex">
             {% for id_dia, nombre_dia in dias %}
@@ -97,7 +102,7 @@
                                                     <tr>
                                                         <td style="width:15%">{{ x.hora_inicio }}</td>
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
-                                                        <td style="width:37%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido }}</td>
+                                                        <td style="width:37%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:11 }}</td>
                                                         <td style="width:15%" class="nombre">{{ x.id_paciente_area.id_paciente.nombre|truncatechars:4 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
                                                         <td style="width:6%" class="accion">
@@ -128,61 +133,78 @@
     </div>
 </div>
 <style>
-.row.d-flex{
-    display:flex;
-    flex-wrap:nowrap;
-    gap:4px;
+.flex-col {
+    flex: 0 0 20%; 
+    min-width: 350px;
+    padding: 4px;
+}
+.card-box {
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.table th, .table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
+    padding: 0.25rem;
+}
+.fixed-height {
+    min-height: 230px;   /* alto fijo, ajustalo según cuántos turnos quieras que "quepan" visualmente */
+    max-height: 230px;
+    overflow-y: auto;    /* si hay más turnos de los que entran, aparece scroll interno */
 }
 
-.flex-col{
-    flex:0 0 20%;
-    min-width:0;
-    padding:2px;
+@media (max-width: 1000.98px){
+
+    .row.d-flex{
+        flex-wrap:wrap;
+        gap:15px;
+    }
+
+    .flex-col{
+        flex:0 0 100%;
+        max-width:100%;
+    }
+
+    .fixed-height{
+        max-height:none;
+        overflow-y:visible;
+    }
+
+    .fill-height{
+        height:auto;
+    }
+
 }
 
-.card-box{
-    background:#f8f9fa;
-    box-shadow:0 4px 8px rgba(0,0,0,.1);
-    padding:8px;
-}
+@media (max-width: 576px){
 
-.fixed-height{
-    max-height:300px;
-    overflow-y:auto;
-}
+    h2{
+        font-size:1.4rem;
+    }
 
-.fill-height{
-    height:317px;
-}
+    h3{
+        font-size:1.2rem;
+    }
 
-.table{
-    table-layout:fixed;
-    margin-bottom:0;
-}
+    .table{
+        font-size:.82rem;
+    }
 
-.table td,
-.table th{
-    white-space:nowrap;
-    vertical-align:top;
-}
+    .nombre{
+        font-size:.8rem;
+    }
 
-.nombre{
-    font-size:.9rem;
-}
+    .obs,
+    .accion{
+        width:24px;
+    }
 
-.obs{
-    width:28px;
-    text-align:center;
-    font-weight:bold;
-}
-
-.accion{
-    width:28px;
-    text-align:center;
-}
-
-.accion a{
-    color:inherit;
 }
 </style>
 {% endblock %}

@@ -35,6 +35,9 @@ class LoginView(View):
 
             login(request, user)
 
+            if user.is_staff:
+                return redirect("inicio_rehab")
+
             if solo_areas(user, COMBINACIONES_VALIDAS["IngresoRehab"]):
                 return redirect("check_in_rehab")
 
