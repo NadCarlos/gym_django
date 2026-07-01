@@ -161,9 +161,10 @@ class TurnosRehabPDFMixin:
         styles = self.get_styles()
         page_width = landscape(A4)[0] - doc.leftMargin - doc.rightMargin
         day_width = page_width / 5
+        targets = self.get_targets_por_seccion(agenda_dias)
 
         day_columns = [
-            self.build_dia_column(dia, styles, day_width)
+            self.build_dia_column(dia, styles, day_width, targets)
             for dia in agenda_dias
         ]
 
@@ -204,15 +205,27 @@ class TurnosRehabPDFMixin:
         response["Content-Disposition"] = f'inline; filename="{filename}"'
         return response
 
-    def build_dia_column(self, dia, styles, day_width):
+    def get_targets_por_seccion(self, agenda_dias):
+        max_manana = max((len(dia["manana"]) for dia in agenda_dias), default=0)
+        max_tarde = max((len(dia["tarde"]) for dia in agenda_dias), default=0)
+        return {
+            "manana": max(5, max_manana),
+            "tarde": max(5, max_tarde),
+        }
+
+    def build_dia_column(self, dia, styles, day_width, targets):
         inner_width = day_width - 0.2 * cm
 
         rows = [
             [Paragraph(dia["nombre"], styles["dia_nombre"])],
             [Paragraph(self.format_date(dia["fecha"]), styles["dia_fecha"])],
         ]
-        rows += self.build_turno_section_rows("Mañana", dia["manana"], styles, inner_width)
-        rows += self.build_turno_section_rows("Tarde", dia["tarde"], styles, inner_width)
+        rows += self.build_turno_section_rows(
+            "Mañana", dia["manana"], styles, inner_width, targets["manana"]
+        )
+        rows += self.build_turno_section_rows(
+            "Tarde", dia["tarde"], styles, inner_width, targets["tarde"]
+        )
 
         column = Table(rows, colWidths=[inner_width])
         column.setStyle(TableStyle([
@@ -225,7 +238,7 @@ class TurnosRehabPDFMixin:
         ]))
         return column
 
-    def build_turno_section_rows(self, titulo, turnos, styles, inner_width):
+    def build_turno_section_rows(self, titulo, turnos, styles, inner_width, target_count):
         banner = Table([[Paragraph(titulo, styles["turno_title"])]], colWidths=[inner_width])
         banner.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#f1f3f5")),
@@ -235,11 +248,14 @@ class TurnosRehabPDFMixin:
         ]))
 
         rows = [[banner]]
-        if not turnos:
-            rows.append([Paragraph("Sin turnos", styles["sin_turnos"])])
-        else:
-            for turno in turnos:
-                rows.append([self.build_turno_card(turno, styles, inner_width)])
+
+        for turno in turnos:
+            rows.append([self.build_turno_card(turno, styles, inner_width)])
+
+        empty_count = max(target_count - len(turnos), 0)
+        for _ in range(empty_count):
+            rows.append([self.build_empty_card(styles, inner_width)])
+
         return rows
 
     def build_turno_card(self, turno, styles, card_width):
@@ -268,6 +284,22 @@ class TurnosRehabPDFMixin:
         card.setStyle(TableStyle([
             ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#dee2e6")),
             ("BACKGROUND", (0, 0), (-1, -1), colors.whitesmoke),
+            ("TOPPADDING", (0, 0), (-1, -1), 3),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("LEFTPADDING", (0, 0), (-1, -1), 4),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        return card
+
+    def build_empty_card(self, styles, card_width):
+        card = Table(
+            [[Paragraph("&nbsp;", styles["subtitulo"])]],
+            colWidths=[card_width - 0.5 * cm],
+            rowHeights=[1.0 * cm],
+        )
+        card.setStyle(TableStyle([
+            ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#e9ecef")),
+            ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#fbfbfb")),
             ("TOPPADDING", (0, 0), (-1, -1), 3),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
             ("LEFTPADDING", (0, 0), (-1, -1), 4),

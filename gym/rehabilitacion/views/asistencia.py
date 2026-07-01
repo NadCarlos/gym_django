@@ -74,7 +74,6 @@ class CheckInRehab(View):
         form = AsistenciaRehabPublicCreateForm(request.POST or None)
         if form.is_valid():
             dni = form.cleaned_data['numero_dni']
-            print(dni)
             dni=int(dni)
             paciente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=2)
             if paciente == None:
