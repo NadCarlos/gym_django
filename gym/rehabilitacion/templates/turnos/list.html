@@ -155,12 +155,15 @@
             <a href="{% url 'turnos_rehab' %}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-clockwise"></i> Limpiar
             </a>
-            <button
-                type="submit"
-                formaction="{% url 'profesional_turnos_to_pdf' %}"
-                class="btn btn-success">
-                <i class="bi bi-file-earmark-pdf"></i> PDF
-            </button>
+            {% if profesional_id %}
+                <button
+                    type="submit"
+                    formaction="{% url 'profesional_turnos_to_pdf' %}"
+                    class="btn btn-success"
+                    formtarget="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                </button>
+            {% endif %}
         </div>
     </form>
 
