@@ -159,7 +159,7 @@ class InformeDetail(View):
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class InformeDelete(View):
 
     def get(self, request, id):
@@ -215,7 +215,7 @@ class ArchivoCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class ArchivoDelete(View):
 
     def get(self, request, id_archivo, id_informe):
@@ -258,7 +258,7 @@ class LinkCreate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class LinkDelete(View):
 
     def get(self, request, id_link, id_informe):
