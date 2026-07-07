@@ -13,10 +13,10 @@ from django.contrib.staticfiles import finders
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.units import cm
 from reportlab.platypus import (
-    SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepInFrame
+    SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepInFrame, Image
 )
 
 from utils.decorators import requiere_areas
@@ -400,6 +400,169 @@ class TurnosProfesionalRehabToPDF(TurnosRehabPDFMixin, View):
             return f"{profesional.apellido}, {profesional.nombre}"
         except Exception:
             return ""
+        
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class TurnoUnicoProfesionalRehabToPDF(View):
+
+    def get(self, request):
+        profesional_id = request.GET.get('profesional')
+        profesional = profesionalRepo.get_by_id(profesional_id)
+        fecha = request.GET.get('fecha')
+        fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+
+        download_date = self.format_date(datetime.now())
+        icon_path = finders.find("public/logoiteclabs.png")
+        logo = finders.find("public/logo.png")
+
+        turnos = list(turnoRepo.filter_by_profesional_and_fecha(
+            profesional_id=profesional_id,
+            fecha=fecha,
+        ))
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'inline; filename="turnos_{fecha}.pdf"'
+
+        doc = SimpleDocTemplate(
+            response,
+            pagesize=landscape(A4),
+            leftMargin=1.5 * cm,
+            rightMargin=1.5 * cm,
+            topMargin=1.5 * cm,
+            bottomMargin=1.5 * cm,
+        )
+
+        styles = getSampleStyleSheet()
+
+        titulo_style = ParagraphStyle(
+            'Titulo',
+            parent=styles['Heading1'],
+            alignment=TA_CENTER,
+            fontSize=16,
+            spaceAfter=6,
+        )
+
+        fecha_style = ParagraphStyle(
+            'Fecha',
+            parent=styles['Normal'],
+            alignment=TA_LEFT,
+            fontSize=16,
+            spaceAfter=12,
+        )
+
+        elementos = []
+
+        elementos.append(Paragraph(f"Turnos de Fisiatría: {profesional}", titulo_style))
+        fecha_paragraph = Paragraph(f"Fecha: {fecha.strftime('%d/%m/%Y')}", fecha_style)
+        fisiatria_style = ParagraphStyle(
+            'Fisiatria',
+            parent=styles['Normal'],
+            alignment=TA_LEFT,
+            fontSize=11,
+            fontName='Helvetica-Bold',
+        )
+
+        logo_path = finders.find("public/cermed.png")
+
+        if logo_path:
+            logo_img = Image(logo_path, width=2 * cm, height=2 * cm)
+        else:
+            logo_img = Paragraph("", fisiatria_style)  # fallback si no encuentra el logo
+
+        # Subtabla para agrupar logo + texto "FISIATRIA" en una sola celda
+        logo_texto_tabla = Table(
+            [[logo_img, Paragraph("", fisiatria_style)]],
+            colWidths=[0.5 * cm, 3 * cm],
+        )
+        logo_texto_tabla.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+
+        # Fila principal: fecha a la izquierda, logo+texto a la derecha
+        header_row = Table(
+            [[fecha_paragraph, logo_texto_tabla]],
+            colWidths=[15 * cm, 10.7 * cm],  # ajustá según ancho útil de tu página
+        )
+        header_row.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+
+        elementos.append(header_row)
+        elementos.append(Spacer(1, 12))
+
+        # Encabezado de la tabla
+        data = [["Hora", "Paciente", "Motivo", "Observaciones"]]
+
+        for turno in turnos:
+            hora = turno.hora.strftime("%H:%M") if hasattr(turno.hora, "strftime") else str(turno.hora)
+            paciente = f"{turno.paciente_id.apellido}, {turno.paciente_id.nombre}"
+            motivo = turno.motivo or ""
+            data.append([hora, paciente, motivo, ""])  # Observaciones vacío
+
+        col_widths = [1.5 * cm, 6 * cm, 4 * cm, 13 * cm]
+
+        # Altura de filas: la primera (encabezado) más chica, el resto más alta
+        row_heights = [1 * cm] + [1.8 * cm] * (len(data) - 1)
+
+        tabla = Table(data, colWidths=col_widths, rowHeights=row_heights, repeatRows=1)
+
+        tabla.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#009f95')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f5f5f5')]),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+
+        elementos.append(tabla)
+
+        doc.build(
+            elementos,
+            onFirstPage=lambda canvas, doc: self.draw_footer(canvas, doc, download_date, icon_path)
+        )
+
+        return response
+    
+    def draw_footer(self, canvas, doc, download_date, icon_path):
+        footer_y = 0.5 * cm
+        canvas.saveState()
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#6c757d"))
+        if icon_path:
+            icon_size = 1.0 * cm
+            canvas.drawImage(
+                icon_path, doc.leftMargin, footer_y - 0.1 * cm,
+                width=icon_size, height=icon_size, preserveAspectRatio=True, mask="auto",
+            )
+            canvas.drawString(doc.leftMargin + 1.2 * cm, footer_y, "Sistema ASISPRO powered by ITEClabs")
+        else:
+            canvas.drawString(doc.leftMargin, footer_y, "Sistema ASISPRO powered by ITEClabs")
+        canvas.drawRightString(doc.pagesize[0] - doc.rightMargin, footer_y, f"Rio Cuarto el {download_date}")
+        canvas.restoreState()
+
+    def format_date(self, value):
+        meses = {
+            1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
+            7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre",
+        }
+        return f"{value.day} de {meses[value.month]} de {value.year}"
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

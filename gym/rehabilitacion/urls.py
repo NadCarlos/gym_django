@@ -97,6 +97,7 @@ from rehabilitacion.views.turno import (
     TratamientosPorProfesionalRehabView,
     TurnoDelete,
     TurnosProfesionalRehabToPDF,
+    TurnoUnicoProfesionalRehabToPDF,
 )
 
 from rehabilitacion.views.asistencia import (
@@ -229,6 +230,7 @@ turnos = [
     path(route='turnos/tratamientos/<int:profesional_id>/', view=TratamientosPorProfesionalRehabView.as_view(), name='turnos_tratamientos_por_profesional'),
     path(route='turnos/delete/<int:id>/', view=TurnoDelete.as_view(), name='turno_rehab_delete'),
     path(route='turnos/profesional/to_pdf/', view=TurnosProfesionalRehabToPDF.as_view(), name='profesional_turnos_to_pdf'),
+    path(route='turnos/profesional/unico/to_pdf/', view=TurnoUnicoProfesionalRehabToPDF.as_view(), name='profesional_turno_unico_to_pdf'),
 ]
 
 asistencia = [

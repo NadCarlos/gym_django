@@ -161,7 +161,14 @@
                     formaction="{% url 'profesional_turnos_to_pdf' %}"
                     class="btn btn-success"
                     formtarget="_blank">
-                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                    <i class="bi bi-file-earmark-pdf"></i> PDF Semanal
+                </button>
+                <button
+                    type="submit"
+                    formaction="{% url 'profesional_turno_unico_to_pdf' %}"
+                    class="btn btn-success"
+                    formtarget="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> PDF Fecha
                 </button>
             {% endif %}
         </div>
