@@ -57,8 +57,12 @@
                     {{ form.id_estado_civil }}
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label fw-bold">Sexo:</label>
-                    {{ form.id_sexo }}
+                    <label class="form-label fw-bold">Fecha inicio:</label>
+                    <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Fecha fin:</label>
+                    <input type="date" name="fecha_fin" value="{{ fecha_fin }}" class="form-control">
                 </div>
                 <div class="col-md-1 text-end">
                     <button type="submit" class="btn w-100 text-white" style="background-color: #6f42c1; border-color: #6f42c1;">
@@ -103,10 +107,8 @@
                         </a>
                     </th>
                     <th>
-                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_sexo' %}-id_sexo{% else %}id_sexo{% endif %}">
-                            Sexo
-                            {% if request.GET.ordering == 'id_sexo' %}<i class="bi bi-caret-down-fill"></i>
-                            {% elif request.GET.ordering == '-id_sexo' %}<i class="bi bi-caret-up-fill"></i>{% endif %}
+                        <a class="text-white text-decoration-none">
+                            Fecha
                         </a>
                     </th>
                     <th class="text-center">Acciones</th>
@@ -119,7 +121,7 @@
                     <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
                     <td>{{ paciente.id_obra_social }}</td>
-                    <td>{{ paciente.id_sexo.nombre }}</td>
+                    <td>{{ paciente.turno.fecha }}</td>
                     <td class="text-center">
                         <a href="{% url 'paciente_fisiatria_detail' paciente.id %}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-info-circle"></i> Detalles

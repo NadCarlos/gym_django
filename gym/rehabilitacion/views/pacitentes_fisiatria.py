@@ -1,15 +1,13 @@
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
 
 import json
-import pandas as pd
-import io
 from datetime import datetime, date
 
-from administracion.filters import PacienteFilter
+from administracion.filters import PacienteFisiatriaFilter
 
 from administracion.forms import (
     PacienteCreateForm,
@@ -38,10 +36,12 @@ from rehabilitacion.repositories.alta_tipo_discapacidad import AltaTipoDiscapaci
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
+from rehabilitacion.repositories.turno import TurnoRepository
+
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
-
+turnoRepo = TurnoRepository()
 pacienteRepo = PacienteRepository()
 obraSocialRepo = ObraSocialRepository()
 sexoRepo = SexoRepository()
@@ -69,7 +69,9 @@ class PacientesFisiatriaList(View):
     context_object_name = 'pacientes_fisiatria'
 
     def get(self, request, state):
-        filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state, id_area=3))
+        filterset = PacienteFisiatriaFilter(request.GET, pacienteRepo.filter_pacientes_area(state, id_area=3))
+        fecha_inicio = self.get_fecha(request.GET.get('fecha_inicio'), date.today())
+        fecha_fin = self.get_fecha(request.GET.get('fecha_fin'))
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
@@ -83,6 +85,13 @@ class PacientesFisiatriaList(View):
 
         pacientes_count = pacientes.count()
 
+        for paciente in pacientes:
+            paciente.turno = turnoRepo.filter_by_paciente_and_fecha_cercana(
+                paciente_id=paciente.id,
+                fecha_inicio=fecha_inicio,
+                fecha_fin=fecha_fin,
+            )
+
         return render(
             request,
             self.template_name,
@@ -92,8 +101,18 @@ class PacientesFisiatriaList(View):
                 form=filterset.form,
                 ordering=ordering,
                 state=state,
+                fecha_inicio=fecha_inicio.isoformat() if fecha_inicio else '',
+                fecha_fin=fecha_fin.isoformat() if fecha_fin else '',
             )
         )
+
+    def get_fecha(self, fecha, default=None):
+        if not fecha:
+            return default
+        try:
+            return datetime.strptime(fecha, "%Y-%m-%d").date()
+        except ValueError:
+            return default
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

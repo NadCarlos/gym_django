@@ -43,6 +43,19 @@ class TurnoRepository:
 
         return turnos
 
+    def filter_by_paciente_and_fecha_cercana(self, paciente_id, fecha_inicio, fecha_fin) -> List[Turno]:
+        turnos = self.get_all()
+        turnos = turnos.filter(activo=True).filter(paciente_id_id=paciente_id)
+        if fecha_inicio and fecha_fin:
+            turnos = turnos.filter(fecha__range=(fecha_inicio, fecha_fin))
+        elif fecha_inicio:
+            turnos = turnos.filter(fecha__gte=fecha_inicio)
+        elif fecha_fin:
+            turnos = turnos.filter(fecha__lte=fecha_fin)
+
+        turno = turnos.order_by("fecha", "hora").first()
+        return turno
+
     def get_by_id(self, id: int) -> Optional[Turno]:
         try:
             turno = Turno.objects.get(id=id)

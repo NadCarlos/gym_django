@@ -18,6 +18,20 @@ class PacienteFilter(django_filters.FilterSet):
             }
 
 
+class PacienteFisiatriaFilter(django_filters.FilterSet):
+    apellido = django_filters.CharFilter(lookup_expr='icontains')
+    numero_dni = django_filters.CharFilter(lookup_expr='icontains')
+
+    class Meta:
+        model = Paciente
+        fields = {
+            'apellido',
+            'id_obra_social',
+            'id_estado_civil',
+            'numero_dni',
+            }
+
+
 class AsistenciasFilter(django_filters.FilterSet):
 
     fecha = django_filters.DateFromToRangeFilter()

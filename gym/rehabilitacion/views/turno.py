@@ -607,7 +607,6 @@ class TurnoUpdate(View):
 
     def get(self, request, id):
         turno = turnoRepo.get_by_id(id=id)
-        print(turno)
         form = TurnoUpdateForm(instance=turno)
         return render(
             request,
