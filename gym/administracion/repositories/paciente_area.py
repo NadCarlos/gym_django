@@ -43,3 +43,7 @@ class PacienteAreaRepository:
     def delete_by_activo(self, paciente_area: PacienteArea):
         paciente_area.activo=False
         paciente_area.save()
+
+    def reactivate(self, paciente_area: PacienteArea):
+            paciente_area.activo=True
+            paciente_area.save()

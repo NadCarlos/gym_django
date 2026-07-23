@@ -17,6 +17,7 @@ from rehabilitacion.views.pacientes_rehab import(
     #PacientesRehabBulkAdd,
     PacienteRehabDelete,
     AsistenciasPacientesRehabList,
+    PacientesActivosSwap,
 )
 
 from rehabilitacion.views.profesional_rehab import(
@@ -129,6 +130,7 @@ from rehabilitacion.views.pacitentes_fisiatria import(
     PacienteFisiatriaUpdate,
     PacienteFisiatriaCreateFromExistent,
     PacienteFisiatriaRedirectFromExistent,
+    PacienteFisiatriaDelete,
 )
 
 
@@ -147,6 +149,7 @@ pacientes = [
     path(route='pacientes/altas_to_csv/<int:id>',view=PacienteAltasToCsv.as_view(), name='paciente_altas_rehab_to_csv'),
     path(route='pacientes/redirect_from_existent',view=PacienteRehabRedirectFromExistent.as_view(), name='paciente_rehab_redirect_from_existent'),
     #path(route='pacientes/bulk_add',view=PacientesRehabBulkAdd.as_view(), name='bulk_add'),
+    path(route='pacientes/pacientes_activos_swap',view=PacientesActivosSwap.as_view(), name='pacientes_activos_swap'),
     path(route='pacientes/delete/<int:id>',view=PacienteRehabDelete.as_view(), name='paciente_rehab_delete'),
     path(route='pacientes/asistencias_list/',view=AsistenciasPacientesRehabList.as_view(), name='asistencias_rehab_list'),
 ]
@@ -259,6 +262,7 @@ pacientes_fisiatria = [
     path(route='pacientes/fisiatria/list/<state>',view=PacientesFisiatriaList.as_view(), name='pacientes_fisiatria_list'),
     path(route='pacientes/fisiatria/detail/<int:id>',view=PacienteFisiatriaDetail.as_view(), name='paciente_fisiatria_detail'),
     path(route='pacientes/fisiatria/create',view=PacienteFisiatriaCreate.as_view(), name='paciente_fisiatria_create'),
+    path(route='pacientes/fisiatria/delete/<int:id>',view=PacienteFisiatriaDelete.as_view(), name='paciente_fisiatria_delete'),
     path(route='pacientes/fisiatria/update/<int:id>',view=PacienteFisiatriaUpdate.as_view(), name='paciente_fisiatria_update'),
     path(route='pacientes/fisiatria/create_from_existent',view=PacienteFisiatriaCreateFromExistent.as_view(), name='paciente_fisiatria_create_from_existent'),
     path(route='pacientes/fisiatria/redirect_from_existent',view=PacienteFisiatriaRedirectFromExistent.as_view(), name='paciente_fisiatria_redirect_from_existent'),

@@ -222,7 +222,7 @@
                 </a>
             </div>
         </div>
-        {% if paciente.activo %}
+        {% if pacienteArea.activo == True %}
             {% if rehabilitacion_paciente %}
             <div class="col-md-3 mb-3">
                 <div class="d-grid gap-2">
@@ -280,7 +280,7 @@
         {% else %}
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
-                <a href="#" class="btn btn-warning"
+                <a href="{% url 'paciente_reactivate' paciente.id 2 %}" class="btn btn-warning"
                     onclick="return confirm('Esto va a restaurar al Paciente');">
                     <i class="bi bi-arrow-up-circle-fill"></i> Reactivar
                 </a>

@@ -26,10 +26,17 @@ class PacienteRepository:
     
     def filter_pacientes_area(self, state, id_area) -> List[Paciente]:
         # Obtener IDs de pacientes relacionados con id_area = 1
-        ids_pacientes = PacienteArea.objects.filter(id_area=id_area).values_list('id_paciente', flat=True)
+        ids_pacientes = PacienteArea.objects.filter(id_area=id_area).filter(activo=state).values_list('id_paciente', flat=True)
 
         # Obtener el queryset de pacientes
-        return Paciente.objects.filter(id__in=ids_pacientes).filter(activo=state).order_by('apellido')
+        return Paciente.objects.filter(id__in=ids_pacientes).order_by('apellido')
+
+    def filter_pacientes_area_para_swap(self, state, id_area) -> List[Paciente]:
+            # Obtener IDs de pacientes relacionados con id_area = 1
+            ids_pacientes = PacienteArea.objects.filter(id_area=id_area).filter(activo=state).values_list('id_paciente', flat=True)
+    
+            # Obtener el queryset de pacientes
+            return Paciente.objects.filter(id__in=ids_pacientes).filter(activo=False)
     
     def dni_list_segun_area(self, id_area):
         ids_pacientes = PacienteArea.objects.filter(id_area=id_area).values_list('id_paciente', flat=True)

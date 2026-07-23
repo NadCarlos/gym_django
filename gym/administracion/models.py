@@ -837,6 +837,12 @@ class PacienteArea(models.Model):
         related_name='usuario_pac_area',
     )
 
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
     def __str__(self):
         return  self.id_area.nombre + self.id_paciente.nombre
     

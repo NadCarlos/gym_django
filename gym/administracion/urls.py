@@ -110,7 +110,7 @@ pacientes = [
     path(route='<int:id>/paciente_detail/',view=PacienteDetail.as_view(), name='paciente_detail'),
     path(route='<int:id>/paciente_update/',view=PacienteUpdate.as_view(), name='paciente_update'),
     path(route='<int:id>/paciente_delete/',view=PacienteDelete.as_view(), name='paciente_delete'),
-    path(route='<int:id>/paciente_reactivate/',view=PacienteReactivate.as_view(), name='paciente_reactivate'),
+    path(route='paciente_reactivate/<int:id>/<int:area>/',view=PacienteReactivate.as_view(), name='paciente_reactivate'),
     path(route='error_paciente_existente/',view=ErrorPacienteExistente.as_view(), name='error_paciente_existente'),
     path(route='paciente_create_existente/',view=PacienteCreateFromExistent.as_view(), name='paciente_create_from_existent'),
     path(route='paciente_redirect_existente/',view=PacienteRedirectFromExistent.as_view(), name='paciente_redirect_existente'),

@@ -121,11 +121,13 @@ class PacienteFisiatriaDetail(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=3, id_paciente=paciente.id)
         return render(
             request,
             'pacientes_fisiatria/detail.html',
             dict(
                 paciente=paciente,
+                pacienteArea=pacienteArea,
             )
         )
     
@@ -283,3 +285,14 @@ class PacienteFisiatriaRedirectFromExistent(View):
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
 
         return redirect('paciente_fisiatria_detail', paciente.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
+class PacienteFisiatriaDelete(View):
+
+    def get(self, request, id, *args, **kwargs):
+        paciente = pacienteRepo.get_by_id(id=id)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=3, id_paciente=paciente.id)
+        pacienteAreaRepo.delete_by_activo(paciente_area=pacienteArea)
+        return redirect('pacientes_fisiatria_list', True)

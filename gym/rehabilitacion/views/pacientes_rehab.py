@@ -39,9 +39,9 @@ from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepo
 from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 
+
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
-
 pacienteRepo = PacienteRepository()
 obraSocialRepo = ObraSocialRepository()
 sexoRepo = SexoRepository()
@@ -110,6 +110,20 @@ class PacientesRehabBulkAdd(View):
                 obra_social=obra_social,
                 estado_civil=estado_civil,
             )
+
+        return redirect('inicio_rehab')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacientesActivosSwap(View):
+    def get(self, request):
+        pacientesGym = pacienteRepo.filter_pacientes_area_para_swap(state=True, id_area=1)
+
+        for pacienteG in pacientesGym:
+            pacienteAreaGym = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=1, id_paciente=pacienteG.id)
+            pacienteAreaRepo.delete_by_activo(paciente_area=pacienteAreaGym)
+            pacienteRepo.reactivate(paciente=pacienteG)
 
         return redirect('inicio_rehab')
 
@@ -198,6 +212,7 @@ class PacienteRehabDetail(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         altas = []
         tiene_pendientes=False
@@ -216,6 +231,7 @@ class PacienteRehabDetail(View):
             'pacientes_rehab/detail.html',
             dict(
                 paciente=paciente,
+                pacienteArea=pacienteArea,
                 rehabilitacion_paciente=rehabilitacion_paciente,
                 altas=altas,
                 tiene_pendientes=tiene_pendientes,
@@ -367,12 +383,41 @@ class PacienteRehabDelete(View):
         paciente_plan = pacientePlanRepo.filter_by_paciente_activo(id_paciente=id)
         if paciente_plan != None:
             pacientePlanRepo.delete_by_activo(paciente_plan=paciente_plan)
-        
-        """cuota = cuotaRepo.filter_by_paciente_id_mes(id_paciente=id,year=today.year,month=today.month)
-        if cuota:
-            cuotaRepo.delete_by_activo(cuota=cuota)"""
 
-        pacienteRepo.delete_by_activo(paciente=paciente)
+
+        # Altas
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente:
+            alta = altaRepo.filter_by_paciente_rehab_id_activa(id_paciente_rehab=rehabilitacion_paciente.id)
+            if alta:
+                altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_all_by_alta_id(alta_id=alta.id)
+                altas_etiologicos = altaEtiologicoRepo.filter_all_by_alta_id(alta_id=alta.id)
+                altas_funcionales = altaFuncionalRepo.filter_all_by_alta_id(alta_id=alta.id)
+
+                fecha_alta = today
+                dado_alta = True
+                altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta.id)
+                altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_by_alta_id(alta_id=alta.id)
+                altas_etiologicos = altaEtiologicoRepo.filter_by_alta_id(alta_id=alta.id)
+
+                if altas_funcionales:
+                    for alta_funcional in altas_funcionales:
+                        altaFuncionalRepo.delete_by_activo(alta_funcional=alta_funcional)
+                if altas_tipo_discapacidad:
+                    for alta_tipo_discapacidad in altas_tipo_discapacidad:
+                        altaTipoDiscapacidadRepo.delete_by_activo(alta_tipo_discapacidad=alta_tipo_discapacidad)
+                if altas_etiologicos:
+                    for alta_etiologico in altas_etiologicos:
+                        altaEtiologicoRepo.delete_by_activo(alta_etiologico=alta_etiologico)
+
+                altaRepo.terminate(
+                    alta=alta,
+                    fecha_alta=fecha_alta,
+                    dado_alta=dado_alta,
+                )
+
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
+        pacienteAreaRepo.delete_by_activo(paciente_area=pacienteArea)
         return redirect('pacientes_rehab_list', True)
         
 

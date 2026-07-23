@@ -34,14 +34,14 @@
             </a>
         </div>
         <div class="col-md-3 mb-3">
-            {% if paciente.activo %}
+            {% if pacienteArea.activo == True %}
             <a href="{% url 'paciente_plan_list' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-book me-2"></i> Ver Planes
             </a>
             {% endif %}
         </div>
         <div class="col-md-3 mb-3">
-            {% if paciente.activo %}
+            {% if pacienteArea.activo == True %}
             <a href="{% url 'list_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-list me-2"></i> Historial Prestaciones
             </a>
@@ -55,7 +55,7 @@
                 <i class="bi bi-pencil me-2"></i> Editar
             </a>
             {% else %}
-            <a href="{% url 'paciente_reactivate' paciente.id %}" class="btn btn-warning w-100 mb-2"
+            <a href="{% url 'paciente_reactivate' paciente.id 1 %}" class="btn btn-warning w-100 mb-2"
                 onclick="return confirm('Esto va a restaurar al Paciente');">
                 <i class="bi bi-arrow-up-circle-fill me-2"></i> Reactivar
             </a>
@@ -63,7 +63,7 @@
         </div>
         <!-- Segunda columna -->
         <div class="col-md-3">
-            {% if paciente.activo %}
+            {% if pacienteArea.activo == True %}
             <a href="{% url 'nueva_prestacion_paciente' paciente.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-plus-circle me-2"></i> Nueva Prestación
             </a>

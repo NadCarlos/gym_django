@@ -22,6 +22,9 @@ class AltaRepository:
     
     def filter_by_paciente_rehab_id(self, id_paciente_rehab) -> Optional[Alta]:
         return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab).order_by("dado_alta", "-fecha", "-id")
+
+    def filter_by_paciente_rehab_id_activa(self, id_paciente_rehab) -> Optional[Alta]:
+            return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab).filter(dado_alta=False).first()
     
     def tiene_alta_activa(self, id_paciente_rehab) -> Optional[Alta]:
         return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab).filter(dado_alta=False).exists()

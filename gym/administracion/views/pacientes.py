@@ -32,9 +32,6 @@ from administracion.repositories.paciente_area import PacienteAreaRepository
 from administracion.repositories.area import AreaRepository
 
 
-from administracion.models import Paciente
-
-
 pacienteRepo = PacienteRepository()
 obraSocialRepo = ObraSocialRepository()
 sexoRepo = SexoRepository()
@@ -186,11 +183,13 @@ class PacienteDetail(View):
 
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=1, id_paciente=paciente.id)
         return render(
             request,
             'pacientes/detail.html',
             dict(
                 paciente=paciente,
+                pacienteArea=pacienteArea,
             )
         )
 
@@ -350,7 +349,8 @@ class PacienteDelete(View):
         if cuota:
             cuotaRepo.delete_by_activo(cuota=cuota)
 
-        pacienteRepo.delete_by_activo(paciente=paciente)
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=1, id_paciente=paciente.id)
+        pacienteAreaRepo.delete_by_activo(paciente_area=pacienteArea)
         return redirect('pacientes_list', True)
     
 
@@ -378,11 +378,19 @@ class PacienteCreateFromExistent(View):
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteReactivate(View):
 
-    def get(self, request, id, *args, **kwargs):
+    def get(self, request, id, area, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
-        pacienteRepo.reactivate(paciente=paciente)
-        return redirect('pacientes_list', True)
-    
+        pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=area, id_paciente=paciente.id)
+        pacienteAreaRepo.reactivate(pacienteArea)
+        if area == 1:
+            return redirect('paciente_detail', paciente.id)
+        elif area == 2:
+            return redirect('paciente_rehab_detail', paciente.id)
+        elif area == 3:
+            return redirect('paciente_fisiatria_detail', paciente.id)
+        else:
+            return redirect('inicio_rehab')
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")

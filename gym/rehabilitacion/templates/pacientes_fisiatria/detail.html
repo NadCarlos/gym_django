@@ -44,7 +44,7 @@
             <div class="card shadow-sm">
                 <div class="card-body d-grid gap-3">
 
-                    {% if paciente.activo %}
+                    {% if pacienteArea.activo == True %}
 
                         <a href="{% url 'paciente_fisiatria_update' paciente.id %}"
                            class="btn btn-primary">
@@ -58,16 +58,16 @@
                             Ver Informes
                         </a>
 
-                        <a href="#"
+                        <a href="{% url 'paciente_fisiatria_delete' paciente.id %}"
                            class="btn btn-danger"
-                           onclick="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda.');">
+                           onclick="return confirm('Esto va a borrar el Paciente.');">
                             <i class="bi bi-trash me-2"></i>
                             Eliminar Paciente
                         </a>
 
                     {% else %}
 
-                        <a href="{% url 'paciente_reactivate' paciente.id %}"
+                        <a href="{% url 'paciente_reactivate' paciente.id 3 %}"
                            class="btn btn-warning"
                            onclick="return confirm('Esto va a restaurar al paciente');">
                             <i class="bi bi-arrow-clockwise me-2"></i>
