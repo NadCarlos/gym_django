@@ -272,7 +272,7 @@ class PacienteFisiatriaCreateFromExistent(View):
             id_usuario=user,
         )
 
-        return redirect('paciente_rehab_detail', paciente.id)
+        return redirect('paciente_fisiatria_detail', paciente.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

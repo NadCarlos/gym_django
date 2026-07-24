@@ -174,6 +174,7 @@ class AreaAdmin(admin.ModelAdmin):
 class PacienteAreaAdmin(admin.ModelAdmin):
     list_display = (
         'id_area',
+        'id_paciente',
     )
 
 @admin.register(ProfesionalArea)
