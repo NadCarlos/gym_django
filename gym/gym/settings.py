@@ -5,16 +5,16 @@ import environ # type: ignore
 import sentry_sdk # type: ignore
 from django.contrib.messages import constants as message_constants
 
-sentry_sdk.init(
-    dsn="https://a8c704adad13e0007ed22f78b69d4714@o4507817863610368.ingest.us.sentry.io/4507817865445376",
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for tracing.
-    traces_sample_rate=1.0,
-    # Set profiles_sample_rate to 1.0 to profile 100%
-    # of sampled transactions.
-    # We recommend adjusting this value in production.
-    profiles_sample_rate=1.0,
-)
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+SENTRY_TRACES_SAMPLE_RATE = float(os.environ.get("SENTRY_TRACES_SAMPLE_RATE", "0"))
+SENTRY_PROFILES_SAMPLE_RATE = float(os.environ.get("SENTRY_PROFILES_SAMPLE_RATE", "0"))
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        profiles_sample_rate=SENTRY_PROFILES_SAMPLE_RATE,
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +25,7 @@ env = environ.Env(
     DJANGO_DEBUG=(bool, False),
     DJANGO_SECRET_KEY=(str, "django-23-!hk12311x5zi4ktc-)_*6n&wgnBBB#j2&ezh_7"),
     DJANGO_ALLOWED_HOSTS=(list, []),
+    DJANGO_CSRF_TRUSTED_ORIGINS=(list, []),
     MYSQL_DATABASE=(str, "gym_db"),
     MYSQL_USER=(str, "root"),
     MYSQL_PASSWORD=(str, "root"),
@@ -49,6 +50,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env("DJANGO_DEBUG")
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=False)
@@ -136,6 +138,7 @@ DATABASES = {
         "PASSWORD": env("MYSQL_PASSWORD"),
         "HOST": env("MYSQL_HOST"),
         "PORT": env("MYSQL_PORT"),
+        "CONN_MAX_AGE": env.int("DJANGO_DB_CONN_MAX_AGE", default=0),
         "MYSQL_ROOT_PASSWORD": env("MYSQL_ROOT_PASSWORD"),
         "OPTIONS": {
             "charset": "utf8mb4",

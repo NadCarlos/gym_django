@@ -1,9 +1,14 @@
-version: "3.8"
-
 services:
   db:
     image: mysql:5.7
-    restart: always
+    restart: unless-stopped
+    command:
+      - --innodb-buffer-pool-size=128M
+      - --max-connections=30
+      - --table-open-cache=400
+      - --performance-schema=OFF
+      - --tmp-table-size=16M
+      - --max-heap-table-size=16M
     env_file:
       - .env
     environment:
@@ -28,6 +33,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "8000:8000"
     depends_on:

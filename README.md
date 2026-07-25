@@ -49,6 +49,7 @@ Esto ayudará a que tu `IDE/IDLE` reconozca los paquetes y liberías del proyect
 En el entorno de producción se utiliza Gunicorn y Nginx para que funcione correctamente en HTTPS.
 Para esto, debemos hacer uso de los archivos de configuración de `Dockerfile.prod` y `docker-compose-prod.yaml`,
 el `entrypoint-prod.sh` y que se suma un nuevo `service`/contenedor en el `compose` para que corra nginx individualmente.
+Además, la configuración de producción toma variables desde `.env.prod` al usar los targets `prod-*` del `Makefile`.
 Nunca está de más checkear los logs en casos de problemas: `docker logs <container_name>`. También
 se puede acceder a un `bash` interactivo con `docker exec -it <container_name> /bin/bash`.
 
@@ -56,11 +57,44 @@ También hay que prestar atención al archivo `grupoterraing.conf` ya que contie
 de Nginx. Tener en cuenta variables de entorno siguiendo el `env.example`, los volúmenes y demás. Siguiendo la configuración
 actual, simplifico el `down` y el `build up` en 2 comandos `Make`: `make prod-down` y `make prod-up`. 
 
+## CI/CD producción
+
+El CI se ejecuta con GitHub Actions en cada push a `develop` y `production`.
+En `production`, si los tests pasan, el workflow construye la imagen productiva y luego entra por SSH al servidor para actualizar el repo
+y recrear los contenedores con `docker-compose-prod.yaml`. El archivo `.env.prod` debe existir únicamente en el servidor.
+
+Secrets requeridos en GitHub:
+
+- `PROD_HOST`: IP o dominio del servidor.
+- `PROD_USER`: usuario SSH con permisos para operar el repo y Docker.
+- `PROD_SSH_KEY`: clave privada SSH para deploy.
+- `PROD_APP_DIR`: ruta absoluta del repo en el servidor.
+
+Secrets opcionales:
+
+- `PROD_SSH_PORT`: puerto SSH. Si no se define, usa `22`.
+- `PROD_HEALTHCHECK_URL`: URL que se consulta desde el servidor al final del deploy. Si no se define, usa `http://localhost:8000/`.
+
+Antes del primer deploy, el servidor debe tener Docker, Docker Compose, el repo clonado, la rama `production`
+disponible y `.env.prod` configurado. El workflow ejecuta `python gym/manage.py check`,
+`python gym/manage.py test --noinput`, build de `Dockerfile.prod`, `make prod-config`, `make prod-deploy`,
+`make prod-status`, `python gym/manage.py check --deploy` dentro del contenedor `web` y un smoke test HTTP con reintentos.
+
+Rollback simple:
+
+1. Entrar al servidor por SSH.
+2. Ir a la carpeta del proyecto: `cd <PROD_APP_DIR>`.
+3. Volver al commit estable: `git checkout production && git reset --hard <commit_anterior>`.
+4. Recrear servicios: `make prod-deploy`.
+
 ## Comandos Makefile
 
 - `make build`: Construye los contenedores.
 - `make up-d`: Corre los contenedores en modo *detach*.
 - `make run`: Construye y corre los contenedores en modo debug.
+- `make prod-config`: Valida la configuración efectiva de Docker Compose para producción.
+- `make prod-deploy`: Construye y levanta el stack productivo en modo *detach*.
+- `make prod-status`: Muestra el estado de los servicios productivos.
 - `make backup`: Crea un dump de la base de datos.
 - `make restore (file=nombre_dump.sql)`: Restaura una versión de la DB a partir de un dump almacenado en la carpeta `backup_data`. Se usa así: `make restore file=dump_file.sql `
 - `make bash`: Abre una terminal interactiva dentro del contenedor `web`.

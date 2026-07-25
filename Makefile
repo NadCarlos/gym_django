@@ -11,13 +11,22 @@ down:
 	docker compose down
 
 prod-up:
-	docker compose -f docker-compose-prod.yaml up --build -d
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml up --build -d
+
+prod-config:
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml config
+
+prod-deploy:
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml up --build -d
+
+prod-status:
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml ps
 
 prod-down:
-	docker compose -f docker-compose-prod.yaml down
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml down
 
 prod-restart:
-	docker compose -f docker-compose-prod.yaml restart
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml restart
 
 run:
 	docker compose build && docker compose up

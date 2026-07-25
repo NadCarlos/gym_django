@@ -1,0 +1,145 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+      - production
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: gym_db
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: ci-secret-key
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost,http://127.0.0.1
+      MYSQL_DATABASE: gym_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: "3306"
+      SENTRY_DSN: ""
+      SENTRY_TRACES_SAMPLE_RATE: "0"
+      SENTRY_PROFILES_SAMPLE_RATE: "0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+          cache-dependency-path: requirements-prod.txt
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential default-libmysqlclient-dev pkg-config
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-prod.txt
+
+      - name: Run Django checks
+        run: python gym/manage.py check
+
+      - name: Run Django tests
+        run: python gym/manage.py test --noinput
+
+      - name: Build production image
+        run: docker build -f Dockerfile.prod .
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    timeout-minutes: 30
+    needs: ci
+    environment: production
+
+    env:
+      PROD_HOST: ${{ secrets.PROD_HOST }}
+      PROD_USER: ${{ secrets.PROD_USER }}
+      PROD_SSH_KEY: ${{ secrets.PROD_SSH_KEY }}
+      PROD_APP_DIR: ${{ secrets.PROD_APP_DIR }}
+      PROD_SSH_PORT: ${{ secrets.PROD_SSH_PORT || '22' }}
+      PROD_HEALTHCHECK_URL: ${{ secrets.PROD_HEALTHCHECK_URL || 'http://localhost:8000/' }}
+
+    steps:
+      - name: Validate required secrets
+        run: |
+          test -n "$PROD_HOST"
+          test -n "$PROD_USER"
+          test -n "$PROD_SSH_KEY"
+          test -n "$PROD_APP_DIR"
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$PROD_SSH_KEY" > ~/.ssh/prod_deploy_key
+          chmod 600 ~/.ssh/prod_deploy_key
+          ssh-keyscan -p "$PROD_SSH_PORT" "$PROD_HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy on production server
+        run: |
+          ssh -i ~/.ssh/prod_deploy_key -p "$PROD_SSH_PORT" "$PROD_USER@$PROD_HOST" \
+            "PROD_APP_DIR='$PROD_APP_DIR' PROD_HEALTHCHECK_URL='$PROD_HEALTHCHECK_URL' bash -s" <<'REMOTE_SCRIPT'
+          set -euo pipefail
+
+          cd "$PROD_APP_DIR"
+
+          git fetch origin production
+          if git rev-parse --verify production >/dev/null 2>&1; then
+            git checkout production
+          else
+            git checkout -b production origin/production
+          fi
+          git pull --ff-only origin production
+
+          make prod-config
+          make prod-deploy
+          make prod-status
+
+          docker compose --env-file .env.prod -f docker-compose-prod.yaml exec -T web \
+            python gym/manage.py check --deploy
+
+          for attempt in $(seq 1 12); do
+            if curl -fsS "$PROD_HEALTHCHECK_URL" >/dev/null; then
+              exit 0
+            fi
+            sleep 5
+          done
+
+          curl -fsS "$PROD_HEALTHCHECK_URL" >/dev/null
+          REMOTE_SCRIPT
