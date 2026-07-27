@@ -86,6 +86,7 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th class="text-center">Asistencia</th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -96,19 +97,32 @@
                     <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
                     <td class="text-center">
-                        <form method="post"
-                            action="{% url 'check_in_rehab_manual' paciente.id fecha %}"
-                            class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-info btn-sm">
-                                <i class="bi bi-plus"></i> Cargar Asistencia
+                        {% if paciente.asistencia_cargada %}
+                            <span class="badge bg-success">Cargada</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        {% if paciente.asistencia_cargada %}
+                            <button type="button" class="btn btn-success btn-sm" disabled>
+                                <i class="bi bi-check2"></i> Asistencia cargada
                             </button>
-                        </form>
+                        {% else %}
+                            <form method="post"
+                                action="{% url 'check_in_rehab_manual' paciente.id fecha_url %}"
+                                class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-info btn-sm">
+                                    <i class="bi bi-plus"></i> Cargar Asistencia
+                                </button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center text-muted">No se encontraron pacientes.</td>
+                    <td colspan="5" class="text-center text-muted">No se encontraron pacientes.</td>
                 </tr>
                 {% endfor %}
             </tbody>

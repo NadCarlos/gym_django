@@ -71,7 +71,7 @@
                         <a class="nav-link text-white" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Desconectar</a>
                     </li>
 
-                    {% if request.user|has_group:"Gimnasio" or user.is_staff %}
+                    {% if request.user|has_group:"Gimnasio" or request.user|has_group:"Rehabilitación" or user.is_staff %}
                     <!-- Pacientes -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="pacientesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

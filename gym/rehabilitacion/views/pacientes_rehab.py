@@ -2,6 +2,7 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, HttpResponse
+from django.db.models import Exists
 from utils.decorators import requiere_areas
 
 import json
@@ -38,6 +39,7 @@ from rehabilitacion.repositories.alta_tipo_discapacidad import AltaTipoDiscapaci
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
+from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
 
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
@@ -60,6 +62,7 @@ altaEtiologicoRepo = AltaEtiologicoRepository()
 altaFuncionalRepo = AltaFuncionalRepository()
 altaTipoDiscapacidadRepo = AltaTipoDiscapacidadRepository()
 agendaRepo = AgendaRehabRepository()
+asistenciaRehabRepo = AsistenciaRehabRepository()
 
 
 def nombres_relacionados(relaciones, attr_name):
@@ -177,7 +180,12 @@ class AsistenciasPacientesRehabList(View):
         id_dia = fecha.weekday() + 1
 
         agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia)
-        pacientes_con_agenda = pacienteRepo.filter_pacientes_area(state=True,id_area=2).filter(id__in=agenda)
+        asistencia_cargada = asistenciaRehabRepo.asistencias_cargadas_list(fecha=fecha, id_dia=id_dia)
+        pacientes_con_agenda = (
+            pacienteRepo.filter_pacientes_area(state=True, id_area=2)
+            .filter(id__in=agenda)
+            .annotate(asistencia_cargada=Exists(asistencia_cargada))
+        )
         
         filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
 
@@ -202,6 +210,7 @@ class AsistenciasPacientesRehabList(View):
                 form=filterset.form,
                 ordering=ordering,
                 fecha=fecha,
+                fecha_url=fecha.strftime("%Y-%m-%d"),
             )
         )
     
