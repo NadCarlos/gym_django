@@ -17,18 +17,14 @@ class TurnoRepository:
             'tratamiento_id',
         ).all().order_by('fecha', 'hora')
 
-    def filter_by_profesional_and_fecha(
-        self,
-        profesional_id=None,
-        fecha=None,
-    ) -> List[Turno]:
+    def filter_by_profesional_and_fecha(self, profesional_id=None, fecha=None) -> List[Turno]:
         turnos = self.get_all()
 
         if profesional_id:
-            turnos = turnos.filter(profesional_id_id=profesional_id)
+            turnos = turnos.filter(activo=True).filter(profesional_id_id=profesional_id)
 
         if fecha:
-            turnos = turnos.filter(fecha=fecha)
+            turnos = turnos.filter(activo=True).filter(fecha=fecha)
 
         return turnos
 

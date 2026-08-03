@@ -40,8 +40,7 @@
                                 <tr>
                                     <th style="width:15%">Ini</th>
                                     <th style="width:15%">Fin</th>
-                                    <th style="width:37%">Apellido</th>
-                                    <th style="width:15%">Nom</th>
+                                    <th style="width:52%">Paciente</th>
                                     <th style="width:6%" class="text-center">
                                         <i class="bi bi-info-circle"></i>
                                     </th>
@@ -65,8 +64,7 @@
                                                     <tr>
                                                         <td style="width:15%">{{ x.hora_inicio }}</td>
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
-                                                        <td style="width:37%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido }}</td>
-                                                        <td style="width:15%" class="nombre">{{ x.id_paciente_area.id_paciente.nombre|truncatechars:4 }}</td>
+                                                        <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
@@ -102,8 +100,7 @@
                                                     <tr>
                                                         <td style="width:15%">{{ x.hora_inicio }}</td>
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
-                                                        <td style="width:37%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:11 }}</td>
-                                                        <td style="width:15%" class="nombre">{{ x.id_paciente_area.id_paciente.nombre|truncatechars:4 }}</td>
+                                                        <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
