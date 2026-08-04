@@ -1,4 +1,5 @@
 from io import BytesIO
+from uuid import UUID, uuid4
 
 from datetime import date, datetime, timedelta, time
 from django.http import JsonResponse
@@ -576,10 +577,16 @@ class TurnoCreate(View):
             'turnos/create.html',
             dict(
                 form=form,
+                request_token=uuid4(),
             )
         )
 
     def post(self, request):
+        try:
+            request_token = UUID(request.POST.get("request_token", ""))
+        except (TypeError, ValueError):
+            request_token = uuid4()
+
         form = TurnoCreateForm(request.POST)
         if form.is_valid():
             turnoRepo.create(
@@ -589,6 +596,7 @@ class TurnoCreate(View):
                 fecha=form.cleaned_data['fecha'],
                 hora=form.cleaned_data['hora'],
                 motivo=form.cleaned_data['motivo'],
+                request_token=request_token,
             )
             return redirect('turnos_rehab')
 
@@ -597,6 +605,7 @@ class TurnoCreate(View):
             'turnos/create.html',
             dict(
                 form=form,
+                request_token=request_token,
             )
         )
     
@@ -666,11 +675,12 @@ class TurnoEstadoUpdate(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class TurnoDelete(View):
+    http_method_names = ["post"]
 
-    def get(self, request, id, *args, **kwargs):
+    def post(self, request, id, *args, **kwargs):
         turno = turnoRepo.get_by_id(id=id)
         #No elimino, cambio el campo activo a False
-        turnoRepo.delete_by_activo(turno=turno)
+        turnoRepo.delete_by_activo(turno=turno, usuario=request.user)
         return redirect(request.META.get('HTTP_REFERER') or 'turnos_rehab')
 
 

@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from django.views import View
+
+from gym.db_instrumentation import instrumented_atomic
 
 from utils.decorators import requiere_areas
 
@@ -64,7 +65,7 @@ class AltaCreate(View):
             diagnosticos_etiologicos = list(form.cleaned_data['diagnosticos_etiologicos'])
             tipos_discapacidad = list(form.cleaned_data['tipos_discapacidad'])
 
-            with transaction.atomic():
+            with instrumented_atomic("discharge.create"):
                 alta_nueva = altaRepo.create(
                     fecha=fecha,
                     id_paciente_rehabilitacion=paciente_rehabilitacion,
@@ -150,7 +151,7 @@ class AltaTerminate(View):
             altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_by_alta_id(alta_id=alta.id)
             altas_etiologicos = altaEtiologicoRepo.filter_by_alta_id(alta_id=alta.id)
 
-            with transaction.atomic():
+            with instrumented_atomic("discharge.terminate"):
                 for alta_funcional in altas_funcionales:
                     altaFuncionalRepo.delete_by_activo(alta_funcional=alta_funcional)
                 for alta_tipo_discapacidad in altas_tipo_discapacidad:

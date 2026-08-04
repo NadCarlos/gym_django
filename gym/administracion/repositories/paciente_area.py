@@ -1,6 +1,9 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
+
+from gym.db_instrumentation import instrumented_atomic
+
 from administracion.models import PacienteArea, Area, Paciente
 
 
@@ -34,11 +37,24 @@ class PacienteAreaRepository:
         id_area: Area,
         id_usuario: User
     ):
-        return PacienteArea.objects.create(
-            id_paciente=id_paciente,
-            id_area=id_area,
-            id_usuario=id_usuario,
-        )
+        with instrumented_atomic("patient_area.create"):
+            Area.objects.select_for_update().get(pk=id_area.pk)
+            paciente_area = PacienteArea.objects.filter(
+                id_paciente=id_paciente,
+                id_area=id_area,
+            ).first()
+            if paciente_area is None:
+                return PacienteArea.objects.create(
+                    id_paciente=id_paciente,
+                    id_area=id_area,
+                    id_usuario=id_usuario,
+                )
+
+            if not paciente_area.activo:
+                paciente_area.activo = True
+                paciente_area.id_usuario = id_usuario
+                paciente_area.save(update_fields=["activo", "id_usuario"])
+            return paciente_area
     
     def delete_by_activo(self, paciente_area: PacienteArea):
         paciente_area.activo=False

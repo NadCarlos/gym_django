@@ -12,6 +12,7 @@
     <div class="card p-4 shadow-sm">
         <form method="post" id="turno-form">
             {% csrf_token %}
+            <input type="hidden" name="request_token" value="{{ request_token }}">
 
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">{{ form.non_field_errors }}</div>

@@ -7,6 +7,7 @@ from datetime import date
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.db import OperationalError
 from django.shortcuts import render, redirect, HttpResponse
 from utils.decorators import requiere_areas
 
@@ -227,42 +228,30 @@ class PacienteCreate(View):
 
     def post(self, request):
         form = PacienteCreateForm(request.POST)
-        if form.is_valid():
-            dni = form.cleaned_data['numero_dni']
-            dni=int(dni)
-            pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=1)
-            if pacienteExistente is None:
-                area = areaRepo.get_by_id(id=1)
-                nombre = form.cleaned_data['nombre']
-                nombre = nombre.upper()
-                apellido = form.cleaned_data['apellido']
-                apellido = apellido.upper()
-                paciente_nuevo = pacienteRepo.create(
-                    id_usuario=form.cleaned_data['id_usuario'],
-                    nombre=nombre,
-                    apellido=apellido,
-                    numero_dni=form.cleaned_data['numero_dni'],
-                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                    id_obra_social=form.cleaned_data['id_obra_social'],
-                    id_estado_civil=form.cleaned_data['id_estado_civil'],
-                    id_sexo=form.cleaned_data['id_sexo'],
-                    id_localidad=form.cleaned_data['id_localidad'],
-                    direccion=form.cleaned_data['direccion'],
-                    telefono=form.cleaned_data['telefono'],
-                    celular=form.cleaned_data['celular'],
-                    email=form.cleaned_data['email'],
-                    observaciones=form.cleaned_data['observaciones'],
-                    )
-                paciente_area = pacienteAreaRepo.create(
-                    id_paciente=paciente_nuevo,
-                    id_area=area,
-                    id_usuario=form.cleaned_data['id_usuario'],
-                )
-                return redirect('paciente_detail', paciente_nuevo.id)
-            else:
-                return redirect('error_paciente_existente')
-        else:
+        if not form.is_valid():
             return redirect('error')
+
+        area = areaRepo.get_by_id(id=1)
+        paciente, area_created = pacienteRepo.create_in_area(
+            id_area=area,
+            id_usuario=request.user,
+            nombre=form.cleaned_data['nombre'].upper(),
+            apellido=form.cleaned_data['apellido'].upper(),
+            numero_dni=form.cleaned_data['numero_dni'],
+            fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+            id_obra_social=form.cleaned_data['id_obra_social'],
+            id_estado_civil=form.cleaned_data['id_estado_civil'],
+            id_sexo=form.cleaned_data['id_sexo'],
+            id_localidad=form.cleaned_data['id_localidad'],
+            direccion=form.cleaned_data['direccion'],
+            telefono=form.cleaned_data['telefono'],
+            celular=form.cleaned_data['celular'],
+            email=form.cleaned_data['email'],
+            observaciones=form.cleaned_data['observaciones'],
+        )
+        if not area_created:
+            return redirect('error_paciente_existente')
+        return redirect('paciente_detail', paciente.id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -313,27 +302,26 @@ class PacienteUpdate(View):
                     return redirect('paciente_detail', paciente.id)
                 else:
                     return redirect('error_paciente_existente')
-        except:
+        except OperationalError:
+            raise
+        except Exception:
             return redirect('error')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteDelete(View):
+    http_method_names = ["post"]
 
-    def get(self, request, id, *args, **kwargs):
+    def post(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         if prestacionPaciente != None:
             today = date.today()
-            agendas = agendaRepo.filter_by_id_prestacion_paciente(id_prestacion_paciente=prestacionPaciente.id)
-            if agendas != None:
-                for agenda in agendas:
-                    agendaRepo.end_date(
-                        agenda=agenda,
-                        fecha_fin=today,
-                    )
-                    agendaRepo.delete_by_activo(agenda=agenda)
+            agendaRepo.deactivate_for_patient_service(
+                id_prestacion_paciente=prestacionPaciente.id,
+                fecha_fin=today,
+            )
             prestacionPacienteRepo.end_date(
                 prestacionPaciente=prestacionPaciente,
                 fecha_fin=today,
@@ -357,9 +345,10 @@ class PacienteDelete(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteCreateFromExistent(View):
+    http_method_names = ["post"]
 
-    def get(self, request):
-        dni = request.GET.get('dni')
+    def post(self, request):
+        dni = request.POST.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
         user = request.user
@@ -377,8 +366,9 @@ class PacienteCreateFromExistent(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteReactivate(View):
+    http_method_names = ["post"]
 
-    def get(self, request, id, area, *args, **kwargs):
+    def post(self, request, id, area, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=area, id_paciente=paciente.id)
         pacienteAreaRepo.reactivate(pacienteArea)

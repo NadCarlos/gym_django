@@ -532,6 +532,18 @@ class AgendaRehab(models.Model):
         blank=False,
     )
 
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["id_paciente_area", "activo", "id_dia", "hora_inicio"],
+                name="agenda_r_pac_dia_idx",
+            ),
+            models.Index(
+                fields=["id_profesional_area", "activo", "id_dia", "hora_inicio"],
+                name="agenda_r_prof_dia_idx",
+            ),
+        ]
+
     def __str__(self):
         return  self.id_paciente_area.id_paciente.nombre
 
@@ -689,6 +701,25 @@ class Turno(models.Model):
         on_delete=models.SET_NULL,
         related_name='turnos_eliminado_rehabilitacion',
     )
+
+    request_token = models.UUIDField(
+        null=True,
+        blank=True,
+        unique=True,
+        editable=False,
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["profesional_id", "activo", "fecha", "hora"],
+                name="turno_prof_fecha_idx",
+            ),
+            models.Index(
+                fields=["paciente_id", "activo", "fecha", "hora"],
+                name="turno_pac_fecha_idx",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.paciente_id} - {self.fecha} {self.hora}"

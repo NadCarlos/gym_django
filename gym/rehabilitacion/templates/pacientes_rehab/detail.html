@@ -232,10 +232,10 @@
                     <a href="{% url 'paciente_rehab_update' paciente.id %}" class="btn btn-primary">
                         <i class="bi bi-pencil"></i> Editar Paciente
                     </a>
-                    <a href="{% url 'paciente_rehab_delete' paciente.id %}" class="btn btn-danger"
-                        onclick="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
-                        <i class="bi bi-trash"></i> Eliminar
-                    </a>
+                    <form method="post" action="{% url 'paciente_rehab_delete' paciente.id %}" onsubmit="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Eliminar</button>
+                    </form>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
@@ -280,10 +280,10 @@
         {% else %}
         <div class="col-md-3 mb-3">
             <div class="d-grid gap-2">
-                <a href="{% url 'paciente_reactivate' paciente.id 2 %}" class="btn btn-warning"
-                    onclick="return confirm('Esto va a restaurar al Paciente');">
-                    <i class="bi bi-arrow-up-circle-fill"></i> Reactivar
-                </a>
+                <form method="post" action="{% url 'paciente_reactivate' paciente.id 2 %}" onsubmit="return confirm('Esto va a restaurar al Paciente');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning w-100"><i class="bi bi-arrow-up-circle-fill"></i> Reactivar</button>
+                </form>
             </div>
         </div>
         {% endif %}

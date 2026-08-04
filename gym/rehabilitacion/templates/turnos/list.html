@@ -258,9 +258,9 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn btn-danger me-auto" href="{% url 'turno_rehab_delete' turno.id %}" onclick="return confirm('Esto va a eliminar definitivamente el turno!');">
+                                <button type="submit" class="btn btn-danger me-auto" formaction="{% url 'turno_rehab_delete' turno.id %}" formnovalidate onclick="return confirm('Esto va a eliminar definitivamente el turno!');">
                                     <i class="bi bi-trash"></i> Eliminar
-                                </a>
+                                </button>
                                 {% if turno.estado != 'ANULADO' %}
                                 <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_update' turno.id %}">
                                     <i class="bi bi-pencil"></i> Editar

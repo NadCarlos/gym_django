@@ -1,7 +1,10 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.utils import timezone
+
+from gym.db_instrumentation import instrumented_atomic
 
 from administracion.models import Paciente, Profesional, Tratamiento
 from rehabilitacion.models import Turno
@@ -59,9 +62,10 @@ class TurnoRepository:
             turno = None
         return turno
     
-    def delete_by_activo(self, turno: Turno):
+    def delete_by_activo(self, turno: Turno, usuario: User = None):
         turno.activo = False
-        turno.save()
+        turno.usuario_eliminador_id = usuario
+        turno.save(update_fields=["activo", "usuario_eliminador_id"])
 
     def create(
         self,
@@ -72,16 +76,24 @@ class TurnoRepository:
         hora,
         motivo,
         estado: str = Turno.ESTADO_PROGRAMADO,
+        request_token=None,
     ) -> Turno:
-        return Turno.objects.create(
-            paciente_id=paciente,
-            profesional_id=profesional,
-            tratamiento_id=tratamiento,
-            fecha=fecha,
-            hora=hora,
-            estado=estado,
-            motivo=motivo,
-        )
+        try:
+            with instrumented_atomic("appointment.create"):
+                return Turno.objects.create(
+                    paciente_id=paciente,
+                    profesional_id=profesional,
+                    tratamiento_id=tratamiento,
+                    fecha=fecha,
+                    hora=hora,
+                    estado=estado,
+                    motivo=motivo,
+                    request_token=request_token,
+                )
+        except IntegrityError:
+            if request_token is None:
+                raise
+            return Turno.objects.get(request_token=request_token)
     
     def update(
         self,
@@ -98,7 +110,15 @@ class TurnoRepository:
         turno.fecha = fecha
         turno.hora = hora
         turno.motivo = motivo
-        turno.save()
+        turno.save(
+            update_fields=[
+                "profesional_id",
+                "tratamiento_id",
+                "fecha",
+                "hora",
+                "motivo",
+            ]
+        )
 
         return turno
 
@@ -107,7 +127,7 @@ class TurnoRepository:
             return turno
 
         turno.estado = Turno.ESTADO_REALIZADO
-        turno.save()
+        turno.save(update_fields=["estado"])
         return turno
 
     def anular(self, turno: Turno, motivo_anulacion: str, usuario_anulacion: User) -> Turno:
@@ -119,5 +139,12 @@ class TurnoRepository:
         turno.usuario_anulacion_id = usuario_anulacion
         turno.fecha_anulacion = timezone.now()
         turno.full_clean()
-        turno.save()
+        turno.save(
+            update_fields=[
+                "estado",
+                "motivo_anulacion",
+                "usuario_anulacion_id",
+                "fecha_anulacion",
+            ]
+        )
         return turno

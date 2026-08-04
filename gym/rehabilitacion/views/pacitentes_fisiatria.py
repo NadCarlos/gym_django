@@ -1,6 +1,8 @@
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.db import OperationalError
+from django.db.models import Prefetch
 from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
 
@@ -36,12 +38,11 @@ from rehabilitacion.repositories.alta_tipo_discapacidad import AltaTipoDiscapaci
 from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepository
 from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
-from rehabilitacion.repositories.turno import TurnoRepository
+from rehabilitacion.models import Turno
 
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
-turnoRepo = TurnoRepository()
 pacienteRepo = PacienteRepository()
 obraSocialRepo = ObraSocialRepository()
 sexoRepo = SexoRepository()
@@ -76,20 +77,33 @@ class PacientesFisiatriaList(View):
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
 
-        # Obtener el queryset filtrado
         pacientes = filterset.qs
-
-        # Si existe un campo de ordenamiento, aplicarlo
         if ordering:
-            pacientes = filterset.qs.order_by(ordering)
+            pacientes = pacientes.order_by(ordering)
 
+        turnos_cercanos = Turno.objects.filter(activo=True).select_related(
+            "profesional_id",
+            "tratamiento_id",
+        ).order_by("fecha", "hora")
+        if fecha_inicio:
+            turnos_cercanos = turnos_cercanos.filter(fecha__gte=fecha_inicio)
+        if fecha_fin:
+            turnos_cercanos = turnos_cercanos.filter(fecha__lte=fecha_fin)
+
+        pacientes = pacientes.prefetch_related(
+            Prefetch(
+                "turnos_rehabilitacion",
+                queryset=turnos_cercanos,
+                to_attr="turnos_cercanos",
+            )
+        )
         pacientes_count = pacientes.count()
 
         for paciente in pacientes:
-            paciente.turno = turnoRepo.filter_by_paciente_and_fecha_cercana(
-                paciente_id=paciente.id,
-                fecha_inicio=fecha_inicio,
-                fecha_fin=fecha_fin,
+            paciente.turno = (
+                paciente.turnos_cercanos[0]
+                if paciente.turnos_cercanos
+                else None
             )
 
         return render(
@@ -165,42 +179,30 @@ class PacienteFisiatriaCreate(View):
 
     def post(self, request):
         form = PacienteCreateForm(request.POST)
-        if form.is_valid():
-            dni = form.cleaned_data['numero_dni']
-            dni=int(dni)
-            pacienteExistente = pacienteRepo.filter_by_dni(numero_dni=dni, id_area=3)
-            if pacienteExistente is None:
-                area = areaRepo.get_by_id(id=3)
-                nombre = form.cleaned_data['nombre']
-                nombre = nombre.upper()
-                apellido = form.cleaned_data['apellido']
-                apellido = apellido.upper()
-                paciente_nuevo = pacienteRepo.create(
-                    id_usuario=form.cleaned_data['id_usuario'],
-                    nombre=nombre,
-                    apellido=apellido,
-                    numero_dni=form.cleaned_data['numero_dni'],
-                    fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
-                    id_obra_social=form.cleaned_data['id_obra_social'],
-                    id_estado_civil=form.cleaned_data['id_estado_civil'],
-                    id_sexo=form.cleaned_data['id_sexo'],
-                    id_localidad=form.cleaned_data['id_localidad'],
-                    direccion=form.cleaned_data['direccion'],
-                    telefono=form.cleaned_data['telefono'],
-                    celular=form.cleaned_data['celular'],
-                    email=form.cleaned_data['email'],
-                    observaciones=form.cleaned_data['observaciones'],
-                    )
-                paciente_area = pacienteAreaRepo.create(
-                    id_paciente=paciente_nuevo,
-                    id_area=area,
-                    id_usuario=form.cleaned_data['id_usuario'],
-                )
-                return redirect('paciente_fisiatria_detail', paciente_nuevo.id)
-            else:
-                return redirect('error_paciente_existente')
-        else:
+        if not form.is_valid():
             return redirect('error')
+
+        area = areaRepo.get_by_id(id=3)
+        paciente, area_created = pacienteRepo.create_in_area(
+            id_area=area,
+            id_usuario=request.user,
+            nombre=form.cleaned_data['nombre'].upper(),
+            apellido=form.cleaned_data['apellido'].upper(),
+            numero_dni=form.cleaned_data['numero_dni'],
+            fecha_nacimiento=form.cleaned_data['fecha_nacimiento'],
+            id_obra_social=form.cleaned_data['id_obra_social'],
+            id_estado_civil=form.cleaned_data['id_estado_civil'],
+            id_sexo=form.cleaned_data['id_sexo'],
+            id_localidad=form.cleaned_data['id_localidad'],
+            direccion=form.cleaned_data['direccion'],
+            telefono=form.cleaned_data['telefono'],
+            celular=form.cleaned_data['celular'],
+            email=form.cleaned_data['email'],
+            observaciones=form.cleaned_data['observaciones'],
+        )
+        if not area_created:
+            return redirect('error_paciente_existente')
+        return redirect('paciente_fisiatria_detail', paciente.id)
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -251,16 +253,19 @@ class PacienteFisiatriaUpdate(View):
                     return redirect('paciente_fisiatria_detail', paciente.id)
                 else:
                     return redirect('error_paciente_existente')
-        except:
+        except OperationalError:
+            raise
+        except Exception:
             return redirect('error')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteFisiatriaCreateFromExistent(View):
+    http_method_names = ["post"]
 
-    def get(self, request):
-        dni = request.GET.get('dni')
+    def post(self, request):
+        dni = request.POST.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
         user = request.user
@@ -290,8 +295,9 @@ class PacienteFisiatriaRedirectFromExistent(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Gimnasio", "Rehabilitacion"), name="dispatch")
 class PacienteFisiatriaDelete(View):
+    http_method_names = ["post"]
 
-    def get(self, request, id, *args, **kwargs):
+    def post(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=3, id_paciente=paciente.id)
         pacienteAreaRepo.delete_by_activo(paciente_area=pacienteArea)
