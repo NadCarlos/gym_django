@@ -1,7 +1,19 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from administracion.models import Paciente, ObraSocial, EstadoCivil, Sexo, Localidad, PacienteArea, Agenda
+
+from gym.db_instrumentation import instrumented_atomic
+
+from administracion.models import (
+    Agenda,
+    Area,
+    EstadoCivil,
+    Localidad,
+    ObraSocial,
+    Paciente,
+    PacienteArea,
+    Sexo,
+)
 
 
 class PacienteRepository:
@@ -51,11 +63,9 @@ class PacienteRepository:
         return paciente 
     
     def get_by_dni(self, numero_dni: int) -> Optional[Paciente]:
-        try:
-            paciente = Paciente.objects.get(numero_dni=numero_dni)
-        except:
-            paciente = None
-        return paciente
+        return Paciente.objects.filter(
+            numero_dni=numero_dni,
+        ).order_by("pk").first()
     
     def delete(self, paciente: Paciente):
         return paciente.delete()
@@ -101,6 +111,37 @@ class PacienteRepository:
             telefono=telefono,
             observaciones=observaciones,
         )
+
+    def create_in_area(self, id_area: Area, **patient_data):
+        with instrumented_atomic("patient.create_in_area"):
+            # One shared row serializes the DNI check and insert across every area.
+            Area.objects.select_for_update().order_by("pk").first()
+            paciente = Paciente.objects.filter(
+                numero_dni=patient_data["numero_dni"]
+            ).order_by("pk").first()
+
+            if paciente is None:
+                paciente = self.create(**patient_data)
+
+            paciente_area = PacienteArea.objects.filter(
+                id_area=id_area,
+                id_paciente=paciente,
+            ).first()
+            if paciente_area is not None:
+                if paciente_area.activo:
+                    return paciente, False
+
+                paciente_area.activo = True
+                paciente_area.id_usuario = patient_data["id_usuario"]
+                paciente_area.save(update_fields=["activo", "id_usuario"])
+                return paciente, True
+
+            PacienteArea.objects.create(
+                id_area=id_area,
+                id_paciente=paciente,
+                id_usuario=patient_data["id_usuario"],
+            )
+            return paciente, True
     
     def update(
         self, 

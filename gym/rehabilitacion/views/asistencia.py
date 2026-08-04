@@ -3,7 +3,8 @@ from datetime import date, datetime
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from utils.decorators import requiere_areas
 
 from rehabilitacion.forms import (
@@ -27,10 +28,7 @@ class CheckInRehabManual(View):
         paciente = pacienteRepo.get_by_id(id=id)
         agenda = agendaRepo.filter_by_id_paciente(id_paciente=paciente.id)
 
-        if fecha:
-            fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
-        else:
-            fecha = date.today()
+        fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
 
         id_dia = fecha.weekday() + 1
 
@@ -43,15 +41,15 @@ class CheckInRehabManual(View):
 
         if len(tiene_asistencia) == 0:
             now = datetime.now()
-            current_hour = now.hour
+            hora = now.time().replace(microsecond=0)
             for turno in turnos_del_dia:
-                asistenciaRepo.create(
+                asistenciaRepo.create_manual(
                     id_agenda_rehab=turno,
                     fecha=fecha,
-                    hora=current_hour,
+                    hora=hora,
                 )
 
-            return redirect('asistencias_rehab_list')
+            return redirect(f"{reverse('asistencias_rehab_list')}?fecha={fecha}")
         else:
             return redirect('check_in_error_asistencia_registrada_manual')
 
@@ -106,13 +104,12 @@ class CheckInRehab(View):
             tiene_asistencia_del_dia = asistenciaRepo.filter_by_date(id_paciente=paciente.id, fecha=today)
             if len(tiene_asistencia_del_dia) == 0:
                 now = datetime.now()
-                current_day = now.day
-                current_hour = now.hour
+                hora = now.time().replace(microsecond=0)
                 for turno in turnosDelDia:
                     asistenciaRepo.create(
                         id_agenda_rehab=turno,
-                        fecha=current_day,
-                        hora=current_hour,
+                        fecha=today,
+                        hora=hora,
                     )
                 return render(
                     request,

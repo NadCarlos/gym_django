@@ -8,7 +8,12 @@ from rehabilitacion.models import AgendaRehab
 class AgendaRehabRepository:
 
     def get_all(self) -> List[AgendaRehab]:
-        return AgendaRehab.objects.all()
+        return AgendaRehab.objects.select_related(
+            "id_dia",
+            "id_tratamiento_rehab",
+            "id_paciente_area__id_paciente",
+            "id_profesional_area__id_profesional",
+        ).all()
     
     def filter_by_id(self, id) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id=id).first()
@@ -26,10 +31,16 @@ class AgendaRehabRepository:
         return AgendaRehab.objects.filter(id_prestacion_paciente=AgendaRehab).filter(activo=True).exists()
     
     def filter_by_paciente_area(self, id_paciente_area) -> Optional[AgendaRehab]:
-        return AgendaRehab.objects.filter(id_paciente_area=id_paciente_area).filter(activo=True).order_by("hora_inicio")
+        return self.get_all().filter(
+            id_paciente_area=id_paciente_area,
+            activo=True,
+        ).order_by("hora_inicio")
     
     def filter_by_id_profesional_area(self, id_profesional_area) -> Optional[AgendaRehab]:
-        return AgendaRehab.objects.filter(id_profesional_area=id_profesional_area).filter(activo=True).order_by("hora_inicio")
+        return self.get_all().filter(
+            id_profesional_area=id_profesional_area,
+            activo=True,
+        ).order_by("hora_inicio")
     
     def filter_by_id_prestacion_paciente(self, id_prestacion_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True)
@@ -58,8 +69,19 @@ class AgendaRehabRepository:
         return agenda.delete()
     
     def delete_by_activo(self, agenda: AgendaRehab):
-        agenda.activo=False
-        agenda.save()
+        agenda.activo = False
+        agenda.save(update_fields=["activo"])
+
+    def deactivate(self, agenda: AgendaRehab, fecha_fin):
+        agenda.fecha_fin = fecha_fin
+        agenda.activo = False
+        agenda.save(update_fields=["fecha_fin", "activo"])
+
+    def deactivate_for_patient_area(self, id_paciente_area, fecha_fin):
+        return AgendaRehab.objects.filter(
+            id_paciente_area_id=id_paciente_area,
+            activo=True,
+        ).update(fecha_fin=fecha_fin, activo=False)
 
     def reactivate(self, agenda: AgendaRehab):
         agenda.activo=True

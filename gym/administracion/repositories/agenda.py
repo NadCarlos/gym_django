@@ -7,13 +7,21 @@ from administracion.models import Agenda, Dia, PrestacionPaciente, ProfesionalTr
 class AgendaRepository:
 
     def get_all(self) -> List[Agenda]:
-        return Agenda.objects.all()
+        return Agenda.objects.select_related(
+            "id_dia",
+            "id_prestacion_paciente__id_paciente",
+            "id_profesional_tratamiento__id_profesional",
+            "id_profesional_tratamiento__id_tratamiento",
+        ).all()
     
     def filter_by_id(self) -> Optional[Agenda]:
         return Agenda.objects.filter(id=id).first()
     
     def filter_by_id_paciente(self, id_prestacion_paciente) -> Optional[Agenda]:
-        return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True)
+        return self.get_all().filter(
+            id_prestacion_paciente=id_prestacion_paciente,
+            activo=True,
+        )
     
     def filter_by_id_paciente_exist(self, id_prestacion_paciente) -> Optional[Agenda]:
         return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True).exists()
@@ -32,10 +40,13 @@ class AgendaRepository:
         return agenda 
     
     def filter_by_activo(self, state) -> List[Agenda]:
-        return Agenda.objects.filter(activo=state).order_by("hora_inicio")
+        return self.get_all().filter(activo=state).order_by("hora_inicio")
     
     def filter_by_activo_profesional(self, state, id_profesional) -> List[Agenda]:
-            return Agenda.objects.filter(activo=state).filter(id_profesional_tratamiento__id_profesional__id = id_profesional).order_by("hora_inicio")
+            return self.get_all().filter(
+                activo=state,
+                id_profesional_tratamiento__id_profesional_id=id_profesional,
+            ).order_by("hora_inicio")
     
     def get_by_id(self, id: int) -> Optional[Agenda]:
         try:
@@ -48,8 +59,19 @@ class AgendaRepository:
         return agenda.delete()
     
     def delete_by_activo(self, agenda: Agenda):
-        agenda.activo=False
-        agenda.save()
+        agenda.activo = False
+        agenda.save(update_fields=["activo"])
+
+    def deactivate(self, agenda: Agenda, fecha_fin):
+        agenda.fecha_fin = fecha_fin
+        agenda.activo = False
+        agenda.save(update_fields=["fecha_fin", "activo"])
+
+    def deactivate_for_patient_service(self, id_prestacion_paciente, fecha_fin):
+        return Agenda.objects.filter(
+            id_prestacion_paciente_id=id_prestacion_paciente,
+            activo=True,
+        ).update(fecha_fin=fecha_fin, activo=False)
 
     def reactivate(self, agenda: Agenda):
         agenda.activo=True

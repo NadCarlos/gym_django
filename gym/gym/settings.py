@@ -36,6 +36,9 @@ env = environ.Env(
     SESSION_COOKIE_SECURE=(bool, False),
     CSRF_COOKIE_SECURE=(bool, False),
     SECURE_SSL_REDIRECT=(bool, False),
+    DB_LOCK_WAIT_TIMEOUT=(int, 5),
+    DB_SLOW_QUERY_MS=(int, 250),
+    WRITE_DB_INSTRUMENTATION_ENABLED=(bool, True),
 )
 environ.Env.read_env(ENV_FILE)
 
@@ -98,6 +101,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "gym.middleware.WriteDatabaseInstrumentationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -142,9 +146,16 @@ DATABASES = {
         "MYSQL_ROOT_PASSWORD": env("MYSQL_ROOT_PASSWORD"),
         "OPTIONS": {
             "charset": "utf8mb4",
+            "init_command": (
+                "SET SESSION innodb_lock_wait_timeout="
+                f"{env.int('DB_LOCK_WAIT_TIMEOUT', default=5)}"
+            ),
         },
     }
 }
+
+DB_SLOW_QUERY_MS = env.int("DB_SLOW_QUERY_MS", default=250)
+WRITE_DB_INSTRUMENTATION_ENABLED = env.bool("WRITE_DB_INSTRUMENTATION_ENABLED", default=True)
 
 DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
 DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "backup_data"}
@@ -230,3 +241,19 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "cermed.db_writes": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

@@ -58,21 +58,17 @@
                             Ver Informes
                         </a>
 
-                        <a href="{% url 'paciente_fisiatria_delete' paciente.id %}"
-                           class="btn btn-danger"
-                           onclick="return confirm('Esto va a borrar el Paciente.');">
-                            <i class="bi bi-trash me-2"></i>
-                            Eliminar Paciente
-                        </a>
+                        <form method="post" action="{% url 'paciente_fisiatria_delete' paciente.id %}" onsubmit="return confirm('Esto va a borrar el Paciente.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash me-2"></i> Eliminar Paciente</button>
+                        </form>
 
                     {% else %}
 
-                        <a href="{% url 'paciente_reactivate' paciente.id 3 %}"
-                           class="btn btn-warning"
-                           onclick="return confirm('Esto va a restaurar al paciente');">
-                            <i class="bi bi-arrow-clockwise me-2"></i>
-                            Reactivar Paciente
-                        </a>
+                        <form method="post" action="{% url 'paciente_reactivate' paciente.id 3 %}" onsubmit="return confirm('Esto va a restaurar al paciente');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning w-100"><i class="bi bi-arrow-clockwise me-2"></i> Reactivar Paciente</button>
+                        </form>
 
                     {% endif %}
 

@@ -529,17 +529,13 @@ class AgendaPacienteRehabUpdate(View):
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class AgendaRehabDelete(View):
+    http_method_names = ["post"]
 
-    def get(self, request, id, *args, **kwargs):
+    def post(self, request, id, *args, **kwargs):
         path = request.session.get('uid')
         agenda = agendaRehabRepo.get_by_id(id=id)
         today = date.today()
-        agendaRehabRepo.end_date(
-            agenda=agenda,
-            fecha_fin=today,
-            )
-        #No elimino, cambio el campo activo a False
-        agendaRehabRepo.delete_by_activo(agenda=agenda)
+        agendaRehabRepo.deactivate(agenda=agenda, fecha_fin=today)
         return redirect( path )
 
 

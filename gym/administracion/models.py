@@ -241,6 +241,11 @@ class Paciente(models.Model):
         related_name='localidad',
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['numero_dni'], name='paciente_dni_idx'),
+        ]
+
     def __str__(self):
         return  self.nombre
 
@@ -528,6 +533,18 @@ class Agenda(models.Model):
         null=False,
         blank=False,
     )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["id_prestacion_paciente", "activo", "id_dia", "hora_inicio"],
+                name="agenda_pac_dia_idx",
+            ),
+            models.Index(
+                fields=["id_profesional_tratamiento", "activo", "id_dia", "hora_inicio"],
+                name="agenda_prof_dia_idx",
+            ),
+        ]
 
     def __str__(self):
         return  self.id_profesional_tratamiento.id_profesional.apellido
@@ -842,6 +859,14 @@ class PacienteArea(models.Model):
         null=False,
         blank=False,
     )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["id_area", "activo", "id_paciente"],
+                name="pac_area_lookup_idx",
+            ),
+        ]
 
     def __str__(self):
         return  self.id_area.nombre + self.id_paciente.nombre
