@@ -138,5 +138,42 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+*.orig
+*.rej
+
+# Django runtime output
+# Keep app source assets under gym/*/static/ tracked.
+/gym/staticfiles/
+/gym/media/
+/media/
+/backup_data/
+/gym/backup_data/
+*.sqlite3
+*.sqlite3-journal
+
+# Local secrets and environment overrides
+.env.*
+!.env.example
+
+# Additional Python tooling caches
+.ruff_cache/
+.pyre/
+.pytype/
+.dmypy.json
+dmypy.json
+
+# Local development state
+.coverage_html/
+.history/
+.vscode/
+.idea/
+.codex/
 .vscode
 .codex
