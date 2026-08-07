@@ -641,6 +641,21 @@ class TurnoUpdate(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class TurnoDetail(View):
+
+    def get(self, request, id):
+        turno = turnoRepo.get_by_id(id=id)
+        return render(
+            request,
+            'turnos/detail.html',
+            dict(
+                turno=turno,
+            )
+        )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class TurnoEstadoUpdate(View):
 
