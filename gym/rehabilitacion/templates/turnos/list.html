@@ -1,118 +1,119 @@
 {% extends 'inicio/base.html' %}
+{% load auth_extras %}
 
 {% block content %}
-    <style>
+<style>
+    .turnos-agenda-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(230px, 1fr));
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
+    .turnos-dia {
+        min-width: 230px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+    }
+
+    .turnos-dia-header {
+        background: #cfe2ff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 10px;
+    }
+
+    .turnos-dia-titulo {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .turnos-bloque-header {
+        background: #f1f3f5;
+        border-top: 1px solid #dee2e6;
+        border-bottom: 1px solid #dee2e6;
+        padding: 6px 10px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .turnos-bloque {
+        min-height: 190px;
+        padding: 8px;
+    }
+
+    .turno-item {
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 6px;
+        margin-bottom: 8px;
+        background: #ffffff;
+    }
+
+    .turno-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .turno-hora {
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .turno-linea {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+        line-height: 1.25;
+    }
+
+    .turno-linea + .turno-linea {
+        margin-top: 4px;
+    }
+
+    .turno-texto {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .turno-paciente {
+        flex: 1;
+        font-weight: 700;
+    }
+
+    .turno-paciente-link {
+        color: #212529;
+        text-decoration: none;
+    }
+
+    .turno-paciente-link:hover {
+        color: #0d6efd;
+        text-decoration: underline;
+    }
+
+    .turno-detalle {
+        flex: 1;
+        color: #6c757d;
+    }
+
+    .turno-accion {
+        width: 28px;
+        height: 24px;
+        padding: 0;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 1200px) {
         .turnos-agenda-grid {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(230px, 1fr));
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 8px;
+            grid-template-columns: repeat(5, 230px);
         }
-
-        .turnos-dia {
-            min-width: 230px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            background: #fff;
-        }
-
-        .turnos-dia-header {
-            background: #cfe2ff;
-            border-bottom: 1px solid #dee2e6;
-            padding: 10px;
-        }
-
-        .turnos-dia-titulo {
-            display: flex;
-            align-items: baseline;
-            justify-content: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .turnos-bloque-header {
-            background: #f1f3f5;
-            border-top: 1px solid #dee2e6;
-            border-bottom: 1px solid #dee2e6;
-            padding: 6px 10px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .turnos-bloque {
-            min-height: 190px;
-            padding: 8px;
-        }
-
-        .turno-item {
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 6px;
-            margin-bottom: 8px;
-            background: #ffffff;
-        }
-
-        .turno-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .turno-hora {
-            font-weight: 700;
-            color: #212529;
-        }
-
-        .turno-linea {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            min-width: 0;
-            line-height: 1.25;
-        }
-
-        .turno-linea + .turno-linea {
-            margin-top: 4px;
-        }
-
-        .turno-texto {
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .turno-paciente {
-            flex: 1;
-            font-weight: 700;
-        }
-
-        .turno-paciente-link {
-            color: #212529;
-            text-decoration: none;
-        }
-
-        .turno-paciente-link:hover {
-            color: #0d6efd;
-            text-decoration: underline;
-        }
-
-        .turno-detalle {
-            flex: 1;
-            color: #6c757d;
-        }
-
-        .turno-accion {
-            width: 28px;
-            height: 24px;
-            padding: 0;
-            flex: 0 0 auto;
-        }
-
-        @media (max-width: 1200px) {
-            .turnos-agenda-grid {
-                grid-template-columns: repeat(5, 230px);
-            }
-        }
+    }
 </style>
 
 <div class="container-fluid">
@@ -262,9 +263,16 @@
                                     <i class="bi bi-trash"></i> Eliminar
                                 </button>
                                 {% if turno.estado != 'ANULADO' %}
-                                <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_update' turno.id %}">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </a>
+                                    {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
+                                        <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_update' turno.id %}">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </a>
+                                    {% endif %}
+                                    {% if request.user|has_group:"Profesional" or user.is_staff %}
+                                        <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_detail' turno.id %}">
+                                            <i class="bi bi-exclamation-lg"></i> Detalles
+                                        </a>
+                                    {% endif %}
                                 {% endif %}
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                                 {% if turno.estado != 'ANULADO' %}
@@ -285,15 +293,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const motivoContainer = form.querySelector(".turno-motivo-container");
         const motivoInput = form.querySelector(".turno-motivo-input");
 
-        accionSelect.addEventListener("change", function () {
-            const requiereMotivo = this.value === "ANULADO";
+        if (!accionSelect || !motivoContainer || !motivoInput) {
+            return;
+        }
+
+        function actualizarMotivoAnulacion() {
+            const requiereMotivo = accionSelect.value === "ANULADO";
             motivoContainer.classList.toggle("d-none", !requiereMotivo);
             motivoInput.required = requiereMotivo;
 
             if (!requiereMotivo) {
                 motivoInput.value = "";
             }
-        });
+        }
+
+        accionSelect.addEventListener("change", actualizarMotivoAnulacion);
+        actualizarMotivoAnulacion();
     });
     const profesional = document.querySelector('select[name="profesional"]');
     const fecha = document.querySelector('input[name="fecha"]');

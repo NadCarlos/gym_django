@@ -1,0 +1,79 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+            <h2 class="mb-0">
+                <i class="bi bi-file-earmark-medical me-2"></i>
+                Detalles Turno
+                {{ turno.paciente_id.apellido }}, {{ turno.paciente_id.nombre }}
+            </h2>
+        </div>
+
+        <!-- Profesional -->
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label text-sm-end">
+                Profesional:
+            </label>
+            <div class="col-sm-7">
+                <div class="form-control bg-light">
+                    {{ turno.profesional_id.apellido }}, {{ turno.profesional_id.nombre }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tratamiento -->
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label text-sm-end">
+                Tratamiento:
+            </label>
+            <div class="col-sm-7">
+                <div class="form-control bg-light">
+                    {{ turno.tratamiento_id.nombre }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Fecha -->
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label text-sm-end">
+                Fecha:
+            </label>
+            <div class="col-sm-7">
+                <div class="form-control bg-light">
+                    {{ turno.fecha }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Hora -->
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label text-sm-end">
+                Hora:
+            </label>
+            <div class="col-sm-7">
+                <div class="form-control bg-light">
+                    {{ turno.hora }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Motivo -->
+        <div class="mb-3 row">
+            <label class="col-sm-3 col-form-label text-sm-end">
+                Motivo:
+            </label>
+            <div class="col-sm-7">
+                <div class="form-control bg-light">
+                    {% if turno.motivo %}
+                        {{ turno.motivo }}
+                    {% else %}
+                        &nbsp;
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
