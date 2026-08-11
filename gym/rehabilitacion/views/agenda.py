@@ -459,7 +459,28 @@ class AgendaPacienteRehabCreate(View):
             )
 
             return redirect('agenda_paciente_rehab', paciente.id)
-        
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class AgendaPacienteRehabDetail(View):
+
+    def get(self, request, id):
+        agenda = agendaRehabRepo.get_by_id(id=id)
+        paciente = agenda.id_paciente_area.id_paciente
+        profesional_old = agenda.id_profesional_area.id_profesional
+        tratamiento_old = agenda.id_tratamiento_rehab
+        return render(
+            request,
+            'agenda/rehab_detail.html',
+            dict(
+                agenda=agenda,
+                paciente=paciente,
+                profesional_old=profesional_old,
+                tratamiento_old=tratamiento_old,
+            )
+        )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")

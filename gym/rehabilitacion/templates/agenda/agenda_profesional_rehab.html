@@ -1,4 +1,5 @@
 {% extends 'inicio/base.html' %}
+{% load auth_extras %}
 
 {% block content %}
 <div class="content">
@@ -66,6 +67,7 @@
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
+                                                        {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
                                                                 <i class="bi bi-pencil"></i>
@@ -77,6 +79,14 @@
                                                                 <button type="submit" class="btn btn-link p-0"><i class="bi bi-trash"></i></button>
                                                             </form>
                                                         </td>
+                                                        {% endif %}
+                                                        {% if request.user|has_group:"Profesional" %}
+                                                        <td style="width:6%" class="accion">
+                                                            <a href="{% url 'agenda_paciente_rehab_detail' x.id %}">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </a>
+                                                        </td>
+                                                        {% endif %}
                                                     </tr>
                                                     {% endif %}
                                                 {% endfor %}
@@ -102,6 +112,7 @@
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
+                                                        {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
                                                                 <i class="bi bi-pencil"></i>
@@ -113,6 +124,14 @@
                                                                 <button type="submit" class="btn btn-link p-0"><i class="bi bi-trash"></i></button>
                                                             </form>
                                                         </td>
+                                                        {% endif %}
+                                                        {% if request.user|has_group:"Profesional" %}
+                                                        <td style="width:6%" class="accion">
+                                                            <a href="{% url 'agenda_paciente_rehab_detail' x.id %}">
+                                                                <i class="bi bi-pencil"></i>
+                                                            </a>
+                                                        </td>
+                                                        {% endif %}
                                                     </tr>
                                                     {% endif %}
                                                 {% endfor %}

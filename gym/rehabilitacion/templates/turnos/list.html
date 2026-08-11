@@ -268,11 +268,6 @@
                                             <i class="bi bi-pencil"></i> Editar
                                         </a>
                                     {% endif %}
-                                    {% if request.user|has_group:"Profesional" or user.is_staff %}
-                                        <a class="btn btn-warning me-auto" href="{% url 'turno_rehab_detail' turno.id %}">
-                                            <i class="bi bi-exclamation-lg"></i> Detalles
-                                        </a>
-                                    {% endif %}
                                 {% endif %}
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                                 {% if turno.estado != 'ANULADO' %}
