@@ -139,29 +139,23 @@ class PacientesRehabList(View):
     context_object_name = 'pacientes_rehab'
 
     def get(self, request, state):
-        filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state, id_area=2))
+        queryset = pacienteRepo.filter_pacientes_area(state, id_area=2)
 
-        # Obtener el parámetro de ordenamiento
+        filterset = PacienteFilter(request.GET, queryset)
+
         ordering = request.GET.get('ordering', 'apellido')
 
-        # Obtener el queryset filtrado
-        pacientes = filterset.qs
-
-        # Si existe un campo de ordenamiento, aplicarlo
-        if ordering:
-            pacientes = filterset.qs.order_by(ordering)
-
-        pacientes_count = pacientes.count()
+        pacientes = filterset.qs.order_by(ordering)
 
         return render(
             request,
             self.template_name,
             dict(
-                pacientes_count = pacientes_count,
-                pacientes=pacientes,
-                form=filterset.form,
-                ordering=ordering,
-                state=state,
+                pacientes_count = pacientes.count(),
+                pacientes = pacientes,
+                form = filterset.form,
+                ordering = ordering,
+                state = state,
             )
         )
     
