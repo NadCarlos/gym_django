@@ -1,6 +1,14 @@
 from typing import List, Optional
 
-from rehabilitacion.models import Alta, PacienteRehabilitacion, DiagnosticoEtiologico
+from django.db.models import Prefetch
+
+from rehabilitacion.models import (
+    Alta,
+    AltaEtiologico,
+    AltaFuncional,
+    AltaTipoDiscapacidad,
+    PacienteRehabilitacion,
+)
 
 
 class AltaRepository:
@@ -22,6 +30,35 @@ class AltaRepository:
     
     def filter_by_paciente_rehab_id(self, id_paciente_rehab) -> Optional[Alta]:
         return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab).order_by("dado_alta", "-fecha", "-id")
+
+    def filter_for_patient_detail(self, id_paciente_rehab):
+        return Alta.objects.filter(
+            id_paciente_rehabilitacion=id_paciente_rehab,
+        ).order_by(
+            "dado_alta", "-fecha", "-id",
+        ).prefetch_related(
+            Prefetch(
+                "id_alta_tipo_discapacidad",
+                queryset=AltaTipoDiscapacidad.objects.filter(activo=True).select_related(
+                    "id_tipo_discapacidad",
+                ),
+                to_attr="altas_tipo_discapacidad",
+            ),
+            Prefetch(
+                "id_alta_etiologico",
+                queryset=AltaEtiologico.objects.filter(activo=True).select_related(
+                    "id_diagnostico_etiologico",
+                ),
+                to_attr="altas_etiologicos",
+            ),
+            Prefetch(
+                "id_diagnostico_funcional",
+                queryset=AltaFuncional.objects.filter(activo=True).select_related(
+                    "id_diagnostico_funcional",
+                ),
+                to_attr="altas_funcionales",
+            ),
+        )
 
     def filter_by_paciente_rehab_id_activa(self, id_paciente_rehab) -> Optional[Alta]:
             return Alta.objects.filter(id_paciente_rehabilitacion=id_paciente_rehab).filter(dado_alta=False).first()

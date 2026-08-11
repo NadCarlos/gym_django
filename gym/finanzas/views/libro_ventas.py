@@ -98,7 +98,7 @@ class FacturasList(View):
     def get(self, request):
         pago_filter = request.GET.get('pago')
         
-        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all_for_list())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', '-fecha')
@@ -108,24 +108,18 @@ class FacturasList(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
+        if pago_filter == "true":
+            facturas = facturas.filter(tiene_orden_pago=True)
+        elif pago_filter == "false":
+            facturas = facturas.filter(tiene_orden_pago=False)
+
+        facturas = list(facturas)
         for factura in facturas:
-            factura_paga_exists = detalleOrdenRepo.filter_by_factura_exists(id_factura=factura.id)
-            factura.pago = factura_paga_exists
+            detalles_orden = factura.detalles_orden_pago
+            factura.pago = bool(detalles_orden)
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
-            if factura_paga_exists == True:
-                factura.orden_pago = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
-
-            else:
-                factura.orden_pago = False
-
-        filtros_pago = {
-            'true': lambda f: f.pago is True,
-            'false': lambda f: f.pago is False,
-        }
-
-        if pago_filter in filtros_pago:
-            facturas = list(filter(filtros_pago[pago_filter], facturas))
+            factura.orden_pago = detalles_orden[0] if detalles_orden else False
 
         facturas_count = len(facturas)
 
@@ -162,7 +156,7 @@ class FacturasToCsv(View):
         fecha_before = request.GET.get('fecha_before')
         pago = request.GET.get('pago')
 
-        facturas = facturaRepo.get_all()
+        facturas = facturaRepo.get_all_for_list()
 
         if beneficiario_nombre:
             facturas = facturas.filter(id_beneficiario__nombre__icontains=beneficiario_nombre)
@@ -173,24 +167,22 @@ class FacturasToCsv(View):
         if fecha_after and fecha_before:
             facturas = facturas.filter(fecha__gte=fecha_after, fecha__lt=fecha_before)
 
+        if pago == "true":
+            facturas = facturas.filter(tiene_orden_pago=True)
+        elif pago == "false":
+            facturas = facturas.filter(tiene_orden_pago=False)
+
+        facturas = list(facturas)
         for factura in facturas:
-            factura_paga_exists = detalleOrdenRepo.filter_by_factura_exists(id_factura=factura.id)
-            factura.pago = factura_paga_exists
+            detalles_orden = factura.detalles_orden_pago
+            factura.pago = bool(detalles_orden)
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
-            if factura_paga_exists == True:
-                factura_orden_pago = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
-                factura.fecha_orden_pago = factura_orden_pago.id_ordenpago.fecha
-            else:
-                factura.fecha_orden_pago = ""
-
-        filtros_pago = {
-            'true': lambda f: f.pago is True,
-            'false': lambda f: f.pago is False,
-        }
-
-        if pago in filtros_pago:
-            facturas = list(filter(filtros_pago[pago], facturas))
+            factura.fecha_orden_pago = (
+                detalles_orden[0].id_ordenpago.fecha
+                if detalles_orden
+                else ""
+            )
 
         data = []
         for factura in facturas:
@@ -234,7 +226,10 @@ class BalanceList(View):
 
     def get(self, request, id):
         beneficiario = beneficiarioRepo.filter_by_id(id=id)
-        filterset = FacturasFilter(request.GET, queryset=facturaRepo.filter_by_beneficiario_id(id_beneficiario=id))
+        filterset = FacturasFilter(
+            request.GET,
+            queryset=facturaRepo.get_all_for_balance().filter(id_beneficiario=id),
+        )
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
@@ -244,7 +239,8 @@ class BalanceList(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
-        facturas_count = facturas.count()
+        facturas = list(facturas)
+        facturas_count = len(facturas)
 
         total = 0
         total_saldado = 0
@@ -253,21 +249,16 @@ class BalanceList(View):
             total += factura.importe
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
-            factura_in_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
-            if factura_in_orden:
-                factura.paga = True
-                total_saldado = total_saldado + factura.importe
+            factura.paga = factura.tiene_orden_pago
+            if factura.paga:
+                total_saldado += factura.importe
             else:
-                factura.paga = False
-                total_deuda = total_deuda + factura.importe
+                total_deuda += factura.importe
             factura.importe = locale.currency(factura.importe, grouping=True)
 
-        total_descuentos = 0
-        ordenes_pago = ordenPagoRepo.filter_by_beneficiario(id_beneficiario=beneficiario.id)
-        for orden in ordenes_pago:
-            descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
-            for descuento in descuentos:
-                total_descuentos = total_descuentos + descuento.importe
+        total_descuentos = (
+            descuentoRepo.total_activo_por_beneficiario(beneficiario.id)
+        )
 
         total_menos_dtos = total - total_descuentos
 
@@ -301,7 +292,7 @@ class BalanceListAll(View):
     context_object_name = 'BalanceListAll'
 
     def get(self, request):
-        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all())
+        filterset = FacturasFilter(request.GET, queryset=facturaRepo.get_all_for_balance())
 
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'fecha')
@@ -311,7 +302,8 @@ class BalanceListAll(View):
         if ordering:
             facturas = facturas.order_by(ordering)
 
-        facturas_count = facturas.count()
+        facturas = list(facturas)
+        facturas_count = len(facturas)
 
         total = 0
         total_saldado = 0
@@ -320,24 +312,14 @@ class BalanceListAll(View):
             total += factura.importe
             factura.pto_vta = factura.pto_vta.zfill(4)
             factura.numero = factura.numero.zfill(8)
-            factura_in_orden = detalleOrdenRepo.filter_by_factura_id(factura_id=factura.id)
-            if factura_in_orden:
-                factura.paga = True
-                total_saldado = total_saldado + factura.importe
+            factura.paga = factura.tiene_orden_pago
+            if factura.paga:
+                total_saldado += factura.importe
             else:
-                factura.paga = False
-                total_deuda = total_deuda + factura.importe
+                total_deuda += factura.importe
             factura.importe = locale.currency(factura.importe, grouping=True)
 
-        beneficiarios = beneficiarioRepo.get_all()
-        total_descuentos = 0
-        for beneficiario in beneficiarios:
-            ordenes_pago = ordenPagoRepo.filter_by_beneficiario(id_beneficiario=beneficiario.id)
-            for orden in ordenes_pago:
-                descuentos = descuentoRepo.filter_by_orden_id(orden_id=orden.id)
-                for descuento in descuentos:
-                    total_descuentos = total_descuentos + descuento.importe
-
+        total_descuentos = descuentoRepo.total_activo()
         total_menos_dtos = total - total_descuentos
 
         total = locale.currency(total, grouping=True)

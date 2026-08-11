@@ -6,8 +6,11 @@ from administracion.models import PacientePlan, Plan
 
 class PacientePlanRepository:
 
+    def _with_display_relations(self):
+        return PacientePlan.objects.select_related("id_paciente", "id_plan")
+
     def get_all(self) -> List[PacientePlan]:
-        return PacientePlan.objects.all()
+        return self._with_display_relations()
     
     def get_by_id(self, id: int) -> Optional[PacientePlan]:
         return PacientePlan.objects.get(id=id)
@@ -16,16 +19,21 @@ class PacientePlanRepository:
         return PacientePlan.objects.filter(id=id)
     
     def filter_by_activo(self) -> List[PacientePlan]:
-        return PacientePlan.objects.filter(activo=True)
+        return self._with_display_relations().filter(activo=True)
     
     def filter_by_paciente_activo(self, id_paciente) -> List[PacientePlan]:
-        return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True).first()
+        return self._with_display_relations().filter(
+            id_paciente=id_paciente,
+            activo=True,
+        ).first()
     
     def paciente_plan_exist(self, id_paciente) -> List[PacientePlan]:
         return PacientePlan.objects.filter(id_paciente=id_paciente).filter(activo=True).exists()
     
     def filter_by_paciente(self, id) -> List[PacientePlan]:
-        return PacientePlan.objects.filter(id_paciente=id).order_by('-activo')
+        return self._with_display_relations().filter(
+            id_paciente=id,
+        ).order_by("-activo")
     
     def delete_by_activo(self, paciente_plan: PacientePlan):
         paciente_plan.activo=False

@@ -73,7 +73,7 @@ class AsistenciasToCsv(View):
         id_obra_social = request.GET.get('id_prestacion_paciente__id_obra_social')
         id_prestacion = request.GET.get('id_prestacion_paciente__id_prestacion')
 
-        asistencias = Asistencia.objects.all()
+        asistencias = asistenciaRepo.get_all()
 
         if apellido:
             asistencias = asistencias.filter(id_prestacion_paciente__id_paciente__apellido__icontains=apellido)

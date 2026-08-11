@@ -24,17 +24,27 @@ class AgendaRepository:
         )
     
     def filter_by_id_paciente_exist(self, id_prestacion_paciente) -> Optional[Agenda]:
-        return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True).exists()
+        return self.get_all().filter(
+            id_prestacion_paciente=id_prestacion_paciente,
+            activo=True,
+        ).exists()
     
     def filter_by_id_profesional(self, id_profesional_tratamiento) -> Optional[Agenda]:
-        return Agenda.objects.filter(id_profesional_tratamiento=id_profesional_tratamiento).filter(activo=True)
+        return self.get_all().filter(
+            id_profesional_tratamiento=id_profesional_tratamiento,
+            activo=True,
+        )
     
     def filter_by_id_prestacion_paciente(self, id_prestacion_paciente) -> Optional[Agenda]:
         return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True)
     
     def filter_by_id_prestacion_paciente_id_dia(self, id_prestacion_paciente, id_dia) -> Optional[Agenda]:
         try:
-            return Agenda.objects.filter(id_prestacion_paciente=id_prestacion_paciente).filter(activo=True).filter(id_dia=id_dia)
+            return self.get_all().filter(
+                id_prestacion_paciente=id_prestacion_paciente,
+                activo=True,
+                id_dia=id_dia,
+            )
         except:
             agenda = None
         return agenda 

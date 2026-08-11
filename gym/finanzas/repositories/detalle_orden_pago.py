@@ -12,7 +12,10 @@ class DetalleOrdenRepo:
         return DetalleOrden.objects.filter(id=id).first()
     
     def filter_by_orden_id(self, orden_id) -> Optional[DetalleOrden]:
-        return DetalleOrden.objects.filter(id_ordenpago=orden_id).filter(activo = True)
+        return DetalleOrden.objects.filter(
+            id_ordenpago=orden_id,
+            activo=True,
+        ).select_related("id_factura", "id_ordenpago")
     
     def filter_by_orden_pago_and_factura_id(self, factura_id, orden_id) -> Optional[DetalleOrden]:
         return DetalleOrden.objects.filter(id_ordenpago=orden_id).filter(id_factura=factura_id).filter(activo = True).first()

@@ -55,7 +55,6 @@ class PacientesList(View):
 
     def get(self, request, state):
         filterset = PacienteFilter(request.GET, pacienteRepo.filter_pacientes_area(state, id_area=1))
-        prestaciones = prestacionPacienteRepo.get_all()
         """pacientesFinished = []
         for paciente in pacientes:
             for prestacion in prestaciones:
@@ -88,7 +87,6 @@ class PacientesList(View):
                 form=filterset.form,
                 ordering=ordering,
                 state=state,
-                prestaciones=prestaciones,
             )
         )
 
@@ -109,7 +107,7 @@ class PacientesToCsv(View):
         id_estado_civil = request.GET.get('id_estado_civil')
         id_sexo = request.GET.get('id_sexo')
 
-        pacientes = pacienteRepo.filter_pacientes_area(state, id_area=area)
+        pacientes = pacienteRepo.filter_pacientes_area_for_export(state, id_area=area)
 
         if apellido:
             pacientes = pacientes.filter(apellido__icontains=apellido)
@@ -123,15 +121,13 @@ class PacientesToCsv(View):
         if id_sexo:
             pacientes = pacientes.filter(id_sexo=id_sexo)
 
-        prestaciones = prestacionPacienteRepo.get_all()
         data = []
         for paciente in pacientes:
-            for prestacion in prestaciones:
-                if paciente.id == prestacion.id_paciente.id and prestacion.activo == True:
-                    tiene_prestacion_activa = 'Prestacion Activa'
-                    break
-            else:
-                tiene_prestacion_activa = 'Sin Prestacion Activa'
+            tiene_prestacion_activa = (
+                'Prestacion Activa'
+                if paciente.tiene_prestacion_activa
+                else 'Sin Prestacion Activa'
+            )
 
             data.append([
                 paciente.nombre,

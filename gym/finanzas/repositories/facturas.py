@@ -1,6 +1,8 @@
 from typing import List, Optional
 
-from finanzas.models import Factura, Beneficiario
+from django.db.models import Exists, OuterRef, Prefetch
+
+from finanzas.models import Beneficiario, DetalleOrden, Factura
 from administracion.models import Paciente
 
 
@@ -8,7 +10,37 @@ class FacturaRepository:
 
     def get_all(self) -> List[Factura]:
         return Factura.objects.all()
+
+    def get_all_for_list(self):
+        detalles_activos = DetalleOrden.objects.filter(
+            activo=True,
+        ).select_related("id_ordenpago").order_by("pk")
+        tiene_orden_pago = DetalleOrden.objects.filter(
+            id_factura=OuterRef("pk"),
+            activo=True,
+        )
+        return Factura.objects.select_related(
+            "id_beneficiario",
+            "id_paciente",
+        ).annotate(
+            tiene_orden_pago=Exists(tiene_orden_pago),
+        ).prefetch_related(
+            Prefetch(
+                "id_factura_detalleorden",
+                queryset=detalles_activos,
+                to_attr="detalles_orden_pago",
+            ),
+        )
     
+    def get_all_for_balance(self):
+        tiene_orden_pago = DetalleOrden.objects.filter(
+            id_factura=OuterRef("pk"),
+            activo=True,
+        )
+        return Factura.objects.select_related("id_beneficiario").annotate(
+            tiene_orden_pago=Exists(tiene_orden_pago),
+        )
+
     def filter_by_id(self, id) -> Optional[Factura]:
         return Factura.objects.filter(id=id).first()
     

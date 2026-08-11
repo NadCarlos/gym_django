@@ -26,7 +26,21 @@ from administracion.models import (
 from administracion.repositories.paciente import PacienteRepository
 from administracion.views.agenda import AgendaDelete
 from administracion.views.pacientes import PacienteDelete
-from rehabilitacion.models import Turno
+from rehabilitacion.models import (
+    Alta,
+    AltaEtiologico,
+    AltaFuncional,
+    AltaTipoDiscapacidad,
+    Conocer,
+    Derivador,
+    DiagnosticoEtiologico,
+    DiagnosticoFuncional,
+    EstadoCertificado,
+    PacienteRehabilitacion,
+    TipoDiscapacidad,
+    Turno,
+)
+from rehabilitacion.repositories.alta import AltaRepository
 from rehabilitacion.repositories.turno import TurnoRepository
 from rehabilitacion.views.agenda import AgendaPacienteRehabUpdate, AgendaRehabDelete
 from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
@@ -202,6 +216,20 @@ class CriticalWriteIdempotencyTests(TestCase):
         )
 
 
+    def test_patient_area_list_preloads_related_display_fields(self):
+        PacienteArea.objects.create(
+            id_paciente=self.paciente,
+            id_area=self.area,
+            id_usuario=self.user,
+        )
+
+        with self.assertNumQueries(1):
+            pacientes = list(
+                PacienteRepository().filter_pacientes_area(state=True, id_area=self.area.id)
+            )
+            [(paciente.id_obra_social, paciente.id_sexo.nombre) for paciente in pacientes]
+
+
 class RequestTimingMiddlewareTests(SimpleTestCase):
     @override_settings(
         REQUEST_INSTRUMENTATION_ENABLED=True,
@@ -274,3 +302,85 @@ class AgendaPacienteRehabUpdateTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/rehabilitacion/agenda_paciente_rehab/42")
+
+
+
+class RehabPatientDetailQueryTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import User
+
+        cls.user = User.objects.create_user(username="rehab-detail-query")
+        pais = Pais.objects.create(nombre="Argentina")
+        provincia = Provincia.objects.create(nombre="Cordoba", pais=pais)
+        localidad = Localidad.objects.create(nombre="Rio Cuarto", provincia=provincia)
+        obra_social = ObraSocial.objects.create(nombre="Particular")
+        estado_civil = EstadoCivil.objects.create(nombre="Soltero")
+        sexo = Sexo.objects.create(nombre="Masculino")
+        paciente = Paciente.objects.create(
+            nombre="Paciente",
+            apellido="Detalle",
+            numero_dni="55667788",
+            fecha_nacimiento=date(1990, 1, 1),
+            id_usuario=cls.user,
+            id_localidad=localidad,
+            id_obra_social=obra_social,
+            id_estado_civil=estado_civil,
+            id_sexo=sexo,
+        )
+        area = Area.objects.create(nombre="Rehabilitacion")
+        paciente_area = PacienteArea.objects.create(
+            id_paciente=paciente,
+            id_area=area,
+            id_usuario=cls.user,
+        )
+        rehabilitacion = PacienteRehabilitacion.objects.create(
+            id_paciente_area=paciente_area,
+            id_estado_certificado=EstadoCertificado.objects.create(nombre="SI"),
+            id_derivador=Derivador.objects.create(
+                nombre="Derivador",
+                id_usuario=cls.user,
+            ),
+            id_obra_social=obra_social,
+            id_conocer=Conocer.objects.create(nombre="Redes"),
+            id_usuario=cls.user,
+        )
+        alta = Alta.objects.create(
+            fecha=date(2026, 1, 1),
+            id_paciente_rehabilitacion=rehabilitacion,
+        )
+        tipo = TipoDiscapacidad.objects.create(nombre="Motora")
+        etiologico = DiagnosticoEtiologico.objects.create(nombre="Origen")
+        funcional = DiagnosticoFuncional.objects.create(nombre="Funcion")
+        AltaTipoDiscapacidad.objects.create(
+            id_alta=alta,
+            id_tipo_discapacidad=tipo,
+            id_usuario=cls.user,
+        )
+        AltaEtiologico.objects.create(
+            id_alta=alta,
+            id_diagnostico_etiologico=etiologico,
+            id_usuario=cls.user,
+        )
+        AltaFuncional.objects.create(
+            id_alta=alta,
+            id_diagnostico_funcional=funcional,
+            id_usuario=cls.user,
+        )
+        cls.rehabilitacion = rehabilitacion
+
+    def test_detail_prefetches_all_alta_relations_with_constant_queries(self):
+        with self.assertNumQueries(4):
+            altas = list(
+                AltaRepository().filter_for_patient_detail(
+                    self.rehabilitacion.id,
+                )
+            )
+            [
+                (
+                    alta.altas_tipo_discapacidad[0].id_tipo_discapacidad.nombre,
+                    alta.altas_etiologicos[0].id_diagnostico_etiologico.nombre,
+                    alta.altas_funcionales[0].id_diagnostico_funcional.nombre,
+                )
+                for alta in altas
+            ]
