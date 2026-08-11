@@ -1,10 +1,14 @@
 from datetime import date, time
+import os
+import threading
+from time import monotonic
+from unittest.mock import patch
 from types import SimpleNamespace
 from uuid import uuid4
 
 from django.db import OperationalError
 from django.http import HttpResponse
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 
 from administracion.models import (
     Area,
@@ -24,7 +28,7 @@ from administracion.views.agenda import AgendaDelete
 from administracion.views.pacientes import PacienteDelete
 from rehabilitacion.models import Turno
 from rehabilitacion.repositories.turno import TurnoRepository
-from rehabilitacion.views.agenda import AgendaRehabDelete
+from rehabilitacion.views.agenda import AgendaPacienteRehabUpdate, AgendaRehabDelete
 from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
 from rehabilitacion.views.pacientes_rehab import PacienteRehabDelete
 from rehabilitacion.views.turno import TurnoDelete
@@ -196,3 +200,77 @@ class CriticalWriteIdempotencyTests(TestCase):
             ).count(),
             1,
         )
+
+
+class RequestTimingMiddlewareTests(SimpleTestCase):
+    @override_settings(
+        REQUEST_INSTRUMENTATION_ENABLED=True,
+        SLOW_REQUEST_LOG_MS=0,
+        SLOW_REQUEST_WATCHDOG_ENABLED=False,
+    )
+    def test_get_request_is_logged_when_slow(self):
+        from gym.middleware import WriteDatabaseInstrumentationMiddleware
+
+        request = RequestFactory().get("/rehabilitacion/")
+        middleware = WriteDatabaseInstrumentationMiddleware(lambda request: HttpResponse())
+
+        with self.assertLogs("cermed.request_timing", level="WARNING") as logs:
+            response = middleware(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("[SLOW-REQUEST] finish", logs.output[0])
+        self.assertIn("method=GET", logs.output[0])
+
+    def test_watchdog_logs_current_thread_stack_once(self):
+        from gym.slow_requests import ActiveRequestRegistry
+
+        registry = ActiveRequestRegistry()
+        registry._active["request-1"] = {
+            "pid": os.getpid(),
+            "thread_id": threading.get_ident(),
+            "method": "GET",
+            "path": "/rehabilitacion/",
+            "view": "rehabilitacion.views.inicio.index.IndexView",
+            "started_at": monotonic() - 11,
+            "stack_after_ms": 10000,
+            "stack_logged": False,
+        }
+
+        with self.assertLogs("cermed.request_timing", level="WARNING") as logs:
+            registry.emit_overdue_stacks()
+            registry.emit_overdue_stacks()
+
+        self.assertEqual(len(logs.output), 1)
+        self.assertIn("request_id=request-1", logs.output[0])
+        self.assertTrue(registry._active["request-1"]["stack_logged"])
+
+
+class AgendaPacienteRehabUpdateTests(SimpleTestCase):
+    def test_post_without_session_return_path_redirects_to_patient_agenda(self):
+        agenda = SimpleNamespace(
+            id_paciente_area=SimpleNamespace(id_paciente_id=42),
+        )
+        form = SimpleNamespace(
+            is_valid=lambda: True,
+            cleaned_data={
+                "hora_inicio": time(9, 0),
+                "hora_fin": time(10, 0),
+                "id_dia": SimpleNamespace(id=1),
+                "observaciones": "control",
+            },
+        )
+        request = SimpleNamespace(
+            POST={"id_tratamiento": "1", "profesional": "2"},
+            session={},
+        )
+
+        with patch("rehabilitacion.views.agenda.AgendaRehabUpdateForm", return_value=form), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.get_by_id", return_value=agenda), \
+             patch("rehabilitacion.views.agenda.tratamientoRepo.filter_by_id", return_value=SimpleNamespace(id=1)), \
+             patch("rehabilitacion.views.agenda.profesionalRepo.filter_by_id", return_value=SimpleNamespace(id=2)), \
+             patch("rehabilitacion.views.agenda.profesionalAreaRepo.filter_by_profesional_id", return_value=SimpleNamespace(id=3)), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.update"):
+            response = AgendaPacienteRehabUpdate().post(request, id=11)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/rehabilitacion/agenda_paciente_rehab/42")

@@ -39,6 +39,10 @@ env = environ.Env(
     DB_LOCK_WAIT_TIMEOUT=(int, 5),
     DB_SLOW_QUERY_MS=(int, 250),
     WRITE_DB_INSTRUMENTATION_ENABLED=(bool, True),
+    REQUEST_INSTRUMENTATION_ENABLED=(bool, True),
+    SLOW_REQUEST_LOG_MS=(int, 2000),
+    SLOW_REQUEST_STACK_MS=(int, 10000),
+    SLOW_REQUEST_WATCHDOG_ENABLED=(bool, False),
 )
 environ.Env.read_env(ENV_FILE)
 
@@ -97,11 +101,11 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "gym.middleware.WriteDatabaseInstrumentationMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "gym.middleware.WriteDatabaseInstrumentationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -156,6 +160,10 @@ DATABASES = {
 
 DB_SLOW_QUERY_MS = env.int("DB_SLOW_QUERY_MS", default=250)
 WRITE_DB_INSTRUMENTATION_ENABLED = env.bool("WRITE_DB_INSTRUMENTATION_ENABLED", default=True)
+REQUEST_INSTRUMENTATION_ENABLED = env.bool("REQUEST_INSTRUMENTATION_ENABLED", default=True)
+SLOW_REQUEST_LOG_MS = env.int("SLOW_REQUEST_LOG_MS", default=2000)
+SLOW_REQUEST_STACK_MS = env.int("SLOW_REQUEST_STACK_MS", default=10000)
+SLOW_REQUEST_WATCHDOG_ENABLED = env.bool("SLOW_REQUEST_WATCHDOG_ENABLED", default=False)
 
 DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
 DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "backup_data"}
@@ -251,6 +259,11 @@ LOGGING = {
     },
     "loggers": {
         "cermed.db_writes": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "cermed.request_timing": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,

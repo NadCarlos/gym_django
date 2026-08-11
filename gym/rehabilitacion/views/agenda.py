@@ -523,7 +523,9 @@ class AgendaPacienteRehabUpdate(View):
                 observaciones=observaciones,
             )
 
-            return redirect( path )
+            if path:
+                return redirect(path)
+            return redirect("agenda_paciente_rehab", agenda.id_paciente_area.id_paciente_id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
