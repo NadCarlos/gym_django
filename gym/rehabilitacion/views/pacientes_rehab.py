@@ -195,11 +195,13 @@ class AsistenciasPacientesRehabList(View):
                 asistencia_cargada=Exists(asistencia_cargada)
             )
         )
+
+        print(pacientes_con_agenda)
         
         filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
 
         # Obtener el parámetro de ordenamiento
-        ordering = request.GET.get('ordering', 'apellido')
+        ordering = request.GET.get('ordering', 'hora_inicio')
 
         # Obtener el queryset filtrado
         pacientes = filterset.qs
@@ -222,7 +224,76 @@ class AsistenciasPacientesRehabList(View):
                 fecha_url=fecha.strftime("%Y-%m-%d"),
             )
         )
-    
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class AsistenciasPacientesRehabListToCSV(View):
+
+    def get(self, request):
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=lista_asistencias.xlsx'
+        fecha_str = request.GET.get("fecha")
+        if fecha_str:
+            fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+        else:
+            fecha = date.today()
+        id_dia = fecha.weekday() + 1
+
+        agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia, id_area=2)
+
+        asistencia_cargada = (
+            asistenciaRehabRepo.asistencias_cargadas_list(
+                fecha=fecha,
+                id_dia=id_dia
+            )
+        )
+
+        primera_hora = agendaRepo.first_hora_inicio_by_paciente(id_dia=id_dia, id_area=2)
+
+        pacientes_con_agenda = (
+            pacienteRepo
+            .filter_pacientes_area(state=True, id_area=2)
+            .filter(id__in=agenda)
+            .annotate(
+                hora_inicio=Subquery(primera_hora),
+                asistencia_cargada=Exists(asistencia_cargada)
+            )
+        )
+
+        print(pacientes_con_agenda)
+
+        data_lista = []
+        for paciente in pacientes_con_agenda:
+
+            data_lista.append([
+                paciente.nombre,
+                paciente.apellido,
+                paciente.numero_dni,
+                paciente.hora_inicio,
+                "Cargada" if paciente.asistencia_cargada == True else "Pendiente",
+                ])
+
+        df = pd.DataFrame(data_lista, columns=[
+            'Nombre',
+            'Apellido',
+            'Dni',
+            'Hora',
+            'Asistencia',
+            ])
+
+        # Use an in-memory output stream to avoid file system I/O
+        output = io.BytesIO()
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Asistencias', index=False)
+
+        response.write(output.getvalue())
+
+        return response
+
+
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")

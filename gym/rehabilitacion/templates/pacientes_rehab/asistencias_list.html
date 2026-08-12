@@ -47,6 +47,11 @@
                         <i class="bi bi-filter-square"></i> Filtrar
                     </button>
                 </div>
+                <div class="col-md-1 text-end">
+                    <a href="{% url 'pacientes_asistencias_to_csv' %}" class="btn btn-success mt-2">
+                        <i class="bi bi-floppy"></i> Excel
+                    </a>
+                </div>
             </form>
         </div>
     </div>
@@ -86,7 +91,16 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th class="text-center">Hora</th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'hora_inicio' %}-hora_inicio{% else %}hora_inicio{% endif %}">
+                            Hora
+                            {% if request.GET.ordering == 'hora_inicio' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-hora_inicio' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
                     <th class="text-center">Asistencia</th>
                     <th class="text-center">Acciones</th>
                 </tr>
