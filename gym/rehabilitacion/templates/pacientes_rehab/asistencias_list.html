@@ -86,6 +86,7 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th class="text-center">Hora</th>
                     <th class="text-center">Asistencia</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -96,6 +97,11 @@
                     <td>{{ paciente.apellido }}</td>
                     <td>{{ paciente.nombre }}</td>
                     <td>{{ paciente.numero_dni }}</td>
+                    <td class="text-center"> 
+                        {% if paciente.hora_inicio %} 
+                            <span class="badge bg-primary"> {{ paciente.hora_inicio|time:"H:i" }} </span>{% else %} <span class="text-muted">—</span> 
+                        {% endif %} 
+                    </td>
                     <td class="text-center">
                         {% if paciente.asistencia_cargada %}
                             <span class="badge bg-success">Cargada</span>

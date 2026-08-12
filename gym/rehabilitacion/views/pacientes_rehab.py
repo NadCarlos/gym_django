@@ -3,7 +3,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError
 from django.shortcuts import render, redirect, HttpResponse
-from django.db.models import Exists
+from django.db.models import Exists, Subquery
 from utils.decorators import requiere_areas
 
 import json
@@ -42,6 +42,7 @@ from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
 
+from rehabilitacion.models import AgendaRehab, PacienteArea
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
@@ -174,12 +175,25 @@ class AsistenciasPacientesRehabList(View):
             fecha = date.today()
         id_dia = fecha.weekday() + 1
 
-        agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia)
-        asistencia_cargada = asistenciaRehabRepo.asistencias_cargadas_list(fecha=fecha, id_dia=id_dia)
+        agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia, id_area=2)
+
+        asistencia_cargada = (
+            asistenciaRehabRepo.asistencias_cargadas_list(
+                fecha=fecha,
+                id_dia=id_dia
+            )
+        )
+
+        primera_hora = agendaRepo.first_hora_inicio_by_paciente(id_dia=id_dia, id_area=2)
+
         pacientes_con_agenda = (
-            pacienteRepo.filter_pacientes_area(state=True, id_area=2)
+            pacienteRepo
+            .filter_pacientes_area(state=True, id_area=2)
             .filter(id__in=agenda)
-            .annotate(asistencia_cargada=Exists(asistencia_cargada))
+            .annotate(
+                hora_inicio=Subquery(primera_hora),
+                asistencia_cargada=Exists(asistencia_cargada)
+            )
         )
         
         filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
