@@ -5,8 +5,14 @@ from administracion.models import ProfesionalTratamiento, Tratamiento, Profesion
 
 class TratamientoProfesionalRepository:
 
+    def _with_display_relations(self):
+        return ProfesionalTratamiento.objects.select_related(
+            "id_profesional",
+            "id_tratamiento",
+        )
+
     def get_all(self) -> List[ProfesionalTratamiento]:
-        return ProfesionalTratamiento.objects.all()
+        return self._with_display_relations()
     
     def filter_by_id(self, id) -> Optional[ProfesionalTratamiento]:
         return ProfesionalTratamiento.objects.filter(id=id).latest()
@@ -15,24 +21,29 @@ class TratamientoProfesionalRepository:
         return ProfesionalTratamiento.objects.filter(id_profesional=id_profesional).first()
     
     def filter_by_id_profesional_all(self, id_profesional) -> Optional[ProfesionalTratamiento]:
-        return ProfesionalTratamiento.objects.filter(id_profesional=id_profesional).all()
+        return self._with_display_relations().filter(id_profesional=id_profesional)
     
     def filter_by_id_tratamiento_all(self, id_tratamiento, id_area) -> Optional[ProfesionalTratamiento]:
         ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
         profesionales = Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True)
-        return ProfesionalTratamiento.objects.filter(id_profesional__in=profesionales).filter(id_tratamiento=id_tratamiento).filter(activo=True).all()
+        return self._with_display_relations().filter(
+            id_profesional__in=profesionales,
+            id_tratamiento=id_tratamiento,
+            activo=True,
+        )
     
     def filter_by_id_profesional_activo(self, id_profesional) -> Optional[ProfesionalTratamiento]:
-        return ProfesionalTratamiento.objects.filter(id_profesional=id_profesional).filter(activo=True)
+        return self._with_display_relations().filter(
+            id_profesional=id_profesional,
+            activo=True,
+        )
     
     def filter_by_activo(self) -> List[ProfesionalTratamiento]:
-        return ProfesionalTratamiento.objects.filter(
-            activo=True
-        )
+        return self._with_display_relations().filter(activo=True)
     
     def get_by_id(self, id: int) -> Optional[ProfesionalTratamiento]:
         try:
-            profesional_tratamiento = ProfesionalTratamiento.objects.get(id=id)
+            profesional_tratamiento = self._with_display_relations().get(id=id)
         except:
             profesional_tratamiento = None
         return profesional_tratamiento

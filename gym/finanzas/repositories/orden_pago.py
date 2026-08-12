@@ -7,19 +7,23 @@ from finanzas.models import OrdenPago, Beneficiario
 class OrdenPagoRepository:
 
     def get_all(self) -> List[OrdenPago]:
-        return OrdenPago.objects.all()
+        return OrdenPago.objects.select_related("id_beneficiario")
 
     def filter_by_id(self, id) -> Optional[OrdenPago]:
-        return OrdenPago.objects.filter(id=id).first()
+        return self.get_all().filter(id=id).first()
     
     def filter_by_activo(self) -> List[OrdenPago]:
-        return OrdenPago.objects.filter(activo=True).order_by('id_beneficiario__nombre')
+        return self.get_all().filter(activo=True).order_by("id_beneficiario__nombre")
     
     def filter_by_beneficiario(self, id_beneficiario) -> List[OrdenPago]:
-        return OrdenPago.objects.filter(id_beneficiario=id_beneficiario).filter(activo=True)
+        return self.get_all().filter(id_beneficiario=id_beneficiario, activo=True)
     
     def filter_by_dates(self, start_date, end_date) -> Optional[OrdenPago]:
-        return OrdenPago.objects.filter(activo=True).filter(fecha__gte=start_date, fecha__lt=end_date)
+        return self.get_all().filter(
+            activo=True,
+            fecha__gte=start_date,
+            fecha__lt=end_date,
+        )
     
     def delete_by_activo(self, orden: OrdenPago):
         orden.activo=False

@@ -6,16 +6,22 @@ from administracion.models import Asistencia, PrestacionPaciente, Agenda
 class AsistenciaRepository:
 
     def get_all(self) -> List[Asistencia]:
-        return Asistencia.objects.all().order_by('fecha')
+        return Asistencia.objects.select_related(
+            "id_prestacion_paciente__id_paciente",
+            "id_prestacion_paciente__id_obra_social",
+            "id_prestacion_paciente__id_prestacion",
+            "id_agenda__id_profesional_tratamiento__id_profesional",
+            "id_agenda__id_profesional_tratamiento__id_tratamiento",
+        ).order_by("fecha")
     
     def get_all_by_id(self, id_prestacion_paciente) -> List[Asistencia]:
-        return Asistencia.objects.filter(id_prestacion_paciente=id_prestacion_paciente)
+        return self.get_all().filter(id_prestacion_paciente=id_prestacion_paciente)
     
     def filter_by_id(self) -> Optional[Asistencia]:
         return Asistencia.objects.filter(id=id).first()
 
     def filter_by_dates(self, start_date, end_date) -> Optional[Asistencia]:
-        return Asistencia.objects.filter(fecha__gte=start_date, fecha__lt=end_date)
+        return self.get_all().filter(fecha__gte=start_date, fecha__lt=end_date)
     
     def get_by_id(self, id: int) -> Optional[Asistencia]:
         try:

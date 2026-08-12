@@ -6,8 +6,14 @@ from administracion.models import DetallePago, Pago, Cuota
 
 class DetallePagoRepository:
 
+    def _with_display_relations(self):
+        return DetallePago.objects.select_related(
+            "id_cuota",
+            "id_pago__id_tipo_pago",
+        )
+
     def get_all(self) -> List[DetallePago]:
-        return DetallePago.objects.all()
+        return self._with_display_relations()
     
     def filter_by_cuota_id(self, id_cuota) -> Optional[DetallePago]:
         return DetallePago.objects.filter(id_cuota=id_cuota)
@@ -16,7 +22,10 @@ class DetallePagoRepository:
         return DetallePago.objects.filter(id_pago=id_pago).first()
     
     def filter_by_paciente_id(self, id_paciente) -> Optional[DetallePago]:
-        return DetallePago.objects.filter(id_cuota__id_paciente_plan__id_paciente__id=id_paciente).filter(activo=True)
+        return self._with_display_relations().filter(
+            id_cuota__id_paciente_plan__id_paciente__id=id_paciente,
+            activo=True,
+        )
     
     def filter_by_cuota_id_exists(self, id_cuota) -> Optional[DetallePago]:
         return DetallePago.objects.filter(id_cuota=id_cuota).exists()

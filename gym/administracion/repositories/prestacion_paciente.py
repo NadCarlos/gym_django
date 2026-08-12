@@ -6,8 +6,15 @@ from administracion.models import PrestacionPaciente, Paciente, ObraSocial, Pres
 
 class PrestacionPacienteRepository:
 
+    def _with_display_relations(self):
+        return PrestacionPaciente.objects.select_related(
+            "id_paciente",
+            "id_obra_social",
+            "id_prestacion",
+        )
+
     def get_all(self) -> List[PrestacionPaciente]:
-        return PrestacionPaciente.objects.all()
+        return self._with_display_relations()
     
     def filter_by_id(self, id) -> Optional[PrestacionPaciente]:
         return PrestacionPaciente.objects.filter(id=id).latest()
@@ -16,10 +23,15 @@ class PrestacionPacienteRepository:
         return PrestacionPaciente.objects.filter(id_paciente=id_paciente).first()
     
     def filter_by_id_paciente_all(self, id_paciente) -> Optional[PrestacionPaciente]:
-        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).all().order_by('-activo')
+        return self._with_display_relations().filter(
+            id_paciente=id_paciente,
+        ).order_by("-activo")
     
     def filter_by_id_paciente_activo(self, id_paciente) -> Optional[PrestacionPaciente]:
-        return PrestacionPaciente.objects.filter(id_paciente=id_paciente).filter(activo=True).first()
+        return self._with_display_relations().filter(
+            id_paciente=id_paciente,
+            activo=True,
+        ).first()
     
     def filter_by_activo(self) -> List[PrestacionPaciente]:
         return PrestacionPaciente.objects.filter(
@@ -28,7 +40,7 @@ class PrestacionPacienteRepository:
     
     def get_by_id(self, id: int) -> Optional[PrestacionPaciente]:
         try:
-            prestacion_paciente = PrestacionPaciente.objects.get(id=id)
+            prestacion_paciente = self._with_display_relations().get(id=id)
         except:
             prestacion_paciente = None
         return prestacion_paciente

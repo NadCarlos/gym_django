@@ -20,7 +20,10 @@ class AgendaRehabRepository:
         return AgendaRehab.objects.filter(id=id).first()
     
     def filter_by_dia(self, id_dia) -> Optional[AgendaRehab]:
-        return AgendaRehab.objects.filter(id_dia__id = id_dia).filter(activo=True).exclude(observaciones="R")
+        return self.get_all().filter(
+            id_dia__id=id_dia,
+            activo=True,
+        ).exclude(observaciones="R")
     
     def filter_by_dia_asist_list(self, id_dia, id_area) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_dia_id=id_dia,activo=True,id_paciente_area__id_area_id=id_area).values_list('id_paciente_area__id_paciente_id',flat=True)
@@ -30,7 +33,10 @@ class AgendaRehabRepository:
         ).order_by('hora_inicio').values('hora_inicio')[:1]
     
     def filter_by_id_paciente(self, id_paciente) -> Optional[AgendaRehab]:
-        return AgendaRehab.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).order_by("id_dia__id")
+        return self.get_all().filter(
+            id_paciente_area__id_paciente__id=id_paciente,
+            activo=True,
+        ).order_by("id_dia__id")
     
     def filter_by_id_paciente_exist(self, id_prestacion_paciente) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_prestacion_paciente=AgendaRehab).filter(activo=True).exists()
@@ -58,7 +64,7 @@ class AgendaRehabRepository:
         return agenda 
     
     def filter_by_activo(self, state) -> List[AgendaRehab]:
-        return AgendaRehab.objects.filter(activo=state).order_by("hora_inicio")
+        return self.get_all().filter(activo=state).order_by("hora_inicio")
     
     def filter_by_activo_profesional(self, state, id_profesional) -> List[AgendaRehab]:
             return AgendaRehab.objects.filter(activo=state).filter(id_profesional_tratamiento__id_profesional__id = id_profesional).order_by("hora_inicio")

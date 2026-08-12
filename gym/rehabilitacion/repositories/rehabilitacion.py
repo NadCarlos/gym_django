@@ -20,7 +20,15 @@ class PacienteRehabilitacionRepository:
         return PacienteRehabilitacion.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).exists()
     
     def get_by_paciente_id_item(self, id_paciente) -> Optional[PacienteRehabilitacion]:
-        return PacienteRehabilitacion.objects.filter(id_paciente_area__id_paciente__id=id_paciente).filter(activo=True).first()
+        return PacienteRehabilitacion.objects.filter(
+            id_paciente_area__id_paciente__id=id_paciente,
+            activo=True,
+        ).select_related(
+            "id_obra_social",
+            "id_estado_certificado",
+            "id_derivador",
+            "id_conocer",
+        ).first()
     
     def create(
         self,

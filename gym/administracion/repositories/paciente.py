@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
+from django.db.models import Exists, OuterRef
 
 from gym.db_instrumentation import instrumented_atomic
 
@@ -41,7 +42,31 @@ class PacienteRepository:
         ids_pacientes = PacienteArea.objects.filter(id_area=id_area, activo=state).values_list('id_paciente', flat=True)
 
         # Obtener el queryset de pacientes
-        return Paciente.objects.filter(id__in=ids_pacientes).select_related('id_sexo', 'id_obra_social').order_by('apellido')
+        return Paciente.objects.filter(id__in=ids_pacientes).select_related(
+            "id_obra_social",
+            "id_sexo",
+        ).order_by('apellido')
+
+    def filter_pacientes_area_for_export(self, state, id_area):
+        """Return the fields and active-service flag used by the XLSX export."""
+        from administracion.models import PrestacionPaciente
+
+        ids_pacientes = PacienteArea.objects.filter(
+            id_area=id_area,
+            activo=state,
+        ).values_list("id_paciente", flat=True)
+        prestaciones_activas = PrestacionPaciente.objects.filter(
+            id_paciente=OuterRef("pk"),
+            activo=True,
+        )
+        return Paciente.objects.filter(id__in=ids_pacientes).select_related(
+            "id_obra_social",
+            "id_estado_civil",
+            "id_localidad",
+            "id_sexo",
+        ).annotate(
+            tiene_prestacion_activa=Exists(prestaciones_activas),
+        ).order_by("apellido")
 
     def filter_pacientes_area_para_swap(self, state, id_area) -> List[Paciente]:
             # Obtener IDs de pacientes relacionados con id_area = 1
@@ -57,7 +82,12 @@ class PacienteRepository:
 
     def get_by_id(self, id: int) -> Optional[Paciente]:
         try:
-            paciente = Paciente.objects.get(id=id)
+            paciente = Paciente.objects.select_related(
+                "id_obra_social",
+                "id_estado_civil",
+                "id_localidad",
+                "id_sexo",
+            ).get(id=id)
         except:
             paciente = None
         return paciente 

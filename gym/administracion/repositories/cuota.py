@@ -5,8 +5,14 @@ from administracion.models import Cuota, PacientePlan
 
 class CuotaRepository:
 
+    def _with_display_relations(self):
+        return Cuota.objects.select_related(
+            "id_paciente_plan__id_paciente",
+            "id_paciente_plan__id_plan",
+        )
+
     def get_all(self) -> List[Cuota]:
-        return Cuota.objects.all().order_by("id_paciente_plan__id_paciente__apellido")
+        return self._with_display_relations().order_by("id_paciente_plan__id_paciente__apellido")
     
     def get_by_id(self, id: int) -> Optional[Cuota]:
         return Cuota.objects.get(id=id)
@@ -24,10 +30,17 @@ class CuotaRepository:
         return Cuota.objects.filter(activo=True).filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).first()
     
     def filter_by_anulado(self, state) -> List[Cuota]:
-        return Cuota.objects.filter(activo=True).filter(anulado=state).order_by('id_paciente_plan__id_paciente__apellido')
+        return self._with_display_relations().filter(
+            activo=True,
+            anulado=state,
+        ).order_by("id_paciente_plan__id_paciente__apellido")
     
     def filter_by_anulado_dates(self, state, start_date, end_date) -> Optional[Cuota]:
-        return Cuota.objects.filter(anulado=state, imputado__gte=start_date, imputado__lt=end_date).order_by('id_paciente_plan__id_paciente__apellido')
+        return self._with_display_relations().filter(
+            anulado=state,
+            imputado__gte=start_date,
+            imputado__lt=end_date,
+        ).order_by("id_paciente_plan__id_paciente__apellido")
     
     def cuota_exist(self,id_paciente, year, month) -> List[Cuota]:
         return Cuota.objects.filter(id_paciente_plan__id_paciente__id=id_paciente).filter(imputado__year=year, imputado__month=month).filter(activo=True).exists()

@@ -11,16 +11,21 @@ class InformeRepository:
     link_repo = LinkRepository()
 
     def get_all(self) -> List[Informe]:
-        return Informe.objects.all()
+        return Informe.objects.select_related(
+            "id_paciente",
+            "id_tipo_informe",
+            "id_profesional",
+            "id_profesional_tratamiento",
+        )
 
     def get_by_id(self, id: int) -> Optional[Informe]:
         return Informe.objects.get(id=id)
     
     def filter_by_id(self, id) -> Optional[Informe]:
-        return Informe.objects.filter(id=id, activo=True).first()
+        return self.get_all().filter(id=id, activo=True).first()
     
     def filter_by_paciente_id(self, paciente_id) -> Optional[Informe]:
-        return Informe.objects.filter(id_paciente=paciente_id, activo=True)
+        return self.get_all().filter(id_paciente=paciente_id, activo=True)
     
     def create(
         self,

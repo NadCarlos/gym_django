@@ -307,12 +307,11 @@ class PacienteRehabDetail(View):
         tiene_pendientes=False
         altas_funcionales = []
         if rehabilitacion_paciente != None:
-            altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
-            tiene_pendientes = altaRepo.tiene_alta_activa(id_paciente_rehab=rehabilitacion_paciente.id)
+            altas = list(altaRepo.filter_for_patient_detail(
+                id_paciente_rehab=rehabilitacion_paciente.id,
+            ))
+            tiene_pendientes = any(not alta.dado_alta for alta in altas)
             for alta in altas:
-                alta.altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_all_by_alta_id(alta_id=alta.id)
-                alta.altas_etiologicos = altaEtiologicoRepo.filter_all_by_alta_id(alta_id=alta.id)
-                alta.altas_funcionales = altaFuncionalRepo.filter_all_by_alta_id(alta_id=alta.id)
                 if not alta.dado_alta:
                     altas_funcionales.extend(alta.altas_funcionales)
         return render(
@@ -616,18 +615,26 @@ class PacienteAltasToCsv(View):
 
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
-        altas = altaRepo.filter_by_paciente_rehab_id(id_paciente_rehab=rehabilitacion_paciente.id)
+        altas = list(altaRepo.filter_for_patient_detail(
+            id_paciente_rehab=rehabilitacion_paciente.id,
+        ))
 
         data = []
         for alta in altas:
-            altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_all_by_alta_id(alta_id=alta.id)
-            altas_etiologicos = altaEtiologicoRepo.filter_all_by_alta_id(alta_id=alta.id)
-            altas_funcionales = altaFuncionalRepo.filter_all_by_alta_id(alta_id=alta.id)
             data.append([
                 alta.fecha,
-                nombres_relacionados(altas_etiologicos, 'id_diagnostico_etiologico'),
-                nombres_relacionados(altas_tipo_discapacidad, 'id_tipo_discapacidad'),
-                nombres_relacionados(altas_funcionales, 'id_diagnostico_funcional'),
+                nombres_relacionados(
+                    alta.altas_etiologicos,
+                    "id_diagnostico_etiologico",
+                ),
+                nombres_relacionados(
+                    alta.altas_tipo_discapacidad,
+                    "id_tipo_discapacidad",
+                ),
+                nombres_relacionados(
+                    alta.altas_funcionales,
+                    "id_diagnostico_funcional",
+                ),
                 alta.dado_alta,
                 alta.fecha_alta,
                 ])
@@ -641,26 +648,29 @@ class PacienteAltasToCsv(View):
             'Fecha Alta',
             ])
 
-        alta_activa = altaRepo.filter_by_id_activa(id_paciente_rehab=rehabilitacion_paciente.id)
+        alta_activa = next(
+            (alta for alta in altas if not alta.dado_alta),
+            None,
+        )
         data_tipos_discapacidad = []
         data_diagnosticos_etiologicos = []
         data_diagnosticos_funcionales = []
         if alta_activa is not None:
-            altas_tipo_discapacidad = altaTipoDiscapacidadRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            altas_tipo_discapacidad = alta_activa.altas_tipo_discapacidad
             for alta_tipo_discapacidad in altas_tipo_discapacidad:
                 data_tipos_discapacidad.append([
                     alta_tipo_discapacidad.id_tipo_discapacidad.nombre,
                     alta_tipo_discapacidad.observaciones,
                 ])
 
-            altas_etiologicos = altaEtiologicoRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            altas_etiologicos = alta_activa.altas_etiologicos
             for alta_etiologico in altas_etiologicos:
                 data_diagnosticos_etiologicos.append([
                     alta_etiologico.id_diagnostico_etiologico.nombre,
                     alta_etiologico.observaciones,
                 ])
 
-            altas_funcionales = altaFuncionalRepo.filter_by_alta_id(alta_id=alta_activa.id)
+            altas_funcionales = alta_activa.altas_funcionales
             for alta_funcional in altas_funcionales:
                 data_diagnosticos_funcionales.append([
                     alta_funcional.id_diagnostico_funcional.nombre,

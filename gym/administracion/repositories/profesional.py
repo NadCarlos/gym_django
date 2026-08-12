@@ -22,14 +22,18 @@ class ProfesionalRepository:
         return Profesional.objects.filter(matricula=matricula).first()
     
     def filter_by_activo(self) -> List[Profesional]:
-        return Profesional.objects.filter(
-            activo=True
-        ).order_by('apellido')
+        return Profesional.objects.filter(activo=True).select_related(
+            "id_sexo",
+            "id_localidad",
+        ).order_by("apellido")
     
     def filter_profesional_area(self, id_area) -> List[Profesional]:
         ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
 
-        return Profesional.objects.filter(id__in=ids_profesionales).filter(activo=True).order_by('apellido')
+        return Profesional.objects.filter(
+            id__in=ids_profesionales,
+            activo=True,
+        ).select_related("id_sexo", "id_localidad").order_by("apellido")
     
     def dni_list_segun_area(self, state, id_area):
         ids_profesionales = ProfesionalArea.objects.filter(id_area=id_area).values_list('id_profesional', flat=True)
@@ -38,7 +42,10 @@ class ProfesionalRepository:
 
     def get_by_id(self, id: int) -> Optional[Profesional]:
         try:
-            profesional = Profesional.objects.get(id=id)
+            profesional = Profesional.objects.select_related(
+                "id_sexo",
+                "id_localidad",
+            ).get(id=id)
         except:
             profesional = None
         return profesional 

@@ -167,11 +167,15 @@ Variables:
 DB_LOCK_WAIT_TIMEOUT=5
 DB_SLOW_QUERY_MS=250
 WRITE_DB_INSTRUMENTATION_ENABLED=True
+REQUEST_INSTRUMENTATION_ENABLED=True
+SLOW_REQUEST_LOG_MS=2000
+SLOW_REQUEST_STACK_MS=10000
+SLOW_REQUEST_WATCHDOG_ENABLED=True
 ```
 
-Mantener la instrumentación durante el período de diagnóstico. Cuando haya
-evidencia suficiente, desactivarla con
-`WRITE_DB_INSTRUMENTATION_ENABLED=False`. Mantener el lock wait timeout corto
+Mantener la instrumentación durante el período de diagnóstico. El watchdog es temporal: registra una vez el stack Python de cada request activa que alcanza `SLOW_REQUEST_STACK_MS`; buscar `[SLOW-REQUEST] stack` y correlacionar su `request_id`, `pid` y `thread_id` con `[SLOW-REQUEST] finish` y `[DB-QUERY] slow_sql`.
+
+Después de capturar evidencia suficiente, desactivarlo con `SLOW_REQUEST_WATCHDOG_ENABLED=False`; mantener los logs resumidos de requests lentas. Mantener el lock wait timeout corto
 si la tasa de 503 es aceptable; un 503 rápido y reintentable protege los threads
 mejor que un 504 tardío.
 
