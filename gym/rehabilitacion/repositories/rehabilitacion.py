@@ -1,7 +1,10 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
+from django.db import transaction
+
 from rehabilitacion.models import PacienteRehabilitacion, PacienteArea, EstadoCertificado, Derivador, ObraSocial, Conocer
+from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
 
 
 
@@ -50,25 +53,30 @@ class PacienteRehabilitacionRepository:
         diagnosticoCUD: str,
         pre_ingreso: bool,
     ):
-        return PacienteRehabilitacion.objects.create(
-            id_paciente_area=id_paciente_area,
-            nombre_tutor=nombre_tutor,
-            celular_tutor=celular_tutor,
-            hijos=hijos,
-            id_estado_certificado=id_estado_certificado,
-            vencimiento_certificado=vencimiento_certificado,
-            fecha_junta=fecha_junta,
-            ven_presupuesto=ven_presupuesto,
-            vencimiento_presupuesto=vencimiento_presupuesto,
-            id_derivador=id_derivador,
-            puerto_esperanza=puerto_esperanza,
-            id_obra_social=id_obra_social,
-            numero_afiliado=numero_afiliado,
-            id_conocer=id_conocer,
-            id_usuario=id_usuario,
-            diagnosticoCUD=diagnosticoCUD,
-            pre_ingreso=pre_ingreso,
-        )
+        with transaction.atomic():
+            paciente_rehabilitacion = PacienteRehabilitacion.objects.create(
+                id_paciente_area=id_paciente_area,
+                nombre_tutor=nombre_tutor,
+                celular_tutor=celular_tutor,
+                hijos=hijos,
+                id_estado_certificado=id_estado_certificado,
+                vencimiento_certificado=vencimiento_certificado,
+                fecha_junta=fecha_junta,
+                ven_presupuesto=ven_presupuesto,
+                vencimiento_presupuesto=vencimiento_presupuesto,
+                id_derivador=id_derivador,
+                puerto_esperanza=puerto_esperanza,
+                id_obra_social=id_obra_social,
+                numero_afiliado=numero_afiliado,
+                id_conocer=id_conocer,
+                id_usuario=id_usuario,
+                diagnosticoCUD=diagnosticoCUD,
+                pre_ingreso=pre_ingreso,
+            )
+            PacienteRehabilitacionSituacionRepository().create_carga_inicial(
+                idpacienterehabilitacion=paciente_rehabilitacion,
+            )
+        return paciente_rehabilitacion
     
     def update(
         self,

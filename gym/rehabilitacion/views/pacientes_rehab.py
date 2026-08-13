@@ -12,11 +12,16 @@ import io
 from datetime import datetime, date
 
 from administracion.filters import PacienteFilter
+from django.contrib import messages
+from django.http import JsonResponse
 
 from administracion.forms import (
     PacienteCreateForm,
     PacienteUpdateForm,
     )
+
+from rehabilitacion.forms import PacienteRehabilitacionSituacionForm
+
 
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.obra_social import ObraSocialRepository
@@ -41,8 +46,8 @@ from rehabilitacion.repositories.estado_certificado import EstadoCertificadoRepo
 from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
+from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
 
-from rehabilitacion.models import AgendaRehab, PacienteArea
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
 derivadorRepo = DerivadorRepository()
@@ -65,6 +70,7 @@ altaFuncionalRepo = AltaFuncionalRepository()
 altaTipoDiscapacidadRepo = AltaTipoDiscapacidadRepository()
 agendaRepo = AgendaRehabRepository()
 asistenciaRehabRepo = AsistenciaRehabRepository()
+pacienteSituacionRepo = PacienteRehabilitacionSituacionRepository()
 
 
 def nombres_relacionados(relaciones, attr_name):
@@ -74,6 +80,21 @@ def nombres_relacionados(relaciones, attr_name):
         if objeto_relacionado is not None:
             nombres.append(objeto_relacionado.nombre)
     return ", ".join(nombres)
+
+
+def situacion_to_dict(situacion):
+    if situacion is None:
+        return None
+
+    fecha_local = datetime.strptime(situacion.fecha, "%Y-%m-%d").date()
+    return {
+        "id": situacion.id,
+        "idsituacion": situacion.idsituacion_id,
+        "situacion": situacion.idsituacion.nombre,
+        "fecha": fecha_local.isoformat(),
+        "fecha_display": fecha_local.strftime("%d/%m/%Y"),
+        "observaciones": situacion.observaciones or "",
+    }
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -306,7 +327,19 @@ class PacienteRehabDetail(View):
         altas = []
         tiene_pendientes=False
         altas_funcionales = []
+        ultima_situacion = None
+        historial_situaciones = []
+        situacion_form = None
         if rehabilitacion_paciente != None:
+            ultima_situacion = pacienteSituacionRepo.get_ultima(
+                id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+            )
+            historial_situaciones = pacienteSituacionRepo.get_historial(
+                id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+            )
+            situacion_form = PacienteRehabilitacionSituacionForm(initial={
+                "fecha": date.today(),
+            })
             altas = list(altaRepo.filter_for_patient_detail(
                 id_paciente_rehab=rehabilitacion_paciente.id,
             ))
@@ -324,8 +357,75 @@ class PacienteRehabDetail(View):
                 altas=altas,
                 tiene_pendientes=tiene_pendientes,
                 altas_funcionales=altas_funcionales,
+                ultima_situacion=ultima_situacion,
+                historial_situaciones=historial_situaciones,
+                situacion_form=situacion_form,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class PacienteRehabUltimaSituacion(View):
+    http_method_names = ["get"]
+
+    def get(self, request, id):
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente is None:
+            return JsonResponse({"situacion": None}, status=404)
+
+        ultima_situacion = pacienteSituacionRepo.get_ultima(
+            id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+        )
+        return JsonResponse({"situacion": situacion_to_dict(ultima_situacion)})
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class PacienteRehabHistorialSituaciones(View):
+    http_method_names = ["get"]
+
+    def get(self, request, id):
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente is None:
+            return JsonResponse({"situaciones": []}, status=404)
+
+        historial = pacienteSituacionRepo.get_historial(
+            id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+        )
+        return JsonResponse({
+            "situaciones": [situacion_to_dict(situacion) for situacion in historial],
+        })
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacienteRehabSituacionCreate(View):
+    http_method_names = ["post"]
+
+    def post(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect("error")
+
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente is None:
+            messages.error(request, "El paciente no tiene datos de rehabilitación cargados.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        form = PacienteRehabilitacionSituacionForm(request.POST)
+        if form.is_valid():
+            pacienteSituacionRepo.create(
+                idpacienterehabilitacion=rehabilitacion_paciente,
+                idsituacion=form.cleaned_data["idsituacion"],
+                fecha=form.cleaned_data["fecha"],
+                observaciones=form.cleaned_data["observaciones"],
+            )
+            messages.success(request, "Estado del paciente actualizado.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        messages.error(request, "No se pudo registrar el estado. Revise los datos ingresados.")
+        return redirect("paciente_rehab_detail", paciente.id)
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -527,6 +627,11 @@ class PacienteRehabToCsv(View):
 
         paciente = pacienteRepo.get_by_id(id=id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        ultima_situacion = None
+        if rehabilitacion_paciente is not None:
+            ultima_situacion = pacienteSituacionRepo.get_ultima(
+                id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+            )
 
         data_paciente = []
         data_paciente.append([
@@ -576,6 +681,7 @@ class PacienteRehabToCsv(View):
                 rehabilitacion_paciente.id_obra_social.nombre if rehabilitacion_paciente.id_obra_social else '',
                 rehabilitacion_paciente.numero_afiliado,
                 rehabilitacion_paciente.puerto_esperanza,
+                ultima_situacion.idsituacion.nombre if ultima_situacion else '',
             ])
         
         df_rehab = pd.DataFrame(data_paciente_rehabilitacion, columns=[
@@ -591,6 +697,7 @@ class PacienteRehabToCsv(View):
             'obra social',
             'numero afiliado',
             'Puerto Esperanza',
+            'Ultima Situacion',
             ])
 
         # Use an in-memory output stream to avoid file system I/O

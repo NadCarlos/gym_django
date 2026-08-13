@@ -69,6 +69,22 @@
                         {% else %}
                             <p><strong>Pre-Ingreso:</strong> Si</p>
                         {% endif %}
+                        <p>
+                            <strong>Estado:</strong>
+                            {% if ultima_situacion %}
+                                <span class="badge bg-primary">{{ ultima_situacion.idsituacion.nombre }}</span>
+                            {% else %}
+                                <span class="text-muted">Sin estado</span>
+                            {% endif %}
+                        </p>
+                        <p>
+                            <strong>Fecha Estado:</strong>
+                            {% if ultima_situacion %}
+                                {{ ultima_situacion.fecha|date:"d/m/Y" }}
+                            {% else %}
+                                <span class="text-muted">Sin fecha</span>
+                            {% endif %}
+                        </p>
                     {% else %}
                         <p class="text-muted"><em>No hay datos de rehabilitación</em></p>
                     {% endif %}
@@ -213,6 +229,79 @@
                 </div>
             </div>
         </div>
+        {% if rehabilitacion_paciente %}
+        <div class="modal fade" id="situacionesPacienteModal" tabindex="-1" aria-labelledby="situacionesPacienteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="situacionesPacienteModalLabel">
+                            <i class="bi bi-clock-history me-1"></i> Historial de Estados
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-4">
+                            <div class="col-lg-7">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Estado</th>
+                                                <th>Observaciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for situacion in historial_situaciones %}
+                                            <tr>
+                                                <td>{{ situacion.fecha|date:"d/m/Y" }}</td>
+                                                <td><span class="badge bg-primary">{{ situacion.idsituacion.nombre }}</span></td>
+                                                <td>
+                                                    {% if situacion.observaciones %}
+                                                        {{ situacion.observaciones }}
+                                                    {% else %}
+                                                        <span class="text-muted">Sin observaciones</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">No hay estados registrados.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <form method="post" action="{% url 'paciente_rehab_situacion_create' paciente.id %}">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="{{ situacion_form.idsituacion.id_for_label }}" class="form-label fw-bold">Estado</label>
+                                        {{ situacion_form.idsituacion }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="{{ situacion_form.fecha.id_for_label }}" class="form-label fw-bold">Fecha</label>
+                                        {{ situacion_form.fecha }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="{{ situacion_form.observaciones.id_for_label }}" class="form-label fw-bold">Observaciones</label>
+                                        {{ situacion_form.observaciones }}
+                                    </div>
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-plus-circle"></i> Registrar Estado
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     <!-- Acciones -->
     <div class="row mt-4">
         <div class="col-md-3 mb-3">
@@ -232,6 +321,12 @@
                     <a href="{% url 'paciente_rehab_update' paciente.id %}" class="btn btn-primary">
                         <i class="bi bi-pencil"></i> Editar Paciente
                     </a>
+                    <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#situacionesPacienteModal">
+                        <i class="bi bi-clock-history"></i> Ver Historial Estado
+                    </button>
                     <form method="post" action="{% url 'paciente_rehab_delete' paciente.id %}" onsubmit="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Eliminar</button>

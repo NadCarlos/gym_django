@@ -14,6 +14,8 @@ from rehabilitacion.models import (
     Link,
     ObraSocial,
     PacienteRehabilitacion,
+    PacienteRehabilitacionSituacion,
+    Situacion,
     TipoDiscapacidad,
     TipoInforme,
     Turno,
@@ -143,6 +145,30 @@ class PacienteRehabilitacionUpdateForm(forms.ModelForm):
             'diagnosticoCUD': forms.TextInput(attrs={'class': 'form-control custom-class','id':'diagnosticoCUD'}),
             'pre_ingreso': forms.Select(attrs={'class': 'form-control custom-class'}),
 
+        }
+
+
+class PacienteRehabilitacionSituacionForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["idsituacion"].queryset = Situacion.objects.all().order_by("nombre")
+        self.fields["idsituacion"].empty_label = "Seleccione una opcion"
+
+    class Meta:
+        model = PacienteRehabilitacionSituacion
+        fields = [
+            "fecha",
+            "idsituacion",
+            "observaciones",
+        ]
+        widgets = {
+            "idsituacion": forms.Select(attrs={"class": "form-control custom-class"}),
+            'fecha': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Select a date', 'type': 'date'}),
+            "observaciones": forms.Textarea(attrs={
+                "class": "form-control custom-class",
+                "rows": 3,
+            }),
         }
 
 

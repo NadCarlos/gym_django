@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from django.contrib.auth.models import User
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Subquery
 
 from gym.db_instrumentation import instrumented_atomic
 
@@ -50,6 +50,7 @@ class PacienteRepository:
     def filter_pacientes_area_for_export(self, state, id_area):
         """Return the fields and active-service flag used by the XLSX export."""
         from administracion.models import PrestacionPaciente
+        from rehabilitacion.models import PacienteRehabilitacionSituacion
 
         ids_pacientes = PacienteArea.objects.filter(
             id_area=id_area,
@@ -66,6 +67,12 @@ class PacienteRepository:
             "id_sexo",
         ).annotate(
             tiene_prestacion_activa=Exists(prestaciones_activas),
+            ultima_situacion=Subquery(
+                PacienteRehabilitacionSituacion.objects.filter(
+                    idpacienterehabilitacion__id_paciente_area__id_paciente=OuterRef("pk"),
+                    idpacienterehabilitacion__activo=True,
+                ).order_by("-fecha", "-id").values("idsituacion__nombre")[:1]
+            ),
         ).order_by("apellido")
 
     def filter_pacientes_area_para_swap(self, state, id_area) -> List[Paciente]:

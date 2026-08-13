@@ -218,6 +218,63 @@ class PacienteRehabilitacion(models.Model):
         return  self.id_paciente_area.id_area.nombre
 
 
+class Situacion(models.Model):
+    idsituacion = models.AutoField(primary_key=True)
+
+    nombre = models.CharField(
+        max_length=100,
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        db_table = "situacion"
+
+    def __str__(self):
+        return self.nombre
+
+
+class PacienteRehabilitacionSituacion(models.Model):
+    id = models.AutoField(primary_key=True)
+
+    idpacienterehabilitacion = models.ForeignKey(
+        PacienteRehabilitacion,
+        on_delete=models.CASCADE,
+        db_column="idpacienterehabilitacion",
+        related_name="situaciones",
+    )
+
+    fecha = models.DateTimeField(
+        null=False,
+        blank=False,
+    )
+
+    idsituacion = models.ForeignKey(
+        Situacion,
+        on_delete=models.RESTRICT,
+        db_column="idsituacion",
+        related_name="pacientes_rehabilitacion",
+    )
+
+    observaciones = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        db_table = "pacienterehabilitacion_situacion"
+        ordering = ["-fecha", "-id"]
+        indexes = [
+            models.Index(
+                fields=["idpacienterehabilitacion", "-fecha", "-id"],
+                name="pacrehab_sit_ult_idx",
+            ),
+        ]
+
+    def __str__(self):
+        return self.idsituacion.nombre
+
+
 class TipoDiscapacidad(models.Model):
 
     nombre = models.CharField(

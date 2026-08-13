@@ -4,6 +4,8 @@ from rehabilitacion.models import(
     EstadoCertificado,
     Derivador,
     PacienteRehabilitacion,
+    PacienteRehabilitacionSituacion,
+    Situacion,
     TipoDiscapacidad,
     DiagnosticoEtiologico,
     Alta,
@@ -41,6 +43,26 @@ class DerivadorAdmin(admin.ModelAdmin):
 class PacienteRehabilitacionAdmin(admin.ModelAdmin):
     list_display = (
         'id_paciente_area',
+    )
+
+
+@admin.register(Situacion)
+class SituacionAdmin(admin.ModelAdmin):
+    list_display = (
+        'idsituacion',
+        'nombre',
+    )
+
+
+@admin.register(PacienteRehabilitacionSituacion)
+class PacienteRehabilitacionSituacionAdmin(admin.ModelAdmin):
+    list_display = (
+        'idpacienterehabilitacion',
+        'fecha',
+        'idsituacion',
+    )
+    list_filter = (
+        'idsituacion',
     )
 
 

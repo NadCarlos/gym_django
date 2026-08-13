@@ -92,7 +92,7 @@ class PacientesList(View):
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
-@method_decorator(requiere_areas("Gimnasio", "Profesional"), name="dispatch")
+@method_decorator(requiere_areas("Gimnasio", "Rehabilitacion", "Profesional"), name="dispatch")
 class PacientesToCsv(View):
 
     def get(self, request, state, area):
@@ -129,7 +129,7 @@ class PacientesToCsv(View):
                 else 'Sin Prestacion Activa'
             )
 
-            data.append([
+            row = [
                 paciente.nombre,
                 paciente.apellido,
                 paciente.numero_dni,
@@ -144,9 +144,12 @@ class PacientesToCsv(View):
                 paciente.id_localidad.nombre if paciente.id_localidad else '',
                 paciente.id_sexo.nombre if paciente.id_sexo else '',
                 tiene_prestacion_activa,
-                ])
+            ]
+            if area == 2:
+                row.append(paciente.ultima_situacion or "")
+            data.append(row)
 
-        df = pd.DataFrame(data, columns=[
+        columns = [
             'Nombre',
             'Apellido',
             'Dni',
@@ -161,7 +164,11 @@ class PacientesToCsv(View):
             'localidad',
             'sexo',
             'Prestacion Activa',
-            ])
+        ]
+        if area == 2:
+            columns.append('Ultima Situacion')
+
+        df = pd.DataFrame(data, columns=columns)
 
         # Use an in-memory output stream to avoid file system I/O
         output = io.BytesIO()

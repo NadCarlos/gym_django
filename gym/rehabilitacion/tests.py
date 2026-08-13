@@ -9,6 +9,7 @@ from uuid import uuid4
 from django.db import OperationalError
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.utils import timezone
 
 from administracion.models import (
     Area,
@@ -37,10 +38,14 @@ from rehabilitacion.models import (
     DiagnosticoFuncional,
     EstadoCertificado,
     PacienteRehabilitacion,
+    PacienteRehabilitacionSituacion,
+    Situacion,
     TipoDiscapacidad,
     Turno,
 )
+from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
+from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
 from rehabilitacion.repositories.turno import TurnoRepository
 from rehabilitacion.views.agenda import AgendaPacienteRehabUpdate, AgendaRehabDelete
 from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
@@ -384,3 +389,111 @@ class RehabPatientDetailQueryTests(TestCase):
                 )
                 for alta in altas
             ]
+
+
+class PacienteRehabilitacionSituacionTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import User
+
+        cls.user = User.objects.create_user(username="situacion-rehab")
+        pais = Pais.objects.create(nombre="Argentina")
+        provincia = Provincia.objects.create(nombre="Cordoba", pais=pais)
+        localidad = Localidad.objects.create(nombre="Rio Cuarto", provincia=provincia)
+        cls.obra_social = ObraSocial.objects.create(nombre="Particular")
+        estado_civil = EstadoCivil.objects.create(nombre="Soltero")
+        sexo = Sexo.objects.create(nombre="Masculino")
+        paciente = Paciente.objects.create(
+            nombre="Paciente",
+            apellido="Situacion",
+            numero_dni="99112233",
+            fecha_nacimiento=date(1990, 1, 1),
+            id_usuario=cls.user,
+            id_localidad=localidad,
+            id_obra_social=cls.obra_social,
+            id_estado_civil=estado_civil,
+            id_sexo=sexo,
+        )
+        cls.area = Area.objects.create(nombre="Rehabilitacion")
+        cls.paciente_area = PacienteArea.objects.create(
+            id_paciente=paciente,
+            id_area=cls.area,
+            id_usuario=cls.user,
+        )
+        cls.estado_certificado = EstadoCertificado.objects.create(nombre="SI")
+        cls.derivador = Derivador.objects.create(
+            nombre="Derivador",
+            id_usuario=cls.user,
+        )
+        cls.conocer = Conocer.objects.create(nombre="Redes")
+
+    def create_rehabilitacion(self):
+        return PacienteRehabilitacionRepository().create(
+            id_paciente_area=self.paciente_area,
+            nombre_tutor="NO",
+            celular_tutor="",
+            hijos=0,
+            id_estado_certificado=self.estado_certificado,
+            vencimiento_certificado=None,
+            fecha_junta=None,
+            ven_presupuesto=False,
+            vencimiento_presupuesto=None,
+            id_derivador=self.derivador,
+            puerto_esperanza=False,
+            id_obra_social=self.obra_social,
+            numero_afiliado="0",
+            id_conocer=self.conocer,
+            id_usuario=self.user,
+            diagnosticoCUD="",
+            pre_ingreso=False,
+        )
+
+    def test_create_rehabilitacion_creates_initial_situacion(self):
+        rehabilitacion = self.create_rehabilitacion()
+
+        situacion = PacienteRehabilitacionSituacion.objects.get(
+            idpacienterehabilitacion=rehabilitacion,
+        )
+
+        self.assertEqual(situacion.idsituacion_id, 1)
+        self.assertEqual(situacion.idsituacion.nombre, "Carga inicial")
+
+    def test_get_ultima_orders_by_fecha_and_id(self):
+        rehabilitacion = self.create_rehabilitacion()
+        segunda_situacion = Situacion.objects.create(nombre="En tratamiento")
+        fecha = timezone.now()
+        primera = PacienteRehabilitacionSituacion.objects.create(
+            idpacienterehabilitacion=rehabilitacion,
+            idsituacion=segunda_situacion,
+            fecha=fecha,
+        )
+        ultima = PacienteRehabilitacionSituacion.objects.create(
+            idpacienterehabilitacion=rehabilitacion,
+            idsituacion=segunda_situacion,
+            fecha=fecha,
+            observaciones="Última por id",
+        )
+
+        resultado = PacienteRehabilitacionSituacionRepository().get_ultima(
+            id_paciente_rehabilitacion=rehabilitacion.id,
+        )
+
+        self.assertLess(primera.id, ultima.id)
+        self.assertEqual(resultado.id, ultima.id)
+
+    def test_patient_export_queryset_includes_latest_situacion(self):
+        rehabilitacion = self.create_rehabilitacion()
+        alta_situacion = Situacion.objects.create(nombre="Alta en seguimiento")
+        PacienteRehabilitacionSituacion.objects.create(
+            idpacienterehabilitacion=rehabilitacion,
+            idsituacion=alta_situacion,
+            fecha=timezone.now(),
+        )
+
+        paciente = (
+            PacienteRepository()
+            .filter_pacientes_area_for_export(state=True, id_area=self.area.id)
+            .get(pk=self.paciente_area.id_paciente_id)
+        )
+
+        self.assertEqual(paciente.ultima_situacion, "Alta en seguimiento")
