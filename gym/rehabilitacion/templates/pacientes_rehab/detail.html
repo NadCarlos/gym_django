@@ -70,15 +70,20 @@
                             <p><strong>Pre-Ingreso:</strong> Si</p>
                         {% endif %}
                         <p>
-                            <strong>Estado:</strong>
+                            <strong>Expediente:</strong>
                             {% if ultima_situacion %}
-                                <span class="badge bg-primary">{{ ultima_situacion.idsituacion.nombre }}</span>
+                                <span class="badge
+                                {% if ultima_situacion.idsituacion.idsituacion == 1 %}bg-primary{% endif %}
+                                {% if ultima_situacion.idsituacion.idsituacion == 2 %}bg-warning{% endif %}
+                                {% if ultima_situacion.idsituacion.idsituacion == 3 %}bg-success{% endif %}
+                                {% if ultima_situacion.idsituacion.idsituacion == 4 %}bg-danger{% endif %}
+                                ">{{ ultima_situacion.idsituacion.nombre }}</span>
                             {% else %}
-                                <span class="text-muted">Sin estado</span>
+                                <span class="text-muted">Sin Expediente</span>
                             {% endif %}
                         </p>
                         <p>
-                            <strong>Fecha Estado:</strong>
+                            <strong>Fecha Expediente:</strong>
                             {% if ultima_situacion %}
                                 {{ ultima_situacion.fecha|date:"d/m/Y" }}
                             {% else %}
@@ -235,7 +240,7 @@
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title" id="situacionesPacienteModalLabel">
-                            <i class="bi bi-clock-history me-1"></i> Historial de Estados
+                            <i class="bi bi-clock-history me-1"></i> Historial de Expedientes
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
@@ -247,7 +252,7 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th>Fecha</th>
-                                                <th>Estado</th>
+                                                <th>Expediente</th>
                                                 <th>Observaciones</th>
                                             </tr>
                                         </thead>
@@ -255,7 +260,12 @@
                                             {% for situacion in historial_situaciones %}
                                             <tr>
                                                 <td>{{ situacion.fecha|date:"d/m/Y" }}</td>
-                                                <td><span class="badge bg-primary">{{ situacion.idsituacion.nombre }}</span></td>
+                                                <td><span class="badge 
+                                                    {% if situacion.idsituacion.idsituacion == 1 %}bg-primary{% endif %}
+                                                    {% if situacion.idsituacion.idsituacion == 2 %}bg-warning{% endif %}
+                                                    {% if situacion.idsituacion.idsituacion == 3 %}bg-success{% endif %}
+                                                    {% if situacion.idsituacion.idsituacion == 4 %}bg-danger{% endif %}
+                                                    ">{{ situacion.idsituacion.nombre }}</span></td>
                                                 <td>
                                                     {% if situacion.observaciones %}
                                                         {{ situacion.observaciones }}

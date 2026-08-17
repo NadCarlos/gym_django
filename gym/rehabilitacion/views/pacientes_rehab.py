@@ -252,8 +252,9 @@ class AsistenciasPacientesRehabList(View):
 class AsistenciasPacientesRehabListToCSV(View):
 
     def get(self, request):
+        hoy = date.today()
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename=lista_asistencias.xlsx'
+        response['Content-Disposition'] = f'attachment; filename=lista_asistencias_{hoy}.xlsx'
         fecha_str = request.GET.get("fecha")
         if fecha_str:
             fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
@@ -281,8 +282,6 @@ class AsistenciasPacientesRehabListToCSV(View):
                 asistencia_cargada=Exists(asistencia_cargada)
             )
         )
-
-        print(pacientes_con_agenda)
 
         data_lista = []
         for paciente in pacientes_con_agenda:

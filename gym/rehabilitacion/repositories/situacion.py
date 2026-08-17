@@ -14,10 +14,7 @@ class SituacionRepository:
     CARGA_INICIAL_NOMBRE = "Carga inicial"
 
     def get_carga_inicial(self) -> Situacion:
-        situacion, _ = Situacion.objects.get_or_create(
-            idsituacion=self.CARGA_INICIAL_ID,
-            defaults={"nombre": self.CARGA_INICIAL_NOMBRE},
-        )
+        situacion = Situacion.objects.get(idsituacion=self.CARGA_INICIAL_ID)
         return situacion
 
     def get_all(self) -> List[Situacion]:
