@@ -114,6 +114,7 @@ from rehabilitacion.views.asistencia import (
     CheckInRehabErrorAsistenciaRegistrada,
     CheckInRehabErrorDiaIncorrecto,
     CheckInRehabManual,
+    CheckInRehabAgendaManual,
     CheckInRehabErrorAsistenciaRegistradaManual,
 )
 
@@ -255,6 +256,7 @@ asistencia = [
     path(route='check_in_error_asistencia_registrada/',view=CheckInRehabErrorAsistenciaRegistrada.as_view(), name='check_in_error_asistencia_registrada'),
     path(route='check_in_error_dia_incorrecto/<int:id>',view=CheckInRehabErrorDiaIncorrecto.as_view(), name='check_in_error_dia_incorrecto'),
     path(route='check_in_rehab_manual/<int:id>/<str:fecha>/',view=CheckInRehabManual.as_view(), name='check_in_rehab_manual'),
+    path(route='check_in_rehab_agenda_manual/<int:id>/',view=CheckInRehabAgendaManual.as_view(), name='check_in_rehab_agenda_manual'),
     path(route='check_in_error_asistencia_registrada_manual/',view=CheckInRehabErrorAsistenciaRegistradaManual.as_view(), name='check_in_error_asistencia_registrada_manual'),
 ]
 

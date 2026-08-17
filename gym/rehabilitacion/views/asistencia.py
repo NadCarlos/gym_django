@@ -1,5 +1,6 @@
 from datetime import date, datetime
 
+from django.contrib import messages
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -37,12 +38,21 @@ class CheckInRehabManual(View):
             if turno.id_dia.id == id_dia
         ]
 
-        tiene_asistencia = asistenciaRepo.filter_by_date(id_paciente=paciente.id,fecha=fecha)
+        asistencias_cargadas = set(
+            asistenciaRepo
+            .filter_by_date(id_paciente=paciente.id, fecha=fecha)
+            .values_list("id_agenda_rehab_id", flat=True)
+        )
 
-        if len(tiene_asistencia) == 0:
+        turnos_pendientes = [
+            turno for turno in turnos_del_dia
+            if turno.id not in asistencias_cargadas
+        ]
+
+        if len(turnos_pendientes) > 0:
             now = datetime.now()
             hora = now.time().replace(microsecond=0)
-            for turno in turnos_del_dia:
+            for turno in turnos_pendientes:
                 asistenciaRepo.create_manual(
                     id_agenda_rehab=turno,
                     fecha=fecha,
@@ -52,6 +62,46 @@ class CheckInRehabManual(View):
             return redirect(f"{reverse('asistencias_rehab_list')}?fecha={fecha}")
         else:
             return redirect('check_in_error_asistencia_registrada_manual')
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class CheckInRehabAgendaManual(View):
+
+    def post(self, request, id):
+        agenda = agendaRepo.get_by_id(id=id)
+        if agenda is None:
+            messages.error(request, "No se encontró el turno de agenda.")
+            return redirect(request.META.get("HTTP_REFERER", "inicio_rehab"))
+
+        today = date.today()
+        id_dia = today.weekday() + 1
+        redirect_url = reverse(
+            "agenda_profesional_rehab",
+            args=[agenda.id_profesional_area.id_profesional_id],
+        )
+
+        if agenda.id_dia_id != id_dia:
+            messages.error(request, "La asistencia solo se puede cargar para turnos del día de hoy.")
+            return redirect(redirect_url)
+
+        tiene_asistencia = asistenciaRepo.filter_by_agenda_date(
+            id_agenda_rehab=agenda.id,
+            fecha=today,
+        )
+        if tiene_asistencia.exists():
+            messages.warning(request, "La asistencia para este turno ya está cargada.")
+            return redirect(redirect_url)
+
+        now = datetime.now()
+        hora = now.time().replace(microsecond=0)
+        asistenciaRepo.create_manual(
+            id_agenda_rehab=agenda,
+            fecha=today,
+            hora=hora,
+        )
+        messages.success(request, "Asistencia cargada correctamente.")
+        return redirect(redirect_url)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

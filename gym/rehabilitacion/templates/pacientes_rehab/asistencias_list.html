@@ -117,14 +117,24 @@
                         {% endif %} 
                     </td>
                     <td class="text-center">
-                        {% if paciente.asistencia_cargada %}
+                        {% if paciente.asistencia_completa %}
                             <span class="badge bg-success">Cargada</span>
+                        {% elif paciente.asistencia_parcial %}
+                            <span class="badge bg-warning text-dark">Carga Parcial</span>
                         {% else %}
                             <span class="badge bg-secondary">Pendiente</span>
                         {% endif %}
                     </td>
                     <td class="text-center">
-                        {% if paciente.asistencia_cargada %}
+                        <button type="button"
+                            class="btn btn-outline-primary btn-sm me-1"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#agenda-paciente-{{ paciente.id }}"
+                            aria-expanded="false"
+                            aria-controls="agenda-paciente-{{ paciente.id }}">
+                            <i class="bi bi-chevron-down"></i> Detalles
+                        </button>
+                        {% if paciente.asistencia_completa %}
                             <button type="button" class="btn btn-success btn-sm" disabled>
                                 <i class="bi bi-check2"></i> Asistencia cargada
                             </button>
@@ -140,9 +150,50 @@
                         {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan="6" class="p-0">
+                        <div class="collapse bg-light p-2" id="agenda-paciente-{{ paciente.id }}">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Profesional</th>
+                                            <th class="text-center">Asistencia del día</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for turno in paciente.agenda_del_dia %}
+                                        <tr>
+                                            <td>
+                                                {{ turno.hora_inicio|time:"H:i" }} - {{ turno.hora_fin|time:"H:i" }}
+                                            </td>
+                                            <td>
+                                                {{ turno.id_profesional_area.id_profesional.apellido }},
+                                                {{ turno.id_profesional_area.id_profesional.nombre }}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if turno.asistencia_cargada %}
+                                                    <span class="badge bg-success">Cargada</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Pendiente</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">No hay turnos para esta fecha.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center text-muted">No se encontraron pacientes.</td>
+                    <td colspan="6" class="text-center text-muted">No se encontraron pacientes.</td>
                 </tr>
                 {% endfor %}
             </tbody>

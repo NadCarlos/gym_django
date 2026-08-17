@@ -18,6 +18,12 @@ class AsistenciaRehabRepository:
     def filter_by_date(self,id_paciente, fecha) -> Optional[AsistenciaRehab]:
         return AsistenciaRehab.objects.filter(id_agenda_rehab__id_paciente_area__id_paciente__id=id_paciente).filter(fecha=fecha)
 
+    def filter_by_agenda_date(self, id_agenda_rehab, fecha) -> Optional[AsistenciaRehab]:
+        return AsistenciaRehab.objects.filter(
+            id_agenda_rehab_id=id_agenda_rehab,
+            fecha=fecha,
+        )
+
     def asistencias_cargadas_list(self, fecha, id_dia):
         return AsistenciaRehab.objects.filter(fecha=fecha,id_agenda_rehab__id_dia_id=id_dia,id_agenda_rehab__activo=True,
             id_agenda_rehab__id_paciente_area__id_paciente_id=OuterRef("pk"),

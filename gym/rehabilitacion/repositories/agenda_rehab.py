@@ -28,6 +28,18 @@ class AgendaRehabRepository:
     def filter_by_dia_asist_list(self, id_dia, id_area) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id_dia_id=id_dia,activo=True,id_paciente_area__id_area_id=id_area).values_list('id_paciente_area__id_paciente_id',flat=True)
 
+    def filter_agenda_del_dia_by_pacientes(self, id_dia, id_area, pacientes_ids):
+        return self.get_all().filter(
+            id_dia_id=id_dia,
+            activo=True,
+            id_paciente_area__id_area_id=id_area,
+            id_paciente_area__id_paciente_id__in=pacientes_ids,
+        ).order_by(
+            "id_paciente_area__id_paciente__apellido",
+            "id_paciente_area__id_paciente__nombre",
+            "hora_inicio",
+        )
+
     def first_hora_inicio_by_paciente(self, id_dia, id_area):
         return AgendaRehab.objects.filter(id_dia_id=id_dia,activo=True,id_paciente_area__id_paciente_id=OuterRef('id'),id_paciente_area__id_area_id=id_area
         ).order_by('hora_inicio').values('hora_inicio')[:1]

@@ -1,9 +1,11 @@
+from collections import defaultdict
+
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError
 from django.shortcuts import render, redirect, HttpResponse
-from django.db.models import Exists, Subquery
+from django.db.models import Exists, OuterRef, Subquery
 from utils.decorators import requiere_areas
 
 import json
@@ -217,8 +219,6 @@ class AsistenciasPacientesRehabList(View):
             )
         )
 
-        print(pacientes_con_agenda)
-        
         filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
 
         # Obtener el parámetro de ordenamiento
@@ -231,7 +231,46 @@ class AsistenciasPacientesRehabList(View):
         if ordering:
             pacientes = filterset.qs.order_by(ordering)
 
-        pacientes_count = pacientes.count()
+        pacientes = list(pacientes)
+        pacientes_count = len(pacientes)
+        agenda_por_paciente = defaultdict(list)
+
+        if pacientes:
+            agendas_del_dia = (
+                agendaRepo
+                .filter_agenda_del_dia_by_pacientes(
+                    id_dia=id_dia,
+                    id_area=2,
+                    pacientes_ids=[paciente.id for paciente in pacientes],
+                )
+                .annotate(
+                    asistencia_cargada=Exists(
+                        asistenciaRehabRepo.filter_by_agenda_date(
+                            id_agenda_rehab=OuterRef("pk"),
+                            fecha=fecha,
+                        )
+                    )
+                )
+            )
+
+            for agenda_dia in agendas_del_dia:
+                paciente_id = agenda_dia.id_paciente_area.id_paciente_id
+                agenda_por_paciente[paciente_id].append(agenda_dia)
+
+        for paciente in pacientes:
+            paciente.agenda_del_dia = agenda_por_paciente[paciente.id]
+            turnos_count = len(paciente.agenda_del_dia)
+            asistencias_cargadas_count = sum(
+                1 for turno in paciente.agenda_del_dia
+                if turno.asistencia_cargada
+            )
+            paciente.asistencia_parcial = (
+                0 < asistencias_cargadas_count < turnos_count
+            )
+            paciente.asistencia_completa = (
+                turnos_count > 0
+                and asistencias_cargadas_count == turnos_count
+            )
 
         return render(
             request,

@@ -3,6 +3,7 @@ from datetime import time, date
 from io import BytesIO
 
 from django.contrib.staticfiles import finders
+from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -21,6 +22,7 @@ from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Tabl
 from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
+from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.tratamiento import TratamientoRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
@@ -33,6 +35,7 @@ from rehabilitacion.forms import AgendaRehabCreateForm, AgendaRehabUpdateForm
 pacienteRepo = PacienteRepository()
 profesionalRepo = ProfesionalRepository()
 agendaRehabRepo = AgendaRehabRepository()
+asistenciaRehabRepo = AsistenciaRehabRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 tratamientoRepo = TratamientoRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
@@ -570,7 +573,16 @@ class AgendaProfesionalRehab(View):
         path = request.session['uid'] = request.path
         profesional = profesionalRepo.get_by_id(id=id)
         profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
-        agenda = agendaRehabRepo.filter_by_id_profesional_area(id_profesional_area=profesionalArea.id)
+        today = date.today()
+        asistencia_cargada = asistenciaRehabRepo.filter_by_agenda_date(
+            id_agenda_rehab=OuterRef("pk"),
+            fecha=today,
+        )
+        agenda = agendaRehabRepo.filter_by_id_profesional_area(
+            id_profesional_area=profesionalArea.id,
+        ).annotate(
+            asistencia_cargada=Exists(asistencia_cargada),
+        )
         dias = [
             (1, "Lunes"),
             (2, "Martes"),
@@ -585,6 +597,7 @@ class AgendaProfesionalRehab(View):
                 path=path,
                 profesional=profesional,
                 agenda=agenda,
+                dia_actual=today.weekday() + 1,
                 hora_limite_tarde=time(14, 0),
                 dias=dias,
             )

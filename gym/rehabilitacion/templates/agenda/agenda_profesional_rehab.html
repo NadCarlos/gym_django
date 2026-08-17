@@ -28,6 +28,14 @@
             </div>
 
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
         <div class="row d-flex">
             {% for id_dia, nombre_dia in dias %}
             <div class="flex-col">
@@ -63,7 +71,25 @@
                                                 {% for x in agenda %}
                                                     {% if x.id_dia.id == id_dia and x.hora_inicio < hora_limite_tarde %}
                                                     <tr>
-                                                        <td style="width:15%">{{ x.hora_inicio }}</td>
+                                                        <td style="width:15%">
+                                                            {% if x.asistencia_cargada %}
+                                                                <span class="text-success fw-bold" title="Asistencia cargada">
+                                                                    {{ x.hora_inicio }}
+                                                                </span>
+                                                            {% elif id_dia == dia_actual %}
+                                                                <form method="post"
+                                                                    action="{% url 'check_in_rehab_agenda_manual' x.id %}"
+                                                                    class="d-inline"
+                                                                    onsubmit="return confirm('Se va a cargar asistencia para este turno. ¿Desea continuar?');">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn btn-link p-0 agenda-time-link">
+                                                                        {{ x.hora_inicio }}
+                                                                    </button>
+                                                                </form>
+                                                            {% else %}
+                                                                {{ x.hora_inicio }}
+                                                            {% endif %}
+                                                        </td>
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
@@ -108,7 +134,25 @@
                                                 {% for x in agenda %}
                                                     {% if x.id_dia.id == id_dia and x.hora_inicio >= hora_limite_tarde %}
                                                     <tr>
-                                                        <td style="width:15%">{{ x.hora_inicio }}</td>
+                                                        <td style="width:15%">
+                                                            {% if x.asistencia_cargada %}
+                                                                <span class="text-success fw-bold" title="Asistencia cargada">
+                                                                    {{ x.hora_inicio }}
+                                                                </span>
+                                                            {% elif id_dia == dia_actual %}
+                                                                <form method="post"
+                                                                    action="{% url 'check_in_rehab_agenda_manual' x.id %}"
+                                                                    class="d-inline"
+                                                                    onsubmit="return confirm('Se va a cargar asistencia para este turno. ¿Desea continuar?');">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit" class="btn btn-link p-0 agenda-time-link">
+                                                                        {{ x.hora_inicio }}
+                                                                    </button>
+                                                                </form>
+                                                            {% else %}
+                                                                {{ x.hora_inicio }}
+                                                            {% endif %}
+                                                        </td>
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
@@ -168,6 +212,10 @@
     font-size: 0.85rem;
     vertical-align: middle;
     padding: 0.25rem;
+}
+.agenda-time-link {
+    font-size: 0.85rem;
+    vertical-align: baseline;
 }
 .fixed-height {
     min-height: 230px;   /* alto fijo, ajustalo según cuántos turnos quieras que "quepan" visualmente */
