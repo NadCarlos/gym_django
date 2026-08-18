@@ -1,5 +1,7 @@
 import json
+from datetime import date, datetime
 
+from django.db.models import Count, F, Sum
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -18,12 +20,14 @@ from administracion.repositories.sexo import SexoRepository
 from administracion.repositories.localidad import LocalidadRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
 from administracion.repositories.area import AreaRepository
+from rehabilitacion.models import AsistenciaRehabTeorica
 
 profesionalRepo = ProfesionalRepository()
 sexoRepo = SexoRepository()
 localidadRepo = LocalidadRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
 areaRepo = AreaRepository()
+REHABILITACION_AREA_ID = 2
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -34,7 +38,10 @@ class ProfesionalRehabList(View):
 
     def get(self, request):
 
-        filterset = ProfesionalFilter(request.GET, profesionalRepo.filter_profesional_area(id_area=2))
+        filterset = ProfesionalFilter(
+            request.GET,
+            profesionalRepo.filter_profesional_area(id_area=REHABILITACION_AREA_ID),
+        )
         
         # Obtener el parámetro de ordenamiento
         ordering = request.GET.get('ordering', 'apellido')
@@ -58,6 +65,86 @@ class ProfesionalRehabList(View):
                 ordering=ordering,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class HorasTeoricasProfesionalRehabList(View):
+    template_name = 'profesional_rehab/horas_teoricas_list.html'
+
+    ordering_fields = {
+        'apellido': 'apellido',
+        '-apellido': '-apellido',
+        'nombre': 'nombre',
+        '-nombre': '-nombre',
+        'matricula': 'matricula',
+        '-matricula': '-matricula',
+        'total_horas': 'total_horas',
+        '-total_horas': '-total_horas',
+        'total_agendas': 'total_agendas',
+        '-total_agendas': '-total_agendas',
+    }
+
+    def get(self, request):
+        mes = self.get_mes(request.GET.get('mes'))
+        fecha_inicio, fecha_fin = self.get_rango_mes(mes)
+        ordering = request.GET.get('ordering', '-total_horas')
+        ordering = self.ordering_fields.get(ordering, '-total_horas')
+
+        profesionales = (
+            AsistenciaRehabTeorica.objects
+            .filter(
+                fecha__gte=fecha_inicio,
+                fecha__lt=fecha_fin,
+                id_agenda_rehab__isnull=False,
+                id_agenda_rehab__id_paciente_area__id_area_id=REHABILITACION_AREA_ID,
+                id_agenda_rehab__id_profesional_area__id_area_id=REHABILITACION_AREA_ID,
+            )
+            .values(
+                profesional_id=F('id_agenda_rehab__id_profesional_area__id_profesional__id'),
+                apellido=F('id_agenda_rehab__id_profesional_area__id_profesional__apellido'),
+                nombre=F('id_agenda_rehab__id_profesional_area__id_profesional__nombre'),
+                matricula=F('id_agenda_rehab__id_profesional_area__id_profesional__matricula'),
+            )
+            .annotate(
+                total_horas=Sum('id_agenda_rehab__tiempo'),
+                total_agendas=Count('id'),
+            )
+            .order_by(ordering, 'apellido', 'nombre')
+        )
+
+        total_horas = sum(profesional['total_horas'] or 0 for profesional in profesionales)
+        total_agendas = sum(profesional['total_agendas'] or 0 for profesional in profesionales)
+
+        return render(
+            request,
+            self.template_name,
+            dict(
+                profesionales=profesionales,
+                profesionales_count=profesionales.count(),
+                total_horas=total_horas,
+                total_agendas=total_agendas,
+                mes=mes.strftime('%Y-%m'),
+                mes_nombre=mes.strftime('%m/%Y'),
+                ordering=ordering,
+            )
+        )
+
+    def get_mes(self, mes):
+        if mes:
+            try:
+                return datetime.strptime(mes, '%Y-%m').date().replace(day=1)
+            except ValueError:
+                pass
+        today = date.today()
+        return today.replace(day=1)
+
+    def get_rango_mes(self, mes):
+        if mes.month == 12:
+            fecha_fin = date(mes.year + 1, 1, 1)
+        else:
+            fecha_fin = date(mes.year, mes.month + 1, 1)
+        return mes, fecha_fin
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

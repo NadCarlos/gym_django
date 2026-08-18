@@ -16,6 +16,12 @@ class AsistenciaRehabRepository:
     
     def filter_by_date(self,id_paciente, fecha) -> Optional[AsistenciaRehabTeorica]:
         return AsistenciaRehabTeorica.objects.filter(id_agenda_rehab__id_paciente_area__id_paciente__id=id_paciente).filter(fecha=fecha)
+
+    def filter_by_agenda_date(self, id_agenda_rehab, fecha) -> Optional[AsistenciaRehabTeorica]:
+        return AsistenciaRehabTeorica.objects.filter(
+            id_agenda_rehab_id=id_agenda_rehab,
+            fecha=fecha,
+        )
     
     def get_by_id(self, id: int) -> Optional[AsistenciaRehabTeorica]:
         try:
@@ -30,7 +36,12 @@ class AsistenciaRehabRepository:
     def create(
         self,
         id_agenda_rehab: Optional[AgendaRehab] = None,
+        fecha = None,
     ):
-        return AsistenciaRehabTeorica.objects.create(
+        asistencia = AsistenciaRehabTeorica.objects.create(
             id_agenda_rehab=id_agenda_rehab,
         )
+        if fecha:
+            asistencia.fecha = fecha
+            asistencia.save(update_fields=["fecha"])
+        return asistencia

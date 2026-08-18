@@ -26,6 +26,7 @@ from rehabilitacion.views.pacientes_rehab import(
 
 from rehabilitacion.views.profesional_rehab import(
     ProfesionalRehabList,
+    HorasTeoricasProfesionalRehabList,
     ProfesionalRehabDetail,
     ProfesionalRehabCreate,
     ProfesionalRehabCreateFromExistent,
@@ -167,6 +168,7 @@ pacientes = [
 
 profesionales = [
     path(route='profesionales/list',view=ProfesionalRehabList.as_view(), name='profesional_rehab_list'),
+    path(route='profesionales/horas_teoricas',view=HorasTeoricasProfesionalRehabList.as_view(), name='profesional_rehab_horas_teoricas_list'),
     path(route='profesionales/detail/<int:id>',view=ProfesionalRehabDetail.as_view(), name='profesional_rehab_detail'),
     path(route='profesionales/create',view=ProfesionalRehabCreate.as_view(), name='profesional_rehab_create'),
     path(route='profesional/create_from_existent',view=ProfesionalRehabCreateFromExistent.as_view(), name='profesional_rehab_create_from_existent'),

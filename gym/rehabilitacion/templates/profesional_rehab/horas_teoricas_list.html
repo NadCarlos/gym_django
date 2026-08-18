@@ -1,65 +1,49 @@
 {% extends 'inicio/base.html' %}
-{% load auth_extras %}
 
 {% block content %}
 <div class="container mt-5">
-    <!-- Encabezado -->
     <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
         <h2 class="text-primary mb-0">
-            <i class="bi bi-people-fill me-2"></i> Lista de Profesionales
+            <i class="bi bi-clock-history me-2"></i> Horas Teóricas por Profesional
         </h2>
     </div>
 
-        <!-- Botones principales -->
-        <div class="row">
-            <!-- Primera columna -->
-            <div class="col-md-8">
-                <div class="mb-3 d-flex flex-wrap gap-2">
-                    <a href="{% url 'profesional_rehab_create' %}" class="btn btn-success me-2">
-                        <i class="bi bi-person-plus"></i> Nuevo Profesional
-                    </a>
-                    <a href="{% url 'profesional_csv' 2 %}" class="btn btn-outline-success">
-                        <i class="bi bi-file-earmark-spreadsheet"></i> Guardar Excel
-                    </a>
-                    {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
-                    <a href="{% url 'profesional_rehab_horas_teoricas_list' %}" class="btn btn-outline-primary">
-                        <i class="bi bi-clock-history"></i> Horas Teóricas
-                    </a>
-                    {% endif %}
-                </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <a href="{% url 'profesional_rehab_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
             </div>
-            <!-- Segunda columna -->
-            <div class="col-md-2">
-            </div>
-            <!-- Tercera columna -->
-            <div class="col-md-2 align-items-end">
-                <div class="text-white bg-dark rounded px-3 py-2 text-center shadow-sm">
-                    <strong>Total Registros: {{ profesionales_count }}</strong>
-                </div>
-            </div>
-        </div>
-
-
-    <!-- Filtros -->
-    <form method="GET" action="{% url 'profesional_rehab_list' %}" class="row g-3 align-items-end mb-4">
-        <div class="col-md-4">
-            <label class="form-label fw-bold">Apellido</label>
-            {{ form.apellido }}
-        </div>
-        <div class="col-md-4">
-            <label class="form-label fw-bold">Sexo</label>
-            {{ form.id_sexo }}
         </div>
         <div class="col-md-2">
+            <div class="text-white bg-primary rounded px-3 py-2 text-center shadow-sm mb-3">
+                <strong>Total Horas: {{ total_horas|floatformat:2 }}</strong>
+            </div>
         </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">
-                <i class="bi bi-filter-square"></i> Filtrar
-            </button>
+        <div class="col-md-2 align-items-end">
+            <div class="text-white bg-dark rounded px-3 py-2 text-center shadow-sm mb-3">
+                <strong>Profesionales: {{ profesionales_count }}</strong>
+            </div>
         </div>
-    </form>
+    </div>
 
-    <!-- Tabla de profesionales -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="GET" action="{% url 'profesional_rehab_horas_teoricas_list' %}" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Mes</label>
+                    <input type="month" name="mes" class="form-control" value="{{ mes }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-filter-square"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle shadow-sm">
             <thead class="table-light text-center">
@@ -95,16 +79,25 @@
                         </a>
                     </th>
                     <th>
-                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'id_sexo' %}-id_sexo{% else %}id_sexo{% endif %}">
-                            Sexo
-                            {% if request.GET.ordering == 'id_sexo' %}
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'total_agendas' %}-total_agendas{% else %}total_agendas{% endif %}">
+                            Agendas Teóricas
+                            {% if request.GET.ordering == 'total_agendas' %}
                                 <i class="bi bi-caret-down-fill"></i>
-                            {% elif request.GET.ordering == '-id_sexo' %}
+                            {% elif request.GET.ordering == '-total_agendas' %}
                                 <i class="bi bi-caret-up-fill"></i>
                             {% endif %}
                         </a>
                     </th>
-                    <th>Acciones</th>
+                    <th>
+                        <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'total_horas' %}-total_horas{% else %}total_horas{% endif %}">
+                            Total Horas
+                            {% if request.GET.ordering == 'total_horas' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-total_horas' or not request.GET.ordering %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody class="text-center">
@@ -113,19 +106,22 @@
                     <td>{{ profesional.apellido }}</td>
                     <td>{{ profesional.nombre }}</td>
                     <td>{{ profesional.matricula }}</td>
-                    <td>{{ profesional.id_sexo.nombre }}</td>
-                    <td>
-                        <a href="{% url 'profesional_rehab_detail' profesional.id %}" class="btn btn-outline-info btn-sm">
-                            <i class="bi bi-info-circle"></i> Detalles
-                        </a>
-                    </td>
+                    <td>{{ profesional.total_agendas }}</td>
+                    <td>{{ profesional.total_horas|floatformat:2 }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-muted">No hay profesionales registrados.</td>
+                    <td colspan="5" class="text-muted">No hay agendas teóricas generadas para {{ mes_nombre }}.</td>
                 </tr>
                 {% endfor %}
             </tbody>
+            <tfoot class="table-light text-center fw-bold">
+                <tr>
+                    <td colspan="3" class="text-end">Totales</td>
+                    <td>{{ total_agendas }}</td>
+                    <td>{{ total_horas|floatformat:2 }}</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

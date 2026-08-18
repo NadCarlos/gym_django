@@ -268,5 +268,10 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "cermed.cron": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
 }
