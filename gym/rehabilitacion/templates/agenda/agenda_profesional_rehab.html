@@ -13,10 +13,17 @@
                 </a>
             </div>
 
-            <div class="col-12 col-lg-8 text-center mb-2 mb-lg-0">
+            <div class="col-12 col-lg-6 text-center mb-2 mb-lg-0">
                 <h2 class="text-dark mb-0">
                     Agenda {{ profesional.apellido }}, {{ profesional.nombre }}
                 </h2>
+            </div>
+
+            <div class="col-12 col-lg-2 mb-2 mb-lg-0">
+                <div class="text-white bg-primary rounded px-3 py-2 text-center shadow-sm">
+                    <strong>{{ horas_teoricas_mes|floatformat:2 }} hs</strong>
+                    <span class="d-block small">Teóricas {{ mes_actual }}</span>
+                </div>
             </div>
 
             <div class="col-12 col-lg-2 text-lg-end">

@@ -2,12 +2,12 @@ from datetime import date
 import logging
 
 from django.core.management.base import BaseCommand
-from rehabilitacion.repositories.asistencia_teorica import AsistenciaRehabRepository
+from rehabilitacion.repositories.asistencia_teorica import AsistenciaRehabTeoricaRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 
 
 logger = logging.getLogger("cermed.cron")
-asistenciaTeoricaRepo = AsistenciaRehabRepository()
+asistenciaTeoricaRepo = AsistenciaRehabTeoricaRepository()
 agendaRehabRepo = AgendaRehabRepository()
 REHABILITACION_AREA_ID = 2
 

@@ -23,6 +23,7 @@ from administracion.repositories.paciente import PacienteRepository
 from administracion.repositories.profesional import ProfesionalRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
+from rehabilitacion.repositories.asistencia_teorica import AsistenciaRehabTeoricaRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.tratamiento import TratamientoRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
@@ -36,11 +37,13 @@ pacienteRepo = PacienteRepository()
 profesionalRepo = ProfesionalRepository()
 agendaRehabRepo = AgendaRehabRepository()
 asistenciaRehabRepo = AsistenciaRehabRepository()
+asistenciaTeoricaRepo = AsistenciaRehabTeoricaRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 tratamientoRepo = TratamientoRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
+REHABILITACION_AREA_ID = 2
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -572,8 +575,23 @@ class AgendaProfesionalRehab(View):
     def get(self, request, id):
         path = request.session['uid'] = request.path
         profesional = profesionalRepo.get_by_id(id=id)
-        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
+        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(
+            id_profesional=profesional.id,
+            id_area=REHABILITACION_AREA_ID,
+        )
         today = date.today()
+        primer_dia_mes = today.replace(day=1)
+        if today.month == 12:
+            primer_dia_mes_siguiente = date(today.year + 1, 1, 1)
+        else:
+            primer_dia_mes_siguiente = date(today.year, today.month + 1, 1)
+
+        horas_teoricas_mes = asistenciaTeoricaRepo.total_horas_por_profesional_area(
+            id_profesional_area=profesionalArea.id,
+            fecha_desde=primer_dia_mes,
+            fecha_hasta=primer_dia_mes_siguiente,
+            id_area=REHABILITACION_AREA_ID,
+        )
         asistencia_cargada = asistenciaRehabRepo.filter_by_agenda_date(
             id_agenda_rehab=OuterRef("pk"),
             fecha=today,
@@ -597,6 +615,8 @@ class AgendaProfesionalRehab(View):
                 path=path,
                 profesional=profesional,
                 agenda=agenda,
+                horas_teoricas_mes=horas_teoricas_mes,
+                mes_actual=today.strftime("%m/%Y"),
                 dia_actual=today.weekday() + 1,
                 hora_limite_tarde=time(14, 0),
                 dias=dias,
