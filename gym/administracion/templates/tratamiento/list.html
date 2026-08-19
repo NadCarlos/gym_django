@@ -50,7 +50,7 @@
                     <td>{{ tratamiento.nombre }}</td>
                     <td>{{ tratamiento.descripcion }}</td>
                     <td>
-                        <a href="{% url 'tratamiento_delete' tratamiento.id area %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'tratamiento_delete' tratamiento.id area %}" class="btn btn-danger btn-sm me-2" onclick="return confirm('Seguro que quieres eliminar?');">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
                         <a href="{% url 'tratamiento_update' tratamiento.id area %}" class="btn btn-warning btn-sm">

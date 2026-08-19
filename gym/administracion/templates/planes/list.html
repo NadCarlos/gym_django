@@ -41,7 +41,7 @@
                     <td>{{ plan.descripcion }}</td>
                     <td>{{ plan.valor }}</td>
                     <td>
-                        <a href="{% url 'plan_delete' plan.id %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'plan_delete' plan.id %}" class="btn btn-danger btn-sm me-2" onclick="return confirm('Seguro que quieres eliminar?');">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
                         <a href="{% url 'plan_update' plan.id %}" class="btn btn-warning btn-sm">

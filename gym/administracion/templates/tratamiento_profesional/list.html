@@ -54,7 +54,8 @@
                     <td class="bg-danger text-white">{{ tratamiento_profesional.activo }}</td>
                     <td class="bg-danger text-white">
                         <a href="{% url 'tratamiento_profesional_delete' tratamiento_profesional.id %}"
-                            class="btn btn-secondary btn-sm me-2">
+                            class="btn btn-secondary btn-sm me-2"
+                            onclick="return confirm('Seguro que quieres eliminar?');">
                             <i class="bi bi-trash"></i> Finalizar Tratamiento
                         </a>
                     </td>

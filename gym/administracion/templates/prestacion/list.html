@@ -39,7 +39,7 @@
                     <td>{{ prestacion.nombre }}</td>
                     <td>{{ prestacion.descripcion }}</td>
                     <td>
-                        <a href="{% url 'prestacion_delete' prestacion.id area %}" class="btn btn-danger btn-sm me-2">
+                        <a href="{% url 'prestacion_delete' prestacion.id area %}" class="btn btn-danger btn-sm me-2" onclick="return confirm('Seguro que quieres eliminar?');">
                             <i class="bi bi-trash"></i> Borrar
                         </a>
                         <a href="{% url 'prestacion_update' prestacion.id area %}" class="btn btn-warning btn-sm">
