@@ -308,6 +308,74 @@ class AgendaPacienteRehabUpdateTests(SimpleTestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/rehabilitacion/agenda_paciente_rehab/42")
 
+    def test_post_without_profesional_renders_error_instead_of_500(self):
+        agenda = SimpleNamespace(
+            id_paciente_area=SimpleNamespace(
+                id_paciente=SimpleNamespace(nombre="Paciente", apellido="Test"),
+                id_paciente_id=42,
+            ),
+            id_profesional_area=SimpleNamespace(id_profesional=SimpleNamespace(id=2)),
+            id_tratamiento_rehab=SimpleNamespace(id=1),
+        )
+        form = SimpleNamespace(
+            is_valid=lambda: True,
+            cleaned_data={
+                "hora_inicio": time(9, 0),
+                "hora_fin": time(10, 0),
+                "id_dia": SimpleNamespace(id=1),
+                "observaciones": "control",
+            },
+        )
+        request = SimpleNamespace(
+            POST={},
+            session={},
+        )
+
+        with patch("rehabilitacion.views.agenda.AgendaRehabUpdateForm", return_value=form), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.get_by_id", return_value=agenda), \
+             patch("rehabilitacion.views.agenda.tratamientoRepo.filter_by_id", return_value=None), \
+             patch("rehabilitacion.views.agenda.profesionalRepo.filter_by_id", return_value=None), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.update") as update_mock, \
+             patch("rehabilitacion.views.agenda.render", return_value=HttpResponse("error")) as render_mock:
+            response = AgendaPacienteRehabUpdate().post(request, id=11)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(update_mock.called)
+        context = render_mock.call_args[0][2]
+        self.assertEqual(
+            context["error_message"],
+            'Debe seleccionar un tratamiento y un profesional de Rehabilitación.',
+        )
+
+    def test_post_with_invalid_form_renders_error_instead_of_500(self):
+        agenda = SimpleNamespace(
+            id_paciente_area=SimpleNamespace(
+                id_paciente=SimpleNamespace(nombre="Paciente", apellido="Test"),
+                id_paciente_id=42,
+            ),
+            id_profesional_area=SimpleNamespace(id_profesional=SimpleNamespace(id=2)),
+            id_tratamiento_rehab=SimpleNamespace(id=1),
+        )
+        form = SimpleNamespace(
+            is_valid=lambda: False,
+            cleaned_data={},
+        )
+        request = SimpleNamespace(
+            POST={},
+            session={},
+        )
+
+        with patch("rehabilitacion.views.agenda.AgendaRehabUpdateForm", return_value=form), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.get_by_id", return_value=agenda), \
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.update") as update_mock, \
+             patch("rehabilitacion.views.agenda.render", return_value=HttpResponse("error")) as render_mock:
+            response = AgendaPacienteRehabUpdate().post(request, id=11)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(update_mock.called)
+        context = render_mock.call_args[0][2]
+        self.assertEqual(context["error_message"], None)
+
 
 
 class RehabPatientDetailQueryTests(TestCase):

@@ -3,6 +3,14 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Gestionar Agenda</h2>
+
+    {% if error_message %}
+    <div class="alert alert-danger text-center" role="alert">{{ error_message }}</div>
+    {% endif %}
+    {% if form.errors %}
+    <div class="alert alert-danger text-center" role="alert">Por favor corrija los errores del formulario.</div>
+    {% endif %}
+
     <div class="card p-4 shadow-sm">
         <form id="form-tratamiento" method="post">
             {% csrf_token %}
@@ -54,7 +62,7 @@
             <div class="mb-2 row">
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Profesional:</label>
                 <div class="col-sm-6">
-                    <select class="form-control custom-class" id="select-profesional" name="profesional" disabled>
+                    <select class="form-control custom-class" id="select-profesional" name="profesional" disabled required>
                         <option value="">Seleccione un profesional</option>
                     </select>
                 </div>

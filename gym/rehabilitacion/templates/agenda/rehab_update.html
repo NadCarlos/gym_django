@@ -6,6 +6,13 @@
         Gestionar Agenda: {{ paciente.nombre }}, {{ paciente.apellido }}
     </h2>
 
+    {% if error_message %}
+    <div class="alert alert-danger text-center" role="alert">{{ error_message }}</div>
+    {% endif %}
+    {% if form.errors %}
+    <div class="alert alert-danger text-center" role="alert">Por favor corrija los errores del formulario.</div>
+    {% endif %}
+
     <div class="card p-4 shadow-sm">
         <form method="post">
             {% csrf_token %}
@@ -65,6 +72,7 @@
                         name="profesional"
                         data-profesional-old="{{ profesional_old.id }}"
                         disabled
+                        required
                     >
                         <option value="">Seleccione un profesional</option>
                     </select>
