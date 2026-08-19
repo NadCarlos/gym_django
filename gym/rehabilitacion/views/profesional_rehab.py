@@ -1,6 +1,9 @@
 import json
+import io
 from datetime import date, datetime
 
+import pandas as pd
+from django.http import HttpResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -93,15 +96,12 @@ class HorasTeoricasProfesionalRehabList(View):
         ordering = request.GET.get('ordering', '-total_horas')
         ordering = self.ordering_fields.get(ordering, '-total_horas')
 
-        profesionales = asistenciaTeoricaRepo.horas_por_profesional(
-            fecha_desde=fecha_desde,
-            fecha_hasta=fecha_hasta,
-            id_area=REHABILITACION_AREA_ID,
-            ordering=ordering,
-        )
+        profesionales = self.get_profesionales(fecha_desde, fecha_hasta, ordering)
 
-        total_horas = sum(profesional['total_horas'] or 0 for profesional in profesionales)
-        total_agendas = sum(profesional['total_agendas'] or 0 for profesional in profesionales)
+        if request.GET.get('export') == 'excel':
+            return self.exportar_excel(profesionales, fecha_desde, fecha_hasta)
+
+        total_horas, total_agendas = self.get_totales(profesionales)
 
         return render(
             request,
@@ -113,12 +113,96 @@ class HorasTeoricasProfesionalRehabList(View):
                 total_agendas=total_agendas,
                 fecha_desde=fecha_desde.strftime('%Y-%m-%d'),
                 fecha_hasta=fecha_hasta.strftime('%Y-%m-%d'),
-                rango_fechas=(
-                    f"{fecha_desde.strftime('%d/%m/%Y')} al "
-                    f"{fecha_hasta.strftime('%d/%m/%Y')}"
-                ),
+                rango_fechas=self.get_rango_fechas_label(fecha_desde, fecha_hasta),
                 ordering=ordering,
             )
+        )
+
+    def get_profesionales(self, fecha_desde, fecha_hasta, ordering):
+        return asistenciaTeoricaRepo.horas_por_profesional(
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
+            id_area=REHABILITACION_AREA_ID,
+            ordering=ordering,
+        )
+
+    def get_totales(self, profesionales):
+        total_horas = sum(profesional['total_horas'] or 0 for profesional in profesionales)
+        total_agendas = sum(profesional['total_agendas'] or 0 for profesional in profesionales)
+        return total_horas, total_agendas
+
+    def exportar_excel(self, profesionales, fecha_desde, fecha_hasta):
+        total_horas, total_agendas = self.get_totales(profesionales)
+        data = []
+
+        for profesional in profesionales:
+            data.append([
+                f"{profesional['apellido']} {profesional['nombre']}".strip(),
+                profesional['matricula'],
+                profesional['total_agendas'],
+                profesional['total_horas'] or 0,
+            ])
+
+        data.append([
+            'Totales',
+            '',
+            total_agendas,
+            total_horas,
+        ])
+
+        df = pd.DataFrame(data, columns=[
+            'Profesional',
+            'Matrícula',
+            'Sesiones',
+            'Total Horas',
+        ])
+
+        output = io.BytesIO()
+        titulo = f"Horas teóricas - Período: {self.get_rango_fechas_label(fecha_desde, fecha_hasta)}"
+
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='Horas Teóricas', index=False, startrow=1)
+            workbook = writer.book
+            worksheet = writer.sheets['Horas Teóricas']
+
+            title_format = workbook.add_format({
+                'bold': True,
+                'font_size': 14,
+                'align': 'center',
+                'valign': 'vcenter',
+            })
+            header_format = workbook.add_format({
+                'bold': True,
+                'bg_color': '#D9EAF7',
+                'border': 1,
+            })
+            total_format = workbook.add_format({
+                'bold': True,
+                'border': 1,
+            })
+
+            worksheet.merge_range(0, 0, 0, 3, titulo, title_format)
+            for col_num, value in enumerate(df.columns.values):
+                worksheet.write(1, col_num, value, header_format)
+            worksheet.set_column(0, 0, 32)
+            worksheet.set_column(1, 1, 14)
+            worksheet.set_column(2, 3, 12)
+            worksheet.set_row(len(df) + 1, None, total_format)
+
+        fecha_generacion = date.today().strftime('%Y-%m-%d')
+        response = HttpResponse(
+            output.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = (
+            f'attachment; filename=horas_teoricas_{fecha_generacion}.xlsx'
+        )
+        return response
+
+    def get_rango_fechas_label(self, fecha_desde, fecha_hasta):
+        return (
+            f"{fecha_desde.strftime('%d/%m/%Y')} al "
+            f"{fecha_hasta.strftime('%d/%m/%Y')}"
         )
 
     def get_rango_fechas(self, fecha_desde, fecha_hasta):
