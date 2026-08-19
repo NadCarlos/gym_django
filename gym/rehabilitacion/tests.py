@@ -47,7 +47,12 @@ from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRep
 from rehabilitacion.repositories.alta import AltaRepository
 from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
 from rehabilitacion.repositories.turno import TurnoRepository
-from rehabilitacion.views.agenda import AgendaPacienteRehabUpdate, AgendaRehabDelete
+from rehabilitacion.views.agenda import (
+    AgendaPacienteRehabUpdate,
+    AgendaProfesionalRehab,
+    AgendaProfesionalRehabToPDF,
+    AgendaRehabDelete,
+)
 from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
 from rehabilitacion.views.pacientes_rehab import PacienteRehabDelete
 from rehabilitacion.views.turno import TurnoDelete
@@ -375,6 +380,48 @@ class AgendaPacienteRehabUpdateTests(SimpleTestCase):
         self.assertFalse(update_mock.called)
         context = render_mock.call_args[0][2]
         self.assertEqual(context["error_message"], None)
+
+
+class AgendaProfesionalRehabTests(SimpleTestCase):
+    def setUp(self):
+        self.request = SimpleNamespace(
+            path="/rehabilitacion/profesionales/agenda/3/",
+            session={},
+        )
+
+    def test_get_without_profesional_redirects_to_error(self):
+        with patch("rehabilitacion.views.agenda.profesionalRepo.get_by_id", return_value=None):
+            response = AgendaProfesionalRehab().get(self.request, id=99)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/error/")
+
+    def test_get_without_profesional_area_redirects_to_error(self):
+        profesional = SimpleNamespace(id=3)
+
+        with patch("rehabilitacion.views.agenda.profesionalRepo.get_by_id", return_value=profesional), \
+             patch("rehabilitacion.views.agenda.profesionalAreaRepo.filter_by_profesional_id", return_value=None):
+            response = AgendaProfesionalRehab().get(self.request, id=3)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/error/")
+
+    def test_pdf_without_profesional_redirects_to_error(self):
+        with patch("rehabilitacion.views.agenda.profesionalRepo.get_by_id", return_value=None):
+            response = AgendaProfesionalRehabToPDF().get(self.request, id=99)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/error/")
+
+    def test_pdf_without_profesional_area_redirects_to_error(self):
+        profesional = SimpleNamespace(id=3)
+
+        with patch("rehabilitacion.views.agenda.profesionalRepo.get_by_id", return_value=profesional), \
+             patch("rehabilitacion.views.agenda.profesionalAreaRepo.filter_by_profesional_id", return_value=None):
+            response = AgendaProfesionalRehabToPDF().get(self.request, id=3)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/error/")
 
 
 

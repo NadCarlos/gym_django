@@ -615,10 +615,14 @@ class AgendaProfesionalRehab(View):
     def get(self, request, id):
         path = request.session['uid'] = request.path
         profesional = profesionalRepo.get_by_id(id=id)
+        if not profesional:
+            return redirect('error')
         profesionalArea = profesionalAreaRepo.filter_by_profesional_id(
             id_profesional=profesional.id,
             id_area=REHABILITACION_AREA_ID,
         )
+        if not profesionalArea:
+            return redirect('error')
         today = date.today()
         primer_dia_mes = today.replace(day=1)
         if today.month == 12:
@@ -670,7 +674,14 @@ class AgendaProfesionalRehabToPDF(AgendaRehabPDFMixin, View):
 
     def get(self, request, id):
         profesional = profesionalRepo.get_by_id(id=id)
-        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(id_profesional=profesional.id, id_area=2)
+        if not profesional:
+            return redirect('error')
+        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(
+            id_profesional=profesional.id,
+            id_area=REHABILITACION_AREA_ID,
+        )
+        if not profesionalArea:
+            return redirect('error')
         agenda = agendaRehabRepo.filter_by_id_profesional_area(id_profesional_area=profesionalArea.id)
         filename = f"agenda_profesional_{profesional.apellido}_{profesional.nombre}.pdf".replace(" ", "_")
         return self.render_agenda_pdf(
