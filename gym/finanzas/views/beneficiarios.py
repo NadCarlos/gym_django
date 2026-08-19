@@ -75,3 +75,11 @@ class BeneficiarioUpdate(View):
                 return redirect('beneficiarios_list')
         except:
             return redirect('error')
+        return render(
+            request,
+            'beneficiarios/update.html',
+            dict(
+                beneficiario=beneficiario,
+                form=form,
+            )
+        )

@@ -197,6 +197,15 @@ class ProfesionalCreate(View):
                     return redirect('error_profesional_existente')
         except:
             return redirect('error')
+        profesionales_dni = profesionalRepo.dni_list_segun_area(state=True, id_area=2)
+        return render(
+            request,
+            'profesional/create.html',
+            dict(
+                form=form,
+                profesionales_dni=json.dumps(profesionales_dni),
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -260,6 +269,14 @@ class ProfesionalUpdate(View):
                 return redirect('profesional_detail', profesional.id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'profesional/update.html',
+            dict(
+                form=form,
+                profesional=profesional,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

@@ -83,6 +83,8 @@ class PagoCreate(View):
     def post(self, request, id, id_c):
         form = PagoForm(request.POST)
         cuota = cuotaRepo.get_by_id(id=id_c)
+        if cuota is None:
+            return redirect('error')
         if form.is_valid():
                 pago = pagoRepo.create(
                     fecha=form.cleaned_data['fecha'],
@@ -101,6 +103,14 @@ class PagoCreate(View):
                     anulado=True,
                 )
                 return redirect('cuotas_list', False)
+
+        return render(
+            request,
+            'pago/create.html',
+            dict(
+                form=form
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

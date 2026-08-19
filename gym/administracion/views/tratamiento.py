@@ -69,6 +69,15 @@ class TratamientoCreate(View):
                 return redirect('tratamientos', area)
         except:
             return redirect('error')
+        base_template = "home/base.html" if area == 1 else "inicio/base.html"
+        return render(
+            request,
+            'tratamiento/create.html',
+            dict(
+                form=form,
+                base_template=base_template,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -106,6 +115,15 @@ class TratamientoUpdate(View):
                 return redirect('tratamientos', area)
         except:
             return redirect('error')
+        base_template = "home/base.html" if area == 1 else "inicio/base.html"
+        return render(
+            request,
+            'tratamiento/update.html',
+            dict(
+                form=form,
+                base_template=base_template,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

@@ -59,6 +59,13 @@ class PlanCreate(View):
                 return redirect('planes_list')
         except:
             return redirect('error')
+        return render(
+            request,
+            'planes/create.html',
+            dict(
+                form=form
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -92,6 +99,13 @@ class PlanUpdate(View):
                 return redirect('planes_list')
         except:
             return redirect('error')
+        return render(
+            request,
+            'planes/create.html',
+            dict(
+                form=form
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

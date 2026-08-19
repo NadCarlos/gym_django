@@ -257,6 +257,14 @@ class PacienteFisiatriaUpdate(View):
             raise
         except Exception:
             return redirect('error')
+        return render(
+            request,
+            'pacientes_fisiatria/update.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -268,6 +276,8 @@ class PacienteFisiatriaCreateFromExistent(View):
         dni = request.POST.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        if paciente is None:
+            return redirect('error')
         user = request.user
         area = areaRepo.get_by_id(id=3)
         
@@ -288,6 +298,8 @@ class PacienteFisiatriaRedirectFromExistent(View):
         dni = request.GET.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        if paciente is None:
+            return redirect('error')
 
         return redirect('paciente_fisiatria_detail', paciente.id)
 
@@ -299,6 +311,10 @@ class PacienteFisiatriaDelete(View):
 
     def post(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect('error')
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=3, id_paciente=paciente.id)
+        if pacienteArea is None:
+            return redirect('error')
         pacienteAreaRepo.delete_by_activo(paciente_area=pacienteArea)
         return redirect('pacientes_fisiatria_list', True)

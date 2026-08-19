@@ -61,6 +61,13 @@ class TratamientoProfesionalRehabCreate(View):
                 return redirect('profesional_rehab_detail', nuevo_tratamiento_profesional.id_profesional.id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'tratamiento_profesional_rehab/create.html',
+            dict(
+                form=form
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

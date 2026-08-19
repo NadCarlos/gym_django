@@ -247,6 +247,8 @@ class LinkCreate(View):
 
     def post(self, request, id):
         informe = informeRepo.filter_by_id(id=id)
+        if not informe:
+            return redirect('inicio_rehab')
         form = LinkCreateForm(request.POST)
         if form.is_valid():
             linkRepo.create(
@@ -255,6 +257,14 @@ class LinkCreate(View):
                 id_informe=form.cleaned_data['id_informe'],
             )
             return redirect('informe_detail', informe.id )
+        return render(
+            request,
+            'informes/link/create.html',
+            dict(
+                informe=informe,
+                form=form,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

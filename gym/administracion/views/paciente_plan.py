@@ -77,6 +77,13 @@ class PacientePlanCreate(View):
                 return redirect('paciente_plan_list', id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'paciente_plan/create.html',
+            dict(
+                form=form
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

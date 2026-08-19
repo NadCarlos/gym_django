@@ -59,6 +59,13 @@ class NuevaPrestacionPaciente(View):
                 return redirect('paciente_detail', nueva_prestacion_paciente.id_paciente.id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'prestacion_paciente/create.html',
+            dict(
+                form=form
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -112,6 +119,14 @@ class PrestacionPacienteUpdate(View):
                 return redirect('list_prestacion_paciente', prestacionPaciente.id_paciente.id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'prestacion_paciente/update.html',
+            dict(
+                form=form,
+                prestacionPaciente=prestacionPaciente,
+            )
+        )
     
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

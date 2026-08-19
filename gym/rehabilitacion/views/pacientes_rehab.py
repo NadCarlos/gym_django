@@ -577,6 +577,14 @@ class PacienteRehabUpdate(View):
             raise
         except Exception:
             return redirect('error')
+        return render(
+            request,
+            'pacientes_rehab/update.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -586,8 +594,12 @@ class PacienteRehabDelete(View):
 
     def post(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect('error')
         today = date.today()
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
+        if pacienteArea is None:
+            return redirect('error')
         agendaRepo.deactivate_for_patient_area(
             id_paciente_area=pacienteArea.id,
             fecha_fin=today,
@@ -643,6 +655,8 @@ class PacienteRehabCreateFromExistent(View):
         dni = request.POST.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        if paciente is None:
+            return redirect('error')
         user = request.user
         area = areaRepo.get_by_id(id=2)
         

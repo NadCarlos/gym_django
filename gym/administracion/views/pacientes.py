@@ -309,6 +309,14 @@ class PacienteUpdate(View):
             raise
         except Exception:
             return redirect('error')
+        return render(
+            request,
+            'pacientes/update.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -318,6 +326,8 @@ class PacienteDelete(View):
 
     def post(self, request, id, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect('error')
         prestacionPaciente = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
         if prestacionPaciente != None:
             today = date.today()
@@ -354,6 +364,8 @@ class PacienteCreateFromExistent(View):
         dni = request.POST.get('dni')
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        if paciente is None:
+            return redirect('error')
         user = request.user
         area = areaRepo.get_by_id(id=1)
         
@@ -373,7 +385,11 @@ class PacienteReactivate(View):
 
     def post(self, request, id, area, *args, **kwargs):
         paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect('error')
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=area, id_paciente=paciente.id)
+        if pacienteArea is None:
+            return redirect('error')
         pacienteAreaRepo.reactivate(pacienteArea)
         if area == 1:
             return redirect('paciente_detail', paciente.id)

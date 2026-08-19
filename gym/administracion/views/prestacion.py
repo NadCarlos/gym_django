@@ -70,6 +70,16 @@ class PrestacionCreate(View):
                 return redirect('prestaciones', area)
         except:
             return redirect('error')
+        base_template = "home/base.html" if area == 1 else "inicio/base.html"
+        return render(
+            request,
+            'prestacion/create.html',
+            dict(
+                form=form,
+                area=area,
+                base_template=base_template,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -108,6 +118,16 @@ class PrestacionUpdate(View):
                 return redirect('prestaciones', area)
         except:
             return redirect('error')
+        base_template = "home/base.html" if area == 1 else "inicio/base.html"
+        return render(
+            request,
+            'prestacion/update.html',
+            dict(
+                form=form,
+                area=area,
+                base_template=base_template,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

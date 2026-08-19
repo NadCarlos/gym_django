@@ -5,6 +5,11 @@
 <input type="hidden" name="next" value="{{ path }}">
 <div class="container mt-5">
     <h2 class="d-flex justify-content-center mb-4">Gestionar Agenda: {{ paciente.nombre }}, {{ paciente.apellido }}</h2>
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>No se pudo guardar:</strong> revise los campos marcados.
+    </div>
+    {% endif %}
     <div class="card p-4 shadow-sm">
         <form method="post">
             {% csrf_token %}

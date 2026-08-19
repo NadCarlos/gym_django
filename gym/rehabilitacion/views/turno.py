@@ -627,6 +627,8 @@ class TurnoUpdate(View):
 
     def post(self, request, id):
         turno = turnoRepo.get_by_id(id=id)
+        if turno is None:
+            return redirect('turnos_rehab')
         form = TurnoUpdateForm(request.POST)
         if form.is_valid():
             turnoRepo.update(
@@ -638,6 +640,14 @@ class TurnoUpdate(View):
                 motivo=form.cleaned_data['motivo'],
             )
             return redirect('turnos_rehab')
+
+        return render(
+            request,
+            'turnos/update.html',
+            dict(
+                form=form,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

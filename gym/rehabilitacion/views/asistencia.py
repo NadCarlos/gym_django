@@ -27,6 +27,8 @@ class CheckInRehabManual(View):
 
     def post(self, request, id, fecha):
         paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect('error')
         agenda = agendaRepo.filter_by_id_paciente(id_paciente=paciente.id)
 
         fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
@@ -172,7 +174,14 @@ class CheckInRehab(View):
             else:
                 return redirect('check_in_error_asistencia_registrada')
 
-        
+        return render(
+            request,
+            'asistencia_rehab/check_in.html',
+            dict(
+                form=form
+            )
+        )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("IngresoRehab"), name="dispatch")

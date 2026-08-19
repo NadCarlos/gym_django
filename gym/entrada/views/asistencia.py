@@ -66,6 +66,7 @@ class NuevaAsistenciaPaciente(View):
     
     def post(self, request, id, *args, **kwargs):
         form = AsistenciaCreateForm(request.POST)
+        paciente = pacienteRepo.get_by_id(id=id)
         try:
             if form.is_valid():
                 nueva_asistencia = asistenciaRepo.create(
@@ -74,6 +75,14 @@ class NuevaAsistenciaPaciente(View):
                 return redirect('paciente_detail', nueva_asistencia.id_prestacion_paciente.id_paciente.id)
         except:
             return redirect('error')
+        return render(
+            request,
+            'asistencia/create.html',
+            dict(
+                paciente=paciente,
+                form=form
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -99,6 +108,13 @@ class CheckIn(View):
                 return redirect ('check_in_confirm', paciente.id)
         except:
             return redirect('check_in_error')
+        return render(
+            request,
+            'asistencia/check_in.html',
+            dict(
+                form=form
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -149,6 +165,14 @@ class CheckInConfirm(View):
                 return redirect('check_in_success', paciente.id)
         except:
             return redirect('check_in_error')
+        return render(
+            request,
+            'asistencia/check_in_confirm.html',
+            dict(
+                form=form,
+                paciente=paciente,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

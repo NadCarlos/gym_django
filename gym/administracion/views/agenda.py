@@ -81,14 +81,16 @@ class AgendaPacienteCreate(View):
     def post(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
         prestacion = prestacionPacienteRepo.filter_by_id_paciente_activo(id_paciente=paciente.id)
+        if prestacion is None:
+            return redirect('error_prestacion_paciente')
         form = AgendaCreateForm(request.POST)
         if form.is_valid():
-            hora_inicio=form.cleaned_data['hora_inicio'],
-            hora_fin=form.cleaned_data['hora_fin'],
+            hora_inicio = form.cleaned_data['hora_inicio']
+            hora_fin = form.cleaned_data['hora_fin']
 
             # Convierte horas y minutos a minutos totales para ambos tiempos
-            hora_inicio_total_minutos = hora_inicio[0].hour * 60 + hora_inicio[0].minute
-            hora_fin_total_minutos = hora_fin[0].hour * 60 + hora_fin[0].minute
+            hora_inicio_total_minutos = hora_inicio.hour * 60 + hora_inicio.minute
+            hora_fin_total_minutos = hora_fin.hour * 60 + hora_fin.minute
             if hora_fin_total_minutos <= hora_inicio_total_minutos:
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
@@ -97,8 +99,8 @@ class AgendaPacienteCreate(View):
             agendaRepo.create(
                 id_usuario=form.cleaned_data['id_usuario'],
                 fecha=form.cleaned_data['fecha'],
-                hora_inicio=form.cleaned_data['hora_inicio'],
-                hora_fin=form.cleaned_data['hora_fin'],
+                hora_inicio=hora_inicio,
+                hora_fin=hora_fin,
                 id_prestacion_paciente=prestacion,
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
@@ -106,6 +108,22 @@ class AgendaPacienteCreate(View):
             )
 
             return redirect('agenda_paciente', paciente.id)
+
+        profesionales = profesionalRepo.filter_profesional_area(id_area=1)
+        tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
+        date = datetime.datetime.now()
+        dateSTR = date.strftime("%d-%m-%Y")
+        return render(
+            request,
+            'agenda/create.html',
+            dict(
+                paciente=paciente,
+                profesionales=profesionales,
+                tratamientosActivos=tratamientosActivos,
+                dateSTR=dateSTR,
+                form=form,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -138,12 +156,12 @@ class AgendaPacienteUpdate(View):
         form = AgendaUpdateForm(request.POST)
         path = request.session.get('uid')
         if form.is_valid():
-            hora_inicio=form.cleaned_data['hora_inicio'],
-            hora_fin=form.cleaned_data['hora_fin'],
+            hora_inicio = form.cleaned_data['hora_inicio']
+            hora_fin = form.cleaned_data['hora_fin']
 
             # Convierte horas y minutos a minutos totales para ambos tiempos
-            hora_inicio_total_minutos = hora_inicio[0].hour * 60 + hora_inicio[0].minute
-            hora_fin_total_minutos = hora_fin[0].hour * 60 + hora_fin[0].minute
+            hora_inicio_total_minutos = hora_inicio.hour * 60 + hora_inicio.minute
+            hora_fin_total_minutos = hora_fin.hour * 60 + hora_fin.minute
             if hora_fin_total_minutos <= hora_inicio_total_minutos:
                 return redirect('error_hora')
             diferencia_minutos = hora_fin_total_minutos - hora_inicio_total_minutos
@@ -151,14 +169,34 @@ class AgendaPacienteUpdate(View):
             
             agendaRepo.update(
                 agenda=agenda,
-                hora_inicio=form.cleaned_data['hora_inicio'],
-                hora_fin=form.cleaned_data['hora_fin'],
+                hora_inicio=hora_inicio,
+                hora_fin=hora_fin,
                 id_profesional_tratamiento=form.cleaned_data['id_profesional_tratamiento'],
                 id_dia=form.cleaned_data['id_dia'],
                 tiempo=diferencia_horas,
             )
 
-            return redirect( path )
+            if path:
+                return redirect(path)
+            return redirect('agenda_paciente', agenda.id_prestacion_paciente.id_paciente.id)
+
+        paciente = agenda.id_prestacion_paciente.id_paciente
+        profesionales = profesionalRepo.filter_profesional_area(id_area=1)
+        profesional_old = agenda.id_profesional_tratamiento.id_profesional
+        tratamiento_old = agenda.id_profesional_tratamiento
+        tratamientosActivos = tratamientoProfesionalRepo.filter_by_activo()
+        return render(
+            request,
+            'agenda/update.html',
+            dict(
+                form=form,
+                profesionales=profesionales,
+                paciente=paciente,
+                tratamientosActivos=tratamientosActivos,
+                profesional_old=profesional_old,
+                tratamiento_old=tratamiento_old,
+            )
+        )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

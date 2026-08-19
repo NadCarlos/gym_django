@@ -168,6 +168,15 @@ class AltaTerminate(View):
             messages.success(request, 'Alta finalizada correctamente.')
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id)
 
+        return render(
+            request,
+            'alta/terminate.html',
+            dict(
+                form=form,
+                alta=alta,
+            )
+        )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 class DiagnosticoEtiologicoByTipoDiscapacidadView(View):
@@ -222,6 +231,15 @@ class AltaTipoDiscapacidadCreate(View):
             )
             messages.success(request, 'Tipo de discapacidad agregado correctamente.')
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id)
+
+        return render(
+            request,
+            'alta_tipo_discapacidad/create.html',
+            dict(
+                form=form,
+                alta=alta,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -296,6 +314,16 @@ class AltaTipoDiscapacidadUpdate(View):
             messages.success(request, 'Tipo de discapacidad actualizado correctamente.')
             return redirect('alta_tipo_discapacidad_list', alta_id=alta.id)
 
+        return render(
+            request,
+            'alta_tipo_discapacidad/update.html',
+            dict(
+                form=form,
+                alta=alta,
+                alta_tipo_discapacidad=alta_tipo_discapacidad,
+            )
+        )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
@@ -356,6 +384,15 @@ class AltaEtiologicoCreate(View):
             )
             messages.success(request, 'Diagnóstico etiológico agregado correctamente.')
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id)
+
+        return render(
+            request,
+            'alta_etiologico/create.html',
+            dict(
+                form=form,
+                alta=alta,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -432,6 +469,16 @@ class AltaEtiologicoUpdate(View):
             messages.success(request, 'Diagnóstico etiológico actualizado correctamente.')
             return redirect('alta_etiologico_list', alta_id=alta.id)
 
+        return render(
+            request,
+            'alta_etiologico/update.html',
+            dict(
+                form=form,
+                alta=alta,
+                alta_etiologico=alta_etiologico,
+            )
+        )
+
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
@@ -495,6 +542,15 @@ class AltaFuncionalCreate(View):
             )
             messages.success(request, 'Diagnóstico funcional agregado correctamente.')
             return redirect('paciente_rehab_detail', alta.id_paciente_rehabilitacion.id_paciente_area.id_paciente.id)
+
+        return render(
+            request,
+            'alta_funcional/create.html',
+            dict(
+                form=form,
+                alta=alta,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -572,6 +628,16 @@ class AltaFuncionalUpdate(View):
             )
             messages.success(request, 'Diagnóstico funcional actualizado correctamente.')
             return redirect('alta_funcional_list', alta_id=alta.id)
+
+        return render(
+            request,
+            'alta_funcional/update.html',
+            dict(
+                form=form,
+                alta=alta,
+                alta_funcional=alta_funcional,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

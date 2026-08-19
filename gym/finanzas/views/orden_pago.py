@@ -60,6 +60,13 @@ class OrdenPagoCreate(View):
                     total=form.cleaned_data['total'],
                 )
                 return redirect('orden_pago_populate', orden.id)
+        return render(
+            request,
+            'orden_pago/create.html',
+            dict(
+                form=form,
+            )
+        )
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
