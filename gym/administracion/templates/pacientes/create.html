@@ -214,7 +214,7 @@
                 usarBtn.onclick = () => {
                     const dni = dniInput.value;
                     const urlBase = "{% url 'paciente_create_from_existent' %}";
-                    window.location.href = `${urlBase}?dni=${dni}`;
+                    window.submitPostWithCsrf(urlBase, {dni: dni});
                 };
     
                 dniAlert.appendChild(mensaje);

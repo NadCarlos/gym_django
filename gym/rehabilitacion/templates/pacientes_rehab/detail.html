@@ -335,7 +335,7 @@
                             class="btn btn-outline-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#situacionesPacienteModal">
-                        <i class="bi bi-clock-history"></i> Ver Historial Estado
+                        <i class="bi bi-clock-history"></i> Ver Historial Expediente
                     </button>
                     <form method="post" action="{% url 'paciente_rehab_delete' paciente.id %}" onsubmit="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
                         {% csrf_token %}

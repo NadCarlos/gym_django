@@ -87,7 +87,7 @@
                     </th>
                     <th>
                         <a href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'total_agendas' %}-total_agendas{% else %}total_agendas{% endif %}">
-                            Agendas Teóricas
+                            Sesiones
                             {% if request.GET.ordering == 'total_agendas' %}
                                 <i class="bi bi-caret-down-fill"></i>
                             {% elif request.GET.ordering == '-total_agendas' %}
