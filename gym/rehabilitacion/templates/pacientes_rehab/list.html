@@ -47,29 +47,38 @@
     <!-- Filtros -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{% url 'pacientes_rehab_list' state %}" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Apellido:</label>
-                    {{ form.apellido }}
+            <form method="GET" action="{% url 'pacientes_rehab_list' state %}">
+                <div class="row g-3">
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">Apellido:</label>
+                        {{ form.apellido }}
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">DNI:</label>
+                        {{ form.numero_dni }}
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">Obra Social:</label>
+                        {{ form.id_obra_social }}
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">Estado Civil:</label>
+                        {{ form.id_estado_civil }}
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">Sexo:</label>
+                        {{ form.id_sexo }}
+                    </div>
+                    <div class="col-sm-6 col-lg-2">
+                        <label class="form-label fw-bold">Expediente:</label>
+                        {{ form.situacion }}
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">DNI:</label>
-                    {{ form.numero_dni }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Obra Social:</label>
-                    {{ form.id_obra_social }}
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Estado Civil:</label>
-                    {{ form.id_estado_civil }}
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold">Sexo:</label>
-                    {{ form.id_sexo }}
-                </div>
-                <div class="col-md-1 text-end">
-                    <button type="submit" class="btn btn-primary w-100">
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <a href="{% url 'pacientes_rehab_list' state %}" class="btn btn-outline-secondary">
+                        Limpiar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
                         <i class="bi bi-filter-square"></i> Filtrar
                     </button>
                 </div>
@@ -132,6 +141,16 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th>
+                        <a class="text-white text-decoration-none" href="?{{ request.GET.urlencode }}&ordering={% if request.GET.ordering == 'ultima_situacion' %}-ultima_situacion{% else %}ultima_situacion{% endif %}">
+                            Expediente
+                            {% if request.GET.ordering == 'ultima_situacion' %}
+                                <i class="bi bi-caret-down-fill"></i>
+                            {% elif request.GET.ordering == '-ultima_situacion' %}
+                                <i class="bi bi-caret-up-fill"></i>
+                            {% endif %}
+                        </a>
+                    </th>
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
@@ -143,6 +162,18 @@
                     <td>{{ paciente.numero_dni }}</td>
                     <td>{{ paciente.id_obra_social }}</td>
                     <td>{{ paciente.id_sexo.nombre }}</td>
+                    <td>
+                        {% if paciente.ultima_situacion %}
+                            <span class="badge
+                            {% if paciente.ultima_situacion_id == 1 %}bg-primary{% endif %}
+                            {% if paciente.ultima_situacion_id == 2 %}bg-warning{% endif %}
+                            {% if paciente.ultima_situacion_id == 3 %}bg-success{% endif %}
+                            {% if paciente.ultima_situacion_id == 4 %}bg-danger{% endif %}
+                            ">{{ paciente.ultima_situacion }}</span>
+                        {% else %}
+                            <span class="text-muted">Sin Expediente</span>
+                        {% endif %}
+                    </td>
                     <td class="text-center">
                         <a href="{% url 'paciente_rehab_detail' paciente.id %}" class="btn btn-info btn-sm">
                             <i class="bi bi-info-circle"></i> Detalles
@@ -151,7 +182,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center text-muted">No se encontraron pacientes.</td>
+                    <td colspan="7" class="text-center text-muted">No se encontraron pacientes.</td>
                 </tr>
                 {% endfor %}
             </tbody>

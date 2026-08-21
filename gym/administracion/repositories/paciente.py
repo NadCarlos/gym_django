@@ -47,6 +47,27 @@ class PacienteRepository:
             "id_sexo",
         ).order_by('apellido')
 
+    def filter_pacientes_area_with_ultima_situacion(self, state, id_area):
+        from rehabilitacion.models import PacienteRehabilitacionSituacion
+
+        ids_pacientes = PacienteArea.objects.filter(
+            id_area=id_area,
+            activo=state,
+        ).values_list("id_paciente", flat=True)
+        ultima_situacion = PacienteRehabilitacionSituacion.objects.filter(
+            idpacienterehabilitacion__id_paciente_area__id_paciente=OuterRef("pk"),
+            idpacienterehabilitacion__activo=True,
+        ).order_by("-fecha", "-id")
+
+        return Paciente.objects.filter(id__in=ids_pacientes).select_related(
+            "id_obra_social",
+            "id_estado_civil",
+            "id_sexo",
+        ).annotate(
+            ultima_situacion=Subquery(ultima_situacion.values("idsituacion__nombre")[:1]),
+            ultima_situacion_id=Subquery(ultima_situacion.values("idsituacion_id")[:1]),
+        ).order_by("apellido")
+
     def filter_pacientes_area_for_export(self, state, id_area):
         """Return the fields and active-service flag used by the XLSX export."""
         from administracion.models import PrestacionPaciente

@@ -14,6 +14,7 @@ import io
 from datetime import datetime, date
 
 from administracion.filters import PacienteFilter
+from rehabilitacion.filters import PacienteRehabFilter
 from django.contrib import messages
 from django.http import JsonResponse
 
@@ -161,13 +162,33 @@ class PacientesActivosSwap(View):
 class PacientesRehabList(View):
     template_name = 'pacientes_rehab/list.html'
     context_object_name = 'pacientes_rehab'
+    allowed_orderings = {
+        "apellido",
+        "-apellido",
+        "nombre",
+        "-nombre",
+        "numero_dni",
+        "-numero_dni",
+        "id_obra_social",
+        "-id_obra_social",
+        "id_sexo",
+        "-id_sexo",
+        "ultima_situacion",
+        "-ultima_situacion",
+    }
+
+    def get_ordering(self, request):
+        ordering = request.GET.get('ordering', 'apellido')
+        if ordering not in self.allowed_orderings:
+            return 'apellido'
+        return ordering
 
     def get(self, request, state):
-        queryset = pacienteRepo.filter_pacientes_area(state, id_area=2)
+        queryset = pacienteRepo.filter_pacientes_area_with_ultima_situacion(state, id_area=2)
 
-        filterset = PacienteFilter(request.GET, queryset)
+        filterset = PacienteRehabFilter(request.GET, queryset)
 
-        ordering = request.GET.get('ordering', 'apellido')
+        ordering = self.get_ordering(request)
 
         pacientes = filterset.qs.order_by(ordering)
 

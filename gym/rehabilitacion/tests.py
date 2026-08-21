@@ -54,7 +54,7 @@ from rehabilitacion.views.agenda import (
     AgendaRehabDelete,
 )
 from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
-from rehabilitacion.views.pacientes_rehab import PacienteRehabDelete
+from rehabilitacion.views.pacientes_rehab import PacienteRehabDelete, PacientesRehabList
 from rehabilitacion.views.turno import TurnoDelete
 
 
@@ -612,3 +612,28 @@ class PacienteRehabilitacionSituacionTests(TestCase):
         )
 
         self.assertEqual(paciente.ultima_situacion, "Alta en seguimiento")
+
+    def test_patient_list_queryset_includes_latest_situacion_for_filtering_and_ordering(self):
+        rehabilitacion = self.create_rehabilitacion()
+        alta_situacion = Situacion.objects.create(nombre="Alta en seguimiento")
+        PacienteRehabilitacionSituacion.objects.create(
+            idpacienterehabilitacion=rehabilitacion,
+            idsituacion=alta_situacion,
+            fecha=timezone.now(),
+        )
+
+        pacientes = (
+            PacienteRepository()
+            .filter_pacientes_area_with_ultima_situacion(state=True, id_area=self.area.id)
+            .filter(ultima_situacion_id=alta_situacion.pk)
+            .order_by("ultima_situacion")
+        )
+
+        paciente = pacientes.get(pk=self.paciente_area.id_paciente_id)
+        self.assertEqual(paciente.ultima_situacion, "Alta en seguimiento")
+
+    def test_patient_list_rejects_invalid_ordering(self):
+        view = PacientesRehabList()
+        request = RequestFactory().get("/", {"ordering": "no_existe"})
+
+        self.assertEqual(view.get_ordering(request), "apellido")
