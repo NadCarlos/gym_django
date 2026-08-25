@@ -396,6 +396,7 @@ class PacienteRehabDetail(View):
         ultima_situacion = None
         historial_situaciones = []
         situacion_form = None
+        situaciones = []
         if rehabilitacion_paciente != None:
             ultima_situacion = pacienteSituacionRepo.get_ultima(
                 id_paciente_rehabilitacion=rehabilitacion_paciente.id,
@@ -406,6 +407,7 @@ class PacienteRehabDetail(View):
             situacion_form = PacienteRehabilitacionSituacionForm(initial={
                 "fecha": date.today(),
             })
+            situaciones = situacion_form.fields["idsituacion"].queryset
             altas = list(altaRepo.filter_for_patient_detail(
                 id_paciente_rehab=rehabilitacion_paciente.id,
             ))
@@ -426,6 +428,7 @@ class PacienteRehabDetail(View):
                 ultima_situacion=ultima_situacion,
                 historial_situaciones=historial_situaciones,
                 situacion_form=situacion_form,
+                situaciones=situaciones,
             )
         )
 
@@ -491,6 +494,72 @@ class PacienteRehabSituacionCreate(View):
             return redirect("paciente_rehab_detail", paciente.id)
 
         messages.error(request, "No se pudo registrar el estado. Revise los datos ingresados.")
+        return redirect("paciente_rehab_detail", paciente.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacienteRehabSituacionUpdate(View):
+    http_method_names = ["post"]
+
+    def post(self, request, id, situacion_id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect("error")
+
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente is None:
+            messages.error(request, "El paciente no tiene datos de rehabilitación cargados.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        paciente_situacion = pacienteSituacionRepo.get_by_id_for_paciente(
+            id=situacion_id,
+            id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+        )
+        if paciente_situacion is None:
+            messages.error(request, "No se encontró el estado indicado.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        form = PacienteRehabilitacionSituacionForm(request.POST, instance=paciente_situacion)
+        if form.is_valid():
+            pacienteSituacionRepo.update(
+                paciente_situacion=paciente_situacion,
+                idsituacion=form.cleaned_data["idsituacion"],
+                fecha=form.cleaned_data["fecha"],
+                observaciones=form.cleaned_data["observaciones"],
+            )
+            messages.success(request, "Estado del paciente actualizado.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        messages.error(request, "No se pudo editar el estado. Revise los datos ingresados.")
+        return redirect("paciente_rehab_detail", paciente.id)
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class PacienteRehabSituacionDelete(View):
+    http_method_names = ["post"]
+
+    def post(self, request, id, situacion_id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            return redirect("error")
+
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
+        if rehabilitacion_paciente is None:
+            messages.error(request, "El paciente no tiene datos de rehabilitación cargados.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        paciente_situacion = pacienteSituacionRepo.get_by_id_for_paciente(
+            id=situacion_id,
+            id_paciente_rehabilitacion=rehabilitacion_paciente.id,
+        )
+        if paciente_situacion is None:
+            messages.error(request, "No se encontró el estado indicado.")
+            return redirect("paciente_rehab_detail", paciente.id)
+
+        pacienteSituacionRepo.delete(paciente_situacion=paciente_situacion)
+        messages.success(request, "Estado del paciente eliminado.")
         return redirect("paciente_rehab_detail", paciente.id)
     
 

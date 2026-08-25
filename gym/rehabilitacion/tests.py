@@ -657,6 +657,42 @@ class PacienteRehabilitacionSituacionTests(TestCase):
 
         self.assertEqual(paciente.ultima_situacion, "Alta en seguimiento")
 
+    def test_update_situacion_changes_expediente_fecha_and_observaciones(self):
+        rehabilitacion = self.create_rehabilitacion()
+        nueva_situacion = Situacion.objects.create(nombre="Pendiente auditoria")
+        paciente_situacion = PacienteRehabilitacionSituacion.objects.get(
+            idpacienterehabilitacion=rehabilitacion,
+        )
+        nueva_fecha = timezone.now()
+
+        PacienteRehabilitacionSituacionRepository().update(
+            paciente_situacion=paciente_situacion,
+            idsituacion=nueva_situacion,
+            fecha=nueva_fecha,
+            observaciones="Expediente observado",
+        )
+        paciente_situacion.refresh_from_db()
+
+        self.assertEqual(paciente_situacion.idsituacion, nueva_situacion)
+        self.assertEqual(paciente_situacion.fecha, nueva_fecha)
+        self.assertEqual(paciente_situacion.observaciones, "Expediente observado")
+
+    def test_delete_situacion_removes_history_item(self):
+        rehabilitacion = self.create_rehabilitacion()
+        paciente_situacion = PacienteRehabilitacionSituacion.objects.get(
+            idpacienterehabilitacion=rehabilitacion,
+        )
+
+        PacienteRehabilitacionSituacionRepository().delete(
+            paciente_situacion=paciente_situacion,
+        )
+
+        self.assertFalse(
+            PacienteRehabilitacionSituacion.objects.filter(
+                id=paciente_situacion.id,
+            ).exists()
+        )
+
     def test_patient_list_queryset_includes_latest_situacion_for_filtering_and_ordering(self):
         rehabilitacion = self.create_rehabilitacion()
         alta_situacion = Situacion.objects.create(nombre="Alta en seguimiento")

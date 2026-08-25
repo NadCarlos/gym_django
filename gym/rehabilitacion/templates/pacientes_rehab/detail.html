@@ -255,6 +255,9 @@
                                                 <th>Fecha</th>
                                                 <th>Expediente</th>
                                                 <th>Observaciones</th>
+                                                <th class="text-center" style="width: 84px;">
+                                                    <i class="bi bi-tools"></i>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -274,10 +277,36 @@
                                                         <span class="text-muted">Sin observaciones</span>
                                                     {% endif %}
                                                 </td>
+                                                <td class="text-center">
+                                                    <div class="btn-group btn-group-sm" role="group" aria-label="Acciones de expediente">
+                                                        <button type="button"
+                                                                class="btn btn-sm btn-outline-primary"
+                                                                data-update-url="{% url 'paciente_rehab_situacion_update' paciente.id situacion.id %}"
+                                                                data-idsituacion="{{ situacion.idsituacion.idsituacion }}"
+                                                                data-fecha="{{ situacion.fecha|date:'Y-m-d' }}"
+                                                                data-observaciones="{{ situacion.observaciones|default_if_none:''|escape }}"
+                                                                title="Editar"
+                                                                aria-label="Editar expediente">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <form method="post"
+                                                              class="d-inline"
+                                                              action="{% url 'paciente_rehab_situacion_delete' paciente.id situacion.id %}"
+                                                              onsubmit="return confirm('¿Eliminar este expediente del historial?');">
+                                                            {% csrf_token %}
+                                                            <button type="submit"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    title="Eliminar"
+                                                                    aria-label="Eliminar expediente">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
                                             </tr>
                                             {% empty %}
                                             <tr>
-                                                <td colspan="3" class="text-center text-muted">No hay estados registrados.</td>
+                                                <td colspan="4" class="text-center text-muted">No hay estados registrados.</td>
                                             </tr>
                                             {% endfor %}
                                         </tbody>
@@ -285,10 +314,14 @@
                                 </div>
                             </div>
                             <div class="col-lg-5">
-                                <form method="post" action="{% url 'paciente_rehab_situacion_create' paciente.id %}">
+                                <h6 class="text-primary mb-3" id="situacionFormTitle">Registrar Expediente</h6>
+                                <form method="post"
+                                      action="{% url 'paciente_rehab_situacion_create' paciente.id %}"
+                                      id="situacionPacienteForm"
+                                      data-create-url="{% url 'paciente_rehab_situacion_create' paciente.id %}">
                                     {% csrf_token %}
                                     <div class="mb-3">
-                                        <label for="{{ situacion_form.idsituacion.id_for_label }}" class="form-label fw-bold">Estado</label>
+                                        <label for="{{ situacion_form.idsituacion.id_for_label }}" class="form-label fw-bold">Expediente</label>
                                         {{ situacion_form.idsituacion }}
                                     </div>
                                     <div class="mb-3">
@@ -300,8 +333,8 @@
                                         {{ situacion_form.observaciones }}
                                     </div>
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="button" class="btn btn-outline-secondary d-none" id="cancelarEdicionSituacion">Cancelar edición</button>
+                                        <button type="submit" class="btn btn-primary" id="situacionSubmitButton">
                                             <i class="bi bi-plus-circle"></i> Registrar Estado
                                         </button>
                                     </div>
@@ -399,4 +432,45 @@
         {% endif %}
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("situacionPacienteForm");
+        if (!form) {
+            return;
+        }
+
+        const title = document.getElementById("situacionFormTitle");
+        const submitButton = document.getElementById("situacionSubmitButton");
+        const cancelButton = document.getElementById("cancelarEdicionSituacion");
+        const expedienteField = form.querySelector('[name="idsituacion"]');
+        const fechaField = form.querySelector('[name="fecha"]');
+        const observacionesField = form.querySelector('[name="observaciones"]');
+        const initialFecha = fechaField.value;
+
+        function resetForm() {
+            form.action = form.dataset.createUrl;
+            expedienteField.value = "";
+            fechaField.value = initialFecha;
+            observacionesField.value = "";
+            title.textContent = "Registrar Expediente";
+            submitButton.innerHTML = '<i class="bi bi-plus-circle"></i> Registrar Estado';
+            cancelButton.classList.add("d-none");
+        }
+
+        document.querySelectorAll("[data-update-url]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                form.action = button.dataset.updateUrl;
+                expedienteField.value = button.dataset.idsituacion;
+                fechaField.value = button.dataset.fecha;
+                observacionesField.value = button.dataset.observaciones;
+                title.textContent = "Editar Expediente";
+                submitButton.innerHTML = '<i class="bi bi-check-circle"></i> Guardar';
+                cancelButton.classList.remove("d-none");
+                form.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+        });
+
+        cancelButton.addEventListener("click", resetForm);
+    });
+</script>
 {% endblock %}

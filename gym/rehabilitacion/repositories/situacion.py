@@ -25,7 +25,21 @@ class SituacionRepository:
 
 
 class PacienteRehabilitacionSituacionRepository:
-    
+    def get_by_id_for_paciente(
+        self,
+        id: int,
+        id_paciente_rehabilitacion: int,
+    ) -> Optional[PacienteRehabilitacionSituacion]:
+        return (
+            PacienteRehabilitacionSituacion.objects
+            .filter(
+                id=id,
+                idpacienterehabilitacion_id=id_paciente_rehabilitacion,
+            )
+            .select_related("idsituacion")
+            .first()
+        )
+
     def get_ultima(
         self,
         id_paciente_rehabilitacion: int,
@@ -73,3 +87,22 @@ class PacienteRehabilitacionSituacionRepository:
             idsituacion=situacion,
             fecha=timezone.now(),
         )
+
+    def update(
+        self,
+        paciente_situacion: PacienteRehabilitacionSituacion,
+        idsituacion: Situacion,
+        fecha,
+        observaciones: str = None,
+    ) -> PacienteRehabilitacionSituacion:
+        paciente_situacion.idsituacion = idsituacion
+        paciente_situacion.fecha = fecha
+        paciente_situacion.observaciones = observaciones
+        paciente_situacion.save()
+        return paciente_situacion
+
+    def delete(
+        self,
+        paciente_situacion: PacienteRehabilitacionSituacion,
+    ):
+        return paciente_situacion.delete()
