@@ -4,6 +4,15 @@
 <div class="container mt-5">
     <h2 class="text-center mb-4" style="color: #009f95;">Nuevo Registro</h2>
 
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="card shadow-sm p-4">
         <form method="post" novalidate>
             {% csrf_token %}
@@ -51,22 +60,37 @@
                 <div class="col-md-4 mb-3">
                     <label for="{{ form.id_estado_certificado.id_for_label }}" class="form-label">Estado Certificado</label>
                     {{ form.id_estado_certificado }}
+                    {% if form.id_estado_certificado.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.id_estado_certificado.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-3 mb-3">
                     <label for="{{ form.vencimiento_certificado.id_for_label }}" class="form-label">Vencimiento Certificado</label>
                     {{ form.vencimiento_certificado }}
+                    {% if form.vencimiento_certificado.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.vencimiento_certificado.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-5 mb-3">
                     <label for="{{ form.diagnosticoCUD.id_for_label }}" class="form-label">Diagnostico Certificado Unico de Discapacidad</label>
                     {{ form.diagnosticoCUD }}
+                    {% if form.diagnosticoCUD.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.diagnosticoCUD.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.ven_presupuesto.id_for_label }}" class="form-label">Vencimiento Presupuesto</label>
                     {{ form.ven_presupuesto }}
+                    {% if form.ven_presupuesto.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.ven_presupuesto.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.vencimiento_presupuesto.id_for_label }}" class="form-label">Fecha de Vencimiento Presupuesto</label>
                     {{ form.vencimiento_presupuesto }}
+                    {% if form.vencimiento_presupuesto.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.vencimiento_presupuesto.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.id_derivador.id_for_label }}" class="form-label">Derivador</label>
@@ -85,10 +109,16 @@
                 <div class="col-md-6 mb-3">
                     <label for="{{ form.puerto_esperanza.id_for_label }}" class="form-label">Puerto Esperanza</label>
                     {{ form.puerto_esperanza }}
+                    {% if form.puerto_esperanza.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.puerto_esperanza.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="{{ form.puerto_esperanza.id_for_label }}" class="form-label">Pre-Ingreso</label>
+                    <label for="{{ form.pre_ingreso.id_for_label }}" class="form-label">Pre-Ingreso</label>
                     {{ form.pre_ingreso }}
+                    {% if form.pre_ingreso.errors %}
+                        <div class="alert alert-danger py-1 mt-2 mb-0">{{ form.pre_ingreso.errors.0 }}</div>
+                    {% endif %}
                 </div>
                 {{ form.id_usuario }}
                 {{ form.id_paciente_area }}

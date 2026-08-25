@@ -29,23 +29,24 @@ profesionalRepo = ProfesionalRepository()
 
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
 
-    SI_NO_CHOICES = [
+    SI_NO_EMPTY_CHOICES = [
+        ("", "Seleccione una opcion"),
         (0, "NO"),
         (1, "SI"),
     ]
 
     puerto_esperanza = forms.ChoiceField(
-        choices=SI_NO_CHOICES,
+        choices=SI_NO_EMPTY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control custom-class'})
     )
 
     pre_ingreso = forms.ChoiceField(
-        choices=SI_NO_CHOICES,
+        choices=SI_NO_EMPTY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control custom-class'})
     )
 
     ven_presupuesto = forms.ChoiceField(
-        choices=SI_NO_CHOICES,
+        choices=SI_NO_EMPTY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control custom-class','id':'ven_presupuesto'})
     )
 
@@ -57,6 +58,31 @@ class PacienteRehabilitacionCreateForm(forms.ModelForm):
         self.fields['id_derivador'].empty_label = "Seleccione una opcion"
         self.fields['id_conocer'].initial = None
         self.fields['id_conocer'].empty_label = "Seleccione una opcion"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        estado_certificado = cleaned_data.get('id_estado_certificado')
+        ven_presupuesto = cleaned_data.get('ven_presupuesto')
+
+        if estado_certificado and estado_certificado.pk == 2:
+            if not cleaned_data.get('vencimiento_certificado'):
+                self.add_error(
+                    'vencimiento_certificado',
+                    'Debe ingresar el vencimiento del certificado.',
+                )
+            if not cleaned_data.get('diagnosticoCUD'):
+                self.add_error(
+                    'diagnosticoCUD',
+                    'Debe ingresar el diagnóstico del Certificado Único de Discapacidad.',
+                )
+
+        if ven_presupuesto == '1' and not cleaned_data.get('vencimiento_presupuesto'):
+            self.add_error(
+                'vencimiento_presupuesto',
+                'Debe ingresar la fecha de vencimiento del presupuesto.',
+            )
+
+        return cleaned_data
 
     class Meta:
 

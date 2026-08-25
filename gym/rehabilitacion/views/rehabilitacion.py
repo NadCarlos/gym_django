@@ -1,6 +1,7 @@
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
 
@@ -20,6 +21,39 @@ pacienteRepo = PacienteRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 estadoCertificadoRepo = EstadoCertificadoRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
+
+
+REHABILITACION_CREATE_FIELD_LABELS = {
+    'id_paciente_area': 'Paciente',
+    'nombre_tutor': 'Nombre Tutor',
+    'celular_tutor': 'Celular Tutor',
+    'hijos': 'Cantidad de Hijos',
+    'id_estado_certificado': 'Estado Certificado',
+    'vencimiento_certificado': 'Vencimiento Certificado',
+    'fecha_junta': 'Fecha Junta',
+    'ven_presupuesto': 'Vencimiento Presupuesto',
+    'vencimiento_presupuesto': 'Fecha de Vencimiento Presupuesto',
+    'id_derivador': 'Derivador',
+    'puerto_esperanza': 'Puerto Esperanza',
+    'id_obra_social': 'Obra Social',
+    'numero_afiliado': 'Número Afiliado',
+    'id_conocer': 'Como Contacto',
+    'id_usuario': 'Usuario',
+    'diagnosticoCUD': 'Diagnóstico Certificado Único de Discapacidad',
+    'pre_ingreso': 'Pre-Ingreso',
+}
+
+
+def add_form_error_messages(request, form, field_labels=None):
+    field_labels = field_labels or {}
+    for field_name, errors in form.errors.items():
+        if field_name == '__all__':
+            label = 'Formulario'
+        else:
+            label = field_labels.get(field_name) or form.fields[field_name].label or field_name
+
+        for error in errors:
+            messages.error(request, f'{label}: {error}')
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -68,7 +102,18 @@ class RehabilitacionCreate(View):
             )
             return redirect('paciente_rehab_detail', paciente.id)
         else:
-            return redirect('error')
+            add_form_error_messages(
+                request,
+                form,
+                REHABILITACION_CREATE_FIELD_LABELS,
+            )
+            return render(
+                request,
+                'rehabilitacion/create.html',
+                dict(
+                    form=form,
+                )
+            )
         
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
