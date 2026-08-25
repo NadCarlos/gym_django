@@ -50,6 +50,7 @@
                     <h5 class="text-primary mb-3 invisible">.</h5> <!-- Mantiene alineado -->
                     <p><strong>Codigo Paciente:</strong> {{ paciente.id }}</p>
                     <p><strong>Fecha de Nacimiento:</strong> {{ paciente.fecha_nacimiento }}</p>
+                    <p><strong>Edad:</strong> {{ paciente.edad }}</p>
                     <p><strong>Obra Social:</strong> {{ paciente.id_obra_social.nombre }}</p>
                     <p><strong>Estado Civil:</strong> {{ paciente.id_estado_civil.nombre }}</p>
                     <p><strong>Sexo:</strong> {{ paciente.id_sexo.nombre }}</p>
@@ -379,6 +380,10 @@
                     <a href="{% url 'rehab_create' paciente.id %}" class="btn btn-outline-success">
                         <i class="bi bi-plus-circle"></i> Nueva Rehabilitacion
                     </a>
+                    <form method="post" action="{% url 'paciente_rehab_delete' paciente.id %}" onsubmit="return confirm('Esto va a borrar el Paciente, finalizar la prestación activa y quitar toda su agenda');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100"><i class="bi bi-trash"></i> Eliminar</button>
+                    </form>
                 </div>
             </div>
             {% endif %}

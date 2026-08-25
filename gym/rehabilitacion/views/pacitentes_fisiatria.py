@@ -294,14 +294,19 @@ class PacienteFisiatriaCreateFromExistent(View):
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteFisiatriaRedirectFromExistent(View):
 
-    def get(self, request):
-        dni = request.GET.get('dni')
+    def redirect_from_dni(self, dni):
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
         if paciente is None:
             return redirect('error')
 
         return redirect('paciente_fisiatria_detail', paciente.id)
+
+    def get(self, request):
+        return self.redirect_from_dni(request.GET.get('dni'))
+
+    def post(self, request):
+        return self.redirect_from_dni(request.POST.get('dni'))
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

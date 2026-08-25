@@ -26,7 +26,7 @@ from administracion.models import (
 )
 from administracion.repositories.paciente import PacienteRepository
 from administracion.views.agenda import AgendaDelete
-from administracion.views.pacientes import PacienteDelete
+from administracion.views.pacientes import PacienteDelete, PacienteRedirectFromExistent
 from rehabilitacion.models import (
     Alta,
     AltaEtiologico,
@@ -53,8 +53,15 @@ from rehabilitacion.views.agenda import (
     AgendaProfesionalRehabToPDF,
     AgendaRehabDelete,
 )
-from rehabilitacion.views.pacitentes_fisiatria import PacienteFisiatriaDelete
-from rehabilitacion.views.pacientes_rehab import PacienteRehabDelete, PacientesRehabList
+from rehabilitacion.views.pacitentes_fisiatria import (
+    PacienteFisiatriaDelete,
+    PacienteFisiatriaRedirectFromExistent,
+)
+from rehabilitacion.views.pacientes_rehab import (
+    PacienteRehabDelete,
+    PacienteRehabRedirectFromExistent,
+    PacientesRehabList,
+)
 from rehabilitacion.views.turno import TurnoDelete
 
 
@@ -88,6 +95,43 @@ class WriteEndpointMethodTests(SimpleTestCase):
 
     def test_gym_patient_delete_rejects_get(self):
         self.assert_get_not_allowed(PacienteDelete)
+
+    def assert_redirect_from_existent_accepts_post(
+        self,
+        view_class,
+        repo_path,
+        expected_url,
+    ):
+        request = self.factory.post("/", {"dni": "12345678"})
+        request.user = self.user
+
+        with patch(repo_path, return_value=SimpleNamespace(id=42)) as get_by_dni:
+            response = view_class.as_view()(request)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, expected_url)
+        get_by_dni.assert_called_once_with(numero_dni=12345678)
+
+    def test_gym_patient_redirect_from_existent_accepts_post(self):
+        self.assert_redirect_from_existent_accepts_post(
+            PacienteRedirectFromExistent,
+            "administracion.views.pacientes.pacienteRepo.get_by_dni",
+            "/administracion/42/paciente_detail/",
+        )
+
+    def test_rehab_patient_redirect_from_existent_accepts_post(self):
+        self.assert_redirect_from_existent_accepts_post(
+            PacienteRehabRedirectFromExistent,
+            "rehabilitacion.views.pacientes_rehab.pacienteRepo.get_by_dni",
+            "/rehabilitacion/pacientes/detail/42",
+        )
+
+    def test_fisiatria_patient_redirect_from_existent_accepts_post(self):
+        self.assert_redirect_from_existent_accepts_post(
+            PacienteFisiatriaRedirectFromExistent,
+            "rehabilitacion.views.pacitentes_fisiatria.pacienteRepo.get_by_dni",
+            "/rehabilitacion/pacientes/fisiatria/detail/42",
+        )
 
 
 class LockErrorMiddlewareTests(SimpleTestCase):

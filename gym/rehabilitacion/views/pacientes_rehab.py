@@ -379,8 +379,15 @@ class AsistenciasPacientesRehabListToCSV(View):
 @method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
 class PacienteRehabDetail(View):
 
+    def calcular_edad(self, fecha_nacimiento):
+        hoy = date.today()
+        return hoy.year - fecha_nacimiento.year - (
+            (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
+        )
+
     def get(self, request, id):
         paciente = pacienteRepo.get_by_id(id=id)
+        paciente.edad = self.calcular_edad(paciente.fecha_nacimiento)
         pacienteArea = pacienteAreaRepo.filter_by_id_area_and_paciente(id_area=2, id_paciente=paciente.id)
         rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=id)
         altas = []
@@ -911,9 +918,16 @@ class PacienteAltasToCsv(View):
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class PacienteRehabRedirectFromExistent(View):
 
-    def get(self, request):
-        dni = request.GET.get('dni')
+    def redirect_from_dni(self, dni):
         dni = int(dni)
         paciente = pacienteRepo.get_by_dni(numero_dni=dni)
+        if paciente is None:
+            return redirect('error')
 
         return redirect('paciente_rehab_detail', paciente.id)
+
+    def get(self, request):
+        return self.redirect_from_dni(request.GET.get('dni'))
+
+    def post(self, request):
+        return self.redirect_from_dni(request.POST.get('dni'))
