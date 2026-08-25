@@ -46,7 +46,7 @@ class PacienteRehabilitacionSituacionRepository:
             PacienteRehabilitacionSituacion.objects
             .filter(idpacienterehabilitacion_id=id_paciente_rehabilitacion)
             .select_related("idsituacion")
-            .order_by("-fecha", "-id")
+            .order_by("fecha", "-id")
         )
 
     def create(
