@@ -29,6 +29,7 @@ class AsistenciaRehabTeoricaRepository:
         return (
             AsistenciaRehabTeorica.objects
             .filter(
+                id_agenda_rehab__activo=True,
                 fecha__gte=fecha_desde,
                 fecha__lte=fecha_hasta,
                 id_agenda_rehab__isnull=False,
