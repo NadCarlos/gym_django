@@ -15,6 +15,21 @@ class AgendaRehabRepository:
             "id_paciente_area__id_paciente",
             "id_profesional_area__id_profesional",
         ).all()
+
+    def list_for_time_check(self, fecha_desde=None, fecha_hasta=None) -> List[AgendaRehab]:
+        agendas = AgendaRehab.objects.only(
+            "id",
+            "fecha",
+            "id_dia",
+            "hora_inicio",
+            "hora_fin",
+            "tiempo",
+        )
+        if fecha_desde:
+            agendas = agendas.filter(fecha__gte=fecha_desde)
+        if fecha_hasta:
+            agendas = agendas.filter(fecha__lte=fecha_hasta)
+        return agendas.order_by("fecha", "id_dia_id", "hora_inicio", "hora_fin")
     
     def filter_by_id(self, id) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id=id).first()

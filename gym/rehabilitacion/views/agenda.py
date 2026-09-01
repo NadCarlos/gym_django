@@ -1,12 +1,15 @@
 import datetime
 from datetime import time, date
+from decimal import Decimal
 from io import BytesIO
 
 from django.contrib.staticfiles import finders
 from django.db.models import Exists, OuterRef
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.utils.dateparse import parse_date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
@@ -44,6 +47,58 @@ profesionalAreaRepo = ProfesionalAreaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 REHABILITACION_AREA_ID = 2
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class AgendaRehabList(View):
+    paginate_by = 100
+
+    def get(self, request):
+        fecha_desde = parse_date(request.GET.get("fecha_desde", ""))
+        fecha_hasta = parse_date(request.GET.get("fecha_hasta", ""))
+        agenda_queryset = agendaRehabRepo.list_for_time_check(
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
+        )
+        paginator = Paginator(agenda_queryset, self.paginate_by)
+        page_obj = paginator.get_page(request.GET.get("page"))
+        query_params = request.GET.copy()
+        query_params.pop("page", None)
+
+        for turno in page_obj:
+            turno.duracion_calculada = self.get_duracion_calculada(turno)
+            turno.tiempo_incorrecto = turno.duracion_calculada != self.normalize_tiempo(turno.tiempo)
+
+        return render(
+            request,
+            'agenda/agenda_rehab_list.html',
+            dict(
+                agenda=page_obj,
+                page_obj=page_obj,
+                total_agendas=paginator.count,
+                fecha_desde=request.GET.get("fecha_desde", ""),
+                fecha_hasta=request.GET.get("fecha_hasta", ""),
+                query_params=query_params.urlencode(),
+            )
+        )
+
+    def get_duracion_calculada(self, turno):
+        hora_inicio = turno.hora_inicio
+        hora_fin = turno.hora_fin
+        if not hora_inicio or not hora_fin:
+            return Decimal("0.00")
+        inicio_minutos = hora_inicio.hour * 60 + hora_inicio.minute
+        fin_minutos = hora_fin.hour * 60 + hora_fin.minute
+        if fin_minutos <= inicio_minutos:
+            return Decimal("0.00")
+        duracion = Decimal(fin_minutos - inicio_minutos) / Decimal("60")
+        return duracion.quantize(Decimal("0.01"))
+
+    def normalize_tiempo(self, tiempo):
+        if tiempo is None:
+            return Decimal("0.00")
+        return Decimal(tiempo).quantize(Decimal("0.01"))
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
