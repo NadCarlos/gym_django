@@ -16,6 +16,9 @@ class AgendaRehabRepository:
             "id_profesional_area__id_profesional",
         ).all()
 
+    def list_all(self) -> List[AgendaRehab]:
+        return self.get_all().order_by("id_dia__id", "hora_inicio", "hora_fin")
+
     def list_for_time_check(self, fecha_desde=None, fecha_hasta=None) -> List[AgendaRehab]:
         agendas = AgendaRehab.objects.only(
             "id",
@@ -30,6 +33,9 @@ class AgendaRehabRepository:
         if fecha_hasta:
             agendas = agendas.filter(fecha__lte=fecha_hasta)
         return agendas.order_by("fecha", "id_dia_id", "hora_inicio", "hora_fin")
+
+    def bulk_update_tiempos(self, agendas) -> None:
+        AgendaRehab.objects.bulk_update(agendas, ["tiempo"], batch_size=500)
     
     def filter_by_id(self, id) -> Optional[AgendaRehab]:
         return AgendaRehab.objects.filter(id=id).first()

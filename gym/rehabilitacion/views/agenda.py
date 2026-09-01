@@ -3,6 +3,7 @@ from datetime import time, date
 from decimal import Decimal
 from io import BytesIO
 
+from django.contrib import messages
 from django.contrib.staticfiles import finders
 from django.db.models import Exists, OuterRef
 from django.core.paginator import Paginator
@@ -13,6 +14,7 @@ from django.utils.dateparse import parse_date
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from utils.decorators import requiere_areas
+from utils.permissions import tiene_area
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
@@ -55,8 +57,7 @@ class AgendaRehabList(View):
     paginate_by = 100
 
     def get(self, request):
-        fecha_desde = parse_date(request.GET.get("fecha_desde", ""))
-        fecha_hasta = parse_date(request.GET.get("fecha_hasta", ""))
+        fecha_desde, fecha_hasta = self.get_fechas_filtro(request.GET)
         agenda_queryset = agendaRehabRepo.list_for_time_check(
             fecha_desde=fecha_desde,
             fecha_hasta=fecha_hasta,
@@ -67,8 +68,7 @@ class AgendaRehabList(View):
         query_params.pop("page", None)
 
         for turno in page_obj:
-            turno.duracion_calculada = self.get_duracion_calculada(turno)
-            turno.tiempo_incorrecto = turno.duracion_calculada != self.normalize_tiempo(turno.tiempo)
+            self.set_estado_tiempo(turno)
 
         return render(
             request,
@@ -80,18 +80,77 @@ class AgendaRehabList(View):
                 fecha_desde=request.GET.get("fecha_desde", ""),
                 fecha_hasta=request.GET.get("fecha_hasta", ""),
                 query_params=query_params.urlencode(),
+                can_recalcular_tiempos=tiene_area(request.user, "Rehabilitacion"),
             )
+        )
+
+    def post(self, request):
+        if not tiene_area(request.user, "Rehabilitacion"):
+            return redirect("inicio_rehab")
+
+        fecha_desde, fecha_hasta = self.get_fechas_filtro(request.POST)
+        agendas = agendaRehabRepo.list_for_time_check(
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
+        )
+        actualizadas = []
+        total_actualizadas = 0
+        invalidas = 0
+        revisadas = 0
+
+        for turno in agendas.iterator(chunk_size=500):
+            revisadas += 1
+            duracion_calculada = self.get_duracion_calculada(turno)
+            if duracion_calculada is None:
+                invalidas += 1
+                continue
+            if duracion_calculada != self.normalize_tiempo(turno.tiempo):
+                turno.tiempo = duracion_calculada
+                actualizadas.append(turno)
+
+            if len(actualizadas) >= 500:
+                agendaRehabRepo.bulk_update_tiempos(actualizadas)
+                total_actualizadas += len(actualizadas)
+                actualizadas = []
+
+        if actualizadas:
+            agendaRehabRepo.bulk_update_tiempos(actualizadas)
+            total_actualizadas += len(actualizadas)
+
+        messages.success(
+            request,
+            f"Agendas revisadas: {revisadas}. Tiempos actualizados: {total_actualizadas}. "
+            f"Agendas con horario invalido: {invalidas}.",
+        )
+        redirect_url = request.path
+        query_params = request.POST.copy()
+        query_params.pop("csrfmiddlewaretoken", None)
+        if query_params:
+            redirect_url = f"{redirect_url}?{query_params.urlencode()}"
+        return redirect(redirect_url)
+
+    def get_fechas_filtro(self, params):
+        return (
+            parse_date(params.get("fecha_desde", "")),
+            parse_date(params.get("fecha_hasta", "")),
+        )
+
+    def set_estado_tiempo(self, turno):
+        turno.duracion_calculada = self.get_duracion_calculada(turno)
+        turno.tiempo_incorrecto = (
+            turno.duracion_calculada is None
+            or turno.duracion_calculada != self.normalize_tiempo(turno.tiempo)
         )
 
     def get_duracion_calculada(self, turno):
         hora_inicio = turno.hora_inicio
         hora_fin = turno.hora_fin
         if not hora_inicio or not hora_fin:
-            return Decimal("0.00")
+            return None
         inicio_minutos = hora_inicio.hour * 60 + hora_inicio.minute
         fin_minutos = hora_fin.hour * 60 + hora_fin.minute
         if fin_minutos <= inicio_minutos:
-            return Decimal("0.00")
+            return None
         duracion = Decimal(fin_minutos - inicio_minutos) / Decimal("60")
         return duracion.quantize(Decimal("0.01"))
 
