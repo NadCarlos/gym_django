@@ -6,6 +6,7 @@ from unittest.mock import patch
 from types import SimpleNamespace
 from uuid import uuid4
 
+from django.contrib.auth.models import User
 from django.db import OperationalError
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
@@ -13,6 +14,7 @@ from django.utils import timezone
 
 from administracion.models import (
     Area,
+    Dia,
     EstadoCivil,
     Localidad,
     ObraSocial,
@@ -20,6 +22,7 @@ from administracion.models import (
     PacienteArea,
     Pais,
     Profesional,
+    ProfesionalArea,
     Provincia,
     Sexo,
     Tratamiento,
@@ -42,7 +45,9 @@ from rehabilitacion.models import (
     Situacion,
     TipoDiscapacidad,
     Turno,
+    DisponibilidadProfesionalRehab,
 )
+from rehabilitacion.repositories.disponibilidad_profesional_rehab import DisponibilidadProfesionalRehabRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
 from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
@@ -52,6 +57,7 @@ from rehabilitacion.views.agenda import (
     AgendaProfesionalRehab,
     AgendaProfesionalRehabToPDF,
     AgendaRehabDelete,
+    DisponibilidadProfesionalRehabDelete,
 )
 from rehabilitacion.views.pacitentes_fisiatria import (
     PacienteFisiatriaDelete,
@@ -83,6 +89,9 @@ class WriteEndpointMethodTests(SimpleTestCase):
 
     def test_agenda_delete_rejects_get(self):
         self.assert_get_not_allowed(AgendaRehabDelete)
+
+    def test_disponibilidad_delete_rejects_get(self):
+        self.assert_get_not_allowed(DisponibilidadProfesionalRehabDelete)
 
     def test_rehab_patient_delete_rejects_get(self):
         self.assert_get_not_allowed(PacienteRehabDelete)
@@ -259,6 +268,103 @@ class CriticalWriteIdempotencyTests(TestCase):
 
         self.assertTrue(first_area_created)
         self.assertFalse(second_area_created)
+
+
+class DisponibilidadProfesionalRehabRepositoryTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(username="rehab", password="test")
+        pais = Pais.objects.create(nombre="Argentina")
+        provincia = Provincia.objects.create(nombre="Cordoba", pais=pais)
+        localidad = Localidad.objects.create(nombre="Rio Cuarto", provincia=provincia)
+        obra_social = ObraSocial.objects.create(nombre="Particular")
+        estado_civil = EstadoCivil.objects.create(nombre="Soltero")
+        sexo = Sexo.objects.create(nombre="Femenino")
+        cls.area = Area.objects.create(nombre="Rehabilitacion")
+        cls.dia_lunes = Dia.objects.create(nombre="Lunes")
+        cls.dia_martes = Dia.objects.create(nombre="Martes")
+        cls.paciente = Paciente.objects.create(
+            nombre="Paciente",
+            apellido="Agenda",
+            numero_dni="22333444",
+            fecha_nacimiento=date(1992, 1, 1),
+            id_usuario=cls.user,
+            id_localidad=localidad,
+            id_obra_social=obra_social,
+            id_estado_civil=estado_civil,
+            id_sexo=sexo,
+        )
+        cls.profesional = Profesional.objects.create(
+            nombre="Profesional",
+            apellido="Agenda",
+            numero_dni="33444555",
+            matricula="MP-2",
+            fecha_nacimiento=date(1982, 1, 1),
+            id_usuario=cls.user,
+            id_localidad=localidad,
+            id_sexo=sexo,
+        )
+        cls.tratamiento = Tratamiento.objects.create(nombre="Terapia")
+        cls.paciente_area = PacienteArea.objects.create(
+            id_area=cls.area,
+            id_paciente=cls.paciente,
+            id_usuario=cls.user,
+        )
+        cls.profesional_area = ProfesionalArea.objects.create(
+            id_area=cls.area,
+            id_profesional=cls.profesional,
+            id_usuario=cls.user,
+        )
+
+    def setUp(self):
+        self.repository = DisponibilidadProfesionalRehabRepository()
+
+    def test_bypasses_disponibilidad_when_profesional_has_no_records(self):
+        permitido = self.repository.is_agenda_within_disponibilidad(
+            id_profesional_area=self.profesional_area.id,
+            id_dia=self.dia_lunes,
+            fecha=date(2026, 9, 7),
+            hora_inicio=time(7, 0),
+            hora_fin=time(8, 0),
+        )
+
+        self.assertTrue(permitido)
+
+    def test_accepts_agenda_fully_inside_existing_disponibilidad(self):
+        self.create_disponibilidad(self.dia_lunes, time(8, 0), time(12, 0))
+
+        permitido = self.repository.is_agenda_within_disponibilidad(
+            id_profesional_area=self.profesional_area.id,
+            id_dia=self.dia_lunes,
+            fecha=date(2026, 9, 7),
+            hora_inicio=time(9, 0),
+            hora_fin=time(10, 0),
+        )
+
+        self.assertTrue(permitido)
+
+    def test_rejects_agenda_outside_existing_disponibilidad(self):
+        self.create_disponibilidad(self.dia_lunes, time(8, 0), time(12, 0))
+
+        permitido = self.repository.is_agenda_within_disponibilidad(
+            id_profesional_area=self.profesional_area.id,
+            id_dia=self.dia_lunes,
+            fecha=date(2026, 9, 7),
+            hora_inicio=time(11, 30),
+            hora_fin=time(12, 30),
+        )
+
+        self.assertFalse(permitido)
+
+    def create_disponibilidad(self, dia, hora_inicio, hora_fin):
+        return DisponibilidadProfesionalRehab.objects.create(
+            id_profesional_area=self.profesional_area,
+            id_dia=dia,
+            hora_inicio=hora_inicio,
+            hora_fin=hora_fin,
+            fecha_inicio=date(2026, 1, 1),
+            id_usuario=self.user,
+        )
         self.assertEqual(first.pk, second.pk)
         self.assertEqual(Paciente.objects.filter(numero_dni="11112222").count(), 1)
         self.assertEqual(

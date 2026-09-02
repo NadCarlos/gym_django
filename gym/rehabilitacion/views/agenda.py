@@ -29,13 +29,18 @@ from administracion.repositories.profesional import ProfesionalRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
 from rehabilitacion.repositories.asistencia_teorica import AsistenciaRehabTeoricaRepository
+from rehabilitacion.repositories.disponibilidad_profesional_rehab import DisponibilidadProfesionalRehabRepository
 from administracion.repositories.prestacion_paciente import PrestacionPacienteRepository
 from administracion.repositories.tratamiento import TratamientoRepository
 from administracion.repositories.profesional_area import ProfesionalAreaRepository
 from administracion.repositories.paciente_area import PacienteAreaRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 
-from rehabilitacion.forms import AgendaRehabCreateForm, AgendaRehabUpdateForm
+from rehabilitacion.forms import (
+    AgendaRehabCreateForm,
+    AgendaRehabUpdateForm,
+    DisponibilidadProfesionalRehabForm,
+)
 
 
 pacienteRepo = PacienteRepository()
@@ -43,12 +48,37 @@ profesionalRepo = ProfesionalRepository()
 agendaRehabRepo = AgendaRehabRepository()
 asistenciaRehabRepo = AsistenciaRehabRepository()
 asistenciaTeoricaRepo = AsistenciaRehabTeoricaRepository()
+disponibilidadRehabRepo = DisponibilidadProfesionalRehabRepository()
 prestacionPacienteRepo = PrestacionPacienteRepository()
 tratamientoRepo = TratamientoRepository()
 profesionalAreaRepo = ProfesionalAreaRepository()
 pacienteAreaRepo = PacienteAreaRepository()
 pacienteRehabRepo = PacienteRehabilitacionRepository()
 REHABILITACION_AREA_ID = 2
+
+
+def validar_agenda_en_disponibilidad(
+    form,
+    profesional_area,
+    id_dia,
+    fecha,
+    hora_inicio,
+    hora_fin,
+):
+    if not disponibilidadRehabRepo.is_agenda_within_disponibilidad(
+        id_profesional_area=profesional_area.id,
+        id_dia=id_dia,
+        fecha=fecha,
+        hora_inicio=hora_inicio,
+        hora_fin=hora_fin,
+    ):
+        form.add_error(
+            None,
+            "El horario seleccionado esta fuera de la disponibilidad cargada para el profesional.",
+        )
+        return False
+
+    return True
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
@@ -571,6 +601,28 @@ class AgendaPacienteRehabCreate(View):
                 paciente_rehab = pacienteRehabRepo.get_by_paciente_id_item(id_paciente=paciente.id)
                 if paciente_rehab is not None and paciente_rehab.pre_ingreso == 1:
                     observaciones = "R"
+
+                if not validar_agenda_en_disponibilidad(
+                    form=form,
+                    profesional_area=profesionalArea,
+                    id_dia=form.cleaned_data['id_dia'],
+                    fecha=form.cleaned_data['fecha'],
+                    hora_inicio=hora_inicio,
+                    hora_fin=hora_fin,
+                ):
+                    return render(
+                        request,
+                        'agenda/rehab_create.html',
+                        dict(
+                            paciente=paciente,
+                            tratamientosActivos=tratamientoRepo.filter_by_activo(),
+                            dateSTR=datetime.datetime.now().strftime("%d-%m-%Y"),
+                            form=form,
+                            error_message=error_message,
+                            selected_tratamiento_id=tratamiento_id,
+                            selected_profesional_id=profesional_id,
+                        ),
+                    )
                 
                 agendaRehabRepo.create(
                     id_usuario=form.cleaned_data['id_usuario'],
@@ -597,6 +649,8 @@ class AgendaPacienteRehabCreate(View):
                 dateSTR=datetime.datetime.now().strftime("%d-%m-%Y"),
                 form=form,
                 error_message=error_message,
+                selected_tratamiento_id=request.POST.get('id_tratamiento'),
+                selected_profesional_id=request.POST.get('profesional'),
             ),
         )
 
@@ -680,6 +734,29 @@ class AgendaPacienteRehabUpdate(View):
                 if observaciones:
                     observaciones = observaciones.upper()
 
+                if not validar_agenda_en_disponibilidad(
+                    form=form,
+                    profesional_area=profesionalArea,
+                    id_dia=form.cleaned_data['id_dia'],
+                    fecha=agenda.fecha,
+                    hora_inicio=hora_inicio,
+                    hora_fin=hora_fin,
+                ):
+                    return render(
+                        request,
+                        'agenda/rehab_update.html',
+                        dict(
+                            form=form,
+                            paciente=agenda.id_paciente_area.id_paciente,
+                            tratamientosActivos=tratamientoRepo.filter_by_activo(),
+                            profesional_old=agenda.id_profesional_area.id_profesional,
+                            tratamiento_old=agenda.id_tratamiento_rehab,
+                            error_message=error_message,
+                            selected_tratamiento_id=tratamiento_id,
+                            selected_profesional_id=profesional_id,
+                        ),
+                    )
+
                 agendaRehabRepo.update(
                     agenda=agenda,
                     hora_inicio=hora_inicio,
@@ -705,6 +782,8 @@ class AgendaPacienteRehabUpdate(View):
                 profesional_old=agenda.id_profesional_area.id_profesional,
                 tratamiento_old=agenda.id_tratamiento_rehab,
                 error_message=error_message,
+                selected_tratamiento_id=request.POST.get('id_tratamiento'),
+                selected_profesional_id=request.POST.get('profesional'),
             ),
         )
 
@@ -720,6 +799,91 @@ class AgendaRehabDelete(View):
         today = date.today()
         agendaRehabRepo.deactivate(agenda=agenda, fecha_fin=today)
         return redirect( path )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class DisponibilidadProfesionalRehabList(View):
+
+    def get(self, request, id):
+        profesional = profesionalRepo.get_by_id(id=id)
+        if not profesional:
+            return redirect('error')
+        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(
+            id_profesional=profesional.id,
+            id_area=REHABILITACION_AREA_ID,
+        )
+        if not profesionalArea:
+            return redirect('error')
+
+        form = DisponibilidadProfesionalRehabForm(initial={
+            'fecha_inicio': date.today(),
+        })
+        disponibilidades = disponibilidadRehabRepo.filter_by_profesional_area(
+            id_profesional_area=profesionalArea.id,
+        )
+        return render(
+            request,
+            'agenda/disponibilidad_profesional_rehab.html',
+            dict(
+                profesional=profesional,
+                form=form,
+                disponibilidades=disponibilidades,
+            )
+        )
+
+    def post(self, request, id):
+        profesional = profesionalRepo.get_by_id(id=id)
+        if not profesional:
+            return redirect('error')
+        profesionalArea = profesionalAreaRepo.filter_by_profesional_id(
+            id_profesional=profesional.id,
+            id_area=REHABILITACION_AREA_ID,
+        )
+        if not profesionalArea:
+            return redirect('error')
+
+        form = DisponibilidadProfesionalRehabForm(request.POST)
+        if form.is_valid():
+            disponibilidadRehabRepo.create(
+                id_profesional_area=profesionalArea,
+                id_dia=form.cleaned_data['id_dia'],
+                hora_inicio=form.cleaned_data['hora_inicio'],
+                hora_fin=form.cleaned_data['hora_fin'],
+                fecha_inicio=form.cleaned_data['fecha_inicio'],
+                fecha_fin=form.cleaned_data['fecha_fin'],
+                id_usuario=request.user,
+            )
+            messages.success(request, "Disponibilidad horaria cargada.")
+            return redirect('disponibilidad_profesional_rehab', profesional.id)
+
+        disponibilidades = disponibilidadRehabRepo.filter_by_profesional_area(
+            id_profesional_area=profesionalArea.id,
+        )
+        return render(
+            request,
+            'agenda/disponibilidad_profesional_rehab.html',
+            dict(
+                profesional=profesional,
+                form=form,
+                disponibilidades=disponibilidades,
+            )
+        )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class DisponibilidadProfesionalRehabDelete(View):
+    http_method_names = ["post"]
+
+    def post(self, request, id):
+        disponibilidad = disponibilidadRehabRepo.get_by_id(id=id)
+        if not disponibilidad:
+            return redirect('profesional_rehab_list')
+        profesional_id = disponibilidad.id_profesional_area.id_profesional_id
+        disponibilidadRehabRepo.deactivate(disponibilidad)
+        messages.success(request, "Disponibilidad horaria eliminada.")
+        return redirect('disponibilidad_profesional_rehab', profesional_id)
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

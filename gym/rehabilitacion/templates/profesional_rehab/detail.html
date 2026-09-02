@@ -61,6 +61,9 @@
             <a href="{% url 'agenda_profesional_rehab' profesional.id %}" class="btn btn-outline-primary w-100 mb-2">
                 <i class="bi bi-calendar me-2"></i> Ver Agenda
             </a>
+            <a href="{% url 'disponibilidad_profesional_rehab' profesional.id %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-clock me-2"></i> Disponibilidad
+            </a>
             <a href="{% url 'profesional_delete' profesional.id %}" class="btn btn-danger w-100 mb-2"
                 onclick="return confirm('Esto va a borrar el Profesional');">
                 <i class="bi bi-trash me-2"></i> Eliminar

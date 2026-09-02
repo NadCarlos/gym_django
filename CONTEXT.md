@@ -24,6 +24,10 @@ _Avoid_: Reserva, slot
 The schedule availability and appointment structure for a professional, service or area.
 _Avoid_: Calendario when referring to the domain object
 
+**Disponibilidad Horaria**:
+The recurring time windows in which a rehabilitation professional can receive assigned agenda entries.
+_Avoid_: Turno, Agenda when referring only to the professional's available capacity
+
 **Asistencia**:
 The record that a patient attended or checked in for a scheduled or expected activity.
 _Avoid_: Presencia, check-in in domain text

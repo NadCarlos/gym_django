@@ -12,6 +12,9 @@
     {% if form.errors %}
     <div class="alert alert-danger text-center" role="alert">Por favor corrija los errores del formulario.</div>
     {% endif %}
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger text-center" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
 
     <div class="card p-4 shadow-sm">
         <form method="post">
@@ -54,7 +57,7 @@
                         <option value="">Seleccione un tratamiento</option>
                         {% for tratamiento in tratamientosActivos %}
                             <option value="{{ tratamiento.id }}"
-                                {% if tratamiento.id == tratamiento_old.id %}selected{% endif %}>
+                                {% if selected_tratamiento_id|stringformat:"s" == tratamiento.id|stringformat:"s" or not selected_tratamiento_id and tratamiento.id == tratamiento_old.id %}selected{% endif %}>
                                 {{ tratamiento.nombre }}
                             </option>
                         {% endfor %}
@@ -70,7 +73,7 @@
                         class="form-control custom-class"
                         id="select-profesional"
                         name="profesional"
-                        data-profesional-old="{{ profesional_old.id }}"
+                        data-profesional-old="{{ selected_profesional_id|default:profesional_old.id }}"
                         disabled
                         required
                     >

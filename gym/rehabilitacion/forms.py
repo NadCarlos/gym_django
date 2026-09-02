@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Min, Case, When, IntegerField
 from rehabilitacion.models import (
     AgendaRehab,
+    DisponibilidadProfesionalRehab,
     Alta,
     AltaEtiologico,
     AltaFuncional,
@@ -402,6 +403,42 @@ class AgendaRehabUpdateForm(forms.ModelForm):
             'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
             'observaciones': forms.TextInput(attrs={'class': 'form-control custom-class'}),
         }
+
+
+class DisponibilidadProfesionalRehabForm(forms.ModelForm):
+
+    class Meta:
+        model = DisponibilidadProfesionalRehab
+        fields = [
+            'id_dia',
+            'hora_inicio',
+            'hora_fin',
+            'fecha_inicio',
+            'fecha_fin',
+        ]
+
+        widgets = {
+            'id_dia': forms.Select(attrs={'class': 'form-control custom-class'}),
+            'hora_inicio': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'hora_fin': forms.TimeInput(format='%H:%M', attrs={'class': 'form-control', 'placeholder': 'HH:MM', 'type': 'time'}),
+            'fecha_inicio': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_fin': forms.DateInput(format=('%Y-%m-%d'), attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        hora_inicio = cleaned_data.get('hora_inicio')
+        hora_fin = cleaned_data.get('hora_fin')
+        fecha_inicio = cleaned_data.get('fecha_inicio')
+        fecha_fin = cleaned_data.get('fecha_fin')
+
+        if hora_inicio and hora_fin and hora_fin <= hora_inicio:
+            self.add_error('hora_fin', 'La hora de fin debe ser posterior a la hora de inicio.')
+
+        if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+            self.add_error('fecha_fin', 'La fecha de fin no puede ser anterior a la fecha de inicio.')
+
+        return cleaned_data
 
 
 class TurnoCreateForm(forms.ModelForm):

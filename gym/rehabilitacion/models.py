@@ -605,6 +605,79 @@ class AgendaRehab(models.Model):
         return  self.id_paciente_area.id_paciente.nombre
 
 
+class DisponibilidadProfesionalRehab(models.Model):
+
+    id_profesional_area = models.ForeignKey(
+        ProfesionalArea,
+        on_delete=models.RESTRICT,
+        related_name='disponibilidades_rehab',
+        null=False,
+        blank=False,
+    )
+
+    id_dia = models.ForeignKey(
+        Dia,
+        on_delete=models.RESTRICT,
+        related_name='disponibilidades_profesional_rehab',
+        null=False,
+        blank=False,
+    )
+
+    hora_inicio = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Inicio",
+    )
+
+    hora_fin = models.TimeField(
+        null=False,
+        blank=False,
+        verbose_name="Hora de Fin",
+    )
+
+    fecha_inicio = models.DateField(
+        null=False,
+        blank=False,
+        verbose_name='Inicio de disponibilidad',
+    )
+
+    fecha_fin = models.DateField(
+        null=True,
+        blank=True,
+        verbose_name='Fin de disponibilidad',
+    )
+
+    momento_de_carga = models.DateTimeField(
+        auto_now_add=True,
+        null=False,
+        blank=False,
+    )
+
+    id_usuario = models.ForeignKey(
+        User,
+        on_delete=models.RESTRICT,
+        related_name='usuario_disponibilidad_profesional_rehab',
+    )
+
+    activo = models.BooleanField(
+        default=1,
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=["id_profesional_area", "activo", "id_dia", "hora_inicio"],
+                name="disp_rehab_prof_dia_idx",
+            ),
+        ]
+
+    def __str__(self):
+        profesional = self.id_profesional_area.id_profesional
+        return f"{profesional.apellido}, {profesional.nombre} - {self.id_dia.nombre}"
+
+
 class AsistenciaRehab(models.Model):
 
     fecha = models.DateField(

@@ -14,6 +14,7 @@ from rehabilitacion.models import(
     AltaFuncional,
     AltaTipoDiscapacidad,
     AgendaRehab,
+    DisponibilidadProfesionalRehab,
     AsistenciaRehab,
     AsistenciaRehabTeorica,
     Informe,
@@ -123,6 +124,19 @@ class AltaFuncionalAdmin(admin.ModelAdmin):
 class AgendaRehabAdmin(admin.ModelAdmin):
     list_display = (
         'id_paciente_area',
+    )
+
+
+@admin.register(DisponibilidadProfesionalRehab)
+class DisponibilidadProfesionalRehabAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_profesional_area',
+        'id_dia',
+        'hora_inicio',
+        'hora_fin',
+        'fecha_inicio',
+        'fecha_fin',
+        'activo',
     )
 
 
