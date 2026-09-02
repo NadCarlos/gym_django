@@ -98,6 +98,7 @@ from rehabilitacion.views.agenda import (
     AgendaPacienteRehabDetail,
     DisponibilidadProfesionalRehabDelete,
     DisponibilidadProfesionalRehabList,
+    DisponibilidadProfesionalRehabUpdate,
 )
 
 from rehabilitacion.views.turno import (
@@ -245,6 +246,7 @@ agenda = [
     path(route='agenda_paciente_rehab_update/<int:id>',view=AgendaPacienteRehabUpdate.as_view(), name='agenda_paciente_rehab_update'),
     path(route='agenda_paciente_rehab_delete/<int:id>',view=AgendaRehabDelete.as_view(), name='agenda_paciente_rehab_delete'),
     path(route='disponibilidad_profesional_rehab/<int:id>',view=DisponibilidadProfesionalRehabList.as_view(), name='disponibilidad_profesional_rehab'),
+    path(route='disponibilidad_profesional_rehab/update/<int:id>',view=DisponibilidadProfesionalRehabUpdate.as_view(), name='disponibilidad_profesional_rehab_update'),
     path(route='disponibilidad_profesional_rehab/delete/<int:id>',view=DisponibilidadProfesionalRehabDelete.as_view(), name='disponibilidad_profesional_rehab_delete'),
 ]
 

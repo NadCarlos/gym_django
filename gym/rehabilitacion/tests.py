@@ -356,6 +356,26 @@ class DisponibilidadProfesionalRehabRepositoryTests(TestCase):
 
         self.assertFalse(permitido)
 
+    def test_updates_existing_disponibilidad(self):
+        disponibilidad = self.create_disponibilidad(self.dia_lunes, time(8, 0), time(12, 0))
+
+        actualizada = self.repository.update(
+            disponibilidad=disponibilidad,
+            id_dia=self.dia_martes,
+            hora_inicio=time(14, 0),
+            hora_fin=time(18, 0),
+            fecha_inicio=date(2026, 2, 1),
+            fecha_fin=date(2026, 12, 31),
+        )
+
+        self.assertEqual(actualizada.pk, disponibilidad.pk)
+        disponibilidad.refresh_from_db()
+        self.assertEqual(disponibilidad.id_dia, self.dia_martes)
+        self.assertEqual(disponibilidad.hora_inicio, time(14, 0))
+        self.assertEqual(disponibilidad.hora_fin, time(18, 0))
+        self.assertEqual(disponibilidad.fecha_inicio, date(2026, 2, 1))
+        self.assertEqual(disponibilidad.fecha_fin, date(2026, 12, 31))
+
     def create_disponibilidad(self, dia, hora_inicio, hora_fin):
         return DisponibilidadProfesionalRehab.objects.create(
             id_profesional_area=self.profesional_area,

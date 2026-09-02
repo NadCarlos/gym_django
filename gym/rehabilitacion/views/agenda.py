@@ -873,6 +873,65 @@ class DisponibilidadProfesionalRehabList(View):
 
 @method_decorator(login_required(login_url='login'), name='dispatch')
 @method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
+class DisponibilidadProfesionalRehabUpdate(View):
+
+    def get(self, request, id):
+        disponibilidad = disponibilidadRehabRepo.get_by_id(id=id)
+        if not disponibilidad:
+            return redirect('profesional_rehab_list')
+
+        profesional = disponibilidad.id_profesional_area.id_profesional
+        form = DisponibilidadProfesionalRehabForm(instance=disponibilidad)
+        disponibilidades = disponibilidadRehabRepo.filter_by_profesional_area(
+            id_profesional_area=disponibilidad.id_profesional_area_id,
+        )
+        return render(
+            request,
+            'agenda/disponibilidad_profesional_rehab.html',
+            dict(
+                profesional=profesional,
+                form=form,
+                disponibilidades=disponibilidades,
+                disponibilidad_editando=disponibilidad,
+            )
+        )
+
+    def post(self, request, id):
+        disponibilidad = disponibilidadRehabRepo.get_by_id(id=id)
+        if not disponibilidad:
+            return redirect('profesional_rehab_list')
+
+        profesional = disponibilidad.id_profesional_area.id_profesional
+        form = DisponibilidadProfesionalRehabForm(request.POST, instance=disponibilidad)
+        if form.is_valid():
+            disponibilidadRehabRepo.update(
+                disponibilidad=disponibilidad,
+                id_dia=form.cleaned_data['id_dia'],
+                hora_inicio=form.cleaned_data['hora_inicio'],
+                hora_fin=form.cleaned_data['hora_fin'],
+                fecha_inicio=form.cleaned_data['fecha_inicio'],
+                fecha_fin=form.cleaned_data['fecha_fin'],
+            )
+            messages.success(request, "Disponibilidad horaria actualizada.")
+            return redirect('disponibilidad_profesional_rehab', profesional.id)
+
+        disponibilidades = disponibilidadRehabRepo.filter_by_profesional_area(
+            id_profesional_area=disponibilidad.id_profesional_area_id,
+        )
+        return render(
+            request,
+            'agenda/disponibilidad_profesional_rehab.html',
+            dict(
+                profesional=profesional,
+                form=form,
+                disponibilidades=disponibilidades,
+                disponibilidad_editando=disponibilidad,
+            )
+        )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion"), name="dispatch")
 class DisponibilidadProfesionalRehabDelete(View):
     http_method_names = ["post"]
 

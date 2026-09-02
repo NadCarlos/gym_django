@@ -32,7 +32,10 @@
     {% endif %}
 
     <div class="card p-4 shadow-sm mb-4">
-        <form method="post" class="row g-3 align-items-end">
+        <form method="post" class="row g-3 align-items-end"
+            {% if disponibilidad_editando %}
+            action="{% url 'disponibilidad_profesional_rehab_update' disponibilidad_editando.id %}"
+            {% endif %}>
             {% csrf_token %}
             <div class="col-md-2">
                 <label class="form-label">Dia</label>
@@ -61,8 +64,14 @@
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-success w-100">
-                    <i class="bi bi-save"></i> Guardar
+                    <i class="bi bi-save"></i>
+                    {% if disponibilidad_editando %}Actualizar{% else %}Guardar{% endif %}
                 </button>
+                {% if disponibilidad_editando %}
+                <a href="{% url 'disponibilidad_profesional_rehab' profesional.id %}" class="btn btn-outline-secondary w-100 mt-2">
+                    Cancelar
+                </a>
+                {% endif %}
             </div>
         </form>
     </div>
@@ -88,9 +97,12 @@
                     <td>{{ disponibilidad.fecha_inicio }}</td>
                     <td>{{ disponibilidad.fecha_fin|default:"Sin fin" }}</td>
                     <td>
-                        <form method="post" action="{% url 'disponibilidad_profesional_rehab_delete' disponibilidad.id %}" onsubmit="return confirm('Seguro que quieres eliminar esta disponibilidad?');">
+                        <a href="{% url 'disponibilidad_profesional_rehab_update' disponibilidad.id %}" class="btn btn-link p-0 me-2" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <form method="post" action="{% url 'disponibilidad_profesional_rehab_delete' disponibilidad.id %}" class="d-inline" onsubmit="return confirm('Seguro que quieres eliminar esta disponibilidad?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-link p-0">
+                            <button type="submit" class="btn btn-link p-0" title="Eliminar">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </form>

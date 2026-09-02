@@ -69,6 +69,31 @@ class DisponibilidadProfesionalRehabRepository:
             id_usuario=id_usuario,
         )
 
+    def update(
+        self,
+        disponibilidad: DisponibilidadProfesionalRehab,
+        id_dia: Dia,
+        hora_inicio,
+        hora_fin,
+        fecha_inicio,
+        fecha_fin,
+    ) -> DisponibilidadProfesionalRehab:
+        disponibilidad.id_dia = id_dia
+        disponibilidad.hora_inicio = hora_inicio
+        disponibilidad.hora_fin = hora_fin
+        disponibilidad.fecha_inicio = fecha_inicio
+        disponibilidad.fecha_fin = fecha_fin
+        disponibilidad.save(
+            update_fields=[
+                "id_dia",
+                "hora_inicio",
+                "hora_fin",
+                "fecha_inicio",
+                "fecha_fin",
+            ]
+        )
+        return disponibilidad
+
     def deactivate(self, disponibilidad: DisponibilidadProfesionalRehab) -> None:
         disponibilidad.activo = False
         disponibilidad.save(update_fields=["activo"])
