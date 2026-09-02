@@ -1,25 +1,51 @@
-document.addEventListener("submit", function (event) {
-    const form = event.target;
-    if (!(form instanceof HTMLFormElement)) {
-        return;
-    }
-
-    if ((form.method || "get").toLowerCase() !== "post") {
-        return;
-    }
-
-    if (form.dataset.submitting === "true") {
-        event.preventDefault();
-        return;
-    }
-
-    form.dataset.submitting = "true";
-    window.setTimeout(function () {
-        form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach(function (button) {
-            button.disabled = true;
+(function () {
+    const submitButtonSelector = 'button[type="submit"], input[type="submit"]';
+    function restoreSubmitState() {
+        document.querySelectorAll('form[data-submitting="true"]').forEach(function (form) {
+            delete form.dataset.submitting;
         });
-    }, 0);
-});
+
+        document.querySelectorAll(submitButtonSelector).forEach(function (button) {
+            const wasDisabledByScript = button.dataset.preventDoubleSubmitDisabled === "true";
+
+            if (wasDisabledByScript) {
+                button.disabled = false;
+                delete button.dataset.preventDoubleSubmitDisabled;
+                button.removeAttribute("data-prevent-double-submit-disabled");
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", restoreSubmitState);
+    window.addEventListener("pageshow", restoreSubmitState);
+
+    document.addEventListener("submit", function (event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+
+        if ((form.method || "get").toLowerCase() !== "post") {
+            return;
+        }
+
+        if (form.dataset.submitting === "true") {
+            event.preventDefault();
+            return;
+        }
+
+        form.dataset.submitting = "true";
+        window.setTimeout(function () {
+            form.querySelectorAll(submitButtonSelector).forEach(function (button) {
+                if (!button.disabled) {
+                    button.dataset.preventDoubleSubmitDisabled = "true";
+                    button.setAttribute("data-prevent-double-submit-disabled", "true");
+                    button.disabled = true;
+                }
+            });
+        }, 0);
+    });
+})();
 
 window.submitPostWithCsrf = function (url, fields) {
     const form = document.createElement("form");

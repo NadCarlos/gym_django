@@ -37,6 +37,9 @@
                 <label class="d-flex justify-content-end col-sm-2 col-form-label">Hora Fin:</label>
                 <div class="col-sm-6">
                     {{ form.hora_fin }}
+                    <div id="hora-fin-error" class="invalid-feedback">
+                        La hora de fin debe ser posterior a la hora de inicio.
+                    </div>
                 </div>
                 <div class="col-sm-4">
                 </div>
@@ -82,7 +85,7 @@
             
             {{ form.id_usuario }}
             <div class="d-flex justify-content-center">
-                <button type="submit" class=" btn btn-success">
+                <button type="submit" id="btn-guardar-agenda" class=" btn btn-success">
                     <i class="bi bi-save"></i> Guardar
                 </button>
             </div>
@@ -94,6 +97,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectTratamiento = document.getElementById("select-tratamiento");
     const selectProfesional = document.getElementById("select-profesional");
     const profesionalSeleccionado = "{{ selected_profesional_id|default:'' }}";
+    const horaInicio = document.querySelector('[name="hora_inicio"]');
+    const horaFin = document.querySelector('[name="hora_fin"]');
+    const horaFinError = document.getElementById("hora-fin-error");
+    const botonGuardar = document.getElementById("btn-guardar-agenda");
+
+    function validarRangoHorario() {
+        if (!horaInicio || !horaFin || !botonGuardar) {
+            return true;
+        }
+
+        const horaInicioValue = horaInicio.value;
+        const horaFinValue = horaFin.value;
+        const rangoInvalido = horaInicioValue && horaFinValue && horaInicioValue >= horaFinValue;
+
+        horaFin.classList.toggle("is-invalid", Boolean(rangoInvalido));
+        horaFin.setCustomValidity(rangoInvalido ? "La hora de fin debe ser posterior a la hora de inicio." : "");
+
+        if (horaFinError) {
+            horaFinError.style.display = rangoInvalido ? "block" : "";
+        }
+
+        botonGuardar.disabled = Boolean(rangoInvalido);
+        return !rangoInvalido;
+    }
 
     function cargarProfesionales() {
         const tratamientoId = selectTratamiento.value;
@@ -126,7 +153,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     selectTratamiento.addEventListener("change", cargarProfesionales);
+    if (horaInicio && horaFin) {
+        horaInicio.addEventListener("input", validarRangoHorario);
+        horaInicio.addEventListener("change", validarRangoHorario);
+        horaFin.addEventListener("input", validarRangoHorario);
+        horaFin.addEventListener("change", validarRangoHorario);
+    }
+
     cargarProfesionales();
+    validarRangoHorario();
 });
 </script>
 {% endblock %}
