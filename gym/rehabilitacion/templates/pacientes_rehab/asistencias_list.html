@@ -134,7 +134,7 @@
                             aria-controls="agenda-paciente-{{ paciente.id }}">
                             <i class="bi bi-chevron-down"></i> Detalles
                         </button>
-                        {% if paciente.asistencia_completa %}
+                        {% if paciente.asistencia_completa or paciente.asistencia_parcial %}
                             <button type="button" class="btn btn-success btn-sm" disabled>
                                 <i class="bi bi-check2"></i> Asistencia cargada
                             </button>
