@@ -1,6 +1,4 @@
 {% extends 'inicio/base.html' %}
-{% load auth_extras %}
-
 {% block content %}
 <div class="content">
     <div class="container-fluid">
@@ -100,7 +98,7 @@
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
-                                                        {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
+                                                        {% if puede_gestionar_agenda %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
                                                                 <i class="bi bi-pencil"></i>
@@ -113,7 +111,7 @@
                                                             </form>
                                                         </td>
                                                         {% endif %}
-                                                        {% if request.user|has_group:"Profesional" %}
+                                                        {% if puede_ver_detalle_profesional %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_detail' x.id %}">
                                                                 <i class="bi bi-pencil"></i>
@@ -163,7 +161,7 @@
                                                         <td style="width:15%">{{ x.hora_fin }}</td>
                                                         <td style="width:52%" class="apellido">{{ x.id_paciente_area.id_paciente.apellido|truncatechars:13 }}, {{ x.id_paciente_area.id_paciente.nombre|truncatechars:5 }}</td>
                                                         <td style="width:6%" class="obs text-center">{{ x.observaciones|default_if_none:"" }}</td>
-                                                        {% if request.user|has_group:"Rehabilitación" or user.is_staff %}
+                                                        {% if puede_gestionar_agenda %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_update' x.id %}">
                                                                 <i class="bi bi-pencil"></i>
@@ -176,7 +174,7 @@
                                                             </form>
                                                         </td>
                                                         {% endif %}
-                                                        {% if request.user|has_group:"Profesional" %}
+                                                        {% if puede_ver_detalle_profesional %}
                                                         <td style="width:6%" class="accion">
                                                             <a href="{% url 'agenda_paciente_rehab_detail' x.id %}">
                                                                 <i class="bi bi-pencil"></i>

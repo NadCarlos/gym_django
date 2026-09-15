@@ -6,10 +6,11 @@ from unittest.mock import patch
 from types import SimpleNamespace
 from uuid import uuid4
 
-from django.contrib.auth.models import User
-from django.db import OperationalError
+from django.contrib.auth.models import Group, User
+from django.db import OperationalError, connection
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.utils import timezone
 
 from administracion.models import (
@@ -45,6 +46,7 @@ from rehabilitacion.models import (
     Situacion,
     TipoDiscapacidad,
     Turno,
+    AgendaRehab,
     DisponibilidadProfesionalRehab,
 )
 from rehabilitacion.repositories.disponibilidad_profesional_rehab import DisponibilidadProfesionalRehabRepository
@@ -592,6 +594,97 @@ class AgendaProfesionalRehabTests(SimpleTestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/error/")
+
+
+@override_settings(DEBUG=True)
+class AgendaProfesionalRehabQueryTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.factory = RequestFactory()
+        cls.user = User.objects.create_user(username="agenda-profesional-query")
+        Group.objects.create(name="Rehabilitación")
+        Group.objects.create(name="Profesional")
+
+        cls.area = Area.objects.create(id=2, nombre="Rehabilitacion")
+        cls.dias = [
+            Dia.objects.create(id=dia_id, nombre=nombre)
+            for dia_id, nombre in (
+                (1, "Lunes"),
+                (2, "Martes"),
+                (3, "Miércoles"),
+                (4, "Jueves"),
+                (5, "Viernes"),
+            )
+        ]
+        tratamiento = Tratamiento.objects.create(nombre="Kinesiologia")
+        profesional = Profesional.objects.create(
+            nombre="Ana",
+            apellido="Rehab",
+            numero_dni="11111111",
+            matricula="MP1",
+            fecha_nacimiento=date(1985, 1, 1),
+            id_usuario=cls.user,
+        )
+        cls.profesional_area = ProfesionalArea.objects.create(
+            id_area=cls.area,
+            id_profesional=profesional,
+            id_usuario=cls.user,
+        )
+        cls.agenda_defaults = {
+            "fecha": date(2026, 1, 1),
+            "hora_inicio": time(8, 0),
+            "hora_fin": time(9, 0),
+            "id_tratamiento_rehab": tratamiento,
+            "id_profesional_area": cls.profesional_area,
+            "tiempo": 1,
+            "id_usuario": cls.user,
+        }
+
+    def create_agendas(self, count):
+        for index in range(count):
+            paciente = Paciente.objects.create(
+                nombre=f"Paciente{index}",
+                apellido=f"Apellido{index}",
+                numero_dni=f"{index:08d}",
+                fecha_nacimiento=date(1990, 1, 1),
+                id_usuario=self.user,
+            )
+            paciente_area = PacienteArea.objects.create(
+                id_area=self.area,
+                id_paciente=paciente,
+                id_usuario=self.user,
+            )
+            AgendaRehab.objects.create(
+                **self.agenda_defaults,
+                id_paciente_area=paciente_area,
+                id_dia=self.dias[index % len(self.dias)],
+            )
+
+    def agenda_query_count(self):
+        request = self.factory.get(
+            f"/rehabilitacion/agenda_profesional_rehab/{self.profesional_area.id_profesional_id}"
+        )
+        request.user = self.user
+        request.session = {}
+
+        with CaptureQueriesContext(connection) as captured:
+            response = AgendaProfesionalRehab().get(
+                request,
+                id=self.profesional_area.id_profesional_id,
+            )
+
+        self.assertEqual(response.status_code, 200)
+        return len(captured)
+
+    def test_query_count_does_not_grow_per_agenda_row(self):
+        self.create_agendas(1)
+        one_row_queries = self.agenda_query_count()
+
+        AgendaRehab.objects.all().delete()
+        self.create_agendas(6)
+        six_row_queries = self.agenda_query_count()
+
+        self.assertLessEqual(six_row_queries - one_row_queries, 2)
 
 
 

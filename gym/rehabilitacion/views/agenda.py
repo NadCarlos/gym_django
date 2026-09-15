@@ -982,6 +982,16 @@ class AgendaProfesionalRehab(View):
         ).annotate(
             asistencia_cargada=Exists(asistencia_cargada),
         )
+        grupos_usuario = set(
+            request.user.groups.filter(
+                name__in=["Rehabilitacion", "Rehabilitación", "Profesional"]
+            ).values_list("name", flat=True)
+        )
+        puede_gestionar_agenda = (
+            request.user.is_staff
+            or "Rehabilitacion" in grupos_usuario
+            or "Rehabilitación" in grupos_usuario
+        )
         dias = [
             (1, "Lunes"),
             (2, "Martes"),
@@ -1001,6 +1011,8 @@ class AgendaProfesionalRehab(View):
                 dia_actual=today.weekday() + 1,
                 hora_limite_tarde=time(14, 0),
                 dias=dias,
+                puede_gestionar_agenda=puede_gestionar_agenda,
+                puede_ver_detalle_profesional="Profesional" in grupos_usuario,
             )
         )
 
