@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from utils.validators import validate_date_not_before_1900
 from administracion.models import Paciente
 
 
@@ -27,6 +28,7 @@ class Beneficiario(models.Model):
         )
     
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -60,6 +62,7 @@ class Factura(models.Model):
         )
     
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name="fecha"
@@ -96,6 +99,7 @@ class Factura(models.Model):
 class OrdenPago(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name="fecha"
@@ -139,6 +143,7 @@ class OrdenPago(models.Model):
         )
     
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,

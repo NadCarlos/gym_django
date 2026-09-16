@@ -23,6 +23,7 @@ from rehabilitacion.models import (
 )
 from administracion.models import Paciente, PacienteArea, Profesional, ProfesionalTratamiento, Tratamiento
 from administracion.repositories.profesional import ProfesionalRepository
+from utils.validators import validate_date_not_before_1900
 
 
 profesionalRepo = ProfesionalRepository()
@@ -202,9 +203,11 @@ class PacienteRehabilitacionSituacionForm(forms.ModelForm):
 class AltaCreateForm(forms.ModelForm):
 
     fecha = forms.DateField(
+        validators=[validate_date_not_before_1900],
         widget=forms.DateInput(attrs={
             'type': 'date',
-            'class': 'form-control'
+            'class': 'form-control',
+            'min': '1900-01-01',
         })
     )
 

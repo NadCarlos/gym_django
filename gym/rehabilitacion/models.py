@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from utils.validators import validate_date_not_before_1900
 import os
 
 from administracion.models import (
@@ -120,12 +121,14 @@ class PacienteRehabilitacion(models.Model):
     )
 
     vencimiento_certificado = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='vencimiento_certificado',
     )
 
     fecha_junta = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='fecha_junta',
@@ -139,6 +142,7 @@ class PacienteRehabilitacion(models.Model):
     )
 
     vencimiento_presupuesto = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='vencimiento_presupuesto',
@@ -174,6 +178,7 @@ class PacienteRehabilitacion(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -245,6 +250,7 @@ class PacienteRehabilitacionSituacion(models.Model):
     )
 
     fecha = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
     )
@@ -345,6 +351,7 @@ class DiagnosticoFuncional(models.Model):
 class Alta(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='fecha_',
@@ -359,6 +366,7 @@ class Alta(models.Model):
     )
 
     fecha_alta = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='fecha_alta',
@@ -503,12 +511,14 @@ class AltaFuncional(models.Model):
 class AgendaRehab(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha_rehab',
     )
 
     fecha_fin = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='Fecha_fin_rehab',
@@ -565,6 +575,7 @@ class AgendaRehab(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -636,18 +647,21 @@ class DisponibilidadProfesionalRehab(models.Model):
     )
 
     fecha_inicio = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Inicio de disponibilidad',
     )
 
     fecha_fin = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='Fin de disponibilidad',
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -681,6 +695,7 @@ class DisponibilidadProfesionalRehab(models.Model):
 class AsistenciaRehab(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         blank=False,
         null=False,
@@ -695,6 +710,7 @@ class AsistenciaRehab(models.Model):
         )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         blank=False,
         null=False,
@@ -726,6 +742,7 @@ class AsistenciaRehabTeorica(models.Model):
     )
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         blank=False,
         null=False,
@@ -770,6 +787,7 @@ class Turno(models.Model):
     )
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha turno',
@@ -803,6 +821,7 @@ class Turno(models.Model):
     )
 
     fecha_anulacion = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='Fecha anulacion',
@@ -872,6 +891,7 @@ class TipoInforme(models.Model):
 class Informe(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha_informe_rehab',

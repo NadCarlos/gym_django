@@ -49,6 +49,7 @@ from rehabilitacion.models import (
     AgendaRehab,
     DisponibilidadProfesionalRehab,
 )
+from rehabilitacion.forms import AltaCreateForm
 from rehabilitacion.repositories.disponibilidad_profesional_rehab import DisponibilidadProfesionalRehabRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
@@ -187,6 +188,21 @@ class LockErrorMiddlewareTests(SimpleTestCase):
         )
 
         self.assertEqual(response.status_code, 503)
+
+
+class RehabilitationFormValidationTests(TestCase):
+    def test_alta_create_form_rejects_dates_before_1900(self):
+        form = AltaCreateForm(
+            data={
+                "fecha": "1899-12-31",
+                "id_paciente_rehabilitacion": "1",
+                "tipos_discapacidad": [],
+                "diagnosticos_etiologicos": [],
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("fecha", form.errors)
 
 
 class CriticalWriteIdempotencyTests(TestCase):

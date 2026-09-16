@@ -1,6 +1,10 @@
 from datetime import date
 
+from django import forms
+from django.apps import apps
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.test import TestCase
 
 from administracion.models import (
@@ -17,6 +21,7 @@ from administracion.models import (
     Sexo,
 )
 from administracion.repositories.paciente import PacienteRepository
+from utils.validators import validate_date_not_before_1900
 
 
 class PatientExportQueryTests(TestCase):
@@ -72,3 +77,34 @@ class PatientExportQueryTests(TestCase):
                 )
                 for paciente in pacientes
             ]
+
+
+class DateFieldValidationTests(TestCase):
+    def test_rejects_dates_before_1900(self):
+        with self.assertRaises(ValidationError):
+            validate_date_not_before_1900(date(1899, 12, 31))
+
+    def test_all_model_date_fields_use_minimum_date_validator(self):
+        missing_fields = []
+
+        for model in apps.get_models():
+            if model._meta.app_label not in {"administracion", "finanzas", "rehabilitacion"}:
+                continue
+
+            for field in model._meta.get_fields():
+                if isinstance(field, (models.DateField, models.DateTimeField)):
+                    if validate_date_not_before_1900 not in field.validators:
+                        missing_fields.append(f"{model.__name__}.{field.name}")
+
+        self.assertEqual(missing_fields, [])
+
+    def test_model_form_shows_validation_error_for_date_before_1900(self):
+        class PacienteBirthDateForm(forms.ModelForm):
+            class Meta:
+                model = Paciente
+                fields = ["fecha_nacimiento"]
+
+        form = PacienteBirthDateForm(data={"fecha_nacimiento": "1899-12-31"})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("fecha_nacimiento", form.errors)

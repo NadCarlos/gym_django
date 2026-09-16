@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from utils.validators import validate_date_not_before_1900
 
 
 class Pais(models.Model):
@@ -179,12 +180,14 @@ class Paciente(models.Model):
     )
 
     fecha_nacimiento = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name="Fecha de nacimiento",
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -253,12 +256,14 @@ class Paciente(models.Model):
 class PrestacionPaciente(models.Model):
 
     fecha_inicio = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Inicio de la prestacion'
     )
 
     fecha_fin = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='Fin de la prestacion'
@@ -353,6 +358,7 @@ class Profesional(models.Model):
     )
     
     fecha_nacimiento = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name="Fecha de nacimiento",
@@ -375,6 +381,7 @@ class Profesional(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -436,6 +443,7 @@ class ProfesionalTratamiento(models.Model):
     )
 
     fecha_inicio = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Inicio del Tratamiento'
@@ -467,12 +475,14 @@ class Dia(models.Model):
 class Agenda(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha',
     )
 
     fecha_fin = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=True,
         blank=True,
         verbose_name='Fecha',
@@ -517,6 +527,7 @@ class Agenda(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -553,6 +564,7 @@ class Agenda(models.Model):
 class Asistencia(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         blank=False,
         null=False,
@@ -567,6 +579,7 @@ class Asistencia(models.Model):
         )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         blank=False,
         null=False,
@@ -614,6 +627,7 @@ class TipoPago(models.Model):
 class Pago(models.Model):
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha',
@@ -642,6 +656,7 @@ class Pago(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -688,6 +703,7 @@ class Plan(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -722,6 +738,7 @@ class PacientePlan(models.Model):
     )
 
     fecha = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='Fecha',
@@ -734,6 +751,7 @@ class PacientePlan(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -749,6 +767,7 @@ class PacientePlan(models.Model):
 class Cuota(models.Model):
 
     imputado = models.DateField(
+        validators=[validate_date_not_before_1900],
         null=False,
         blank=False,
         verbose_name='imputado',
@@ -843,6 +862,7 @@ class PacienteArea(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,
@@ -890,6 +910,7 @@ class ProfesionalArea(models.Model):
     )
 
     momento_de_carga = models.DateTimeField(
+        validators=[validate_date_not_before_1900],
         auto_now_add=True,
         null=False,
         blank=False,

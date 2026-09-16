@@ -180,7 +180,19 @@ class PacienteFisiatriaCreate(View):
     def post(self, request):
         form = PacienteCreateForm(request.POST)
         if not form.is_valid():
-            return redirect('error')
+            pacientes_dni_gym = pacienteRepo.dni_list_segun_area(id_area=1)
+            pacientes_dni_rehab = pacienteRepo.dni_list_segun_area(id_area=2)
+            pacientes_dni_area_actual = pacienteRepo.dni_list_segun_area(id_area=3)
+            return render(
+                request,
+                'pacientes_fisiatria/create.html',
+                dict(
+                    form=form,
+                    pacientes_dni_gym=json.dumps(pacientes_dni_gym),
+                    pacientes_dni_rehab=json.dumps(pacientes_dni_rehab),
+                    pacientes_dni_area_actual=json.dumps(pacientes_dni_area_actual),
+                )
+            )
 
         area = areaRepo.get_by_id(id=3)
         paciente, area_created = pacienteRepo.create_in_area(
