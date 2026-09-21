@@ -390,6 +390,9 @@
                     <a href="{% url 'paciente_altas_rehab_to_csv' paciente.id %}" class="btn btn-outline-success">
                         <i class="bi bi-floppy-fill"></i> Guardar Altas Excel
                     </a>
+                    <a href="{% url 'paciente_rehab_ficha_pdf' paciente.id %}" class="btn btn-outline-success">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Descargar Ficha PDF
+                    </a>
                 </div>
             </div>
             <div class="col-md-3 mb-3">

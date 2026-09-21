@@ -50,6 +50,7 @@ from rehabilitacion.repositories.derivador import DerivadorRepository
 from rehabilitacion.repositories.agenda_rehab import AgendaRehabRepository
 from rehabilitacion.repositories.asistencia import AsistenciaRehabRepository
 from rehabilitacion.repositories.situacion import PacienteRehabilitacionSituacionRepository
+from rehabilitacion.services.ficha_ingreso_pdf import render_ficha_ingreso_pdf
 
 
 estadoCertificadoRepo = EstadoCertificadoRepository()
@@ -312,14 +313,14 @@ class AsistenciasPacientesRehabList(View):
 class AsistenciasPacientesRehabListToCSV(View):
 
     def get(self, request):
-        hoy = date.today()
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = f'attachment; filename=lista_asistencias_{hoy}.xlsx'
         fecha_str = request.GET.get("fecha")
         if fecha_str:
             fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
         else:
             fecha = date.today()
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename=lista_asistencias_{fecha}.xlsx'
         id_dia = fecha.weekday() + 1
 
         agenda = agendaRepo.filter_by_dia_asist_list(id_dia=id_dia, id_area=2)
@@ -343,8 +344,20 @@ class AsistenciasPacientesRehabListToCSV(View):
             )
         )
 
+        filterset = PacienteFilter(request.GET, queryset=pacientes_con_agenda)
+        pacientes = filterset.qs
+        ordering = request.GET.get('ordering', 'hora_inicio')
+        allowed_ordering = {
+            'apellido', '-apellido',
+            'nombre', '-nombre',
+            'numero_dni', '-numero_dni',
+            'hora_inicio', '-hora_inicio',
+        }
+        if ordering in allowed_ordering:
+            pacientes = pacientes.order_by(ordering)
+
         data_lista = []
-        for paciente in pacientes_con_agenda:
+        for paciente in pacientes:
 
             data_lista.append([
                 paciente.nombre,
@@ -431,6 +444,27 @@ class PacienteRehabDetail(View):
                 situaciones=situaciones,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class PacienteRehabFichaPDF(View):
+    http_method_names = ["get"]
+
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        rehabilitacion_paciente = pacienteRehabRepo.get_by_paciente_id_item(
+            id_paciente=id,
+        )
+        pdf = render_ficha_ingreso_pdf(
+            paciente=paciente,
+            rehabilitacion=rehabilitacion_paciente,
+            generated_on=date.today(),
+        )
+        filename = f"ficha_ingreso_{paciente.apellido}_{paciente.nombre}.pdf"
+        response = HttpResponse(pdf, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

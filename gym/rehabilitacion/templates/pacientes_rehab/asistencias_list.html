@@ -48,7 +48,7 @@
                     </button>
                 </div>
                 <div class="col-md-1 text-end">
-                    <a href="{% url 'pacientes_asistencias_to_csv' %}" class="btn btn-success mt-2">
+                    <a href="{% url 'pacientes_asistencias_to_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success mt-2">
                         <i class="bi bi-floppy"></i> Excel
                     </a>
                 </div>

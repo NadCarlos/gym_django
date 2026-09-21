@@ -2,7 +2,7 @@ from datetime import date, time
 import os
 import threading
 from time import monotonic
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -11,6 +11,7 @@ from django.db import OperationalError, connection
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
+from django.template.loader import render_to_string
 from django.utils import timezone
 
 from administracion.models import (
@@ -67,11 +68,194 @@ from rehabilitacion.views.pacitentes_fisiatria import (
     PacienteFisiatriaRedirectFromExistent,
 )
 from rehabilitacion.views.pacientes_rehab import (
+    AsistenciasPacientesRehabListToCSV,
     PacienteRehabDelete,
+    PacienteRehabFichaPDF,
     PacienteRehabRedirectFromExistent,
     PacientesRehabList,
 )
 from rehabilitacion.views.turno import TurnoDelete
+from rehabilitacion.services.ficha_ingreso_pdf import (
+    build_ficha_fields,
+    render_ficha_ingreso_pdf,
+)
+
+
+class AsistenciasPacientesRehabExportTests(SimpleTestCase):
+    def test_export_link_preserves_active_filters(self):
+        request = RequestFactory().get(
+            "/rehabilitacion/pacientes/asistencias_list/",
+            {
+                "fecha": "2026-09-14",
+                "apellido": "Perez",
+                "numero_dni": "123",
+                "ordering": "apellido",
+            },
+        )
+
+        html = render_to_string(
+            "pacientes_rehab/asistencias_list.html",
+            {
+                "pacientes": [],
+                "pacientes_count": 0,
+                "form": SimpleNamespace(apellido="", numero_dni=""),
+                "fecha": date(2026, 9, 14),
+            },
+            request=request,
+        )
+
+        self.assertIn(
+            "pacientes/asistencias_to_csv/?fecha=2026-09-14&amp;apellido=Perez"
+            "&amp;numero_dni=123&amp;ordering=apellido",
+            html,
+        )
+
+    def test_export_applies_date_patient_filters_and_ordering(self):
+        request = RequestFactory().get(
+            "/rehabilitacion/pacientes/asistencias_to_csv/",
+            {
+                "fecha": "2026-09-14",
+                "apellido": "Perez",
+                "numero_dni": "123",
+                "ordering": "-apellido",
+            },
+        )
+        paciente = SimpleNamespace(
+            nombre="Ana",
+            apellido="Perez",
+            numero_dni="12345678",
+            hora_inicio=time(9, 0),
+            asistencia_cargada=True,
+        )
+        pacientes_con_agenda = MagicMock()
+        pacientes_filtrados = MagicMock()
+        pacientes_filtrados.order_by.return_value = [paciente]
+
+        with (
+            patch("rehabilitacion.views.pacientes_rehab.agendaRepo") as agenda_repo,
+            patch("rehabilitacion.views.pacientes_rehab.asistenciaRehabRepo") as asistencia_repo,
+            patch("rehabilitacion.views.pacientes_rehab.pacienteRepo") as paciente_repo,
+            patch("rehabilitacion.views.pacientes_rehab.Subquery", return_value="hora"),
+            patch("rehabilitacion.views.pacientes_rehab.Exists", return_value="asistencia"),
+            patch("rehabilitacion.views.pacientes_rehab.PacienteFilter") as paciente_filter,
+        ):
+            paciente_repo.filter_pacientes_area.return_value.filter.return_value.annotate.return_value = pacientes_con_agenda
+            paciente_filter.return_value.qs = pacientes_filtrados
+
+            response = AsistenciasPacientesRehabListToCSV().get(request)
+
+        agenda_repo.filter_by_dia_asist_list.assert_called_once_with(
+            id_dia=1,
+            id_area=2,
+        )
+        asistencia_repo.asistencias_cargadas_list.assert_called_once_with(
+            fecha=date(2026, 9, 14),
+            id_dia=1,
+        )
+        paciente_filter.assert_called_once_with(
+            request.GET,
+            queryset=pacientes_con_agenda,
+        )
+        pacientes_filtrados.order_by.assert_called_once_with("-apellido")
+        self.assertEqual(
+            response["Content-Disposition"],
+            "attachment; filename=lista_asistencias_2026-09-14.xlsx",
+        )
+
+
+class FichaIngresoPDFTests(SimpleTestCase):
+    def setUp(self):
+        self.paciente = SimpleNamespace(
+            nombre="Ana",
+            apellido="Pérez",
+            numero_dni="12345678",
+            fecha_nacimiento=date(1990, 5, 20),
+            telefono="0358 123456",
+            celular="358 555555",
+            direccion="Sobremonte 123",
+            id_sexo=SimpleNamespace(nombre="Femenino"),
+            id_estado_civil=SimpleNamespace(nombre="Soltero"),
+            id_localidad=SimpleNamespace(nombre="Río Cuarto"),
+            id_obra_social=SimpleNamespace(nombre="Obra Social General"),
+        )
+        self.rehabilitacion = SimpleNamespace(
+            id_obra_social=SimpleNamespace(nombre="Obra Social Rehab"),
+            numero_afiliado="A-456",
+            id_estado_certificado=SimpleNamespace(nombre="SI"),
+            vencimiento_certificado=date(2027, 6, 30),
+            nombre_tutor="Juan Pérez",
+            celular_tutor="358 444444",
+            id_conocer=SimpleNamespace(nombre="Derivación profesional"),
+        )
+
+    def test_maps_existing_patient_and_rehabilitation_data(self):
+        fields = build_ficha_fields(self.paciente, self.rehabilitacion)
+
+        self.assertEqual(fields["nombre_completo"], "Pérez, Ana")
+        self.assertEqual(fields["fecha_nacimiento"], "20/05/1990")
+        self.assertEqual(fields["obra_social"], "Obra Social Rehab")
+        self.assertEqual(fields["numero_afiliado"], "A-456")
+        self.assertTrue(fields["certificado_si"])
+        self.assertFalse(fields["certificado_no"])
+        self.assertEqual(fields["vencimiento_certificado"], "30/06/2027")
+        self.assertEqual(fields["nombre_responsable"], "Juan Pérez")
+
+    def test_leaves_rehabilitation_fields_blank_when_data_does_not_exist(self):
+        self.paciente.id_obra_social = None
+
+        fields = build_ficha_fields(self.paciente, None)
+
+        self.assertEqual(fields["obra_social"], "")
+        self.assertEqual(fields["numero_afiliado"], "")
+        self.assertEqual(fields["nombre_responsable"], "")
+        self.assertEqual(fields["como_contacto"], "")
+        self.assertFalse(fields["certificado_si"])
+        self.assertFalse(fields["certificado_no"])
+
+    def test_historical_placeholder_values_are_rendered_as_blank(self):
+        self.rehabilitacion.nombre_tutor = "NO"
+        self.rehabilitacion.numero_afiliado = "0"
+
+        fields = build_ficha_fields(self.paciente, self.rehabilitacion)
+
+        self.assertEqual(fields["nombre_responsable"], "")
+        self.assertEqual(fields["numero_afiliado"], "")
+
+    def test_generates_a_pdf_document(self):
+        result = render_ficha_ingreso_pdf(
+            self.paciente,
+            self.rehabilitacion,
+            generated_on=date(2026, 9, 21),
+        )
+
+        self.assertTrue(result.startswith(b"%PDF"))
+        self.assertGreater(len(result), 1000)
+
+    @patch("rehabilitacion.views.pacientes_rehab.pacienteRehabRepo")
+    @patch("rehabilitacion.views.pacientes_rehab.pacienteRepo")
+    def test_download_endpoint_returns_pdf_attachment(
+        self,
+        paciente_repo,
+        rehabilitacion_repo,
+    ):
+        paciente_repo.get_by_id.return_value = self.paciente
+        rehabilitacion_repo.get_by_paciente_id_item.return_value = self.rehabilitacion
+        request = RequestFactory().get("/rehabilitacion/pacientes/1/ficha.pdf")
+        request.user = SimpleNamespace(is_authenticated=True, is_superuser=True)
+
+        response = PacienteRehabFichaPDF.as_view()(request, id=1)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="ficha_ingreso_12345678.pdf"',
+        )
+        self.assertTrue(response.content.startswith(b"%PDF"))
+        paciente_repo.get_by_id.assert_called_once_with(id=1)
+        rehabilitacion_repo.get_by_paciente_id_item.assert_called_once_with(
+            id_paciente=1,
+        )
 
 
 class WriteEndpointMethodTests(SimpleTestCase):
