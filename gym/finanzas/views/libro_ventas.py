@@ -59,7 +59,7 @@ class CargaView(View):
         excel = pandas.read_excel(file)
         cleaned_data = []
         for fila in excel.values:
-            if isinstance(fila[0], datetime):
+            if isinstance(fila[0], datetime) and not pandas.isna(fila[0]):
                 cleaned_data.append(fila)
 
         # [0]=Fecha,[1]=Tipo,[2]=pto_vta,[3]=Nro,[4]=Nombre,[5]=Cuit,[6]=id_paciente,[7]=Importe
