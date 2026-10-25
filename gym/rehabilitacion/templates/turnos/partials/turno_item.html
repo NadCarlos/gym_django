@@ -1,3 +1,5 @@
+{% load l10n %}
+{% localize off %}
 <div class="turno-item">
     <div class="turno-linea">
         <span class="turno-hora">{{ turno.hora|time:"H:i" }}</span>
@@ -37,3 +39,4 @@
         </span>
     </div>
 </div>
+{% endlocalize %}

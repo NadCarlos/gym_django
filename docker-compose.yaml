@@ -1,6 +1,9 @@
 services:
   db:
-    image: mysql:5.7
+    image: cermed-mysql:8.4.13
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
     restart: unless-stopped
     command:
       - --innodb-buffer-pool-size=128M
@@ -24,7 +27,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data84:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/
     container_name: gym_db
     hostname: ${MYSQL_HOST}
@@ -49,6 +52,7 @@ services:
     container_name: gym_web
 
 volumes:
-  db_data:
+  # A fresh volume protects existing MySQL 5.7 data from an in-place upgrade.
+  db_data84:
   backup_data:
   logs:

@@ -1,38 +1,28 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Create and set the working directory
-RUN mkdir /app
+# Shared base keeps native mysqlclient libraries compatible across build/runtime.
+FROM python:3.12.15-slim-bookworm@sha256:6a0e06f5ba0b373d051aabd3fffb9b873f27f9a2a3a14bcbe37dee6f0e3bbc70 AS base
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3-dev \
-    default-libmysqlclient-dev \
-    default-mysql-client \
-    cron
-
-# Set up locale
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y locales \
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends default-mysql-client cron locales ca-certificates \
     && sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen \
-    && locale-gen
-ENV LANG es_AR.UTF-8
-ENV LANGUAGE es_AR:es
-ENV LC_ALL es_AR.UTF-8
+    && locale-gen \
+    && rm -rf /var/lib/apt/lists/*
+ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8
 
-# Install Python dependencies
+FROM base AS dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential default-libmysqlclient-dev pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements-prod.txt /app/
-RUN pip install --no-cache-dir -r requirements-prod.txt
+RUN pip install --no-cache-dir pip==26.2.2 \
+    && pip install --no-cache-dir --require-hashes -r requirements-prod.txt \
+    && pip check
 
-
-# Copy your project files into the container
+FROM base AS runtime
+COPY --from=dependencies /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 COPY . /app/
-
-# Expose the port your application runs on
 EXPOSE 8000
-

@@ -249,7 +249,7 @@ class FichaIngresoPDFTests(SimpleTestCase):
         self.assertEqual(response["Content-Type"], "application/pdf")
         self.assertEqual(
             response["Content-Disposition"],
-            'attachment; filename="ficha_ingreso_12345678.pdf"',
+            'attachment; filename="ficha_ingreso_Pérez_Ana.pdf"',
         )
         self.assertTrue(response.content.startswith(b"%PDF"))
         paciente_repo.get_by_id.assert_called_once_with(id=1)
@@ -659,6 +659,7 @@ class AgendaPacienteRehabUpdateTests(SimpleTestCase):
     def test_post_without_session_return_path_redirects_to_patient_agenda(self):
         agenda = SimpleNamespace(
             id_paciente_area=SimpleNamespace(id_paciente_id=42),
+            fecha=date(2026, 10, 24),
         )
         form = SimpleNamespace(
             is_valid=lambda: True,
@@ -679,7 +680,8 @@ class AgendaPacienteRehabUpdateTests(SimpleTestCase):
              patch("rehabilitacion.views.agenda.tratamientoRepo.filter_by_id", return_value=SimpleNamespace(id=1)), \
              patch("rehabilitacion.views.agenda.profesionalRepo.filter_by_id", return_value=SimpleNamespace(id=2)), \
              patch("rehabilitacion.views.agenda.profesionalAreaRepo.filter_by_profesional_id", return_value=SimpleNamespace(id=3)), \
-             patch("rehabilitacion.views.agenda.agendaRehabRepo.update"):
+             patch("rehabilitacion.views.agenda.agendaRehabRepo.update"), \
+             patch("rehabilitacion.views.agenda.validar_agenda_en_disponibilidad", return_value=True):
             response = AgendaPacienteRehabUpdate().post(request, id=11)
 
         self.assertEqual(response.status_code, 302)

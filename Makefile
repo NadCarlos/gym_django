@@ -1,6 +1,20 @@
 build:
 	docker compose build
 
+CERMED_REHEARSAL_PROJECT ?= cermed-upgrade
+
+.PHONY: upgrade-inventory upgrade-build upgrade-check
+
+upgrade-inventory:
+	bash scripts/upgrade-inventory.sh
+
+upgrade-build:
+	docker compose --project-name "$(CERMED_REHEARSAL_PROJECT)" --env-file /dev/null -f docker-compose-upgrade.yaml build web db84
+
+upgrade-check:
+	docker compose --project-name "$(CERMED_REHEARSAL_PROJECT)" --env-file /dev/null -f docker-compose-upgrade.yaml up -d --wait db84
+	docker compose --project-name "$(CERMED_REHEARSAL_PROJECT)" --env-file /dev/null -f docker-compose-upgrade.yaml run --rm web sh /app/scripts/validate-upgrade.sh
+
 up:
 	docker compose up
 
@@ -62,4 +76,4 @@ load:
 	docker compose exec web ./load_db_to_docker_mysql.sh $(file)
 
 dump:
-	docker compose exec web ./dump_db_from_docker.sh 
+	docker compose exec web ./dump_db_from_docker.sh

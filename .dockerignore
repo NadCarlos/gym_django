@@ -13,3 +13,10 @@ venv/
 backup_data/
 gym/backup_data/
 logs/
+gym/media/
+media/
+gym/staticfiles/
+.agents/
+.claude/
+.codex/
+.aws/

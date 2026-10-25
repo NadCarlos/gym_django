@@ -1,0 +1,17 @@
+# Direct runtime dependencies. Compile with Python 3.12 and pip-tools.
+Django==5.2.18
+django-crontab==0.7.1
+django-dbbackup==5.4.0
+django-environ==0.14.0
+django-filter==26.2
+gunicorn==26.2.0
+mysqlclient==2.3.0
+openpyxl==3.1.5
+pandas==3.1.0
+Pillow==13.0.0
+reportlab==5.1.0
+sentry-sdk==2.73.0
+XlsxWriter==3.3.0
+# Explicit security floors are pinned so transitive resolution cannot undo them.
+certifi==2026.10.23
+urllib3==2.8.0

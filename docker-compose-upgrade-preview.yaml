@@ -1,0 +1,20 @@
+# Optional local acceptance UI; combine only with docker-compose-upgrade.yaml.
+services:
+  web:
+    command: ["python", "gym/manage.py", "runserver", "0.0.0.0:8000", "--noreload", "--insecure"]
+  preview:
+    image: cermed-upgrade-nginx:local
+    ports:
+      - "127.0.0.1:18000:8080"
+    volumes:
+      - ./config/nginx.rehearsal.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - default
+      - preview_frontend
+
+networks:
+  preview_frontend:
+    # Only the proxy joins this network. Web/DB stay on the internal network.
+    internal: false

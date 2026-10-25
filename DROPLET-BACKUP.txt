@@ -1,0 +1,61 @@
+# PASO 2: copiar TODO este bloque en la terminal del droplet.
+# Lee MySQL y crea un backup privado en tu home. No instala ni reinicia servicios.
+# Es un backup para ensayar; no es el backup final de la ventana de mantenimiento.
+# Evitar cambios de esquema/migraciones mientras corre. No pegar el SQL en el chat.
+
+bash <<'CERMED_BACKUP'
+set -euo pipefail
+umask 077
+
+sql() {
+  docker exec cermed_db sh -ec '
+    MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysql -u root \
+      --batch --skip-column-names --database="$MYSQL_DATABASE" -e "$1"
+  ' sh "$1"
+}
+
+echo 'Motores de las tablas (sin leer registros de pacientes):'
+sql "SELECT ENGINE, COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' GROUP BY ENGINE"
+tables=$(sql "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE'")
+non_innodb=$(sql "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE' AND (ENGINE IS NULL OR ENGINE <> 'InnoDB')")
+if [ "$tables" = 0 ] || [ "$non_innodb" != 0 ]; then
+  echo 'DETENIDO: esquema vacío o tablas no InnoDB. Compartir esta salida antes de seguir.' >&2
+  exit 1
+fi
+
+echo 'Espacio disponible antes del backup:'
+df -h "$HOME"
+available_kb=$(df -Pk "$HOME" | awk 'END {print $4}')
+if [ "$available_kb" -lt 1048576 ]; then
+  echo 'DETENIDO: menos de 1 GiB libre. Revisar espacio antes de generar el dump.' >&2
+  exit 1
+fi
+
+mkdir -p "$HOME/cermed-upgrade-backups"
+backup_dir=$(mktemp -d "$HOME/cermed-upgrade-backups/$(date -u +%Y%m%dT%H%M%SZ).XXXXXX")
+trap 'echo "ERROR: backup incompleto en $backup_dir; no usar archivos .partial." >&2' ERR
+docker inspect --format '{{.Name}} image={{.Image}}' \
+  cermed_web cermed_db cermed_nginx > "$backup_dir/images.txt"
+docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}type={{.Type}} name={{.Name}} source={{.Source}}{{end}}{{end}}' \
+  cermed_db > "$backup_dir/mysql-volume.txt"
+
+docker exec cermed_db sh -ec '
+  MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysqldump -u root \
+    --single-transaction --no-tablespaces --set-gtid-purged=OFF \
+    --default-character-set=utf8mb4 --hex-blob \
+    --routines --events --triggers "$MYSQL_DATABASE"
+' > "$backup_dir/pre-upgrade.sql.partial"
+test -s "$backup_dir/pre-upgrade.sql.partial"
+mv "$backup_dir/pre-upgrade.sql.partial" "$backup_dir/pre-upgrade.sql"
+cd "$backup_dir"
+sha256sum pre-upgrade.sql > SHA256SUMS
+sha256sum -c SHA256SUMS
+echo 'BACKUP GENERADO (restauración todavía pendiente):'
+pwd
+wc -c pre-upgrade.sql
+cat SHA256SUMS
+cat images.txt mysql-volume.txt
+CERMED_BACKUP
+
+# Compartir únicamente la salida de la terminal, no pre-upgrade.sql ni archivos .env.
+# Después se copiará este directorio fuera del droplet por SSH/SCP y se ensayará la restauración.

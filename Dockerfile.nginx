@@ -1,5 +1,11 @@
-FROM nginx:latest
+FROM nginx:1.31.8@sha256:6e67f8eaac94fc456588d4ff6c470d984841f5b5dc4279863d5cbe6ec5a60def
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends cron certbot \
+    # CERMED uses the core proxy/static/TLS modules and Certbot webroot.
+    # These optional modules are not loaded by cermed.conf or nginx.conf.
+    && apt-get purge -y --auto-remove \
+        curl nginx-module-acme nginx-module-geoip nginx-module-image-filter \
+        nginx-module-njs nginx-module-xslt \
     && rm -rf /var/lib/apt/lists/*

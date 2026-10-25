@@ -1,4 +1,4 @@
-  ![Python](https://img.shields.io/badge/Python-3.10-blue)   ![Django](https://img.shields.io/badge/Django-4.1.12-brightgreen)   ![MySQL](https://img.shields.io/badge/MySQL-5.7.14-orange)  ![Docker](https://img.shields.io/badge/Docker-24.0.7-blue) ![Docker Compose](https://img.shields.io/badge/Docker%20Compose-1.29.2-blue)  ![Black](https://img.shields.io/badge/Black-23.10.1-black)  ![Ruff](https://img.shields.io/badge/Ruff-0.1.1-lightgrey)  ![Make](https://img.shields.io/badge/Makefile-Yes-green)
+![Python](https://img.shields.io/badge/Python-3.12.15-blue) ![Django](https://img.shields.io/badge/Django-5.2.18-brightgreen) ![MySQL](https://img.shields.io/badge/MySQL-8.4.13-orange)
 
 
 
@@ -8,15 +8,14 @@ Servicio de Backoffice para la empresa CERMED de Río Cuarto, Córdoba.
 
 ## Requisitos del Sistema
 
-- **Python** >= ***3.10***
-- **Django** >= ***4.2.12***
-- **MySQL** >= ***5.7.14***
-- **Docker** >= ***24.0.7***
-- **Docker Compose** >= ***1.29.2***
-- **Black** >= ***23.10.1***
-- **Ruff** >= ***0.1.1***
-- **Makefile**
+- Python 3.12.15, Django 5.2.18 LTS y MySQL 8.4.13 LTS.
+- Docker Engine, Docker Compose v2 con `up --wait`, y Make.
+- Dependencias exactas y hashes en `requirements-prod.txt` (runtime) y `requirements.txt` (desarrollo).
 
+**Migración pendiente de producción:** antes del primer despliegue de estas versiones,
+seguir [UPGRADE-2026.md](UPGRADE-2026.md). Los volúmenes 5.7 se conservan; el nuevo
+Compose usa un volumen 8.4 separado. [DROPLET-CHECKS.txt](DROPLET-CHECKS.txt) contiene
+los comandos de inventario listos para copiar y pegar.
 
 ## Instalación
 
@@ -28,7 +27,7 @@ contenedor para **Nginx**.
 1. Clona este repositorio.
 2. Crea un entorno virtual: `python3 -m venv venv`.
 3. Activa el entorno virtual: `source venv/bin/activate` (Linux/Mac) o `venv\Scripts\activate` (Windows).
-4. Instala las dependencias: `pip install -r requirements.txt`
+4. Instala las dependencias: `pip install --require-hashes -r requirements.txt`
 Esto ayudará a que tu `IDE/IDLE` reconozca los paquetes y liberías del proyecto.
 
 ## Configuración
@@ -60,8 +59,7 @@ actual, simplifico el `down` y el `build up` en 2 comandos `Make`: `make prod-do
 ## CI/CD producción
 
 El CI se ejecuta con GitHub Actions en cada push a `develop` y `production`.
-En `production`, si los tests pasan, el workflow construye la imagen productiva y luego entra por SSH al servidor para actualizar el repo
-y recrear los contenedores con `docker-compose-prod.yaml`. El archivo `.env.prod` debe existir únicamente en el servidor.
+En `production`, CI valida tests, migraciones, estáticos, dependencias e imágenes. El deploy por SSH solo se habilita cuando la variable de repositorio `CERMED_MYSQL84_READY` vale `true`, después de validar la migración. El archivo `.env.prod` debe existir únicamente en el servidor e indicar `CERMED_MYSQL84_VOLUME`, el volumen 8.4 restaurado.
 
 Secrets requeridos en GitHub:
 
@@ -75,17 +73,14 @@ Secrets opcionales:
 - `PROD_SSH_PORT`: puerto SSH. Si no se define, usa `22`.
 - `PROD_HEALTHCHECK_URL`: URL que se consulta desde el servidor al final del deploy. Si no se define, usa `http://localhost:8000/`.
 
-Antes del primer deploy, el servidor debe tener Docker, Docker Compose, el repo clonado, la rama `production`
-disponible y `.env.prod` configurado. El workflow ejecuta `python gym/manage.py check`,
-`python gym/manage.py test --noinput`, build de `Dockerfile.prod`, `make prod-config`, `make prod-deploy`,
-`make prod-status`, `python gym/manage.py check --deploy` dentro del contenedor `web` y un smoke test HTTP con reintentos.
+Antes del primer deploy, completar los pasos de [UPGRADE-2026.md](UPGRADE-2026.md).
+El workflow conserva el despliegue SSH + git/Compose y bloquea High/Critical del
+escaneo de imágenes. Un `check --deploy` con advertencias no equivale a una
+configuración productiva completamente endurecida.
 
-Rollback simple:
-
-1. Entrar al servidor por SSH.
-2. Ir a la carpeta del proyecto: `cd <PROD_APP_DIR>`.
-3. Volver al commit estable: `git checkout production && git reset --hard <commit_anterior>`.
-4. Recrear servicios: `make prod-deploy`.
+La reversión de MySQL necesita el volumen y las imágenes anteriores, además del
+código. Seguir la sección de corte y reversión del runbook; volver solo el commit
+no revierte una migración de datos.
 
 ## Comandos Makefile
 

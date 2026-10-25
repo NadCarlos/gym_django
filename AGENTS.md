@@ -4,7 +4,7 @@ This repository is the CERMED backoffice system for a medical/rehabilitation bus
 
 ## Project shape
 
-- Runtime stack: Python 3.10, Django 4.1.12, MySQL 5.7, Docker Compose, Gunicorn, Nginx.
+- Repository target: Python 3.12, Django 5.2 LTS, MySQL 8.4 LTS, Docker Compose v2, Gunicorn, Nginx. Production migration status is recorded in `UPGRADE-2026.md`.
 - Django entrypoint: `gym/manage.py`.
 - Main settings module: `gym/gym/settings.py`.
 - Domain apps:
@@ -36,13 +36,14 @@ Inside the `web` container, use:
 
 - Django checks: `python gym/manage.py check`
 - Migration drift check: `python gym/manage.py makemigrations --check --dry-run`
-- Tests: `python gym/manage.py test --noinput`
+- Tests: `python gym/manage.py test administracion rehabilitacion finanzas entrada usuarios home --noinput` (the unlabeled command from the repository root discovers zero tests).
 - Static dry run: `python gym/manage.py collectstatic --dry-run --noinput`
 - Production deploy check: `python gym/manage.py check --deploy`
 
 ## Production and deploy constraints
 
-- Production uses `docker-compose-prod.yaml`, `Dockerfile.prod`, `Dockerfile.nginx`, `config/entrypoint.prod.sh` and `cermed.conf`.
+- Production uses `docker-compose-prod.yaml`, `Dockerfile.prod`, `Dockerfile.mysql`, `Dockerfile.nginx`, `config/entrypoint.prod.sh` and `cermed.conf`.
+- Before the first MySQL 8.4 deployment, follow `UPGRADE-2026.md`: rehearse a real backup, restore into a separate volume, and retain the MySQL 5.7 volume for rollback. The external `CERMED_MYSQL84_VOLUME` and Actions variable `CERMED_MYSQL84_READY` are migration gates.
 - Production config comes from `.env.prod` on the server only. Never commit `.env`, `.env.prod`, credentials, database dumps, media uploads or generated static output.
 - The production workflow is GitHub Actions over SSH and server-side git/Compose operations. Do not switch it to rsync unless the user explicitly reopens that decision.
 - Do not treat longer Nginx/Gunicorn timeouts as the primary fix for database write blocking. Prefer reducing lock scope, query count and duplicate submissions.

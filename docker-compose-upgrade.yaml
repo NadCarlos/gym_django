@@ -1,0 +1,75 @@
+# Isolated rehearsal only. No host ports, .env files, production mounts or cron.
+name: cermed-upgrade
+
+x-database: &database
+  environment:
+    MYSQL_ROOT_PASSWORD: rehearsal-only
+    MYSQL_DATABASE: cermed_rehearsal
+  command:
+    - --innodb-buffer-pool-size=128M
+    - --performance-schema=OFF
+    - --event-scheduler=OFF
+  healthcheck:
+    test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysql -h 127.0.0.1 -u root -e 'SELECT 1'"]
+    interval: 5s
+    timeout: 5s
+    retries: 30
+
+services:
+  db57:
+    <<: *database
+    image: mysql:5.7.44
+    profiles: [legacy]
+    volumes:
+      - mysql57:/var/lib/mysql
+  db80:
+    <<: *database
+    image: mysql:8.0.46@sha256:7dcddc01f13bab2f15cde676d44d01f61fc9f99fe7785e86196dfc07d358ae2b
+    profiles: [intermediate]
+    volumes:
+      - mysql80:/var/lib/mysql
+  db84:
+    <<: *database
+    image: cermed-upgrade-mysql:local
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    volumes:
+      - mysql84:/var/lib/mysql
+  web:
+    image: cermed-upgrade-web:local
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    environment:
+      DJANGO_DEBUG: "False"
+      DJANGO_SECRET_KEY: isolated-rehearsal-secret-not-for-production-123456789
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      MYSQL_DATABASE: cermed_rehearsal
+      MYSQL_USER: root
+      MYSQL_PASSWORD: rehearsal-only
+      MYSQL_ROOT_PASSWORD: rehearsal-only
+      MYSQL_HOST: db84
+      MYSQL_PORT: "3306"
+      SENTRY_DSN: ""
+      WRITE_DB_INSTRUMENTATION_ENABLED: "False"
+      REQUEST_INSTRUMENTATION_ENABLED: "False"
+    depends_on:
+      db84:
+        condition: service_healthy
+    # Deliberately bypass the application entrypoint and its cron/migrations.
+    command: ["python", "gym/manage.py", "check"]
+    volumes:
+      - rehearsal_backups:/app/gym/backup_data
+      - rehearsal_static:/app/gym/staticfiles
+
+networks:
+  default:
+    internal: true
+
+volumes:
+  mysql57:
+  mysql80:
+  mysql84:
+  rehearsal_backups:
+  rehearsal_static:

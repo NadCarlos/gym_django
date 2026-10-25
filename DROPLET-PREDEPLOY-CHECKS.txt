@@ -1,0 +1,67 @@
+# Ejecutar en el droplet con el usuario cermed y compartir la salida.
+# No instala paquetes, no reinicia servicios y no renueva certificados.
+# Certbot puede crear su log/lock habitual. No muestra claves ni archivos .env.
+
+bash <<'CERMED_PREDEPLOY_CHECKS'
+set -uo pipefail
+echo 'FECHA Y RECURSOS ACTUALES:'
+date -u
+free -h
+df -h /
+docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.MemPerc}}' cermed_web cermed_db cermed_nginx
+
+echo 'CONFIGURACION NGINX:'
+docker exec cermed_nginx nginx -t
+
+echo 'HTTPS LOCAL CON VALIDACION DEL CERTIFICADO:'
+curl --connect-timeout 10 --max-time 20 --silent --show-error \
+  --resolve cermed.com.ar:443:127.0.0.1 \
+  --output /dev/null --write-out 'HTTP=%{http_code} TLS_verify=%{ssl_verify_result}\n' \
+  https://cermed.com.ar/usuarios/login/
+
+echo 'CERTBOT Y VIGENCIA DE CERTIFICADOS (NO RENUEVA):'
+docker exec cermed_nginx certbot --version
+docker exec cermed_nginx certbot certificates
+
+echo 'PERMISOS Y ESTADO DEL CRON DE RENOVACION:'
+docker exec cermed_nginx sh -c '
+  stat -c "%a %n" /app/config/certbot-renewal.sh /etc/cron.d/certbot-renewal
+  if [ -s /var/run/crond.pid ] && kill -0 "$(cat /var/run/crond.pid)" 2>/dev/null; then
+    echo "Cron activo"
+  else
+    echo "REVISAR: no se pudo confirmar cron activo"
+  fi
+  if [ -x /app/config/certbot-renewal.sh ]; then
+    echo "Script ejecutable"
+  elif grep -Eq "(/bin/)?sh[[:space:]]+/app/config/certbot-renewal.sh" /etc/cron.d/certbot-renewal; then
+    echo "Script invocado mediante sh"
+  else
+    echo "REVISAR: script sin permiso de ejecucion y cron sin sh"
+  fi
+'
+
+echo 'METODO Y HOOKS DE RENOVACION (SOLO INDICA PRESENCIA):'
+docker exec cermed_nginx sh -c '
+  for renewal in /etc/letsencrypt/renewal/*.conf; do
+    [ -f "$renewal" ] || continue
+    printf "Configuracion: %s\n" "$(basename "$renewal")"
+    if grep -Eq "^[[:space:]]*authenticator[[:space:]]*=[[:space:]]*webroot[[:space:]]*$" "$renewal"; then
+      echo "Autenticador webroot"
+    else
+      echo "REVISAR: autenticador distinto de webroot"
+    fi
+    if grep -Eq "^[[:space:]]*(pre_hook|post_hook|deploy_hook|renew_hook)[[:space:]]*=" "$renewal"; then
+      echo "REVISAR: hay hooks personalizados; contenido no mostrado"
+    fi
+  done
+  for hooks in /etc/letsencrypt/renewal-hooks/pre /etc/letsencrypt/renewal-hooks/deploy /etc/letsencrypt/renewal-hooks/post; do
+    if [ -d "$hooks" ]; then
+      count=$(find "$hooks" -type f | wc -l)
+      printf "%s: %s archivos\n" "$hooks" "$count"
+    fi
+  done
+'
+CERMED_PREDEPLOY_CHECKS
+
+# Compartir la salida, incluyendo cualquier error. No pegar claves privadas,
+# .env.prod ni el contenido completo de los archivos de renovacion.

@@ -1,0 +1,45 @@
+# PASO 3: ejecutar en TU COMPUTADORA, no en la terminal SSH del droplet.
+# Copiar TODO este bloque. Pedirá el host y, opcionalmente, el puerto SSH.
+# Descarga el backup por SCP a una carpeta privada fuera del repositorio.
+# No restaura ni modifica ninguna base de datos.
+
+bash <<'CERMED_COPY'
+set -euo pipefail
+umask 077
+if [ "$(hostname -s)" = ubuntu-2204-cermed ]; then
+  echo 'DETENIDO: abrir una terminal local, fuera de la sesión SSH del droplet.' >&2
+  exit 1
+fi
+command -v scp >/dev/null
+command -v sha256sum >/dev/null
+read -r -p 'IP IPv4, dominio o alias SSH del droplet (sin usuario): ' droplet_host </dev/tty
+if [[ ! "$droplet_host" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]]; then
+  echo 'Host inválido. Usar una IPv4, un dominio o un alias SSH.' >&2
+  exit 1
+fi
+read -r -p 'Puerto SSH (Enter = configuración SSH habitual, normalmente 22): ' droplet_port </dev/tty
+ssh_options=()
+if [ -n "$droplet_port" ]; then
+  if [[ ! "$droplet_port" =~ ^[1-9][0-9]{0,4}$ ]] || (( droplet_port > 65535 )); then
+    echo 'Puerto inválido.' >&2
+    exit 1
+  fi
+  ssh_options=(-P "$droplet_port")
+fi
+
+remote_dir=/home/cermed/cermed-upgrade-backups/20261024T230006Z.nK5kPg
+mkdir -p "$HOME/cermed-upgrade-backups"
+local_dir=$(mktemp -d "$HOME/cermed-upgrade-backups/received.XXXXXX")
+scp "${ssh_options[@]}" -r "cermed@$droplet_host:$remote_dir" "$local_dir/"
+cd "$local_dir/20261024T230006Z.nK5kPg"
+test "$(wc -c < pre-upgrade.sql | tr -d '[:space:]')" = 4789350
+printf '%s  pre-upgrade.sql\n' \
+  e643f0209d8e7791e12753d32cd10f0460b07120cf777c76d24f6ef0e0c9a2de \
+  | sha256sum -c -
+echo 'COPIA LOCAL VERIFICADA; restauración todavía pendiente:'
+pwd
+wc -c pre-upgrade.sql
+CERMED_COPY
+
+# Compartir la salida y la ruta local que imprime. NO compartir el contenido SQL.
+# Con esa ruta continuamos el ensayo aislado; conservar intacto el backup del droplet.

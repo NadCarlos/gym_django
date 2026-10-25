@@ -1,6 +1,9 @@
 services:
   db:
-    image: mysql:5.7
+    image: cermed-mysql:8.4.13
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
     restart: unless-stopped
     command:
       - --innodb-buffer-pool-size=128M
@@ -24,7 +27,7 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - db_data:/var/lib/mysql
+      - db_data84:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/
     container_name: cermed_db
     hostname: ${MYSQL_HOST}
@@ -69,6 +72,10 @@ services:
     container_name: cermed_nginx
 
 volumes:
-  db_data:
+  # Must already contain the restored, validated MySQL 8.4 database.
+  # Never point this variable at the old MySQL 5.7 volume.
+  db_data84:
+    external: true
+    name: ${CERMED_MYSQL84_VOLUME:?Set the restored MySQL 8.4 volume before deployment}
   backup_data:
   logs:

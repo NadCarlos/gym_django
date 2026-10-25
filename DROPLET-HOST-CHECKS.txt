@@ -1,0 +1,34 @@
+# SIGUIENTE PASO: ejecutar en el droplet, con el usuario cermed.
+# Actualiza SOLO los índices APT y simula las actualizaciones.
+# No instala paquetes, no reinicia servicios y no cambia la versión de Ubuntu.
+# sudo puede pedir tu contraseña en la terminal; no compartirla.
+
+bash <<'CERMED_HOST_CHECKS'
+set -euo pipefail
+echo 'FECHA Y KERNEL:'
+date -u
+uname -r
+echo 'MEMORIA Y DISCO:'
+free -h
+df -h /
+echo 'REINICIO PENDIENTE:'
+if [ -f /var/run/reboot-required ]; then
+  cat /var/run/reboot-required
+  if [ -f /var/run/reboot-required.pkgs ]; then
+    cat /var/run/reboot-required.pkgs
+  fi
+else
+  echo 'No hay aviso de reinicio pendiente.'
+fi
+echo 'SERVICIOS FALLIDOS:'
+systemctl --failed --no-pager
+echo 'PAQUETES RETENIDOS MANUALMENTE:'
+apt-mark showhold
+echo 'ACTUALIZANDO INDICES APT:'
+sudo apt-get update
+echo 'SIMULACION; NO SE INSTALARA NADA:'
+sudo apt-get -s upgrade
+CERMED_HOST_CHECKS
+
+# Compartir la salida. No ejecutar apt upgrade real ni reiniciar todavía:
+# primero revisamos la simulación y acordamos la ventana de mantenimiento.

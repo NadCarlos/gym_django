@@ -169,8 +169,14 @@ SLOW_REQUEST_WATCHDOG_ENABLED = env.bool("SLOW_REQUEST_WATCHDOG_ENABLED", defaul
 DATA_UPLOAD_MAX_MEMORY_SIZE = env.int("DATA_UPLOAD_MAX_MEMORY_SIZE", default=2_500_000)
 FILE_UPLOAD_MAX_MEMORY_SIZE = env.int("FILE_UPLOAD_MAX_MEMORY_SIZE", default=2_500_000)
 
-DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
-DBBACKUP_STORAGE_OPTIONS = {"location": BASE_DIR / "backup_data"}
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    "dbbackup": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": BASE_DIR / "backup_data"},
+    },
+}
 
 
 def custom_backup_filename(databasename, datetime, *args, **kwargs):
@@ -221,7 +227,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "es-AR"
 TIME_ZONE = "America/Argentina/Buenos_Aires"
 USE_I18N = True
-USE_L10N = False
+FORMAT_MODULE_PATH = "gym.formats"
 USE_TZ = False
 
 DATE_FORMAT = "d/m/Y"

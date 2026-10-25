@@ -1,0 +1,9 @@
+-r requirements-prod.txt
+
+# Development and audit tools are not installed in the production image.
+black==26.10.1
+ipdb==0.13.13
+pip-audit==2.10.1
+pip-tools==7.6.2
+pytest==9.1.1
+ruff==0.17.2

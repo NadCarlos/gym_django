@@ -1,0 +1,10 @@
+# Ejecutar en el droplet. Solo lectura; no cambia servicios ni paquetes.
+# Copiar este bloque completo y compartir la salida.
+
+docker exec cermed_web python --version
+docker exec cermed_web python -m pip list --format=columns
+docker exec cermed_db mysqld --version
+docker exec cermed_nginx nginx -v
+docker version --format '{{.Server.Version}}'
+docker compose version
+docker exec cermed_db sh -c 'du -sh /var/lib/mysql'

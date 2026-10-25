@@ -1,0 +1,250 @@
+# Actualización preventiva de CERMED — 24/10/2026
+
+**Estado: restauración del backup real y validaciones automáticas locales aprobadas;
+producción pendiente.** El usuario aceptó la prueba funcional local. No ejecutar
+`make prod-deploy` todavía: faltan controles técnicos, la preparación del corte
+y resolver los hallazgos de imágenes.
+
+El cron de certificados ya recibió una corrección puntual en el droplet:
+entrypoint y cron invocan el script mediante `/bin/sh`. La renovación ACME staging
+pasó y HTTPS siguió en 200 con TLS validado. Ese cambio local del checkout debe
+conservarse al preparar el corte; no implica que las nuevas versiones estén desplegadas.
+
+El alcance acordado es actualizar versiones y validar compatibilidad. Los puertos
+8000/3308, DBeaver, HTTPS, permisos de medios y comportamiento de endpoints se
+conservan. No hay evidencia aportada de compromiso. Un escaneo de dependencias
+identifica riesgos conocidos; no demuestra ni descarta una intrusión.
+
+## Versiones y cambios
+
+| Componente | Anterior en el repositorio | Objetivo |
+| --- | --- | --- |
+| Python | 3.10 | 3.12.15, Debian Bookworm slim |
+| Django | 4.1.12 | 5.2.18 LTS |
+| MySQL | 5.7 | 8.4.13 LTS, pasando por 8.0.46 |
+| Nginx | etiqueta mutable; producción 1.31.6 | 1.31.8 |
+| Gunicorn | 21.2.0 | 26.2.0 |
+| Pillow | dependencia transitiva | 13.0.0 explícita |
+
+Las imágenes base están fijadas por digest. Las dependencias Python están fijadas
+con hashes; `requirements-prod.in` contiene las directas y `requirements.in`
+agrega herramientas de desarrollo. Los paquetes sin uso en imports/configuración
+se retiraron del runtime. Los compiladores quedan en una etapa de construcción.
+Los paquetes Debian se actualizan al construir; registrar el ID de la imagen
+construida, porque sus repositorios cambian aunque el digest base sea fijo.
+`Dockerfile.mysql` conserva MySQL 8.4.13, actualiza los certificados del sistema
+y retira MySQL Shell, que CERMED no utiliza. `mysql` y `mysqldump` permanecen.
+El Upgrade Checker se ejecuta aparte con la herramienta oficial; no forma parte
+del contenedor que sirve la base.
+
+Las adaptaciones de Django preservan los formatos de números/fechas y el directorio
+de backups. `django-dbbackup` utiliza ahora `STORAGES["dbbackup"]`. Se prueban
+exportaciones XLSX/PDF, contraseñas anteriores y roles. El comando de tests de CI
+ahora enumera las aplicaciones: antes, desde la raíz, descubría cero tests.
+
+## 1. Completar el inventario del droplet
+
+Copiar el contenido de [DROPLET-CHECKS.txt](DROPLET-CHECKS.txt) en la terminal del
+servidor. Son comandos de lectura, sin cambios ni credenciales en su salida.
+El inventario extendido está en `scripts/upgrade-inventory.sh`; requiere también
+`scripts/runtime_inventory.py` junto a él. Se puede copiar ambos archivos sin
+hacer `git pull` del cambio en el checkout que sirve producción.
+
+Ya informado: Ubuntu 22.04.5, RAM 957 MiB, swap 2 GiB, disco libre 9.7 GiB.
+Están publicados 80/443, 8000 y 3308. Inventario confirmado por el usuario:
+Python 3.10.21, Django 4.1.12, MySQL 5.7.44, Nginx 1.31.6, Docker 29.9.2 y
+Compose v5.6.1. `/var/lib/mysql` ocupa 248 MB: incluye archivos del motor, no es
+el tamaño exacto del dump. Pillow 12.3.0, certifi 2024.7.4, Gunicorn 21.2.0 y
+mysqlclient 2.0.0 también están confirmados. Con esta memoria, el ensayo pesado debe correr localmente;
+en el servidor las etapas de bases de datos serán secuenciales.
+
+**Cierre:** registrar versiones, tamaño de datos, espacio para backups/volúmenes,
+commit e imágenes actuales. Identificar también cron, accesos DBeaver y cualquier
+otro proceso que escriba en la base durante la futura ventana.
+
+## 2. Obtener y proteger un backup real
+
+Copiar todo [DROPLET-BACKUP.txt](DROPLET-BACKUP.txt) en la terminal del droplet,
+con la base actual funcionando. Comprueba tablas InnoDB, registra las imágenes
+y el volumen original, crea un dump privado y calcula su checksum. Se detiene
+ante errores y no presenta un `.partial` como backup válido. Este primer dump
+sirve para ensayar; se repetirá con escrituras detenidas para el corte final.
+
+Si el dump falla, detenerse: que el archivo exista no lo vuelve válido.
+`--single-transaction` requiere tablas transaccionales para garantizar una vista
+consistente; revisar los motores antes del backup final. No usar `--all-databases`
+ni restaurar tablas internas `mysql.*` de 5.7 en 8.x. Respaldar también los medios,
+`.env.prod` y certificados por un canal privado y verificar su recuperación.
+Copiar el SQL fuera del droplet por SSH/SCP y comprobar su SHA-256. No adjuntar
+datos de pacientes al chat ni guardarlos dentro del repositorio.
+
+**Cierre:** backup legible, checksum coincidente y copia fuera del servidor.
+
+El usuario ya confirmó la generación del backup de ensayo (62 tablas InnoDB y
+4.789.350 bytes); su ubicación, checksum e imágenes originales están en
+`UPGRADE-VALIDATION.md`. Para completar la copia externa, ejecutar
+[LOCAL-COPY-BACKUP.txt](LOCAL-COPY-BACKUP.txt) **en la computadora local**. El bloque
+pide el host SSH, descarga a una carpeta privada fuera del repo y compara tamaño
+y SHA-256 con los valores confirmados, antes de continuar con la restauración.
+La copia externa y el ensayo real ya se completaron en esta ejecución; el detalle
+está en `UPGRADE-VALIDATION.md`. No hace falta repetir la copia para continuar.
+
+## 3. Ensayar MySQL y aplicación en Docker local
+
+El Compose de ensayo no publica puertos ni monta `.env`, medios o datos reales del
+proyecto. Usa credenciales desechables y una red interna. No inicia cron ni Sentry.
+Ejecutar desde un checkout local del cambio, con una copia privada del backup:
+
+```bash
+make upgrade-build
+bash scripts/rehearse-mysql-upgrade.sh /ruta/privada/pre-upgrade.sql
+make upgrade-check
+```
+
+Para conservar un ensayo anterior, elegir otro proyecto aislado con el prefijo
+`cermed-upgrade-` y usar el mismo nombre en ambos comandos:
+
+```bash
+CERMED_REHEARSAL_PROJECT=cermed-upgrade-real-20261024-verified \
+  bash scripts/rehearse-mysql-upgrade.sh /ruta/privada/pre-upgrade.sql
+make CERMED_REHEARSAL_PROJECT=cermed-upgrade-real-20261024-verified upgrade-check
+```
+
+El script exige esquemas vacíos. Restaura sucesivamente en 5.7, 8.0 y 8.4, detiene
+cada motor antes del siguiente y compara tablas, conteos exactos, hashes de filas
+y resultados de las vistas. Comprueba que exista un conteo por cada tabla y vista.
+Imprime la carpeta privada con dumps, informes y logs de importación; estos últimos
+pueden contener datos privados si una sentencia falla. Los eventos
+MySQL quedan desactivados durante el ensayo. Un error de importación o diferencia
+detiene el proceso y apaga el motor activo; no suprimirlo para continuar.
+
+Ejecutar `upgrade-check` **después** de la restauración; si se ejecuta antes,
+crea tablas y el ensayo se negará a sobrescribirlas. Para repetir un ensayo,
+conservar primero sus informes y comprobar los volúmenes del proyecto aislado.
+Solo entonces eliminar sus volúmenes desechables:
+
+```bash
+docker compose --project-name cermed-upgrade --env-file /dev/null \
+  -f docker-compose-upgrade.yaml --profile legacy --profile intermediate down --volumes
+```
+
+No ejecutar ese comando con el Compose de producción. Los tests usan otra base
+temporal; las migraciones de `upgrade-check` sí afectan a la copia de ensayo.
+La comparación no sustituye la revisión de vistas, rutinas, definers, usuarios,
+collations o permisos específicos de la base real. Revisar también el resultado
+del Upgrade Checker de MySQL Shell para cada salto antes del corte.
+
+**Cierre:** restauración real sin errores, comparaciones idénticas, tests pasando,
+migraciones sin drift, estáticos, login/roles y recorridos de agenda/pagos/exportes
+validados sobre la copia. Medir memoria, disco y duración de la restauración.
+
+## 4. Validar dependencias e imágenes
+
+```bash
+pip-audit --disable-pip --no-deps -r requirements-prod.txt
+docker build -t cermed-upgrade-nginx:local -f Dockerfile.nginx .
+docker build -t cermed-upgrade-mysql:local -f Dockerfile.mysql .
+bash scripts/scan-upgrade-images.sh /tmp/cermed-image-scans \
+  cermed-upgrade-web:local cermed-upgrade-nginx:local \
+  cermed-upgrade-mysql:local
+```
+
+Ejecutar `pip-audit` en el entorno de desarrollo instalado con el lock nuevo.
+El scanner devuelve error ante High/Critical, incluso sin parche disponible,
+y conserva los informes de las tres imágenes. No usa `--only-fixed`. Solo aplica
+las reglas exactas de falsos positivos Oracle y MariaDB documentadas en
+[UPGRADE-IMAGE-TRIAGE.md](UPGRADE-IMAGE-TRIAGE.md); sus matches permanecen en el JSON.
+CI reproduce estos controles y publica los JSON como artefactos.
+
+Los hallazgos de un paquete de origen pueden afectar solo a ciertos binarios o
+configuraciones. Deben contrastarse con el proveedor; un resultado del scanner
+no prueba que exista una ruta explotable en CERMED. Tampoco se descarta sin evidencia.
+El resumen local está en [UPGRADE-VALIDATION.md](UPGRADE-VALIDATION.md).
+
+**Cierre:** resolver los hallazgos bloqueantes, o documentar y aprobar por separado
+una excepción específica con evidencia. Las correcciones de falsos positivos
+no aceptan riesgos de las vulnerabilidades que siguen pendientes.
+
+## 5. Parches del host en una ventana separada
+
+**Comprobado el 24/10/2026 a las 23:15 UTC:** APT no ofrece actualizaciones tras
+refrescar los índices; no hay paquetes retenidos, unidades fallidas ni aviso de
+reinicio. No hace falta ejecutar `apt upgrade` o reiniciar con este resultado.
+La revisión se repetirá si la ventana de despliegue se realiza otro día.
+
+Para repetir la revisión del droplet, el bloque está en
+[DROPLET-HOST-CHECKS.txt](DROPLET-HOST-CHECKS.txt). Actualiza índices APT y simula
+la instalación; no instala paquetes ni reinicia servicios.
+
+Antes de cambiar Ubuntu/Docker, obtener snapshot y backups comprobados. Revisar:
+
+```bash
+sudo apt-get update
+apt list --upgradable
+sudo apt-get -s upgrade
+systemctl --failed
+test ! -f /var/run/reboot-required || cat /var/run/reboot-required
+```
+
+`apt-get update` actualiza índices; la simulación no instala paquetes. Revisar
+qué servicios se reiniciarán, aplicar los parches aprobados de Ubuntu 22.04 y
+revalidar servicios/HTTP. No combinar un cambio de release Ubuntu con el corte de
+MySQL. Si hace falta reiniciar el host, hacerlo en la ventana acordada.
+
+## 6. Corte de producción y reversión
+
+Esta etapa se prepara con los resultados reales anteriores; todavía no se ejecutó.
+Antes del corte, ejecutar [DROPLET-PREDEPLOY-CHECKS.txt](DROPLET-PREDEPLOY-CHECKS.txt)
+para comprobar TLS, vigencia, cron y presencia de hooks personalizados. No instala
+ni renueva certificados. Cualquier hook que necesite curl o módulos retirados
+debe revisarse antes de adoptar la imagen reducida.
+El checkout actual está montado dentro del contenedor web: **un `git pull` ya
+cambia código servido**, aun sin reconstruir la imagen. Congelar escrituras antes
+de actualizar ese checkout y conservar el commit, imágenes, Compose y configuración
+anteriores fuera de él para poder volver.
+
+1. Anunciar mantenimiento; detener web y su cron, escritores externos y sesiones
+   DBeaver con capacidad de escritura. Bloquear nuevas operaciones durante el corte.
+2. Tomar el backup final y verificarlo. Conservar intacto el volumen 5.7, detenido.
+3. Restaurar en volúmenes nuevos, primero 8.0 y luego 8.4. Mantener el nombre real de
+   la base y recrear usuarios/permisos compatibles, sin importar tablas internas
+   de MySQL 5.7. Comparar nuevamente conteos y contenido. No usar en producción
+   el volumen de ensayo con credenciales `rehearsal-only`.
+4. En `.env.prod`, fijar `CERMED_MYSQL84_VOLUME` al volumen 8.4 **ya restaurado y
+   validado**. Compose exige que exista; nunca apuntarlo al volumen 5.7.
+5. Actualizar el checkout y construir las imágenes aprobadas. Validar con
+   `docker compose --env-file .env.prod -f docker-compose-prod.yaml config --quiet`.
+   No compartir `config` sin `--quiet`: expone valores resueltos del entorno.
+6. Levantar aplicación/proxy; revisar migraciones, estáticos, `check --deploy`,
+   login, roles, pacientes, agendas, cuotas/pagos, PDF/XLSX y acceso de medios.
+   Verificar cron y renovación de certificados, sin duplicar tareas.
+7. Generar un backup nuevo de 8.4 y restaurarlo en un entorno aparte; comparar
+   contenido. Solo después reabrir escrituras y registrar la hora del corte.
+8. Habilitar la variable de repositorio Actions `CERMED_MYSQL84_READY=true` cuando
+   la migración esté aprobada. Hasta entonces el job de deploy queda deshabilitado,
+   aunque CI pase. El despliegue sigue usando SSH + git/Compose.
+
+Antes de reabrir escrituras, revertir significa detener los servicios nuevos y
+restaurar el checkout, imagen, configuración y volumen 5.7 anteriores. No conectar
+MySQL 5.7 al volumen 8.4. Después de reabrir escrituras, volver a la copia anterior
+perdería operaciones nuevas: detenerse y preparar reconciliación/recuperación.
+
+**Cierre:** smoke aprobado, backup 8.4 restaurable, reapertura registrada y recursos
+estables. Conservar los backups y el volumen anterior durante el plazo acordado.
+
+## 7. Seguimiento
+
+Revisar durante el siguiente día hábil errores 5xx, logs de aplicación/Nginx/MySQL,
+memoria/swap/OOM, espacio, tiempos de respuesta, cron y backup nocturno. Registrar
+las advertencias existentes de `check --deploy`; HTTPS/cookies/headers requieren
+una etapa de configuración separada, fuera del alcance acordado de versiones.
+
+## Fuentes
+
+- [Ruta oficial MySQL 5.7 → 8.0 → 8.4](https://dev.mysql.com/doc/refman/8.4/en/upgrade-paths.html).
+- [Imágenes oficiales Python](https://hub.docker.com/_/python).
+- [Avisos Nginx](https://nginx.org/en/security_advisories.html): 1.31.6 está dentro
+  de los rangos afectados por avisos corregidos en 1.31.7+/1.30.6+. Se elige
+  [1.31.8](https://nginx.org/en/CHANGES) para conservar la rama de producción.
+  La exposición de cada aviso depende de la configuración; no se probó explotación.
+- [Checklist de despliegue Django 5.2](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/).

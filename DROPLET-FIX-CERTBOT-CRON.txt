@@ -1,0 +1,81 @@
+# Ejecutar en el droplet con el usuario cermed.
+# Corrige SOLO la invocacion del script: entrypoint persistente y cron actual.
+# Guarda ambos archivos originales. No hace git pull ni reinicia contenedores.
+# Al final prueba la renovacion contra Let's Encrypt STAGING (certificado de
+# prueba); no reemplaza el certificado productivo. Puede tardar unos minutos.
+
+bash <<'CERMED_FIX_CERTBOT_CRON'
+set -euo pipefail
+umask 077
+mount_state=$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/app/config"}}{{.Type}} {{.RW}}{{end}}{{end}}' cermed_nginx)
+if [ "$mount_state" != 'bind true' ]; then
+  echo 'DETENER: /app/config no es el bind mount escribible esperado.'
+  exit 1
+fi
+mkdir -p "$HOME/cermed-upgrade-backups"
+backup_dir=$(mktemp -d "$HOME/cermed-upgrade-backups/cron-fix.XXXXXXXX")
+docker cp cermed_nginx:/app/config/entrypoint.nginx.sh "$backup_dir/entrypoint.nginx.sh"
+docker cp cermed_nginx:/etc/cron.d/certbot-renewal "$backup_dir/certbot-renewal.cron"
+printf 'Backup de configuracion: %s\n' "$backup_dir"
+
+docker exec -i cermed_nginx python3 - <<'PY'
+from pathlib import Path
+import subprocess
+
+entrypoint = Path('/app/config/entrypoint.nginx.sh')
+cron = Path('/etc/cron.d/certbot-renewal')
+old = 'root /app/config/certbot-renewal.sh'
+new = 'root /bin/sh /app/config/certbot-renewal.sh'
+original = {path: path.read_text() for path in (entrypoint, cron)}
+updated = {}
+for path, content in original.items():
+    if content.count(old) == 1 and new not in content:
+        updated[path] = content.replace(old, new)
+    elif content.count(new) == 1 and old not in content:
+        updated[path] = content
+    else:
+        raise SystemExit(f'DETENER: formato inesperado en {path}; no se modifico nada.')
+subprocess.run(['/bin/sh', '-n'], input=updated[entrypoint], text=True, check=True)
+try:
+    for path, content in updated.items():
+        if content != original[path]:
+            path.write_text(content)
+except OSError:
+    for path, content in original.items():
+        if path.read_text() != content:
+            path.write_text(content)
+    raise
+assert all(path.read_text() == content for path, content in updated.items())
+print('OK: entrypoint persistente y cron actual invocan el script mediante /bin/sh.')
+PY
+
+docker exec cermed_nginx sh -c '
+  test -s /var/run/crond.pid
+  kill -0 "$(cat /var/run/crond.pid)"
+  test -r /app/config/certbot-renewal.sh
+  sh -n /app/config/certbot-renewal.sh
+  stat -c "%a %n" /etc/cron.d/certbot-renewal
+  for config in /etc/letsencrypt/cli.ini /etc/letsencrypt/renewal/cermed.com.ar.conf; do
+    [ -f "$config" ] || continue
+    if grep -Eq "^[[:space:]]*(pre_hook|post_hook|deploy_hook|renew_hook|pre-hook|post-hook|deploy-hook|renew-hook)[[:space:]]*=" "$config"; then
+      echo "DETENER prueba: hay hooks personalizados que debemos revisar. Cron ya corregido."
+      exit 1
+    fi
+  done
+'
+docker exec cermed_nginx nginx -t
+echo 'PRUEBA DE RENOVACION EN STAGING; NO REEMPLAZA EL CERTIFICADO ACTUAL:'
+docker exec cermed_nginx certbot renew --cert-name cermed.com.ar \
+  --dry-run --non-interactive --no-random-sleep-on-renew --no-directory-hooks \
+  --server https://acme-staging-v02.api.letsencrypt.org/directory \
+  --webroot -w /var/www/certbot
+curl --connect-timeout 10 --max-time 20 --silent --show-error \
+  --resolve cermed.com.ar:443:127.0.0.1 \
+  --output /dev/null --write-out 'HTTP=%{http_code} TLS_verify=%{ssl_verify_result}\n' \
+  https://cermed.com.ar/usuarios/login/
+echo 'CORRECCION Y PRUEBA COMPLETADAS. Compartir la salida.'
+CERMED_FIX_CERTBOT_CRON
+
+# El entrypoint se modifica en el checkout del servidor, mediante su bind mount.
+# Es un cambio local intencional: conservarlo al preparar el despliegue futuro.
+# La misma correccion ya esta preparada en el repositorio local.
