@@ -38,7 +38,8 @@ services:
       dockerfile: Dockerfile.prod
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      # Nginx reaches cermed_web:8000 over Docker; host checks use loopback.
+      - "127.0.0.1:8000:8000"
     depends_on:
       db:
         condition: service_healthy   
