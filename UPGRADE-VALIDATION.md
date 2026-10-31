@@ -1,5 +1,10 @@
 # Evidencia local — 24/10/2026
 
+> Actualización del 27/10: correcciones de OpenSSL, Brotli y Certbot, excepciones
+> específicas y resultados nuevos en [UPGRADE-IMAGE-REVIEW-2026-10-27.md](UPGRADE-IMAGE-REVIEW-2026-10-27.md).
+> Los conteos anteriores de este documento son históricos; CI sigue bloqueado
+> por avisos residuales. Producción no se actualizó durante esta revisión.
+
 **Restauración real y validaciones automáticas locales: aprobadas. Seguridad de
 imágenes: bloqueada. Actualización de versiones en producción: pendiente.** El
 usuario aplicó únicamente la corrección puntual del cron de certificados y validó
