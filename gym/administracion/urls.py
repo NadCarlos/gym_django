@@ -150,7 +150,7 @@ profesional = [
     path(route='<int:id>/profesional_detail/',view=ProfesionalDetail.as_view(), name='profesional_detail'),
     path(route='<int:id>/profesional_update/',view=ProfesionalUpdate.as_view(), name='profesional_update'),
     path(route='<int:id>/profesional_delete/',view=ProfesionalDelete.as_view(), name='profesional_delete'),
-    path(route='<error_profesional_existente/',view=ErrorProfesionalExistente.as_view(), name='error_profesional_existente'),
+    path(route='error_profesional_existente/',view=ErrorProfesionalExistente.as_view(), name='error_profesional_existente'),
     path(route='profesional_create_existente/',view=ProfesionalCreateFromExistent.as_view(), name='profesional_create_from_existent'),
 ]
 
