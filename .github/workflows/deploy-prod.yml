@@ -17,7 +17,7 @@ permissions:
 jobs:
   ci:
     name: CI
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
 
     services:
@@ -104,7 +104,7 @@ jobs:
 
       - name: Preserve vulnerability reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: image-vulnerability-reports
           path: /tmp/cermed-image-scans/*.json
@@ -112,7 +112,7 @@ jobs:
 
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Enable only after the maintenance-window migration and validation.
     if: github.ref == 'refs/heads/production' && vars.CERMED_MYSQL84_READY == 'true'
     timeout-minutes: 30
