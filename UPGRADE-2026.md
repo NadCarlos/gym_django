@@ -1,15 +1,50 @@
 # Actualización preventiva de CERMED — 24/10/2026
 
-**Estado al 31/10: despliegue autorizado y riesgo residual acotado registrado;
-migración productiva pendiente.** Las restauraciones y validaciones locales pasaron.
-La política exacta y sus controles están en `config/reviewed-image-risk.json` y
-`UPGRADE-IMAGE-TRIAGE.md`. No ejecutar `make prod-deploy` hasta preparar el volumen
-8.4, TLS y el backup final del corte; `CERMED_MYSQL84_READY` sigue cerrado.
+**Estado al 31/10: producción migrada y reabierta en `7883216`.** El usuario
+confirmó el sistema funcionando con Python 3.12.16, Django 5.2.18, MySQL 8.4.13 y
+Nginx 1.31.8. Login y estáticos devolvieron HTTPS 200 con certificado válido tanto
+en el droplet como desde una comprobación externa. CI del release pasó.
+`CERMED_MYSQL84_READY=true` quedó habilitado para los futuros despliegues por
+SSH + git/Compose; habilitar la variable no ejecutó otro despliegue.
 
-El cron de certificados ya recibió una corrección puntual en el droplet:
-entrypoint y cron invocan el script mediante `/bin/sh`. La renovación ACME staging
-pasó y HTTPS siguió en 200 con TLS validado. Ese cambio local del checkout debe
-conservarse al preparar el corte; no implica que las nuevas versiones estén desplegadas.
+El corte conservó **`gym_db`, `bunfer` y `bunfercopia2`**. Las dos últimas parecen
+copias de otros sistemas según el usuario, pero su desuso no está confirmado:
+no eliminarlas. El backup final se restauró secuencialmente en volúmenes nuevos
+8.0 y 8.4. Coincidieron tablas, conteos, hashes de filas, resultados de vistas,
+motores y collations; se repitió la comparación tras reiniciar y al conectar el
+volumen 8.4 a Compose. La importación preservó la collation de 5.7 mediante una
+opción de sesión, sin cambiar el default global del servidor nuevo.
+
+- Volumen productivo: `cermed_mysql84_20261031_sp3xsl01`.
+- Volumen 5.7 retenido: `gym_django_db_data`; nunca montarlo con MySQL 8.x.
+- Artefactos privados del corte:
+  `/home/cermed/cermed-upgrade-backups/release-20261031T031935Z.sP3XSL01`.
+  **`mysql-tls/` dentro de ese directorio está en uso por producción**, no es
+  caché descartable. `data/final57.sql` incluye las tres bases y
+  `data/media-static.tar` conserva medios y estáticos; checksums verificados.
+- Pasaron checks de Django, ausencia de migraciones pendientes y drift,
+  collectstatic, backup con el usuario real y TLS verificado, login y estáticos.
+  Ambos procesos cron quedaron activos. La renovación ACME staging ya había
+  pasado antes del corte; no se volvió a ejecutar durante esta activación.
+- Se generó `backup_data/cermed-first84-sp3xsl01.sql` con Django en producción.
+  La restauración de **ese nuevo dump** y la copia externa del backup final del
+  corte aún no están confirmadas; no confundirlas con los ensayos previos.
+- Estado inmediato: disco libre 3.5 GiB (86% usado), RAM disponible 158 MiB y
+  swap usada 92 MiB. Es una medición inicial, no una prueba de estabilidad.
+- `check --deploy` conserva `urls.W010` por el `<` sobrante en
+  `gym/administracion/urls.py`, ruta `error_profesional_existente`; no bloqueó el
+  despliegue. La aceptación detallada de agendas/pagos y el backup nocturno quedan
+  para el seguimiento operativo.
+
+**Las escrituras ya están habilitadas en 8.4.** Los comandos de rollback del corte
+no deben ejecutarse ahora: volver a 5.7 perdería operaciones posteriores y requiere
+reconciliación. Se conservaron imágenes anteriores, volumen original y respaldos.
+Las secciones numeradas siguientes documentan el procedimiento de la primera
+migración; no volver a ejecutarlo sobre esta producción ya migrada.
+
+Persisten 13 CVE High distintos aceptados de forma acotada; no se consideran
+corregidos. La política exacta y sus controles están en
+`config/reviewed-image-risk.json` y `UPGRADE-IMAGE-TRIAGE.md`.
 
 El alcance acordado es actualizar versiones y validar compatibilidad. El puerto
 8000 queda en loopback; 3308, HTTPS, permisos de medios y endpoints se conservan.
