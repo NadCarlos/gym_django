@@ -1,11 +1,27 @@
-FROM nginx:1.31.8@sha256:6e67f8eaac94fc456588d4ff6c470d984841f5b5dc4279863d5cbe6ec5a60def
+FROM nginx:1.31.8@sha256:6e67f8eaac94fc456588d4ff6c470d984841f5b5dc4279863d5cbe6ec5a60def AS base
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends cron certbot \
+    && apt-get install -y --no-install-recommends cron python3 ca-certificates \
     # CERMED uses the core proxy/static/TLS modules and Certbot webroot.
     # These optional modules are not loaded by cermed.conf or nginx.conf.
     && apt-get purge -y --auto-remove \
         curl nginx-module-acme nginx-module-geoip nginx-module-image-filter \
         nginx-module-njs nginx-module-xslt \
     && rm -rf /var/lib/apt/lists/*
+
+# Build a locked Certbot environment without Debian's older Python dependencies.
+FROM base AS certbot-dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/certbot
+COPY requirements-certbot.txt /tmp/requirements-certbot.txt
+RUN /opt/certbot/bin/pip install --no-cache-dir --require-hashes -r /tmp/requirements-certbot.txt \
+    && /opt/certbot/bin/pip check
+
+FROM base AS runtime
+COPY --from=certbot-dependencies /opt/certbot /opt/certbot
+# Debian cron has a minimal PATH; keep the command available in /usr/bin.
+RUN ln -s /opt/certbot/bin/certbot /usr/bin/certbot \
+    && certbot --version

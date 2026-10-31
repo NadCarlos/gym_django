@@ -1,9 +1,9 @@
 FROM mysql:8.4.13@sha256:76f0358884cb92d9a086d24e5671c38048d3fef40f2588703d73eb55392d6b69
 
-# Refresh OS trust roots. The bundled MySQL Shell has its own outdated Python
-# dependencies; CERMED uses mysqld/mysql/mysqldump, not that auxiliary tool.
+# Refresh OS trust roots and Brotli (ELSA-2026-500513). MySQL Shell bundles
+# outdated Python dependencies; CERMED uses mysqld/mysql/mysqldump, not Shell.
 # Run migration Upgrade Checker separately with the official Shell distribution.
-RUN microdnf update -y ca-certificates \
+RUN microdnf update -y ca-certificates libbrotli \
     && microdnf remove -y mysql-shell \
     && microdnf clean all
 

@@ -28,7 +28,7 @@ prod-up:
 	docker compose --env-file .env.prod -f docker-compose-prod.yaml up --build -d
 
 prod-config:
-	docker compose --env-file .env.prod -f docker-compose-prod.yaml config
+	docker compose --env-file .env.prod -f docker-compose-prod.yaml config --quiet
 
 prod-deploy:
 	docker compose --env-file .env.prod -f docker-compose-prod.yaml up --build -d

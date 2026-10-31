@@ -72,7 +72,9 @@ jobs:
           pip check
 
       - name: Audit locked production dependencies
-        run: pip-audit --disable-pip --no-deps -r requirements-prod.txt
+        run: |
+          pip-audit --disable-pip --no-deps -r requirements-prod.txt
+          pip-audit --disable-pip --no-deps -r requirements-certbot.txt
 
       - name: Run Django checks
         run: python gym/manage.py check
@@ -95,6 +97,8 @@ jobs:
         run: |
           docker build -t cermed-ci:nginx -f Dockerfile.nginx .
           docker build -t cermed-ci:mysql -f Dockerfile.mysql .
+          bash scripts/check-nginx-image.sh cermed-ci:nginx
+          bash scripts/check-image-exceptions.sh cermed-ci:runtime cermed-ci:nginx
           bash scripts/scan-upgrade-images.sh /tmp/cermed-image-scans \
             cermed-ci:runtime cermed-ci:nginx cermed-ci:mysql
 

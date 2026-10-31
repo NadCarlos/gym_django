@@ -1,0 +1,4 @@
+# Certbot's isolated environment; never use system-site-packages.
+certbot==5.8.0
+cryptography==50.0.2
+urllib3==2.8.0

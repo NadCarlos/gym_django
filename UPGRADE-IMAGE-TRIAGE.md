@@ -1,5 +1,44 @@
 # Revisión de avisos de imágenes — 24/10/2026
 
+## Actualización validada el 27/10/2026
+
+Se incorporaron OpenSSL `3.0.22-1~deb12u2`, Brotli `1.0.9-10.0.1.el9_8`
+y Certbot `5.8.0` en un venv con hashes, cryptography `50.0.2` y urllib3 `2.8.0`.
+Cron usa rutas absolutas y detiene la recarga si falla la renovación o `nginx -t`.
+Los locks de producción/Certbot pasaron pip-audit; pasaron 59 tests, migraciones,
+134 estáticos y backup/restauración en una base desechable. El smoke de Nginx
+verificó TLS temporal, proxy, archivos, webroot y cron, incluyendo fallo sin
+recarga. La renovación ACME real con esta imagen sigue pendiente.
+
+Ocho reglas nuevas en `config/grype.yaml` conservan los matches ignorados y se
+limitan al aviso, distribución, paquete y versión. Su evidencia es:
+
+- [ACL CVE-2026-54370](https://security-tracker.debian.org/tracker/CVE-2026-54370):
+  `getfacl`, `setfacl` y `chacl` ausentes en web y Nginx; el aviso de biblioteca
+  CVE-2026-54369 permanece visible.
+- Perl [CVE-2026-82560](https://security-tracker.debian.org/tracker/CVE-2026-82560)
+  y [CVE-2026-9538](https://security-tracker.debian.org/tracker/CVE-2026-9538):
+  `Pod::Text` y `Archive::Tar` ausentes solo en Nginx, comprobados por import.
+- SQLite [CVE-2025-7458](https://security-tracker.debian.org/tracker/CVE-2025-7458),
+  [CVE-2026-11822](https://security-tracker.debian.org/tracker/CVE-2026-11822) y
+  [CVE-2026-11824](https://security-tracker.debian.org/tracker/CVE-2026-11824):
+  producción usa MySQL; no ejecuta SQL arbitrario en SQLite ni ingiere bases SQLite.
+- [Python CVE-2026-19445](https://security-tracker.debian.org/tracker/CVE-2026-19445):
+  TLS termina en Nginx, sin servidor Python con sustitución de contexto SNI.
+  Certbot usa webroot; el droplet reportó ausencia de hooks personalizados.
+
+`check-image-exceptions.sh` verifica componentes ausentes y backend MySQL en CI.
+Reevaluar al cambiar motores, carga de bases, terminación TLS, plugins o hooks.
+Estas condiciones no convierten las bibliotecas en versiones parcheadas.
+
+Resultado del 27/10: web **87 High / 4 Critical**, Nginx **70 High / 0 Critical**,
+MySQL **0 High / 0 Critical**. Las cuatro críticas restantes son CVE-2026-5450
+(glibc). **CI conserva el bloqueo por High; no se aprobó ni implementó una
+excepción temporal para el riesgo residual.** Los conteos siguientes son
+históricos. No hubo despliegue productivo durante estas validaciones.
+
+## Evidencia histórica del 24/10
+
 **Estado: revisión parcial priorizada; CI sigue bloqueado.** Este documento
 clasifica evidencia y documenta exclusiones específicas por falsos positivos
 confirmados de Oracle y MariaDB. No acepta riesgos sobre los demás hallazgos.
