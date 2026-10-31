@@ -250,7 +250,7 @@ hostname de la aplicación actual; no imprime contraseñas ni modifica servicios
 ```bash
 cermed_mysql_host=$(docker exec cermed_web python -c 'import os; print(os.environ["MYSQL_HOST"])')
 cermed_tls_dir="$HOME/cermed-mysql-tls/$(date -u +%Y%m%dT%H%M%SZ)"
-bash /ruta/a/create-mysql-tls.sh "$cermed_tls_dir" "$cermed_mysql_host" db cermed_db localhost 127.0.0.1
+bash /ruta/a/create-mysql-tls.sh "$cermed_tls_dir" "$cermed_mysql_host" db cermed_db localhost 127.0.0.1 cermed.com.ar 142.93.11.29
 printf 'CERMED_MYSQL_TLS_DIR=%s\n' "$cermed_tls_dir"
 ```
 
@@ -274,10 +274,14 @@ El generador crea una CA nueva; actualizar también la confianza de DBeaver.
 No sobrescribe material existente. No usar una renovación HTTPS de Certbot para
 estos certificados internos.
 
-Para DBeaver, mantener el túnel SSH y habilitar TLS con `client/ca.pem` como CA y
-verificación de identidad (`sslMode=VERIFY_IDENTITY` en el driver MySQL). El SAN
-incluye `127.0.0.1` para el extremo local del túnel. No copiar claves privadas al
-cliente ni desactivar la verificación. Comprobar lectura y escritura durante la
+Para DBeaver, conectar directamente a `cermed.com.ar:3308` o `142.93.11.29:3308`,
+con SSH deshabilitado, base `gym_db` y las credenciales habituales. Habilitar TLS
+con `client/ca.pem` como CA y verificación de identidad (`sslMode=VERIFY_IDENTITY`
+en el driver MySQL). El certificado debe incluir el dominio y la IP pública en
+su SAN; el certificado inicial del corte solo incluía los destinos internos.
+El administrador puede entregar al analista únicamente el certificado público
+`client/ca.pem`; el analista no necesita una cuenta SSH. No copiar claves privadas
+al cliente ni desactivar la verificación. Comprobar lectura y escritura durante la
 ventana. MySQL rechazará conexiones TCP sin cifrar; las conexiones locales por
 socket utilizadas para mantenimiento siguen disponibles.
 

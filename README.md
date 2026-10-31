@@ -12,17 +12,15 @@ Servicio de Backoffice para la empresa CERMED de Río Cuarto, Córdoba.
 - Docker Engine, Docker Compose v2 con `up --wait`, y Make.
 - Dependencias exactas y hashes en `requirements-prod.txt` (runtime) y `requirements.txt` (desarrollo).
 
-**Migración pendiente de producción:** antes del primer despliegue de estas versiones,
-seguir [UPGRADE-2026.md](UPGRADE-2026.md). Los volúmenes 5.7 se conservan; el nuevo
-Compose usa un volumen 8.4 separado. [DROPLET-CHECKS.txt](DROPLET-CHECKS.txt) contiene
-los comandos de inventario listos para copiar y pegar.
+Producción ya corre con este stack. El historial, los respaldos y el procedimiento
+de recuperación de la migración están en [UPGRADE-2026.md](UPGRADE-2026.md).
 
 ## Instalación
 
-El sistema utiliza **Docker** y **docker-compose** con el objetivo de organizar
-y orquestar la estructura. Tenemos 2 contenedores, uno para el servicio de 
-la base de datos **MYSQL** y otro para levantar la aplicación de **Django**. También tenemos un 
-contenedor para **Nginx**.
+El stack local y de producción se ejecuta con Docker Compose: Django 5.2.18 sobre
+Python 3.12.16, MySQL 8.4.13 y Nginx. En producción, Gunicorn sirve Django detrás
+de Nginx con HTTPS. Las dependencias de producción y desarrollo están fijadas con
+hashes en `requirements-prod.txt` y `requirements.txt`, respectivamente.
 
 1. Clona este repositorio.
 2. Crea un entorno virtual: `python3 -m venv venv`.
@@ -49,16 +47,14 @@ Esto ayudará a que tu `IDE/IDLE` reconozca los paquetes y liberías del proyect
 
 ## Para producción
 
-En el entorno de producción se utiliza Gunicorn y Nginx para que funcione correctamente en HTTPS.
-Para esto, debemos hacer uso de los archivos de configuración de `Dockerfile.prod` y `docker-compose-prod.yaml`,
-el `entrypoint-prod.sh` y que se suma un nuevo `service`/contenedor en el `compose` para que corra nginx individualmente.
-Además, la configuración de producción toma variables desde `.env.prod` al usar los targets `prod-*` del `Makefile`.
+En producción se utilizan `Dockerfile.prod`, `Dockerfile.mysql`, `Dockerfile.nginx`
+y `docker-compose-prod.yaml`. La configuración toma variables de `.env.prod`, que
+existe únicamente en el servidor. Los targets `prod-*` del `Makefile` operan el stack.
 Nunca está de más checkear los logs en casos de problemas: `docker logs <container_name>`. También
 se puede acceder a un `bash` interactivo con `docker exec -it <container_name> /bin/bash`.
 
-También hay que prestar atención al archivo `grupoterraing.conf` ya que contiene la información para el setup
-de Nginx. Tener en cuenta variables de entorno siguiendo el `env.example`, los volúmenes y demás. Siguiendo la configuración
-actual, simplifico el `down` y el `build up` en 2 comandos `Make`: `make prod-down` y `make prod-up`. 
+La configuración de Nginx está en `cermed.conf`. Consultá `.env.example` para las
+variables locales; nunca guardes `.env.prod` en Git.
 
 ## CI/CD producción
 
@@ -77,7 +73,7 @@ Secrets opcionales:
 - `PROD_SSH_PORT`: puerto SSH. Si no se define, usa `22`.
 - `PROD_HEALTHCHECK_URL`: URL que se consulta desde el servidor al final del deploy. Si no se define, usa `http://localhost:8000/`.
 
-Antes del primer deploy, completar los pasos de [UPGRADE-2026.md](UPGRADE-2026.md).
+Para el historial de despliegue y recuperación, consultá [UPGRADE-2026.md](UPGRADE-2026.md).
 El workflow conserva el despliegue SSH + git/Compose y bloquea High/Critical del
 escaneo de imágenes. Un `check --deploy` con advertencias no equivale a una
 configuración productiva completamente endurecida.
