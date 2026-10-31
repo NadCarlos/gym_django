@@ -60,6 +60,32 @@ test "$("${tls[@]}" "https://cermed.com.ar:$https_port/media/probe.txt")" = medi
 test "$(curl -q --noproxy '*' --silent --show-error --fail --max-time 5 \
     -H 'Host: cermed.com.ar' "http://127.0.0.1:$http_port/.well-known/acme-challenge/probe")" = acme-ok
 docker exec "$proxy" /opt/certbot/bin/pip check
+docker exec -i "$proxy" /opt/certbot/bin/python - <<'PY'
+import bz2
+import ctypes
+import dbm.gnu
+import dbm.ndbm
+import lzma
+import readline
+import sqlite3
+import ssl
+import sys
+import uuid
+import zlib
+
+assert sys.version_info[:3] == (3, 13, 18), sys.version
+# CVE-2026-19553: check_hostname must not silently allow a missing hostname.
+context = ssl.create_default_context()
+for hostname in (None, ""):
+    try:
+        context.wrap_bio(ssl.MemoryBIO(), ssl.MemoryBIO(), server_hostname=hostname)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("TLS accepted an absent server_hostname")
+context.wrap_bio(ssl.MemoryBIO(), ssl.MemoryBIO(), server_hostname="example.test")
+print("PASS: patched Certbot Python, native imports and TLS hostname guard.")
+PY
 docker exec "$proxy" certbot --version
 docker exec "$proxy" certbot plugins --authenticators | grep -q webroot
 docker exec "$proxy" sh -c 'test "$(stat -c %a /etc/cron.d/certbot-renewal)" = 644; kill -0 "$(cat /var/run/crond.pid)"'

@@ -1,12 +1,20 @@
+FROM tianon/gosu:1.20@sha256:572913c67c6b58baea3e5572fc10e4b42914463d8e8b3ab8e3fed077394c807f AS gosu
+
 FROM mysql:8.4.13@sha256:76f0358884cb92d9a086d24e5671c38048d3fef40f2588703d73eb55392d6b69
 
-# Refresh OS trust roots and Brotli (ELSA-2026-500513). MySQL Shell bundles
+# Refresh all available Oracle OS fixes, including trust roots, Brotli and xz.
+# MySQL Shell bundles
 # outdated Python dependencies; CERMED uses mysqld/mysql/mysqldump, not Shell.
 # Run migration Upgrade Checker separately with the official Shell distribution.
-RUN microdnf update -y ca-certificates libbrotli \
+RUN microdnf update -y \
     && microdnf remove -y mysql-shell \
     && microdnf clean all
 
+# Upstream gosu 1.20 includes moby/sys/user 0.4.1 (GHSA-mjcv-p78q-w5fw).
+# Its static binary works on Oracle Linux; keep MySQL's original entrypoint.
+COPY --from=gosu /usr/local/bin/gosu /usr/local/bin/gosu
 RUN mysqld --version | grep '8.4.13' \
     && mysql --version \
-    && mysqldump --version
+    && mysqldump --version \
+    && gosu --version | grep '^1.20 ' \
+    && test "$(gosu mysql id -u)" = "$(id -u mysql)"

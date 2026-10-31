@@ -196,12 +196,3 @@ ignore:
       name: "^perl-base$"
       version: "5.40.1-6+deb13u1"
       type: deb
-# Applicability decisions, not patched libraries. Reevaluate on changes to
-# TLS termination, Certbot plugins or hooks.
-  - vulnerability: CVE-2026-19445
-    namespace: debian:distro:debian:13
-    reason: "TLS terminates in Nginx, not a Python SNI callback server; Certbot uses webroot and no custom hooks. Reevaluate if changed."
-    package:
-      name: "^(libpython3[.]13-minimal|libpython3[.]13-stdlib|python3[.]13-minimal|python3[.]13)$"
-      version: "3.13.5-2+deb13u5"
-      type: deb

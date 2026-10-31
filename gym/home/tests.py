@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from io import BytesIO
+from zipfile import ZipFile
 
 import pandas as pd
 from django import forms
@@ -13,6 +14,28 @@ from openpyxl import load_workbook
 
 
 class UpgradeCompatibilityTests(SimpleTestCase):
+    def test_excel_import_rejects_xml_entities(self):
+        original = BytesIO()
+        with pd.ExcelWriter(original, engine="xlsxwriter") as writer:
+            pd.DataFrame({"Paciente": ["safe-marker"]}).to_excel(writer, index=False)
+        crafted = BytesIO()
+        with ZipFile(original) as source, ZipFile(crafted, "w") as target:
+            for item in source.infolist():
+                content = source.read(item.filename)
+                if item.filename == "xl/sharedStrings.xml":
+                    # One harmless entity exercises the real import path without
+                    # allocating a large payload or contacting an external host.
+                    declaration = b'<!DOCTYPE sst [<!ENTITY sample "expanded-marker">]>'
+                    content = content.replace(b"?>", b"?>" + declaration, 1)
+                    content = content.replace(b"safe-marker", b"&sample;")
+                target.writestr(item, content)
+        crafted.seek(0)
+        with self.assertRaises(ValueError) as caught:
+            pd.read_excel(crafted)
+        from defusedxml.common import EntitiesForbidden
+
+        self.assertIsInstance(caught.exception.__cause__, EntitiesForbidden)
+
     def test_existing_template_number_and_date_output_is_preserved(self):
         request = RequestFactory().get("/")
         request.user = AnonymousUser()

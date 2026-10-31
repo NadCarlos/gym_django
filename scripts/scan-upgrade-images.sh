@@ -8,6 +8,7 @@ fi
 reports=$1
 shift
 mkdir -p -- "$reports"
+reports=$(cd -- "$reports" && pwd)
 scanner=anchore/grype:v0.121.0@sha256:621d56d1d68106b787022c81546f7e0a36202a25d1239f0c20195fab8c16f7ea
 repo_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 status=0
@@ -24,5 +25,35 @@ for image in "$@"; do
         > "$reports/image-$index.json"; then
         status=1
     fi
+    # Image package catalogs can miss Expat compiled into CPython. Inventory
+    # the loaded version and scan its upstream CPE as a separate SBOM as well.
+    native_status=0
+    docker run --rm --read-only --network none -i --entrypoint sh "$image" -ec '
+        if command -v python3 >/dev/null 2>&1; then exec python3 -; fi
+        exit 3
+    ' < "$repo_root/scripts/python-expat-sbom.py" \
+        > "$reports/python-expat-$index.cdx.json" || native_status=$?
+    case "$native_status" in
+        0)
+            printf 'Scanning Python Expat in %s\n' "$image"
+            if ! docker run --rm \
+                -v cermed-upgrade-grype-cache:/cache \
+                --mount "type=bind,src=$reports/python-expat-$index.cdx.json,dst=/sbom.json,readonly" \
+                --mount "type=bind,src=$repo_root/config/grype.yaml,dst=/config/grype.yaml,readonly" \
+                -e GRYPE_DB_CACHE_DIR=/cache \
+                "$scanner" sbom:/sbom.json --config /config/grype.yaml --fail-on high -o json \
+                > "$reports/python-expat-$index.json"; then
+                status=1
+            fi
+            ;;
+        3)
+            rm -- "$reports/python-expat-$index.cdx.json"
+            printf 'No Python interpreter in %s; image scan still applies.\n' "$image"
+            ;;
+        *)
+            printf 'Failed to inventory Python Expat in %s\n' "$image" >&2
+            status=1
+            ;;
+    esac
 done
 exit "$status"

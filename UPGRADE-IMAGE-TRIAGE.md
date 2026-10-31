@@ -1,5 +1,122 @@
 # Revisión de avisos de imágenes — 24/10/2026
 
+## Revisión de todos los High y actualización adicional — 31/10/2026
+
+Se cruzaron los **17 CVE High distintos** de las candidatas anteriores con
+los avisos de Debian/upstream, los componentes instalados y sus usos en CERMED.
+También se inventariaron las demás severidades y sus actualizaciones disponibles.
+Los hallazgos sin resolución se conservan: revisión no equivale a aceptación.
+
+Resultado final local (coincidencias por paquete; **0 Critical** en las tres):
+
+| Imagen | High del catálogo | High de Expat integrado | CVE High distintos | Medium / Low / Negligible |
+| --- | ---: | ---: | ---: | --- |
+| Web | 49 | 2 | 13 | 152 / 24 / 72 |
+| Nginx | 39 | 2 | 11 | 54 / 12 / 56 |
+| MySQL | 0 | 0 | 0 | 13 / 0 / 0 |
+
+Los dos avisos agregados a web son cobertura nueva, no una regresión de versión.
+En Nginx, 16 coincidencias desaparecen por los cuatro CVE de Python corregidos;
+las dos de Expat cambian de catálogo a SBOM. Los avisos de pip desaparecen.
+MySQL baja de 16 a 13 Medium al corregir xz y gosu. Los avisos restantes no se
+excluyen. **El gate High sigue fallando y el despliegue continúa bloqueado.**
+
+Pasaron: construcción de las cuatro imágenes (web prod/dev, Nginx, MySQL),
+`check-mysql-client.sh` con **60 tests**, backup/restauración y negativos TLS,
+`check-nginx-image.sh` con proxy/archivos/ACME/cron y hostname TLS, controles
+de componentes ausentes, y `pip-audit` de ambos locks de producción/Certbot.
+Permanece el warning de URL preexistente; no se ejecutó una emisión ACME real.
+El ensayo Excel fue rojo antes y verde después. El escaneo SBOM detecta los
+dos CVE reales de Expat, conserva JSON y devuelve error; MySQL sin Python se
+escanea correctamente y pasa el umbral High.
+
+Evidencia: `/tmp/cermed-full-review-scans/` para web/proxy y
+`/tmp/cermed-full-review-mysql-scans/` para MySQL final;
+`/tmp/cermed-full-review-app-final.log`, `/tmp/cermed-full-review-proxy-check.log`,
+`/tmp/cermed-full-review-pip-audit.log` y `/tmp/cermed-excel-entities-red.log`.
+No hubo push ni cambios en el droplet. La reversión de este paso restaura los
+Dockerfiles, locks, test Excel, comprobación del proxy y escaneo complementario
+como una unidad, sin revertir las mejoras TLS y de herramientas del paso anterior.
+
+### Correcciones aplicadas
+
+- Certbot usa ahora **Python 3.13.18 oficial**, fijado por digest, sobre el mismo
+  Debian Trixie de Nginx. Se copian el intérprete y su biblioteca estándar y se
+  instalan sus dependencias nativas mediante APT; no se mezclan distribuciones.
+  Se corrigen los cuatro avisos High del Python Debian anterior:
+  [HTMLParser](https://security-tracker.debian.org/tracker/CVE-2026-15308),
+  [hostname TLS](https://security-tracker.debian.org/tracker/CVE-2026-19553),
+  [entropía XML](https://security-tracker.debian.org/tracker/CVE-2026-7210) y
+  [filtros tar](https://security-tracker.debian.org/tracker/CVE-2026-82049).
+  Se retira la antigua excepción de SNI para Python Debian 3.13.5.
+- `pip` queda en **26.2.2** tanto globalmente como en los venv. La actualización
+  previa solo alcanzaba al venv web; se verificó la desaparición de sus hallazgos
+  en el escaneo completo, sin filtros nuevos.
+- Producción incorpora **defusedxml 0.7.1**, con hashes, para las importaciones
+  Excel mediante pandas/openpyxl. [Openpyxl recomienda esta protección](https://openpyxl.readthedocs.io/en/stable/#security).
+  Un XLSX sintético con una sola entidad se aceptaba antes; ahora el lector real
+  lo rechaza con `EntitiesForbidden`. El test de Excel normal sigue pasando.
+  Esto mitiga expansión de entidades; no parchea Expat ni evita todos los posibles
+  consumos excesivos de recursos al importar archivos.
+- MySQL mantiene **8.4.13**, actualiza todos los RPM disponibles de Oracle
+  (incluidos xz, curl/libcurl y krb5-libs) y usa **gosu 1.20** del mantenedor,
+  fijado por digest. [Oracle corrige xz](https://linux.oracle.com/errata/ELSA-2026-89749.html)
+  y [gosu incorpora moby/sys/user 0.4.1](https://github.com/tianon/gosu/releases/tag/1.20).
+  Se conserva el entrypoint original y se verifica el cambio al usuario MySQL.
+
+### Expat estaba fuera del inventario web
+
+Tanto Python web 3.12.16 como el Python 3.13.18 de Certbot cargan **Expat 2.9.0**.
+Quitar el paquete Debian de Python elimina `libexpat1` del catálogo, pero deja
+la copia integrada vulnerable. Por eso no se cuentan esos dos avisos como resueltos.
+`python-expat-sbom.py` obtiene la versión cargada y emite CycloneDX con el CPE del
+[SBOM oficial de Python](https://www.python.org/ftp/python/3.13.18/Python-3.13.18.tar.xz.spdx.json).
+`scan-upgrade-images.sh` lo escanea con la misma base Grype y bloqueo High.
+CI conserva tanto los SBOM como los informes; cualquier fallo de inventario o
+escaneo falla el paso. MySQL no tiene intérprete Python y conserva su escaneo de imagen.
+No se agregó una lista manual de vulnerabilidades ni una excepción para Expat.
+
+### Hallazgos High pendientes, con alcance y acción
+
+| Componente / CVE | Evidencia y alcance | Resolución pendiente |
+| --- | --- | --- |
+| glibc: [19499](https://security-tracker.debian.org/tracker/CVE-2026-19499), [5435](https://security-tracker.debian.org/tracker/CVE-2026-5435) | `strfmon` y funciones antiguas de impresión DNS. No hay llamadas directas en el proyecto; `locale.currency()` de Python formatea en Python, no mediante `strfmon`. Esto no prueba ausencia de uso en todas las dependencias nativas. | Debian Trixie 2.41-12+deb13u4 sigue afectado. Esperar paquete corregido o ensayar otra base completa. No reemplazar libc aisladamente. |
+| util-linux: [76642](https://security-tracker.debian.org/tracker/CVE-2026-76642), [78409](https://security-tracker.debian.org/tracker/CVE-2026-78409), [78410](https://security-tracker.debian.org/tracker/CVE-2026-78410) | Fallos de montajes privilegiados/fstab. El droplet reportó kernel 5.15, sin privilegios extra y sin entradas fstab; 78409 exige Linux ≥6.15. Son condiciones que reducen exposición, no bibliotecas corregidas. | `libmount` permanece instalado; 2.41.5 de Trixie no tiene el arreglo. No ampliar la excepción de `nsenter` a estos avisos. |
+| GCC/libstdc++: [102010](https://security-tracker.debian.org/tracker/CVE-2026-102010), [95619](https://security-tracker.debian.org/tracker/CVE-2026-95619) | PBDS `erase_if` y asignación alineada. La ausencia de compilador en runtime no demuestra que las extensiones compiladas no incluyan código afectado. | GCC 14.2 de Trixie sin arreglo disponible. El caso de plantillas puede requerir reconstruir consumidores además de actualizar bibliotecas. |
+| ACL: [54369](https://security-tracker.debian.org/tracker/CVE-2026-54369) | Carreras de rutas/symlinks al manejar ACL con privilegios. La biblioteca sigue presente aunque se hayan quitado herramientas CLI. | Trixie 2.3.2; upstream 2.4.0 añade ABI, con incompatibilidades documentadas. No aplicar un parche parcial ni extender la excepción de CLI. |
+| Perl: [82560](https://security-tracker.debian.org/tracker/CVE-2026-82560), [9538](https://security-tracker.debian.org/tracker/CVE-2026-9538) | `Pod::Text` y `Archive::Tar` presentes solo en web. No hay llamadas Perl del proyecto; MariaDB cliente depende de Perl y una purga elimina `mysqldump`. | No hay actualización de Trixie. Los módulos tienen arreglos upstream, pero integrar CPAN o recortar módulos exige validar herramientas cliente; el tracker señala regresiones pendientes en Archive::Tar. No se ocultaron. |
+| zlib: [85091](https://security-tracker.debian.org/tracker/CVE-2026-85091) | La descripción indica versiones posteriores a 1.3.1, pero Debian marca la instalada como afectada y mantiene la [discusión de alcance](https://github.com/madler/zlib/issues/1310). | Se mantiene el hallazgo hasta confirmar el alcance con el proveedor o actualizar a un paquete corregido; no se descarta solo por comparar números de versión. |
+| Expat: [113351](https://security-tracker.debian.org/tracker/CVE-2026-113351), [115506](https://security-tracker.debian.org/tracker/CVE-2026-115506) | Agotamiento de recursos por reset de parsers y expansión de entidades. También presentes en las copias integradas de Python. Se protegió la vía Excel conocida, sin declarar toda la biblioteca segura. | Seguimiento upstream abierto; 2.9.0 y los paquetes Debian disponibles siguen afectados. Actualizar Python/Expat cuando integren ambos arreglos y repetir el escaneo complementario. |
+
+Todos los CVE de la tabla son de 2026. La consulta de APT estable, security y
+backports confirmó que no hay versiones superiores para estas bibliotecas;
+no se añadió backports a los Dockerfiles. La tabla cubre los **13 High distintos
+que siguen presentes** entre web y proxy, incluidos los dos de Expat descubiertos
+en web. No identifica una explotación remota demostrada de los otros componentes,
+pero tampoco certifica que sus rutas sean inalcanzables.
+
+### Otras severidades y límites
+
+Se mantienen los Medium/Low/Negligible completos en los JSON. Incluyen avisos de
+glibc, util-linux, Perl, ncurses, tar, PAM, systemd, SQLite, attr/bzip2, MariaDB
+cliente y funciones de Python. La aplicación no usa IMAP/POP ni `Morsel.js_output`
+directamente; usa MySQL en producción y SQLite solo en configuración de tests.
+No se crearon exclusiones a partir de esas búsquedas. Los avisos con corrección
+en otra rama de Python no justifican saltar de versión de la aplicación sin
+una validación de compatibilidad separada.
+
+En MySQL, los avisos Medium restantes comparan paquetes no FIPS con versiones
+FIPS de epoch 10: OpenSSL (ELSA-2024-12675, 2025-28011, 2026-50379, 2026-50345),
+GnuTLS (ELSA-2024-12336, 2024-12364, 2025-20606, 2026-50149) y libgcrypt
+(ELSA-2026-500145). Se conserva la evidencia en los informes; no se agregaron
+excepciones Medium por analogía con las High ya justificadas.
+
+Esta revisión cubre imágenes, paquetes y las vías de uso señaladas; no sustituye
+una auditoría completa de autorización, lógica de negocio o un análisis forense
+del droplet. La exposición productiva debe verificarse otra vez al desplegar:
+8000 debe quedar en loopback, MySQL exige TLS y el acceso a 3308 sigue sujeto
+al firewall/uso autorizado existente. No se modificó producción.
+
 ## Retiro de herramientas sin uso — 31/10/2026, validado localmente
 
 Web y Nginx ya no incluyen `nsenter` ni `infocmp`; no hay llamadas a estas

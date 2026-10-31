@@ -6,6 +6,8 @@ django-environ==0.14.0
 django-filter==26.2
 gunicorn==26.2.0
 mysqlclient==2.3.0
+# openpyxl enables entity-expansion protection when this package is installed.
+defusedxml==0.7.1
 openpyxl==3.1.5
 pandas==3.1.0
 Pillow==13.0.0

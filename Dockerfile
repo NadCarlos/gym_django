@@ -18,6 +18,7 @@ RUN apt-get update \
     && rm -f /usr/bin/nsenter /usr/bin/infocmp \
     && rm -rf /var/lib/apt/lists/*
 ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8
+RUN python -m pip install --no-cache-dir pip==26.2.2
 
 FROM base AS dependencies
 RUN apt-get update \
