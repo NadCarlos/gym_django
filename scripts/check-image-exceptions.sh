@@ -5,9 +5,9 @@ web=${1:?Usage: bash scripts/check-image-exceptions.sh WEB_IMAGE NGINX_IMAGE}
 proxy=${2:?Missing NGINX_IMAGE}
 for image in "$web" "$proxy"; do
     docker run --rm --read-only --network none --entrypoint sh "$image" -ec '
-        for tool in getfacl setfacl chacl; do
+        for tool in getfacl setfacl chacl nsenter infocmp; do
             if command -v "$tool" >/dev/null 2>&1; then
-                echo "Reevaluate CVE-2026-54370: $tool is installed" >&2
+                echo "Reevaluate component-absence filters: $tool is installed" >&2
                 exit 1
             fi
         done

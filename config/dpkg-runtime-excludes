@@ -1,0 +1,4 @@
+# Runtime does not need namespace entry or terminfo comparison tools.
+# Keep them absent on later package installation/upgrade as well.
+path-exclude=/usr/bin/nsenter
+path-exclude=/usr/bin/infocmp

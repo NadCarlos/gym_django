@@ -2,6 +2,7 @@
 FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS base
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
+COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes
 # MariaDB 11.8.9 fixes the client advisories still present in Debian 13 packages.
 # Signing key: 177F4010FE56CA3336300305F1656F24C74CD1D8; scoped to this source.
 ADD --chmod=0644 --checksum=sha256:00adb387f4c12e8982cfc28165d225695621494354cd58108c6845063bfb74b5 https://mariadb.org/mariadb_release_signing_key.pgp /usr/share/keyrings/mariadb.asc
@@ -14,6 +15,7 @@ RUN apt-get update \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3t64)" ge '3.5.7-1~deb13u3' \
     && sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
+    && rm -f /usr/bin/nsenter /usr/bin/infocmp \
     && rm -rf /var/lib/apt/lists/*
 ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8
 

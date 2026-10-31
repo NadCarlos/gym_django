@@ -3,6 +3,36 @@
 # cross-channel matches. Retain ignoredMatches in JSON; never suppress aliases,
 # other versions, packages, distributions, or unrelated advisories.
 ignore:
+  # These two affected executables are removed and excluded from dpkg unpack.
+  # Libraries remain installed. Other util-linux/ncurses CVEs are not covered.
+  - vulnerability: CVE-2026-78408
+    namespace: debian:distro:debian:13
+    reason: "Affected nsenter executable absent; enforced by dpkg exclusions and CI. Other util-linux findings remain."
+    package:
+      name: "^(libblkid1|liblastlog2-2|libmount1|libsmartcols1|libuuid1|mount|util-linux)$"
+      version: "2.41.5-0+deb13u1"
+      type: deb
+  - vulnerability: CVE-2026-78408
+    namespace: debian:distro:debian:13
+    reason: "Affected nsenter executable absent; bsdutils is another binary package from the same source."
+    package:
+      name: "^bsdutils$"
+      version: "1:2.41.5-0+deb13u1"
+      type: deb
+  - vulnerability: CVE-2026-78408
+    namespace: debian:distro:debian:13
+    reason: "Affected nsenter executable absent; login is another binary package from the same source."
+    package:
+      name: "^login$"
+      version: "1:4.16.0-2+really2.41.5-0+deb13u1"
+      type: deb
+  - vulnerability: CVE-2025-69720
+    namespace: debian:distro:debian:13
+    reason: "Affected infocmp executable absent; enforced by dpkg exclusions and CI. The flaw is in progs/infocmp.c, not the retained terminal libraries."
+    package:
+      name: "^(libncurses6|libncursesw6|libtinfo6|ncurses-base|ncurses-bin)$"
+      version: "6.5+20250216-2"
+      type: deb
   - vulnerability: ELSA-2026-50075
     namespace: oracle:distro:oraclelinux:9
     reason: "Non-FIPS fix ELSA-2026-1473 is included; FIPS epoch mismatch."

@@ -1,5 +1,41 @@
 # Revisión de avisos de imágenes — 24/10/2026
 
+## Retiro de herramientas sin uso — 31/10/2026, validado localmente
+
+Web y Nginx ya no incluyen `nsenter` ni `infocmp`; no hay llamadas a estas
+herramientas en la aplicación ni en los scripts operativos del repositorio.
+[CVE-2026-78408](https://security-tracker.debian.org/tracker/CVE-2026-78408)
+afecta a `nsenter --join-cgroup` y
+[CVE-2025-69720](https://security-tracker.debian.org/tracker/CVE-2025-69720)
+a `progs/infocmp.c`. Se eliminan los ejecutables existentes y
+`config/dpkg-runtime-excludes` impide reinstalarlos al actualizar sus paquetes.
+Una reinstalación real en un contenedor desechable confirmó ambas ausencias;
+`flock` y `tput` siguen disponibles.
+
+Grype asocia estos avisos también a otros paquetes binarios del mismo código
+fuente. Las reglas se limitan a esos dos CVE, Debian 13 y nombres/versiones
+exactos; las coincidencias permanecen en `ignoredMatches`. CI verifica la
+ausencia de ejecutables antes del escaneo y falla con la imagen anterior.
+Las bibliotecas retenidas no se declaran parcheadas: siguen visibles los otros
+tres avisos de util-linux (76642, 78409 y 78410, todos CVE-2026), sin versiones
+corregidas disponibles en Trixie estable o backports durante esta revisión.
+
+Resultado: web **49 High / 0 Critical** (antes 63), Nginx **57 High / 0 Critical**
+(antes 70). Son coincidencias por paquete: corresponden a 11 y 15 CVE High
+distintos, respectivamente. La comparación de JSON confirma que solo se retiraron
+14 y 13 coincidencias de los dos ejecutables; no hubo otros cambios de hallazgos.
+**CI sigue bloqueando por High.** No se habilitó ninguna aceptación temporal.
+
+Validación: `check-mysql-client.sh` pasó los 59 tests, backup/restauración y
+rechazo de host/CA incorrectos y TCP sin TLS. `check-nginx-image.sh` pasó TLS,
+proxy, estáticos/media, ACME, Certbot y cron, incluido fallo sin recarga.
+Se mantiene el warning de URL preexistente. Informes en
+`/tmp/cermed-reduced-tools-scans/image-{1,2}.json`; logs de pruebas en
+`/tmp/cermed-reduced-tools-{mysql,nginx}-check.log`.
+El cambio se revierte como una unidad: exclusiones dpkg, eliminación en los tres
+Dockerfiles, reglas de esos dos CVE y su control de ausencia. No se hizo push
+ni despliegue productivo.
+
 ## Candidata web Trixie — 31/10/2026, TLS y backups validados localmente
 
 Se ensayó Python 3.12.16 sobre Trixie, con glibc `2.41-12+deb13u4`
