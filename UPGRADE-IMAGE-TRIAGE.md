@@ -2,7 +2,7 @@
 
 ## Decisión de despliegue autorizada — 31/10/2026
 
-Tras la revisión de los 13 CVE High restantes, el usuario pidió salir del bloqueo
+Tras la revisión de los 14 CVE High restantes, el usuario pidió salir del bloqueo
 y desplegar la versión. Se registra **aceptación de riesgo residual** para esta
 configuración, no una declaración de que los componentes estén corregidos.
 La evidencia y las limitaciones de cada componente se mantienen más abajo.
@@ -27,12 +27,51 @@ cada CI; la aceptación y los informes permanecen visibles. Cambiar condiciones
 de producción (privilegios, montajes, exposición de servicios o procesamiento de
 entradas) exige reevaluación aunque no cambien los CVE.
 
-Validación local: 13 pruebas del gate, 60 tests Django, backup/restauración con TLS,
+Validación local: 14 pruebas del gate, 60 tests Django, backup/restauración con TLS,
 Nginx/Certbot con las restricciones y escaneo completo con **cero bloqueos fuera
 de los riesgos aceptados**. MySQL no requiere aceptación High. Evidencia:
 `/tmp/cermed-release-policy-scans/`, `/tmp/cermed-release-policy-{app,proxy}.log`.
 La puerta `CERMED_MYSQL84_READY` permanece cerrada hasta completar y validar la
 migración productiva. Esta decisión no autoriza reutilizar el volumen 5.7 en 8.4.
+
+## Aviso nuevo de glibc aceptado de forma acotada — 31/10/2026
+
+El run `41209359838` reconstruyó las mismas imágenes tras un cambio solo de
+documentación, pero la base de Grype pasó de `2026-10-30T06:23:28Z` a
+`2026-10-31T06:18:17Z`. La base nueva incorporó
+[CVE-2026-84243](https://security-tracker.debian.org/tracker/CVE-2026-84243):
+cuatro coincidencias de glibc en web y dos en Nginx. El gate falló como estaba
+diseñado; no fue una regresión del runtime. Debian mantiene Trixie
+`2.41-12+deb13u4` vulnerable y todavía no publica una versión corregida.
+
+El fallo permite que la familia `gettext` recorra rutas mediante entradas
+maliciosas de `LANGUAGE`. La explotación requiere además un locale de mensajes
+distinto de C, poder colocar un catálogo `.mo` legible y cruzar un límite de
+confianza con el entorno del proceso. No se encontraron catálogos `.mo` del
+proyecto, una vía HTTP que modifique el entorno ni SSH/`AcceptEnv` dentro de los
+contenedores. Esto reduce exposición, pero no corrige glibc ni convierte el
+hallazgo en falso positivo.
+
+Web fija al arrancar `LANG=es_AR.UTF-8`, `LANGUAGE=es_AR:es` y
+`LC_ALL=es_AR.UTF-8`; ninguna entrada de `LANGUAGE` contiene `/` ni es `..`.
+Nginx fija el locale C y `LANGUAGE=C`. El control de imagen comprueba tanto los
+defaults incorporados como los exports de ambos entrypoints. La política separa
+roles: web acepta solamente `libc-bin`, `libc-l10n`, `libc6` y `locales`; Nginx
+solamente `libc-bin` y `libc6`, siempre en la versión exacta observada y con
+estado `not-fixed`.
+
+El usuario autorizó esta aceptación residual adicional después de la revisión.
+El inventario resultante conserva **53 High de catálogo + 2 de Expat** en web y
+**41 + 2** en Nginx, correspondientes a 14 y 12 CVE High distintos; MySQL sigue
+en cero High. Una versión corregida, explotación conocida, otro paquete, versión,
+rol, namespace o estado vuelve a cerrar el gate automáticamente. No se parchea
+glibc a mano ni se cambia de distribución por este aviso aislado.
+
+Validación final: 14 pruebas del gate, construcción de web/Nginx/MySQL, control
+de componentes y locales, `manage.py check`, smoke completo de Nginx/Certbot y
+escaneo fresco de las tres imágenes terminaron correctamente. El escaneo preserva
+todos los hallazgos y devuelve cero bloqueos; evidencia local en
+`/tmp/cermed-cve-84243-final-scans/`.
 
 ## Revisión de todos los High y actualización adicional — 31/10/2026
 
@@ -41,7 +80,7 @@ los avisos de Debian/upstream, los componentes instalados y sus usos en CERMED.
 También se inventariaron las demás severidades y sus actualizaciones disponibles.
 Los hallazgos sin resolución se conservan: revisión no equivale a aceptación.
 
-Resultado final local (coincidencias por paquete; **0 Critical** en las tres):
+Resultado previo al aviso nuevo (coincidencias por paquete; **0 Critical** en las tres):
 
 | Imagen | High del catálogo | High de Expat integrado | CVE High distintos | Medium / Low / Negligible |
 | --- | ---: | ---: | ---: | --- |

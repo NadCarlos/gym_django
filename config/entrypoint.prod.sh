@@ -1,5 +1,11 @@
 # #!/bin/sh
 
+# CVE-2026-84243 requires an attacker-controlled LANGUAGE traversal. Keep the
+# application locale fixed before starting cron, Django commands or Gunicorn.
+export LANG=es_AR.UTF-8
+export LANGUAGE=es_AR:es
+export LC_ALL=es_AR.UTF-8
+
 cd gym
 
 service cron start

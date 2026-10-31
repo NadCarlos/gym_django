@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "reviewed_at": "2026-10-31",
-  "acceptance": "User authorized proceeding to production after review of the 13 remaining High CVEs. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
+  "acceptance": "User authorized proceeding to production after review of the 14 remaining High CVEs, including the newly disclosed CVE-2026-84243. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
   "evidence": "UPGRADE-IMAGE-TRIAGE.md",
   "reviewed_files": {
     "Dockerfile": "64b37044f1ddf198e4406327cfe2aebb29fad3042c2db1d3e5bbcdf3a2fe78ea",
@@ -12,12 +12,12 @@
     "requirements-prod.txt": "edb8613f52762ec5ca99a35c4057512e09a9511944e009f37c596cf2880b2180",
     "requirements-certbot.txt": "8ffa3915a8efa3ff43f0c21f73f3c425cf1fbc48a826061d7217f30c86fb1747",
     "config/dpkg-runtime-excludes": "c3869302b2da2fe92f445e65fa8771a5ab7ac3c388d47e98e09b4c8c98ccbd63",
-    "config/entrypoint.prod.sh": "7979f4bae178d30b53f1f8e5f58981ad52687b98a9e87f53491ecc20339b831c",
-    "config/entrypoint.nginx.sh": "b416f102eee5810581d78383e708c98c2eab76fe0551126582a6c09c5ede569d",
+    "config/entrypoint.prod.sh": "257946c5157ebfe63e1154e8021a57d9d765a0e51da95ed2bc6f119cd2413483",
+    "config/entrypoint.nginx.sh": "2b4287ea1524991b29d909c23752c6b922a2f48c64eddc809788cb5818063f85",
     "config/certbot-renewal.sh": "1eb98ea5affeb09efc1cb768a06fe5d6f199e776dc1d04974ee362d7908a37d6",
     "cermed.conf": "fd48666276607df7d9d17e768b031fb7f04f6a86ae15085725fc5a4df13797e1",
     "gym/gym/settings.py": "51cb774759bdd6cb04fbe1b246a68738ed01540cbba367a53d9272b4d11885af",
-    "scripts/check-image-exceptions.sh": "6ad02a83d0a0fb4c301a1bbbf3e382401a1074d9f2d594daaf749707be73ae0e",
+    "scripts/check-image-exceptions.sh": "baa3f10348ef85bb7c720e7d3c27ab520e0268c8bd90c113f6a6667222731d32",
     "scripts/check-nginx-image.sh": "90497858bfe8ed188a50910762f34328fefbe27dbc5b2f89534e309367e36efb",
     "scripts/check-mysql-client.sh": "2b45d11e7ccf88307d7e5bda98b8231fb1509b77353871b0ffa489effd53ed3c",
     "scripts/python-expat-sbom.py": "d597f6971826901455317d68326c1d6d9ea2b1afcf48507efccf9180de658395",
@@ -227,6 +227,42 @@
         "wont-fix"
       ],
       "reason": "Residual Perl POD resource exhaustion accepted; no project Perl/POD processing; Perl is a MariaDB client dependency."
+    },
+    {
+      "vulnerability": "CVE-2026-84243",
+      "scope": "image",
+      "namespace": "debian:distro:debian:13",
+      "package_type": "deb",
+      "roles": [
+        "web"
+      ],
+      "packages": {
+        "libc-bin": "2.41-12+deb13u4",
+        "libc-l10n": "2.41-12+deb13u4",
+        "libc6": "2.41-12+deb13u4",
+        "locales": "2.41-12+deb13u4"
+      },
+      "fix_states": [
+        "not-fixed"
+      ],
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins es_AR locale values without slash or dot traversal, and no untrusted process-environment boundary or project message catalogs were identified."
+    },
+    {
+      "vulnerability": "CVE-2026-84243",
+      "scope": "image",
+      "namespace": "debian:distro:debian:13",
+      "package_type": "deb",
+      "roles": [
+        "nginx"
+      ],
+      "packages": {
+        "libc-bin": "2.41-12+deb13u4",
+        "libc6": "2.41-12+deb13u4"
+      },
+      "fix_states": [
+        "not-fixed"
+      ],
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins the C locale and no untrusted process-environment boundary or project message catalogs were identified."
     },
     {
       "vulnerability": "CVE-2026-85091",

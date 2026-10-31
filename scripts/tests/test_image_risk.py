@@ -135,6 +135,32 @@ class RiskPolicyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Runtime changed"):
                 read_policy(path, root)
 
+    def test_repository_policy_accepts_authorized_gettext_risk_exactly(self):
+        root = Path(__file__).resolve().parents[2]
+        policy = read_policy(root / "config/reviewed-image-risk.json", root)
+        self.match["vulnerability"].update({
+            "id": "CVE-2026-84243",
+            "namespace": "debian:distro:debian:13",
+            "fix": {"state": "not-fixed", "versions": []},
+        })
+        packages = {
+            "web": ["libc-bin", "libc-l10n", "libc6", "locales"],
+            "nginx": ["libc-bin", "libc6"],
+        }
+        for role, names in packages.items():
+            for name in names:
+                with self.subTest(role=role, package=name):
+                    self.match["artifact"].update({
+                        "name": name,
+                        "version": "2.41-12+deb13u4",
+                        "type": "deb",
+                    })
+                    accepted, blocked = evaluate(
+                        self.report, policy, role, "sha256:example", "image", self.now,
+                    )
+                    self.assertEqual(len(accepted), 1)
+                    self.assertEqual(blocked, [])
+
 
 if __name__ == "__main__":
     unittest.main()

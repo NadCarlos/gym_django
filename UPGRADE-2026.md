@@ -51,7 +51,7 @@ reconciliación. Se conservaron imágenes anteriores, volumen original y respald
 Las secciones numeradas siguientes documentan el procedimiento de la primera
 migración; no volver a ejecutarlo sobre esta producción ya migrada.
 
-Persisten 13 CVE High distintos aceptados de forma acotada; no se consideran
+Persisten 14 CVE High distintos aceptados de forma acotada; no se consideran
 corregidos. La política exacta y sus controles están en
 `config/reviewed-image-risk.json` y `UPGRADE-IMAGE-TRIAGE.md`.
 
