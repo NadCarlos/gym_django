@@ -1,9 +1,10 @@
 # Actualización preventiva de CERMED — 24/10/2026
 
-**Estado: restauración del backup real y validaciones automáticas locales aprobadas;
-producción pendiente.** El usuario aceptó la prueba funcional local. No ejecutar
-`make prod-deploy` todavía: faltan controles técnicos, la preparación del corte
-y resolver los hallazgos de imágenes.
+**Estado al 31/10: despliegue autorizado y riesgo residual acotado registrado;
+migración productiva pendiente.** Las restauraciones y validaciones locales pasaron.
+La política exacta y sus controles están en `config/reviewed-image-risk.json` y
+`UPGRADE-IMAGE-TRIAGE.md`. No ejecutar `make prod-deploy` hasta preparar el volumen
+8.4, TLS y el backup final del corte; `CERMED_MYSQL84_READY` sigue cerrado.
 
 El cron de certificados ya recibió una corrección puntual en el droplet:
 entrypoint y cron invocan el script mediante `/bin/sh`. La renovación ACME staging
@@ -151,11 +152,12 @@ bash scripts/scan-upgrade-images.sh /tmp/cermed-image-scans \
 ```
 
 Ejecutar `pip-audit` en el entorno de desarrollo instalado con el lock nuevo.
-El scanner devuelve error ante High/Critical, incluso sin parche disponible,
-y conserva los informes de las tres imágenes. No usa `--only-fixed`. Solo aplica
-las reglas exactas de falsos positivos Oracle y MariaDB documentadas en
-[UPGRADE-IMAGE-TRIAGE.md](UPGRADE-IMAGE-TRIAGE.md); sus matches permanecen en el JSON.
-CI reproduce estos controles y publica los JSON como artefactos.
+El modo mostrado devuelve error ante High/Critical y conserva los informes de
+las imágenes y del Expat integrado. CI añade `--accept-reviewed-risk` antes del
+directorio para evaluar la aceptación específica del 31/10: conserva los matches
+y bloquea cualquier hallazgo fuera de esa política. No usa `--only-fixed`.
+Los falsos positivos/componentes ausentes siguen en `config/grype.yaml`; sus
+matches quedan en `ignoredMatches`. CI publica todos los JSON como artefactos.
 
 Los hallazgos de un paquete de origen pueden afectar solo a ciertos binarios o
 configuraciones. Deben contrastarse con el proveedor; un resultado del scanner

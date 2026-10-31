@@ -31,6 +31,7 @@ network=$(docker network create "cermed-proxy-check-${work##*/}")
 backend=$(docker run -d --network "$network" --network-alias cermed_web \
     --entrypoint python3 "$image" -m http.server 8000)
 proxy=$(docker run -d --network "$network" \
+    --cap-drop SYS_ADMIN --security-opt no-new-privileges:true \
     -p 127.0.0.1::80 -p 127.0.0.1::443 \
     --mount "type=bind,src=$repo_root/config,dst=/app/config,readonly" \
     --mount "type=bind,src=$repo_root/cermed.conf,dst=/etc/nginx/conf.d/cermed.conf,readonly" \

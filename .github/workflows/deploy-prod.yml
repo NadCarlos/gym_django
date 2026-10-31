@@ -79,6 +79,9 @@ jobs:
       - name: Run Django checks
         run: python gym/manage.py check
 
+      - name: Validate reviewed image risk gate
+        run: python -m unittest discover -s scripts/tests -v
+
       - name: Run Django tests
         run: python gym/manage.py test administracion rehabilitacion finanzas entrada usuarios home --noinput
 
@@ -100,7 +103,7 @@ jobs:
           bash scripts/check-mysql-client.sh cermed-ci:runtime cermed-ci:mysql
           bash scripts/check-nginx-image.sh cermed-ci:nginx
           bash scripts/check-image-exceptions.sh cermed-ci:runtime cermed-ci:nginx
-          bash scripts/scan-upgrade-images.sh /tmp/cermed-image-scans \
+          bash scripts/scan-upgrade-images.sh --accept-reviewed-risk /tmp/cermed-image-scans \
             cermed-ci:runtime cermed-ci:nginx cermed-ci:mysql
 
       - name: Preserve vulnerability reports

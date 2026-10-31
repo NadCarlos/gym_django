@@ -1,5 +1,39 @@
 # Revisión de avisos de imágenes — 24/10/2026
 
+## Decisión de despliegue autorizada — 31/10/2026
+
+Tras la revisión de los 13 CVE High restantes, el usuario pidió salir del bloqueo
+y desplegar la versión. Se registra **aceptación de riesgo residual** para esta
+configuración, no una declaración de que los componentes estén corregidos.
+La evidencia y las limitaciones de cada componente se mantienen más abajo.
+
+`config/reviewed-image-risk.json` limita la decisión a los CVE, roles de imagen,
+paquetes, versiones, namespaces y estados de corrección revisados. Los hashes
+de Dockerfiles, locks, Compose, configuración y controles vinculan la aceptación
+a este runtime. Web y Nginx declaran `SYS_ADMIN` eliminado y
+`no-new-privileges`; los ensayos se ejecutan con esas restricciones.
+
+CI usa `scan-upgrade-images.sh --accept-reviewed-risk` con los tres roles en orden
+web/nginx/mysql. Grype sigue generando todos los matches; el evaluador posterior
+rechaza Critical/Unknown, High nuevos, cambios de versión/namespace/tipo/rol,
+correcciones disponibles, explotación conocida indicada por Grype, evidencia
+inválida, otra arquitectura y una base de vulnerabilidades de más de cinco días.
+Los SBOM de Expat quedan vinculados al ID de imagen y se evalúan también.
+El modo sin esa opción conserva el bloqueo estricto por High.
+
+No existe una fecha arbitraria de desbloqueo/caducidad: un cambio en los archivos
+vinculados o en los hallazgos exige revisar la decisión. El escaneo se repite en
+cada CI; la aceptación y los informes permanecen visibles. Cambiar condiciones
+de producción (privilegios, montajes, exposición de servicios o procesamiento de
+entradas) exige reevaluación aunque no cambien los CVE.
+
+Validación local: 13 pruebas del gate, 60 tests Django, backup/restauración con TLS,
+Nginx/Certbot con las restricciones y escaneo completo con **cero bloqueos fuera
+de los riesgos aceptados**. MySQL no requiere aceptación High. Evidencia:
+`/tmp/cermed-release-policy-scans/`, `/tmp/cermed-release-policy-{app,proxy}.log`.
+La puerta `CERMED_MYSQL84_READY` permanece cerrada hasta completar y validar la
+migración productiva. Esta decisión no autoriza reutilizar el volumen 5.7 en 8.4.
+
 ## Revisión de todos los High y actualización adicional — 31/10/2026
 
 Se cruzaron los **17 CVE High distintos** de las candidatas anteriores con

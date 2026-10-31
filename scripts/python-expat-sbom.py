@@ -8,13 +8,22 @@ Grype supplies the vulnerability data; this script does not maintain a CVE list.
 import json
 import platform
 import pyexpat
+import re
+import sys
 
 
 version = ".".join(map(str, pyexpat.version_info))
+image_id, architecture = sys.argv[1:]
+if not re.fullmatch(r"sha256:[0-9a-f]{64}", image_id):
+    raise ValueError("Expected Docker image ID")
 print(json.dumps({
     "bomFormat": "CycloneDX",
     "specVersion": "1.6",
     "version": 1,
+    "metadata": {"properties": [
+        {"name": "cermed:image-id", "value": image_id},
+        {"name": "cermed:architecture", "value": architecture},
+    ]},
     "components": [{
         "type": "library",
         "name": "expat",

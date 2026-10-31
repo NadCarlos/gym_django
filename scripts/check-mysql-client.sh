@@ -43,6 +43,7 @@ fi
 docker exec "$database" sh -ec 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysql -u root -e "GRANT ALL ON test_cermed_rehearsal.* TO '\''clientcheck'\''@'\''%'\''"'
 web="cermed-client-check-web-${work##*/}"
 docker run --rm -i --name "$web" --network "$network" --workdir /app/gym \
+    --cap-drop SYS_ADMIN --security-opt no-new-privileges:true \
     --mount "type=bind,src=$work/tls/client,dst=/run/mysql-tls/client,readonly" \
     --mount "type=bind,src=$work/tls/client/client.cnf,dst=/etc/mysql/conf.d/cermed-tls.cnf,readonly" \
     --mount "type=bind,src=$work/untrusted/client/ca.pem,dst=/run/mysql-tls/untrusted-ca.pem,readonly" \
