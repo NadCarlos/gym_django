@@ -29,12 +29,21 @@ opción de sesión, sin cambiar el default global del servidor nuevo.
 - Se generó `backup_data/cermed-first84-sp3xsl01.sql` con Django en producción.
   La restauración de **ese nuevo dump** y la copia externa del backup final del
   corte aún no están confirmadas; no confundirlas con los ensayos previos.
+  Cron ejecuta el backup a las 02:00 UTC (23:00 de Argentina), aunque Django usa
+  la zona argentina. El inventario posterior solo encontró el backup manual de
+  hoy y automáticos hasta septiembre de 2025; `daily_database_backup` oculta las
+  excepciones. Aún hay que verificar la ejecución automática de la versión nueva.
 - Estado inmediato: disco libre 3.5 GiB (86% usado), RAM disponible 158 MiB y
   swap usada 92 MiB. Es una medición inicial, no una prueba de estabilidad.
-- `check --deploy` conserva `urls.W010` por el `<` sobrante en
+- En la reapertura, `check --deploy` informó `urls.W010` por el `<` sobrante en
   `gym/administracion/urls.py`, ruta `error_profesional_existente`; no bloqueó el
-  despliegue. La aceptación detallada de agendas/pagos y el backup nocturno quedan
-  para el seguimiento operativo.
+  despliegue. La corrección está en `ca72117`, con cuatro tests de administración
+  y comprobaciones de resolución y autenticación aprobados. La aceptación
+  detallada de agendas/pagos y el backup nocturno quedan para el seguimiento.
+- Tras un reinicio del droplet confirmado por el usuario, se eliminó únicamente
+  la caché regenerable `cermed-upgrade-grype-cache` (3.376 GB). Quedaron 6.6 GiB
+  libres (73% usado); MySQL 214.6 MiB, web 162 MiB, Nginx 7.6 MiB, RAM disponible
+  283 MiB, sin OOM ni reinicios automáticos. Imágenes y volúmenes se conservaron.
 
 **Las escrituras ya están habilitadas en 8.4.** Los comandos de rollback del corte
 no deben ejecutarse ahora: volver a 5.7 perdería operaciones posteriores y requiere
