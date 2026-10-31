@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/Python-3.12.15-blue) ![Django](https://img.shields.io/badge/Django-5.2.18-brightgreen) ![MySQL](https://img.shields.io/badge/MySQL-8.4.13-orange)
+![Python](https://img.shields.io/badge/Python-3.12.16-blue) ![Django](https://img.shields.io/badge/Django-5.2.18-brightgreen) ![MySQL](https://img.shields.io/badge/MySQL-8.4.13-orange)
 
 
 
@@ -8,7 +8,7 @@ Servicio de Backoffice para la empresa CERMED de Río Cuarto, Córdoba.
 
 ## Requisitos del Sistema
 
-- Python 3.12.15, Django 5.2.18 LTS y MySQL 8.4.13 LTS.
+- Python 3.12.16, Django 5.2.18 LTS y MySQL 8.4.13 LTS.
 - Docker Engine, Docker Compose v2 con `up --wait`, y Make.
 - Dependencias exactas y hashes en `requirements-prod.txt` (runtime) y `requirements.txt` (desarrollo).
 
@@ -34,6 +34,10 @@ Esto ayudará a que tu `IDE/IDLE` reconozca los paquetes y liberías del proyect
 
 1. Copia el archivo de entorno de ejemplo: `cp .env.example .env`
 2. Actualiza las variables acorde a tus necesidades y valores.
+3. Generá TLS con `bash scripts/create-mysql-tls.sh /ruta/privada/nueva HOST_DB`,
+   usando el nombre de `MYSQL_HOST`, y guardá esa ruta en `CERMED_MYSQL_TLS_DIR`
+   de `.env`. Requiere Bash, OpenSSL y GNU realpath. Las claves deben quedar fuera
+   del repositorio. Ver [preparación y renovación TLS](UPGRADE-2026.md#preparar-tls-de-mysql).
 
 ## Iniciar la Aplicación
 

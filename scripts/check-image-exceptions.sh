@@ -21,9 +21,17 @@ docker run --rm --read-only --network none --entrypoint sh "$proxy" -ec '
         fi
     done
 '
-docker run --rm --read-only --network none --workdir /app/gym \
-    --env SENTRY_DSN= --entrypoint python "$web" -c '
-from gym import settings
-assert settings.DATABASES["default"]["ENGINE"] == "django.db.backends.mysql", "Reevaluate SQLite exceptions"
+docker run --rm --read-only --network none --entrypoint sh "$web" -ec '
+    for package in libmariadb3 mariadb-client mariadb-client-compat mariadb-client-core mariadb-common mysql-common; do
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' "$package")" = "1:11.8.9+maria~deb13"
+    done
+    if command -v mariadbd >/dev/null 2>&1 || command -v mysqld >/dev/null 2>&1; then
+        echo "Unexpected database server in web image; reevaluate client-only filters" >&2
+        exit 1
+    fi
 '
-echo 'PASS: component-absence and production database assumptions.'
+docker run --rm --read-only --network none --entrypoint python "$web" -c '
+import MySQLdb
+assert MySQLdb.get_client_info() == "3.4.10", "Reevaluate MariaDB Connector/C fixes"
+'
+echo 'PASS: component absence and exact patched MariaDB client versions.'

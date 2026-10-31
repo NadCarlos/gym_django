@@ -12,6 +12,10 @@ services:
       - --performance-schema=OFF
       - --tmp-table-size=16M
       - --max-heap-table-size=16M
+      - --ssl-ca=/run/mysql-tls/server/ca.pem
+      - --ssl-cert=/run/mysql-tls/server/server-cert.pem
+      - --ssl-key=/run/mysql-tls/server/server-key.pem
+      - --require-secure-transport=ON
     env_file:
       - .env
     environment:
@@ -29,6 +33,12 @@ services:
     volumes:
       - db_data84:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d/
+      - type: bind
+        source: ${CERMED_MYSQL_TLS_DIR:?Generate private MySQL TLS files outside the repo}/server
+        target: /run/mysql-tls/server
+        read_only: true
+        bind:
+          create_host_path: false
     container_name: gym_db
     hostname: ${MYSQL_HOST}
 
@@ -44,11 +54,25 @@ services:
         condition: service_healthy   
     env_file:
       - .env
+    environment:
+      MYSQL_SSL_CA: /run/mysql-tls/client/ca.pem
     command: sh /app/config/entrypoint.dev.sh
     volumes:
       - .:/app
       - ./backup_data:/app/gym/backup_data
       - /logs/:/app/gym/logs
+      - type: bind
+        source: ${CERMED_MYSQL_TLS_DIR:?Generate private MySQL TLS files outside the repo}/client
+        target: /run/mysql-tls/client
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${CERMED_MYSQL_TLS_DIR:?Generate private MySQL TLS files outside the repo}/client/client.cnf
+        target: /etc/mysql/conf.d/cermed-tls.cnf
+        read_only: true
+        bind:
+          create_host_path: false
     container_name: gym_web
 
 volumes:

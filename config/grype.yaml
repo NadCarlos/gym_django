@@ -39,74 +39,111 @@ ignore:
       version: "3.8.10-9.el9_8"
       type: rpm
 
-# MariaDB's release notes mark these eight CVEs fixed in 10.11.19.
-# Scope to the exact Debian 12 client packages; no future versions or server.
+# Official MariaDB 11.8 release table confirms these fixes in 11.8.7/8/9.
+# Debian's tracker still matches the source package to its older 11.8.6 build.
+# Only the exact upstream-signed client packages are covered, never a server.
+# See UPGRADE-IMAGE-TRIAGE.md; all matches remain in ignoredMatches.
   - vulnerability: CVE-2026-107815
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-107818
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-107821
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-107823
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-85746
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-86047
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-92262
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
   - vulnerability: CVE-2026-97380
-    namespace: debian:distro:debian:12
-    reason: "MariaDB upstream fixes this CVE in installed 10.11.19; stale source-package match."
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
     package:
-      name: "^(libmariadb3|mariadb-client|mariadb-client-core|mariadb-common)$"
-      version: "1:10.11.19-0+deb12u1"
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-44168
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-44171
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-44172
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-48163
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-48165
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
+  - vulnerability: CVE-2026-49261
+    namespace: debian:distro:debian:13
+    reason: "Official MariaDB 11.8.9 includes this fix; exact upstream client package, not Debian 11.8.6."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
       type: deb
 
 # Reviewed 2026-10-27; evidence and limitations in UPGRADE-IMAGE-TRIAGE.md.
 # Component absence: the ACL CLI tools are not installed in either runtime.
-  - vulnerability: CVE-2026-54370
-    namespace: debian:distro:debian:12
-    reason: "Affected getfacl/setfacl/chacl executables absent; libacl library CVE-2026-54369 remains reported."
-    package:
-      name: "^libacl1$"
-      version: "2.3.1-3"
-      type: deb
   - vulnerability: CVE-2026-54370
     namespace: debian:distro:debian:13
     reason: "Affected getfacl/setfacl/chacl executables absent; libacl library CVE-2026-54369 remains reported."
@@ -130,28 +167,7 @@ ignore:
       version: "5.40.1-6+deb13u1"
       type: deb
 # Applicability decisions, not patched libraries. Reevaluate on changes to
-# database engines, database uploads, TLS termination, Certbot plugins or hooks.
-  - vulnerability: CVE-2025-7458
-    namespace: debian:distro:debian:12
-    reason: "Production uses MySQL; no arbitrary SQLite SQL execution. SQLite remains vulnerable if that usage changes."
-    package:
-      name: "^libsqlite3-0$"
-      version: "3.40.1-2+deb12u2"
-      type: deb
-  - vulnerability: CVE-2026-11822
-    namespace: debian:distro:debian:12
-    reason: "No external SQLite database ingestion or FTS5 MATCH in production; MySQL backend only."
-    package:
-      name: "^libsqlite3-0$"
-      version: "3.40.1-2+deb12u2"
-      type: deb
-  - vulnerability: CVE-2026-11824
-    namespace: debian:distro:debian:12
-    reason: "No external SQLite database ingestion or FTS5 MATCH in production; MySQL backend only."
-    package:
-      name: "^libsqlite3-0$"
-      version: "3.40.1-2+deb12u2"
-      type: deb
+# TLS termination, Certbot plugins or hooks.
   - vulnerability: CVE-2026-19445
     namespace: debian:distro:debian:13
     reason: "TLS terminates in Nginx, not a Python SNI callback server; Certbot uses webroot and no custom hooks. Reevaluate if changed."

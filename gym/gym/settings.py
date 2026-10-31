@@ -160,6 +160,14 @@ DATABASES = {
     }
 }
 
+# Production Compose supplies the public CA; failed verification must not fall
+# back to an unauthenticated connection. CLI backups use the matching client.cnf.
+MYSQL_SSL_CA = env("MYSQL_SSL_CA", default="")
+if MYSQL_SSL_CA:
+    DATABASES["default"]["OPTIONS"].update(
+        ssl={"ca": MYSQL_SSL_CA}, ssl_mode="VERIFY_IDENTITY"
+    )
+
 DB_SLOW_QUERY_MS = env.int("DB_SLOW_QUERY_MS", default=250)
 WRITE_DB_INSTRUMENTATION_ENABLED = env.bool("WRITE_DB_INSTRUMENTATION_ENABLED", default=True)
 REQUEST_INSTRUMENTATION_ENABLED = env.bool("REQUEST_INSTRUMENTATION_ENABLED", default=True)

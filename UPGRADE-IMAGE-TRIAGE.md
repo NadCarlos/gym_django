@@ -1,5 +1,49 @@
 # Revisión de avisos de imágenes — 24/10/2026
 
+## Candidata web Trixie — 31/10/2026, TLS y backups validados localmente
+
+Se ensayó Python 3.12.16 sobre Trixie, con glibc `2.41-12+deb13u4`
+y OpenSSL `3.5.7-1~deb13u3`. El CVE-2026-5450 desaparece del escaneo
+sin filtro: [Debian confirma la corrección en Trixie](https://security-tracker.debian.org/tracker/CVE-2026-5450).
+Los clientes MariaDB provienen del archivo oficial firmado 11.8.9 para Trixie,
+versión `1:11.8.9+maria~deb13`; Connector/C cargado por mysqlclient es `3.4.10`.
+La clave se verificó con la [huella oficial](https://mariadb.com/docs/server/server-management/install-and-upgrade-mariadb/installing-mariadb/binary-packages/gpg)
+`177F4010FE56CA3336300305F1656F24C74CD1D8`; el Dockerfile fija su SHA-256
+y APT limita esa clave al repositorio de MariaDB.
+
+La [tabla oficial de MariaDB 11.8](https://mariadb.com/docs/release-notes/community-server/11.8/what-is-mariadb-118.md)
+confirma los 14 avisos filtrados: 44168/44171/44172 en 11.8.7,
+48163/48165/49261 en 11.8.8 y los ocho ya revisados en 11.8.9 (todos CVE-2026).
+Grype los sigue asociando a la información de Debian 11.8.6. Las reglas cubren
+únicamente esa versión upstream y los seis paquetes cliente enumerados;
+`check-image-exceptions.sh` comprueba versiones, Connector/C y ausencia de servidor.
+Se retiraron las reglas Bookworm que ya no corresponden a las imágenes propuestas.
+
+Resultado web: **63 High / 0 Critical**, con 84 coincidencias MariaDB corregidas
+conservadas en `ignoredMatches`; ninguna otra coincidencia se retiró respecto del
+escaneo de la misma candidata sin esas reglas. CI sigue bloqueando por High.
+Pasaron los 59 tests, migraciones y simulación de 134 estáticos en MySQL 8.4 aislado.
+Los checks mantienen los warnings de URL existente y de HTTPS en el entorno de ensayo.
+
+El ensayo inicial reprodujo un fallo de `dbbackup`: MariaDB 11.8 rechaza el
+certificado autofirmado predeterminado de MySQL. Se resolvió configurando una CA
+privada y certificado con SAN, compartiendo solo la CA pública con web. Django
+verifica identidad y los clientes CLI verifican el certificado; MySQL exige TLS
+en TCP. No se desactivó la verificación para conservar los backups.
+
+`check-mysql-client.sh` pasó backup/restauración con Unicode, binarios, decimales,
+fechas, NULL y una vista; luego los 59 tests sobre TLS. Usa un usuario limitado a
+la base sintética y su base de tests, sin privilegios globales. Tanto ORM como CLI
+rechazan host incorrecto, CA incorrecta y CA ausente; MySQL rechaza TCP sin TLS.
+Las imágenes de producción y desarrollo construyen. Se mantiene el warning de URL
+ya existente. El generador rechaza sobrescritura y claves dentro del repositorio.
+
+**Producción sigue pendiente:** deben prepararse los certificados y resolver los
+avisos High; no se hizo push ni despliegue en esta etapa. Preparación y renovación
+en `UPGRADE-2026.md`. Evidencia final: `/tmp/cermed-trixie-tls-scan/image-1.json`,
+`/tmp/cermed-trixie-tls-appuser-check.log`; reproducción anterior:
+`/tmp/cermed-trixie-mariadb-backup.log`.
+
 ## Actualización validada el 27/10/2026
 
 Se incorporaron OpenSSL `3.0.22-1~deb12u2`, Brotli `1.0.9-10.0.1.el9_8`

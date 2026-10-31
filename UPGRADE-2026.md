@@ -10,16 +10,17 @@ entrypoint y cron invocan el script mediante `/bin/sh`. La renovación ACME stag
 pasó y HTTPS siguió en 200 con TLS validado. Ese cambio local del checkout debe
 conservarse al preparar el corte; no implica que las nuevas versiones estén desplegadas.
 
-El alcance acordado es actualizar versiones y validar compatibilidad. Los puertos
-8000/3308, DBeaver, HTTPS, permisos de medios y comportamiento de endpoints se
-conservan. No hay evidencia aportada de compromiso. Un escaneo de dependencias
+El alcance acordado es actualizar versiones y validar compatibilidad. El puerto
+8000 queda en loopback; 3308, HTTPS, permisos de medios y endpoints se conservan.
+La conexión MySQL incorpora TLS verificado; DBeaver debe confiar en la CA privada.
+No hay evidencia aportada de compromiso. Un escaneo de dependencias
 identifica riesgos conocidos; no demuestra ni descarta una intrusión.
 
 ## Versiones y cambios
 
 | Componente | Anterior en el repositorio | Objetivo |
 | --- | --- | --- |
-| Python | 3.10 | 3.12.15, Debian Bookworm slim |
+| Python | 3.10 | 3.12.16, Debian Trixie slim |
 | Django | 4.1.12 | 5.2.18 LTS |
 | MySQL | 5.7 | 8.4.13 LTS, pasando por 8.0.46 |
 | Nginx | etiqueta mutable; producción 1.31.6 | 1.31.8 |
@@ -193,6 +194,49 @@ MySQL. Si hace falta reiniciar el host, hacerlo en la ventana acordada.
 
 ## 6. Corte de producción y reversión
 
+### Preparar TLS de MySQL
+
+Antes de arrancar los contenedores nuevos, generar certificados **fuera del repo**.
+Usar una copia revisada de `scripts/create-mysql-tls.sh` fuera del checkout servido;
+no hacer `git pull` en el checkout vivo para obtenerla. Este ejemplo lee solo el
+hostname de la aplicación actual; no imprime contraseñas ni modifica servicios:
+
+```bash
+cermed_mysql_host=$(docker exec cermed_web python -c 'import os; print(os.environ["MYSQL_HOST"])')
+cermed_tls_dir="$HOME/cermed-mysql-tls/$(date -u +%Y%m%dT%H%M%SZ)"
+bash /ruta/a/create-mysql-tls.sh "$cermed_tls_dir" "$cermed_mysql_host" db cermed_db localhost 127.0.0.1
+printf 'CERMED_MYSQL_TLS_DIR=%s\n' "$cermed_tls_dir"
+```
+
+Guardar la línea resultante en `.env.prod`. En desarrollo, ejecutar el mismo
+generador con el `MYSQL_HOST` de `.env` y guardar allí `CERMED_MYSQL_TLS_DIR` antes
+de `make run`. Compose monta `server/` solo en MySQL y `client/` solo en web,
+siempre en lectura; no crea directorios ausentes. Nunca montar `authority/`.
+El directorio exterior es 0700 y la clave CA es 0600. La clave del servidor es
+legible por el UID de MySQL dentro de su montaje; permanece protegida en el host
+por el directorio exterior. Respaldar la carpeta por un canal privado.
+
+El certificado dura un año. Revisar su vencimiento en el mantenimiento mensual:
+
+```bash
+openssl x509 -in "$cermed_tls_dir/server/server-cert.pem" -noout -enddate -checkend 2592000
+```
+
+Un resultado no cero requiere renovar antes de 30 días: generar otra carpeta,
+actualizar `CERMED_MYSQL_TLS_DIR` y recrear db/web en una ventana de mantenimiento.
+El generador crea una CA nueva; actualizar también la confianza de DBeaver.
+No sobrescribe material existente. No usar una renovación HTTPS de Certbot para
+estos certificados internos.
+
+Para DBeaver, mantener el túnel SSH y habilitar TLS con `client/ca.pem` como CA y
+verificación de identidad (`sslMode=VERIFY_IDENTITY` en el driver MySQL). El SAN
+incluye `127.0.0.1` para el extremo local del túnel. No copiar claves privadas al
+cliente ni desactivar la verificación. Comprobar lectura y escritura durante la
+ventana. MySQL rechazará conexiones TCP sin cifrar; las conexiones locales por
+socket utilizadas para mantenimiento siguen disponibles.
+
+### Ejecutar el corte
+
 Esta etapa se prepara con los resultados reales anteriores; todavía no se ejecutó.
 Antes del corte, ejecutar [DROPLET-PREDEPLOY-CHECKS.txt](DROPLET-PREDEPLOY-CHECKS.txt)
 para comprobar TLS, vigencia, cron y presencia de hooks personalizados. No instala
@@ -211,7 +255,8 @@ anteriores fuera de él para poder volver.
    de MySQL 5.7. Comparar nuevamente conteos y contenido. No usar en producción
    el volumen de ensayo con credenciales `rehearsal-only`.
 4. En `.env.prod`, fijar `CERMED_MYSQL84_VOLUME` al volumen 8.4 **ya restaurado y
-   validado**. Compose exige que exista; nunca apuntarlo al volumen 5.7.
+   validado**, y `CERMED_MYSQL_TLS_DIR` a los certificados preparados. Compose
+   exige ambos; nunca apuntar al volumen 5.7.
 5. Actualizar el checkout y construir las imágenes aprobadas. Validar con
    `docker compose --env-file .env.prod -f docker-compose-prod.yaml config --quiet`.
    No compartir `config` sin `--quiet`: expone valores resueltos del entorno.
