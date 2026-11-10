@@ -1,5 +1,17 @@
+# Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.
+FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS patched-expat
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential pkg-config xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:c624ba2998fc65df1163a49641ff3f9ab73138b11641d92c86bee0fb01b1bc7f https://github.com/libexpat/libexpat/releases/download/R_2_10_0/expat-2.10.0.tar.xz /tmp/expat.tar.xz
+ADD --checksum=sha256:b5796915dc45ff745cfb4e990a7e7c93d6f546328a102ce31448d69ebc37575c https://www.python.org/ftp/python/3.12.16/Python-3.12.16.tar.xz /tmp/python.tar.xz
+COPY scripts/build-patched-pyexpat.sh /tmp/build-patched-pyexpat.sh
+RUN sh /tmp/build-patched-pyexpat.sh
+
 # Shared base keeps native mysqlclient libraries compatible across build/runtime.
 FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS base
+COPY --from=patched-expat /out/ /usr/local/lib/python3.12/lib-dynload/
+RUN python3 -c 'import pyexpat; assert pyexpat.version_info == (2, 10, 0), pyexpat.EXPAT_VERSION'
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes

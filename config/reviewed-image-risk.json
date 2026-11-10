@@ -4,9 +4,9 @@
   "acceptance": "User authorized proceeding to production after review of the 14 remaining High CVEs, including the newly disclosed CVE-2026-84243. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
   "evidence": "UPGRADE-IMAGE-TRIAGE.md",
   "reviewed_files": {
-    "Dockerfile": "64b37044f1ddf198e4406327cfe2aebb29fad3042c2db1d3e5bbcdf3a2fe78ea",
-    "Dockerfile.prod": "f091ba8333fb488e499b95c68489447bf64effd84a7c41531670f53c6a52b20b",
-    "Dockerfile.nginx": "efee736879da3506f51823fde1616886d502906a601f6f43c6d7c4a43143c721",
+    "Dockerfile": "ad2ba844516dff93b056a1e146e1251ae05e8bb26dd35e475ae2fb18cbf8a37d",
+    "Dockerfile.prod": "9e29b21877b0e23209355611f73f301b7e543ec1215a7f4fecc14b1b87b77905",
+    "Dockerfile.nginx": "62ce6c2cad5988b1eb78a29e3daa1c8d428c2d7c6bb79f956711489d7831192c",
     "Dockerfile.mysql": "a8653216e38389cbf65b5d3412795c85dc807970e4104a96a0dee4066143ea73",
     "docker-compose-prod.yaml": "6329d4069250dcfcee4174d837f654d6ed0f23fd38f21b8dd0ed4ea9bab995a4",
     "requirements-prod.txt": "edb8613f52762ec5ca99a35c4057512e09a9511944e009f37c596cf2880b2180",
@@ -22,7 +22,8 @@
     "scripts/check-mysql-client.sh": "2b45d11e7ccf88307d7e5bda98b8231fb1509b77353871b0ffa489effd53ed3c",
     "scripts/python-expat-sbom.py": "d597f6971826901455317d68326c1d6d9ea2b1afcf48507efccf9180de658395",
     "scripts/check_image_risk.py": "e33dae30cc67454903951c66a082a12506ea841b5ad90b2f815eec201826276e",
-    "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5"
+    "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5",
+    "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49"
   },
   "rules": [
     {
@@ -43,40 +44,6 @@
         "wont-fix"
       ],
       "reason": "Residual GCC template risk accepted; native compiled consumers cannot be proven unaffected by absence of compiler."
-    },
-    {
-      "vulnerability": "CVE-2026-113351",
-      "scope": "python-expat",
-      "namespace": "nvd:cpe",
-      "package_type": "UnknownPackage",
-      "roles": [
-        "web",
-        "nginx"
-      ],
-      "packages": {
-        "expat": "2.9.0"
-      },
-      "fix_states": [
-        ""
-      ],
-      "reason": "Residual bundled Expat parser-reset resource exhaustion accepted; Excel uses defusedxml; no persistent reset-parser path identified."
-    },
-    {
-      "vulnerability": "CVE-2026-115506",
-      "scope": "python-expat",
-      "namespace": "nvd:cpe",
-      "package_type": "UnknownPackage",
-      "roles": [
-        "web",
-        "nginx"
-      ],
-      "packages": {
-        "expat": "2.9.0"
-      },
-      "fix_states": [
-        ""
-      ],
-      "reason": "Residual bundled Expat resource exhaustion accepted with defusedxml Excel protection and Nginx request size limit; library not patched."
     },
     {
       "vulnerability": "CVE-2026-19499",

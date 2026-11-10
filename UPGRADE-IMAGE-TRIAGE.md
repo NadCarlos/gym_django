@@ -1,3 +1,32 @@
+# Actualización Expat — 2026-11-10
+
+El CI detectó CVE-2026-117610 y CVE-2026-118370 en Expat 2.9.0
+integrado en CPython. [Expat 2.10.0](https://github.com/libexpat/libexpat/blob/R_2_10_0/expat/Changes)
+corrige ambos avisos y los dos anteriormente aceptados, CVE-2026-113351 y
+CVE-2026-115506. Las publicaciones oficiales Python 3.12.16, 3.13.18 y 3.14.10
+todavía incluyen Expat 2.9.0.
+
+Los Dockerfile de desarrollo, producción y Nginx compilan `pyexpat` desde la
+misma versión de CPython que ejecutan, enlazando estáticamente Expat 2.10.0.
+Ambos archivos fuente quedan fijados por SHA-256. Solo se copia la extensión
+resultante al runtime; compiladores y fuentes quedan en la etapa de build.
+El build verifica la versión cargada y parsing con pyexpat y ElementTree.
+Esto permite conservar Python 3.12 para Django y Python 3.13 para Certbot.
+
+Se retiran las dos excepciones anteriores de Expat y se actualizan los hashes
+de los Dockerfile y del nuevo script en la política. Las otras aceptaciones
+previas conservan su alcance y versiones exactas; no se agregan excepciones.
+El escaneo complementario sigue inventariando la versión real de pyexpat.
+
+Validación local: 14 pruebas de la política, sintaxis del script y compilación
+nativa de pyexpat desde CPython 3.12.16 con Expat 2.10.0. La extensión compilada
+reporta `expat_2.10.0` y procesa XML; `ldd` confirma que no depende de la
+biblioteca compartida Expat del sistema. El build Docker,
+la prueba funcional de Nginx y el escaneo completo quedan pendientes de CI:
+el usuario local no tiene acceso al daemon y sudo requiere contraseña.
+Las secciones siguientes conservan la evidencia histórica de revisiones previas.
+
+
 # Revisión de avisos de imágenes — 24/10/2026
 
 ## Decisión de despliegue autorizada — 31/10/2026

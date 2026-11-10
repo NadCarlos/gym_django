@@ -1,9 +1,21 @@
+# Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.
+FROM python:3.13.18-slim-trixie@sha256:76baad6037690d6e8c4397fbcaef17bca6f19eecef822b708fe8fa3417d30bb5 AS patched-expat
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential pkg-config xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:c624ba2998fc65df1163a49641ff3f9ab73138b11641d92c86bee0fb01b1bc7f https://github.com/libexpat/libexpat/releases/download/R_2_10_0/expat-2.10.0.tar.xz /tmp/expat.tar.xz
+ADD --checksum=sha256:abb0102e6d4ae027509bcb82327d9dd85515b44a3ba8ad538cfc5e9847029f68 https://www.python.org/ftp/python/3.13.18/Python-3.13.18.tar.xz /tmp/python.tar.xz
+COPY scripts/build-patched-pyexpat.sh /tmp/build-patched-pyexpat.sh
+RUN sh /tmp/build-patched-pyexpat.sh
+
 FROM python:3.13.18-slim-trixie@sha256:76baad6037690d6e8c4397fbcaef17bca6f19eecef822b708fe8fa3417d30bb5 AS certbot-python
 
 FROM nginx:1.31.8@sha256:6e67f8eaac94fc456588d4ff6c470d984841f5b5dc4279863d5cbe6ec5a60def AS base
 
 ENV PATH="/usr/local/bin:$PATH" LANG=C.UTF-8
 COPY --from=certbot-python /usr/local /usr/local
+COPY --from=patched-expat /out/ /usr/local/lib/python3.13/lib-dynload/
+RUN python3 -c 'import pyexpat; assert pyexpat.version_info == (2, 10, 0), pyexpat.EXPAT_VERSION'
 COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes
 RUN apt-get update \
     && apt-get upgrade -y \
