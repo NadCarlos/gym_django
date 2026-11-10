@@ -141,7 +141,7 @@ class RiskPolicyTests(unittest.TestCase):
         self.match["vulnerability"].update({
             "id": "CVE-2026-84243",
             "namespace": "debian:distro:debian:13",
-            "fix": {"state": "not-fixed", "versions": []},
+            "fix": {"state": "wont-fix", "versions": []},
         })
         packages = {
             "web": ["libc-bin", "libc-l10n", "libc6", "locales"],
@@ -160,6 +160,38 @@ class RiskPolicyTests(unittest.TestCase):
                     )
                     self.assertEqual(len(accepted), 1)
                     self.assertEqual(blocked, [])
+
+    def test_gettext_acceptance_still_blocks_fix_exploitation_and_other_versions(self):
+        root = Path(__file__).resolve().parents[2]
+        policy = read_policy(root / "config/reviewed-image-risk.json", root)
+        self.match["vulnerability"].update({
+            "id": "CVE-2026-84243",
+            "namespace": "debian:distro:debian:13",
+            "fix": {"state": "wont-fix", "versions": []},
+        })
+        self.match["artifact"].update({
+            "name": "libc6", "version": "2.41-12+deb13u4", "type": "deb",
+        })
+        original = copy.deepcopy(self.match)
+        for change in ("fix_version", "fixed_state", "exploited", "version", "unknown_state"):
+            with self.subTest(change=change):
+                self.match.clear()
+                self.match.update(copy.deepcopy(original))
+                if change == "fix_version":
+                    self.match["vulnerability"]["fix"]["versions"] = ["2.41-12+deb13u5"]
+                elif change == "fixed_state":
+                    self.match["vulnerability"]["fix"]["state"] = "fixed"
+                elif change == "exploited":
+                    self.match["vulnerability"]["knownExploited"] = [{"cve": "CVE-2026-84243"}]
+                elif change == "version":
+                    self.match["artifact"]["version"] = "2.41-12+deb13u5"
+                else:
+                    self.match["vulnerability"]["fix"]["state"] = "unknown"
+                accepted, blocked = evaluate(
+                    self.report, policy, "web", "sha256:example", "image", self.now,
+                )
+                self.assertEqual(accepted, [])
+                self.assertEqual(len(blocked), 1)
 
 
 if __name__ == "__main__":

@@ -4,9 +4,9 @@
   "acceptance": "User authorized proceeding to production after review of the 14 remaining High CVEs, including the newly disclosed CVE-2026-84243. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
   "evidence": "UPGRADE-IMAGE-TRIAGE.md",
   "reviewed_files": {
-    "Dockerfile": "ad2ba844516dff93b056a1e146e1251ae05e8bb26dd35e475ae2fb18cbf8a37d",
-    "Dockerfile.prod": "9e29b21877b0e23209355611f73f301b7e543ec1215a7f4fecc14b1b87b77905",
-    "Dockerfile.nginx": "62ce6c2cad5988b1eb78a29e3daa1c8d428c2d7c6bb79f956711489d7831192c",
+    "Dockerfile": "fe1647f1b79515848f9f0d3648c29005d544811701f4552d9e91898d49c5d31f",
+    "Dockerfile.prod": "d018ebddbae766de76ed71fbceae5a96e51b7043b436f5037b2a77e350877256",
+    "Dockerfile.nginx": "d411e78422c433d1b76f4883559a540ff83919a01e02a3f618b7c60077145177",
     "Dockerfile.mysql": "a8653216e38389cbf65b5d3412795c85dc807970e4104a96a0dee4066143ea73",
     "docker-compose-prod.yaml": "6329d4069250dcfcee4174d837f654d6ed0f23fd38f21b8dd0ed4ea9bab995a4",
     "requirements-prod.txt": "edb8613f52762ec5ca99a35c4057512e09a9511944e009f37c596cf2880b2180",
@@ -17,13 +17,14 @@
     "config/certbot-renewal.sh": "1eb98ea5affeb09efc1cb768a06fe5d6f199e776dc1d04974ee362d7908a37d6",
     "cermed.conf": "fd48666276607df7d9d17e768b031fb7f04f6a86ae15085725fc5a4df13797e1",
     "gym/gym/settings.py": "51cb774759bdd6cb04fbe1b246a68738ed01540cbba367a53d9272b4d11885af",
-    "scripts/check-image-exceptions.sh": "baa3f10348ef85bb7c720e7d3c27ab520e0268c8bd90c113f6a6667222731d32",
+    "scripts/check-image-exceptions.sh": "338dc255ea7fe8b08e7046ac2e21c5f2347e4e078263e492466e9586ff706ca9",
     "scripts/check-nginx-image.sh": "90497858bfe8ed188a50910762f34328fefbe27dbc5b2f89534e309367e36efb",
     "scripts/check-mysql-client.sh": "2b45d11e7ccf88307d7e5bda98b8231fb1509b77353871b0ffa489effd53ed3c",
     "scripts/python-expat-sbom.py": "d597f6971826901455317d68326c1d6d9ea2b1afcf48507efccf9180de658395",
     "scripts/check_image_risk.py": "e33dae30cc67454903951c66a082a12506ea841b5ad90b2f815eec201826276e",
     "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5",
-    "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49"
+    "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49",
+    "config/grype.yaml": "56e7d5af5d4753bd2912fd3f8aceb4b185980a57c77fe3bb441d41a3b287c092"
   },
   "rules": [
     {
@@ -210,9 +211,10 @@
         "locales": "2.41-12+deb13u4"
       },
       "fix_states": [
-        "not-fixed"
+        "not-fixed",
+        "wont-fix"
       ],
-      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins es_AR locale values without slash or dot traversal, and no untrusted process-environment boundary or project message catalogs were identified."
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins es_AR locale values without slash or dot traversal, and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI."
     },
     {
       "vulnerability": "CVE-2026-84243",
@@ -227,9 +229,10 @@
         "libc6": "2.41-12+deb13u4"
       },
       "fix_states": [
-        "not-fixed"
+        "not-fixed",
+        "wont-fix"
       ],
-      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins the C locale and no untrusted process-environment boundary or project message catalogs were identified."
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins the C locale and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI."
     },
     {
       "vulnerability": "CVE-2026-85091",

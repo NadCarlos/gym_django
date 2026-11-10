@@ -6,6 +6,7 @@ web=${1:?Usage: bash scripts/check-image-exceptions.sh WEB_IMAGE NGINX_IMAGE}
 proxy=${2:?Missing NGINX_IMAGE}
 for image in "$web" "$proxy"; do
     docker run --rm --read-only --network none --entrypoint sh "$image" -ec '
+        test "$(dpkg-query -W -f='"'"'${Version}'"'"' libsqlite3-0)" = "3.54.1-2"
         for tool in getfacl setfacl chacl nsenter infocmp; do
             if command -v "$tool" >/dev/null 2>&1; then
                 echo "Reevaluate component-absence filters: $tool is installed" >&2
@@ -13,6 +14,15 @@ for image in "$web" "$proxy"; do
             fi
         done
     '
+    docker run --rm --read-only --network none --entrypoint python3 "$image" -c '
+import sqlite3
+assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version
+with sqlite3.connect(":memory:") as connection:
+    connection.execute("CREATE VIRTUAL TABLE probe USING fts5(value, detail=none, prefix=2)")
+    connection.executemany("INSERT INTO probe(rowid, value) VALUES (?, ?)", [(-1, "patched"), (1, "parser")])
+    assert connection.execute("SELECT count(*) FROM probe WHERE probe MATCH ?", ("pa*",)).fetchone() == (2,)
+print("PASS: loaded SQLite 3.54.1 and FTS5 query with negative rowids.")
+'
 done
 docker run --rm --read-only --network none --entrypoint sh "$proxy" -ec '
     for module in Pod::Text Archive::Tar; do
@@ -51,4 +61,4 @@ grep -Fqx 'export LC_ALL=es_AR.UTF-8' "$repo_root/config/entrypoint.prod.sh"
 grep -Fqx 'export LANG=C.UTF-8' "$repo_root/config/entrypoint.nginx.sh"
 grep -Fqx 'export LANGUAGE=C' "$repo_root/config/entrypoint.nginx.sh"
 grep -Fqx 'export LC_ALL=C.UTF-8' "$repo_root/config/entrypoint.nginx.sh"
-echo 'PASS: component absence, exact patched MariaDB clients and safe locale policy.'
+echo 'PASS: patched SQLite, component absence, exact patched MariaDB clients and safe locale policy.'

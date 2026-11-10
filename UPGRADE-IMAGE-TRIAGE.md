@@ -1,3 +1,51 @@
+# Revisión de nuevos bloqueos — 2026-11-10
+
+El nuevo CI confirma que Expat pasa sin excepciones en web y Nginx. Los
+bloqueos restantes tienen tres causas distintas:
+
+- **MariaDB / CVE-2026-102523**: el [aviso oficial GHSA-h4vr-wpff-jfx4](https://github.com/MariaDB/server/security/advisories/GHSA-h4vr-wpff-jfx4)
+  lista 11.8.9 como corregida. Los seis paquetes upstream instalados ya son
+  `1:11.8.9+maria~deb13`; el rango de Debian 13 no distingue esta versión.
+  Se agrega un filtro limitado a ese CVE, namespace, tipo y versiones exactas.
+  Se conserva la comprobación de versiones y ausencia de servidor en web.
+- **SQLite / CVE-2026-119373, CVE-2026-119374, CVE-2026-119379**: Debian 13
+  conserva 3.46.1-7+deb13u2 vulnerable. El [tracker de Debian](https://security-tracker.debian.org/tracker/source-package/sqlite3)
+  registra los arreglos desde 3.54.1-1 en sid. Se instala únicamente el paquete
+  oficial `libsqlite3-0` 3.54.1-2, fijado por SHA-256 para amd64 y arm64, en los
+  tres Dockerfile. Su única dependencia es libc6 >= 2.38, cubierta por Debian 13.
+  No se habilita un repositorio sid ni se reemplaza glibc. Build y CI comprueban
+  la versión que realmente carga Python; CI también ejecuta una consulta FTS5
+  con rowids negativos. El catálogo de Grype para Debian 13 no acota el rango
+  vulnerable: se filtran únicamente los tres avisos corregidos, para la versión
+  exacta 3.54.1-2. El paquete anterior permanece detectable.
+- **glibc / CVE-2026-84243**: Debian mantiene 2.41-12+deb13u4 vulnerable y
+  clasificó el aviso como `no-dsa` (minor issue). La base de Grype del
+  2026-11-10 lo expresa como `wont-fix`, frente a `not-fixed` en la revisión
+  anterior. Se conserva la aceptación previa para el mismo CVE, roles y
+  versiones, agregando solo el estado `wont-fix`. Esto **no corrige glibc**.
+  Las comprobaciones del entorno de locales siguen vigentes. Las pruebas
+  verifican que parche disponible, explotación conocida, versión distinta o
+  estado desconocido siguen bloqueando. No se modificó el evaluador del gate.
+
+Los hashes de la política se actualizan para los archivos modificados y ahora
+incluyen también `config/grype.yaml`, vinculando los filtros a la revisión.
+
+Validación: 15 pruebas del gate, sintaxis Bash y `git diff --check` pasan. Se
+extrajo el paquete SQLite oficial amd64 y se comprobó que Python carga 3.54.1,
+completa una transacción y ejecuta la consulta FTS5 con rowids negativos.
+Además se ejecutó Grype 0.121.0 sobre un inventario mínimo Debian 13 con los
+siete paquetes relevantes (SQLite y los seis clientes MariaDB), usando su base
+válida `v6.1.10`, construida el 2026-11-10T06:21:20Z. Ese inventario queda sin
+High/Critical/Unknown pendientes; los nueve matches de esta revisión quedan
+en `ignoredMatches` con motivos y versiones exactas. Dos controles negativos
+confirman que SQLite 3.46.1-7+deb13u2 conserva los tres High y que MariaDB
+11.8.8 conserva CVE-2026-102523 sin filtrar. Son pruebas de inventario y filtros,
+no escaneos de las imágenes completas. Informes locales:
+`/tmp/cermed-sqlite-mariadb-scan.json`, `/tmp/cermed-old-sqlite-scan.json` y
+`/tmp/cermed-other-mariadb-scan.json`.
+El build de las imágenes y las comprobaciones funcionales completas siguen
+pendientes de CI: el usuario local no tiene acceso al daemon Docker.
+
 # Actualización Expat — 2026-11-10
 
 El CI detectó CVE-2026-117610 y CVE-2026-118370 en Expat 2.9.0

@@ -1,3 +1,12 @@
+ARG TARGETARCH
+# SQLite security update, pinned Debian packages compatible with glibc >= 2.38.
+# Keep the stable base; do not enable the unstable repository in the runtime.
+FROM scratch AS sqlite-amd64
+ADD --checksum=sha256:7789bf0b2338b781de388d83d7c473f9386c9ef638af110b5c1b3d1debb36f00 https://deb.debian.org/debian/pool/main/s/sqlite3/libsqlite3-0_3.54.1-2_amd64.deb /libsqlite3-0.deb
+FROM scratch AS sqlite-arm64
+ADD --checksum=sha256:27416ae5fd9a8a491cacc2316cb08ebf31ac0d3d628da5576e04eeba365605a4 https://deb.debian.org/debian/pool/main/s/sqlite3/libsqlite3-0_3.54.1-2_arm64.deb /libsqlite3-0.deb
+FROM sqlite-${TARGETARCH} AS patched-sqlite
+
 # Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.
 FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS patched-expat
 RUN apt-get update \
@@ -19,7 +28,8 @@ COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes
 # Signing key: 177F4010FE56CA3336300305F1656F24C74CD1D8; scoped to this source.
 ADD --chmod=0644 --checksum=sha256:00adb387f4c12e8982cfc28165d225695621494354cd58108c6845063bfb74b5 https://mariadb.org/mariadb_release_signing_key.pgp /usr/share/keyrings/mariadb.asc
 RUN printf '%s\n' 'deb [signed-by=/usr/share/keyrings/mariadb.asc] https://archive.mariadb.org/mariadb-11.8.9/repo/debian trixie main' > /etc/apt/sources.list.d/mariadb.list
-RUN apt-get update \
+RUN --mount=type=bind,from=patched-sqlite,source=/libsqlite3-0.deb,target=/tmp/libsqlite3-0.deb \
+    apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends default-mysql-client cron locales ca-certificates \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libc6)" ge '2.41-12+deb13u4' \
@@ -27,6 +37,8 @@ RUN apt-get update \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3t64)" ge '3.5.7-1~deb13u3' \
     && sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
+    && dpkg -i /tmp/libsqlite3-0.deb \
+    && python3 -c 'import sqlite3; assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version' \
     && rm -f /usr/bin/nsenter /usr/bin/infocmp \
     && rm -rf /var/lib/apt/lists/*
 ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8

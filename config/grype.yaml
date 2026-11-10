@@ -3,6 +3,38 @@
 # cross-channel matches. Retain ignoredMatches in JSON; never suppress aliases,
 # other versions, packages, distributions, or unrelated advisories.
 ignore:
+  # Debian 13 marks all SQLite versions affected; these pinned Debian sid
+  # binaries include the fixes recorded as fixed in Debian sid (3.54.1-1).
+  - vulnerability: CVE-2026-119373
+    namespace: debian:distro:debian:13
+    reason: "Fixed in SQLite 3.54.0 / Debian 3.54.1-1; installed official Debian 3.54.1-2, checksum pinned and loaded version checked in CI."
+    package:
+      name: "^libsqlite3-0$"
+      version: "3.54.1-2"
+      type: deb
+  - vulnerability: CVE-2026-119374
+    namespace: debian:distro:debian:13
+    reason: "Fixed in SQLite 3.54.0 / Debian 3.54.1-1; installed official Debian 3.54.1-2, checksum pinned and loaded version checked in CI."
+    package:
+      name: "^libsqlite3-0$"
+      version: "3.54.1-2"
+      type: deb
+  - vulnerability: CVE-2026-119379
+    namespace: debian:distro:debian:13
+    reason: "Fixed in SQLite 3.54.0 / Debian 3.54.1-1; installed official Debian 3.54.1-2, checksum pinned and loaded version checked in CI."
+    package:
+      name: "^libsqlite3-0$"
+      version: "3.54.1-2"
+      type: deb
+  # Vendor GHSA-h4vr-wpff-jfx4 fixes CVE-2026-102523 in 11.8.9.
+  # Debian's source-package range incorrectly matches these upstream packages.
+  - vulnerability: CVE-2026-102523
+    namespace: debian:distro:debian:13
+    reason: "MariaDB GHSA-h4vr-wpff-jfx4 lists 11.8.9 as fixed; exact upstream packages, with server absence checked in CI."
+    package:
+      name: "^(libmariadb3|mariadb-client|mariadb-client-compat|mariadb-client-core|mariadb-common|mysql-common)$"
+      version: "1:11.8.9+maria~deb13"
+      type: deb
   # These two affected executables are removed and excluded from dpkg unpack.
   # Libraries remain installed. Other util-linux/ncurses CVEs are not covered.
   - vulnerability: CVE-2026-78408
