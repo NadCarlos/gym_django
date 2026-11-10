@@ -1138,3 +1138,32 @@ class PacienteRehabilitacionSituacionTests(TestCase):
         request = RequestFactory().get("/", {"ordering": "no_existe"})
 
         self.assertEqual(view.get_ordering(request), "apellido")
+
+
+class PacientesRehabProfesionalTests(SimpleTestCase):
+    def get_context(self, params, profesional=True):
+        request = RequestFactory().get("/", params)
+        request.user = MagicMock()
+        request.user.groups.filter.return_value.exists.return_value = profesional
+        with patch(
+            "rehabilitacion.views.pacientes_rehab.pacienteRepo.filter_pacientes_area_with_ultima_situacion",
+            return_value=Paciente.objects.all(),
+        ), patch("rehabilitacion.views.pacientes_rehab.render") as render:
+            PacientesRehabList().get(request, "True")
+        return render.call_args.args[2]
+
+    def test_profesional_requires_nonblank_search(self):
+        for params in ({}, {"apellido": "  "}, {"id_sexo": "1"}, {"ordering": "nombre"}):
+            with self.subTest(params=params):
+                context = self.get_context(params)
+                self.assertEqual(list(context["pacientes"]), [])
+                self.assertIsNone(context["pacientes_count"])
+                self.assertEqual(set(context["form"].fields), {"apellido", "numero_dni"})
+
+    def test_profesional_search_ignores_other_filters(self):
+        for field in ("apellido", "numero_dni"):
+            with self.subTest(field=field):
+                context = self.get_context({field: " Perez ", "id_sexo": "invalid"})
+                self.assertTrue(context["form"].is_valid())
+                self.assertEqual(context["form"].cleaned_data[field], "Perez")
+                self.assertFalse(context["pacientes"].query.is_empty())

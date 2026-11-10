@@ -23,15 +23,18 @@
                 <a href="{% url 'pacientes_rehab_list' False %}" class="btn btn-outline-secondary">
                     <i class="bi bi-eye-slash"></i> Ver Eliminados
                 </a>
+                {% if not es_profesional %}
                 <a href="{% url 'pacientes_csv' True 2 %}?{{ request.GET.urlencode }}" class="btn btn-outline-success">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Guardar EXCEL
                 </a>
+                {% endif %}
                 <a href="{% url 'asistencias_rehab_list' %}" class="btn btn-outline-warning">
                     <i class="bi bi-file-arrow-up"></i> Cargar Asistencias
                 </a>
                 {% endif %}
             </div>
         </div>
+        {% if not es_profesional %}
         <!-- Segunda columna -->
         <div class="col-md-2">
         </div>
@@ -41,6 +44,7 @@
                 <strong>Total Registros: {{ pacientes_count }}</strong>
             </div>
         </div>
+        {% endif %}
     </div>
 
 
@@ -57,6 +61,7 @@
                         <label class="form-label fw-bold">DNI:</label>
                         {{ form.numero_dni }}
                     </div>
+                    {% if not es_profesional %}
                     <div class="col-sm-6 col-lg-2">
                         <label class="form-label fw-bold">Obra Social:</label>
                         {{ form.id_obra_social }}
@@ -73,6 +78,7 @@
                         <label class="form-label fw-bold">Expediente:</label>
                         {{ form.situacion }}
                     </div>
+                    {% endif %}
                 </div>
                 <div class="d-flex justify-content-end gap-2 mt-3">
                     <a href="{% url 'pacientes_rehab_list' state %}" class="btn btn-outline-secondary">

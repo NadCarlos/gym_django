@@ -187,7 +187,21 @@ class PacientesRehabList(View):
     def get(self, request, state):
         queryset = pacienteRepo.filter_pacientes_area_with_ultima_situacion(state, id_area=2)
 
-        filterset = PacienteRehabFilter(request.GET, queryset)
+        es_profesional = request.user.groups.filter(name="Profesional").exists()
+        filter_data = request.GET
+        if es_profesional:
+            filter_data = {
+                field: request.GET.get(field, "").strip()
+                for field in ("apellido", "numero_dni")
+            }
+            if not any(filter_data.values()):
+                queryset = queryset.none()
+
+        filterset = PacienteRehabFilter(filter_data, queryset)
+        if es_profesional:
+            for field in list(filterset.form.fields):
+                if field not in ("apellido", "numero_dni"):
+                    del filterset.form.fields[field]
 
         ordering = self.get_ordering(request)
 
@@ -197,7 +211,8 @@ class PacientesRehabList(View):
             request,
             self.template_name,
             dict(
-                pacientes_count = pacientes.count(),
+                pacientes_count = None if es_profesional else pacientes.count(),
+                es_profesional = es_profesional,
                 pacientes = pacientes,
                 form = filterset.form,
                 ordering = ordering,
