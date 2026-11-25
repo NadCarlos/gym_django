@@ -7,6 +7,19 @@ FROM scratch AS sqlite-arm64
 ADD --checksum=sha256:27416ae5fd9a8a491cacc2316cb08ebf31ac0d3d628da5576e04eeba365605a4 https://deb.debian.org/debian/pool/main/s/sqlite3/libsqlite3-0_3.54.1-2_arm64.deb /libsqlite3-0.deb
 FROM sqlite-${TARGETARCH} AS patched-sqlite
 
+# Debian OpenSSL with published upstream fixes pending the next vendor release.
+# Shared across web/proxy builds so CI reuses the compiled security packages.
+FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS patched-openssl
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential debhelper dpkg-dev \
+        libzstd-dev zlib1g-dev pkg-config xz-utils patch \
+    && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a https://deb.debian.org/debian/pool/main/o/openssl/openssl_3.5.9.orig.tar.gz /tmp/openssl.tar.gz
+ADD --checksum=sha256:7d5158a87cd24641316b050de419be4ebddb1f180afd7ebaa3bc990036c38ec6 https://deb.debian.org/debian/pool/main/o/openssl/openssl_3.5.9-1~deb13u1.debian.tar.xz /tmp/openssl-debian.tar.xz
+COPY config/openssl-backports/ /tmp/openssl-backports/
+COPY scripts/build-patched-openssl.sh /tmp/build-patched-openssl.sh
+RUN sh /tmp/build-patched-openssl.sh
+
 # Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.
 FROM python:3.13.18-slim-trixie@sha256:76baad6037690d6e8c4397fbcaef17bca6f19eecef822b708fe8fa3417d30bb5 AS patched-expat
 RUN apt-get update \
@@ -27,6 +40,7 @@ COPY --from=patched-expat /out/ /usr/local/lib/python3.13/lib-dynload/
 RUN python3 -c 'import pyexpat; assert pyexpat.version_info == (2, 10, 0), pyexpat.EXPAT_VERSION'
 COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes
 RUN --mount=type=bind,from=patched-sqlite,source=/libsqlite3-0.deb,target=/tmp/libsqlite3-0.deb \
+    --mount=type=bind,from=patched-openssl,source=/out,target=/tmp/openssl-debs \
     apt-get update \
     && apt-get upgrade -y \
     # Native runtime libraries of the official Python image, on the same Debian.
@@ -39,8 +53,9 @@ RUN --mount=type=bind,from=patched-sqlite,source=/libsqlite3-0.deb,target=/tmp/l
         curl nginx-module-acme nginx-module-geoip nginx-module-image-filter \
         nginx-module-njs nginx-module-xslt \
     && dpkg -i /tmp/libsqlite3-0.deb \
+    && apt-get install -y --no-install-recommends --no-remove /tmp/openssl-debs/libssl3t64_*.deb /tmp/openssl-debs/openssl_*.deb /tmp/openssl-debs/openssl-provider-legacy_*.deb \
     && python3 -c 'import sqlite3; assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version' \
-    && rm -f /usr/bin/nsenter /usr/bin/infocmp \
+    && rm -f /usr/bin/nsenter /usr/bin/infocmp /usr/bin/newgidmap /usr/bin/newuidmap \
     && ldconfig \
     && python3 -c 'import sys; assert sys.version_info[:3] == (3, 13, 18)' \
     && rm -rf /var/lib/apt/lists/*

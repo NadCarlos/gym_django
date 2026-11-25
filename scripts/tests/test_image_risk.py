@@ -152,7 +152,7 @@ class RiskPolicyTests(unittest.TestCase):
                 with self.subTest(role=role, package=name):
                     self.match["artifact"].update({
                         "name": name,
-                        "version": "2.41-12+deb13u4",
+                        "version": "2.41-12+deb13u5",
                         "type": "deb",
                     })
                     accepted, blocked = evaluate(
@@ -170,7 +170,7 @@ class RiskPolicyTests(unittest.TestCase):
             "fix": {"state": "wont-fix", "versions": []},
         })
         self.match["artifact"].update({
-            "name": "libc6", "version": "2.41-12+deb13u4", "type": "deb",
+            "name": "libc6", "version": "2.41-12+deb13u5", "type": "deb",
         })
         original = copy.deepcopy(self.match)
         for change in ("fix_version", "fixed_state", "exploited", "version", "unknown_state"):
@@ -178,13 +178,13 @@ class RiskPolicyTests(unittest.TestCase):
                 self.match.clear()
                 self.match.update(copy.deepcopy(original))
                 if change == "fix_version":
-                    self.match["vulnerability"]["fix"]["versions"] = ["2.41-12+deb13u5"]
+                    self.match["vulnerability"]["fix"]["versions"] = ["2.41-12+deb13u6"]
                 elif change == "fixed_state":
                     self.match["vulnerability"]["fix"]["state"] = "fixed"
                 elif change == "exploited":
                     self.match["vulnerability"]["knownExploited"] = [{"cve": "CVE-2026-84243"}]
                 elif change == "version":
-                    self.match["artifact"]["version"] = "2.41-12+deb13u5"
+                    self.match["artifact"]["version"] = "2.41-12+deb13u6"
                 else:
                     self.match["vulnerability"]["fix"]["state"] = "unknown"
                 accepted, blocked = evaluate(

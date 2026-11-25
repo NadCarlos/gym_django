@@ -7,6 +7,19 @@ FROM scratch AS sqlite-arm64
 ADD --checksum=sha256:27416ae5fd9a8a491cacc2316cb08ebf31ac0d3d628da5576e04eeba365605a4 https://deb.debian.org/debian/pool/main/s/sqlite3/libsqlite3-0_3.54.1-2_arm64.deb /libsqlite3-0.deb
 FROM sqlite-${TARGETARCH} AS patched-sqlite
 
+# Debian OpenSSL with published upstream fixes pending the next vendor release.
+# Shared across web/proxy builds so CI reuses the compiled security packages.
+FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS patched-openssl
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential debhelper dpkg-dev \
+        libzstd-dev zlib1g-dev pkg-config xz-utils patch \
+    && rm -rf /var/lib/apt/lists/*
+ADD --checksum=sha256:603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a https://deb.debian.org/debian/pool/main/o/openssl/openssl_3.5.9.orig.tar.gz /tmp/openssl.tar.gz
+ADD --checksum=sha256:7d5158a87cd24641316b050de419be4ebddb1f180afd7ebaa3bc990036c38ec6 https://deb.debian.org/debian/pool/main/o/openssl/openssl_3.5.9-1~deb13u1.debian.tar.xz /tmp/openssl-debian.tar.xz
+COPY config/openssl-backports/ /tmp/openssl-backports/
+COPY scripts/build-patched-openssl.sh /tmp/build-patched-openssl.sh
+RUN sh /tmp/build-patched-openssl.sh
+
 # Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.
 FROM python:3.12.16-slim-trixie@sha256:8523d6abeb48ceae0b7240d30c5808fc26cb79c1a635bacdf19cf3baecfbec07 AS patched-expat
 RUN apt-get update \
@@ -29,24 +42,27 @@ COPY config/dpkg-runtime-excludes /etc/dpkg/dpkg.cfg.d/cermed-runtime-excludes
 ADD --chmod=0644 --checksum=sha256:00adb387f4c12e8982cfc28165d225695621494354cd58108c6845063bfb74b5 https://mariadb.org/mariadb_release_signing_key.pgp /usr/share/keyrings/mariadb.asc
 RUN printf '%s\n' 'deb [signed-by=/usr/share/keyrings/mariadb.asc] https://archive.mariadb.org/mariadb-11.8.9/repo/debian trixie main' > /etc/apt/sources.list.d/mariadb.list
 RUN --mount=type=bind,from=patched-sqlite,source=/libsqlite3-0.deb,target=/tmp/libsqlite3-0.deb \
+    --mount=type=bind,from=patched-openssl,source=/out,target=/tmp/openssl-debs \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends default-mysql-client cron locales ca-certificates \
-    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libc6)" ge '2.41-12+deb13u4' \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libc6)" ge '2.41-12+deb13u5' \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libmariadb3)" eq '1:11.8.9+maria~deb13' \
     && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3t64)" ge '3.5.7-1~deb13u3' \
     && sed -i '/es_AR.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen \
     && dpkg -i /tmp/libsqlite3-0.deb \
+    && apt-get install -y --no-install-recommends --no-remove /tmp/openssl-debs/libssl3t64_*.deb /tmp/openssl-debs/openssl_*.deb /tmp/openssl-debs/openssl-provider-legacy_*.deb \
     && python3 -c 'import sqlite3; assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version' \
-    && rm -f /usr/bin/nsenter /usr/bin/infocmp \
+    && rm -f /usr/bin/nsenter /usr/bin/infocmp /usr/bin/newgidmap /usr/bin/newuidmap \
     && rm -rf /var/lib/apt/lists/*
 ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8
 RUN python -m pip install --no-cache-dir pip==26.2.2
 
 FROM base AS dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential default-libmysqlclient-dev pkg-config \
+RUN --mount=type=bind,from=patched-openssl,source=/out,target=/tmp/openssl-debs \
+    apt-get update \
+    && apt-get install -y --no-install-recommends build-essential default-libmysqlclient-dev pkg-config /tmp/openssl-debs/libssl-dev_*.deb \
     && rm -rf /var/lib/apt/lists/*
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"

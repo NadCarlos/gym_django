@@ -4,27 +4,41 @@
   "acceptance": "User authorized proceeding to production after review of the 14 remaining High CVEs, including the newly disclosed CVE-2026-84243. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
   "evidence": "UPGRADE-IMAGE-TRIAGE.md",
   "reviewed_files": {
-    "Dockerfile": "fe1647f1b79515848f9f0d3648c29005d544811701f4552d9e91898d49c5d31f",
-    "Dockerfile.prod": "d018ebddbae766de76ed71fbceae5a96e51b7043b436f5037b2a77e350877256",
-    "Dockerfile.nginx": "d411e78422c433d1b76f4883559a540ff83919a01e02a3f618b7c60077145177",
+    "Dockerfile": "b39c2dd2cd5708448eca63a89fe0bec21233f96b391ecb14d51860ed0d4d43d6",
+    "Dockerfile.prod": "13ec39ab6c60f018de142eb34023cf5931395ce1dadf76593f7fbe63e0e1f093",
+    "Dockerfile.nginx": "fe3ccf09de2fe090925589f2cc02d67806dcbdf7a55a8027538edfbeac8edcea",
     "Dockerfile.mysql": "a8653216e38389cbf65b5d3412795c85dc807970e4104a96a0dee4066143ea73",
     "docker-compose-prod.yaml": "6329d4069250dcfcee4174d837f654d6ed0f23fd38f21b8dd0ed4ea9bab995a4",
     "requirements-prod.txt": "edb8613f52762ec5ca99a35c4057512e09a9511944e009f37c596cf2880b2180",
     "requirements-certbot.txt": "8ffa3915a8efa3ff43f0c21f73f3c425cf1fbc48a826061d7217f30c86fb1747",
-    "config/dpkg-runtime-excludes": "c3869302b2da2fe92f445e65fa8771a5ab7ac3c388d47e98e09b4c8c98ccbd63",
+    "config/dpkg-runtime-excludes": "ce41a5cd6b306733479447b6f351d055cdfa0809de18ae8d8442ecf3f36df0b9",
     "config/entrypoint.prod.sh": "257946c5157ebfe63e1154e8021a57d9d765a0e51da95ed2bc6f119cd2413483",
     "config/entrypoint.nginx.sh": "2b4287ea1524991b29d909c23752c6b922a2f48c64eddc809788cb5818063f85",
     "config/certbot-renewal.sh": "1eb98ea5affeb09efc1cb768a06fe5d6f199e776dc1d04974ee362d7908a37d6",
     "cermed.conf": "fd48666276607df7d9d17e768b031fb7f04f6a86ae15085725fc5a4df13797e1",
     "gym/gym/settings.py": "51cb774759bdd6cb04fbe1b246a68738ed01540cbba367a53d9272b4d11885af",
-    "scripts/check-image-exceptions.sh": "338dc255ea7fe8b08e7046ac2e21c5f2347e4e078263e492466e9586ff706ca9",
+    "scripts/check-image-exceptions.sh": "13f4e3206055195e3cd138b5f77bec6c5cabccd2e9b1c3ec01459706dc4a517e",
     "scripts/check-nginx-image.sh": "90497858bfe8ed188a50910762f34328fefbe27dbc5b2f89534e309367e36efb",
     "scripts/check-mysql-client.sh": "2b45d11e7ccf88307d7e5bda98b8231fb1509b77353871b0ffa489effd53ed3c",
     "scripts/python-expat-sbom.py": "d597f6971826901455317d68326c1d6d9ea2b1afcf48507efccf9180de658395",
     "scripts/check_image_risk.py": "e33dae30cc67454903951c66a082a12506ea841b5ad90b2f815eec201826276e",
     "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5",
     "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49",
-    "config/grype.yaml": "56e7d5af5d4753bd2912fd3f8aceb4b185980a57c77fe3bb441d41a3b287c092"
+    "config/grype.yaml": "cb25125693e7dbcdf3803f5bf06fa3943844e753282f6538faa653de0a486dee",
+    "scripts/build-patched-openssl.sh": "d419d3eea39159b738b4f6bc9ea4d041b4ce8c95047a8632cfb93e96188532aa",
+    "config/openssl-backports/CVE-2026-95691.patch": "93d8e82fdc995172a6d5cc6952491658106191bd5ac221d34596adbddfcd1afe",
+    "config/openssl-backports/CVE-2026-95692.patch": "0e328604c0038de6629a29322ae5f02d2f5f5128c2625b57ca64262efab99e05",
+    "config/openssl-backports/CVE-2026-84786.patch": "ba6d7ad89dc2bb79a236cfc3ce3168f40b97b687f4ae2c8838ec116987ad30b9",
+    "config/openssl-backports/CVE-2026-88822.patch": "50f7cc52fb146703379ca043d17e204c4fda99c684efe3db6d6f3ae1d175bd2a",
+    "config/openssl-backports/manifest.json": "f45a77443b96caad57c1d98839f435ba03aac9a48c8e5b0cc45d9dc7bad9e311",
+    "config/openssl-backports/CVE-2026-107494.patch": "c1726a50d589b2dc289727865c184382c2bd846733ddb139427062713ebeb5bd",
+    "config/openssl-backports/CVE-2026-35190.patch": "e1b45282a8876fdda6b930273e28bad1cdb1c6915ccd25fe0b61789281489ed1",
+    "config/openssl-backports/CVE-2026-107496.patch": "77d3759d279c71af59629c4a0fa82d8272a099762f2fa9e3f66d7ca5ed544157",
+    "config/openssl-backports/CVE-2026-124709.patch": "d52a6af23bc966daaa9eded816a392d429a67bb76faafd922f4c4cf35a9349f4",
+    "config/openssl-backports/CVE-2026-84785.patch": "a0020eba9a1584da9ddc71a026fb85a9560a4e407fd4b3d0ef41c32027f1cb18",
+    "config/openssl-backports/CVE-2026-121482.patch": "6bdbb111a7ce640e42c558aaf912fe19b3770aa9afc7c8c5a0d36d20dcb2d5e9",
+    "config/openssl-backports/CVE-2026-88823.patch": "a945077c0a978dbfe5af5e4f7174a2151466547f8fb94562f395baa7b6b7c147",
+    "config/openssl-backports/CVE-2026-107493.patch": "6176d694ac38251bfa4e11198d002d8720f9efb05deffb35703adb93be6173e1"
   },
   "rules": [
     {
@@ -205,16 +219,16 @@
         "web"
       ],
       "packages": {
-        "libc-bin": "2.41-12+deb13u4",
-        "libc-l10n": "2.41-12+deb13u4",
-        "libc6": "2.41-12+deb13u4",
-        "locales": "2.41-12+deb13u4"
+        "libc-bin": "2.41-12+deb13u5",
+        "libc-l10n": "2.41-12+deb13u5",
+        "libc6": "2.41-12+deb13u5",
+        "locales": "2.41-12+deb13u5"
       },
       "fix_states": [
         "not-fixed",
         "wont-fix"
       ],
-      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins es_AR locale values without slash or dot traversal, and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI."
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins es_AR locale values without slash or dot traversal, and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI. Re-reviewed 2026-11-25 for Debian glibc 2.41-12+deb13u5: same unfixed LANGUAGE issue and unchanged enforced locale/environment boundary."
     },
     {
       "vulnerability": "CVE-2026-84243",
@@ -225,14 +239,14 @@
         "nginx"
       ],
       "packages": {
-        "libc-bin": "2.41-12+deb13u4",
-        "libc6": "2.41-12+deb13u4"
+        "libc-bin": "2.41-12+deb13u5",
+        "libc6": "2.41-12+deb13u5"
       },
       "fix_states": [
         "not-fixed",
         "wont-fix"
       ],
-      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins the C locale and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI."
+      "reason": "Residual gettext LANGUAGE traversal risk accepted; startup pins the C locale and no untrusted process-environment boundary or project message catalogs were identified. Re-reviewed 2026-11-10: Debian trixie no-dsa is Grype wont-fix; still no stable vendor fix. Existing locale and environment assumptions remain enforced in CI. Re-reviewed 2026-11-25 for Debian glibc 2.41-12+deb13u5: same unfixed LANGUAGE issue and unchanged enforced locale/environment boundary."
     },
     {
       "vulnerability": "CVE-2026-85091",

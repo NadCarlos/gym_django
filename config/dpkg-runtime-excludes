@@ -2,3 +2,6 @@
 # Keep them absent on later package installation/upgrade as well.
 path-exclude=/usr/bin/nsenter
 path-exclude=/usr/bin/infocmp
+# CVE-2026-135901 is in the optional uidmap helper, not passwd/login.defs.
+path-exclude=/usr/bin/newgidmap
+path-exclude=/usr/bin/newuidmap

@@ -1,0 +1,80 @@
+{
+  "base_version": "3.5.9-1~deb13u1",
+  "version": "3.5.9-1~deb13u1+cermed20261125",
+  "reference": "https://openssl-library.org/news/vulnerabilities/",
+  "patches": [
+    {
+      "cve": "CVE-2026-88822",
+      "commit": "1a73dc590cbad62d6f0329ea4779eadaa8d8fd75",
+      "sha256": "50f7cc52fb146703379ca043d17e204c4fda99c684efe3db6d6f3ae1d175bd2a",
+      "file": "CVE-2026-88822.patch"
+    },
+    {
+      "cve": "CVE-2026-88823",
+      "commit": "159e1de0c448d7b9f09ad768c8e141def4aa1eb4",
+      "sha256": "a945077c0a978dbfe5af5e4f7174a2151466547f8fb94562f395baa7b6b7c147",
+      "file": "CVE-2026-88823.patch"
+    },
+    {
+      "cve": "CVE-2026-95691",
+      "commit": "f6244675833e097c2429a40d1b206d95385bd42f",
+      "sha256": "93d8e82fdc995172a6d5cc6952491658106191bd5ac221d34596adbddfcd1afe",
+      "file": "CVE-2026-95691.patch"
+    },
+    {
+      "cve": "CVE-2026-95692",
+      "commit": "257a3427aa0ef8d9dd2ef5b3e2d1c021a221b116",
+      "sha256": "0e328604c0038de6629a29322ae5f02d2f5f5128c2625b57ca64262efab99e05",
+      "file": "CVE-2026-95692.patch"
+    },
+    {
+      "cve": "CVE-2026-107496",
+      "commit": "a0051cfe699bf5a047bc1c4faef65f80f7987366",
+      "sha256": "77d3759d279c71af59629c4a0fa82d8272a099762f2fa9e3f66d7ca5ed544157",
+      "file": "CVE-2026-107496.patch"
+    },
+    {
+      "cve": "CVE-2026-35190",
+      "commit": "9491b0d9cc7950af1f3dc89499bd5433b9cd4f43",
+      "sha256": "e1b45282a8876fdda6b930273e28bad1cdb1c6915ccd25fe0b61789281489ed1",
+      "file": "CVE-2026-35190.patch"
+    },
+    {
+      "cve": "CVE-2026-107493",
+      "commit": "c8f6d04f8e6d40b1bf83334e4a2ec9daf5943a3d",
+      "sha256": "6176d694ac38251bfa4e11198d002d8720f9efb05deffb35703adb93be6173e1",
+      "file": "CVE-2026-107493.patch"
+    },
+    {
+      "cve": "CVE-2026-124709",
+      "commit": "f3acb0a3328046741479482c51cec815839e1b05",
+      "sha256": "d52a6af23bc966daaa9eded816a392d429a67bb76faafd922f4c4cf35a9349f4",
+      "file": "CVE-2026-124709.patch"
+    },
+    {
+      "cve": "CVE-2026-84786",
+      "commit": "1ad851363d5b8588b0d40edcc045fd633e93f0c2",
+      "sha256": "ba6d7ad89dc2bb79a236cfc3ce3168f40b97b687f4ae2c8838ec116987ad30b9",
+      "file": "CVE-2026-84786.patch"
+    },
+    {
+      "cve": "CVE-2026-107494",
+      "commit": "734c6cd7444bdbf589bfec917e47598c1b21ddd3",
+      "sha256": "c1726a50d589b2dc289727865c184382c2bd846733ddb139427062713ebeb5bd",
+      "file": "CVE-2026-107494.patch"
+    },
+    {
+      "cve": "CVE-2026-121482",
+      "commit": "468c287cf451a834b370b69ab321b8ffdfac23aa",
+      "sha256": "6bdbb111a7ce640e42c558aaf912fe19b3770aa9afc7c8c5a0d36d20dcb2d5e9",
+      "file": "CVE-2026-121482.patch"
+    },
+    {
+      "cve": "CVE-2026-84785",
+      "commit": "7a14b6e410c881365881596231ea6f88e7d27c6e",
+      "sha256": "a0020eba9a1584da9ddc71a026fb85a9560a4e407fd4b3d0ef41c32027f1cb18",
+      "file": "CVE-2026-84785.patch"
+    }
+  ],
+  "tests": "test_evp test_ec test_x509_check_cert_pkey test_dane test_cms test_cmsapi test_quic* test_tls13groupselection"
+}

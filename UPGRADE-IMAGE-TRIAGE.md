@@ -1,3 +1,92 @@
+# OpenSSL, shadow y glibc — revisión 2026-11-25
+
+El nuevo CI usa Debian OpenSSL 3.5.9-1~deb13u1 y glibc 2.41-12+deb13u5;
+las reglas anteriores no cubrían esos avisos/versiones. El gate no se relajó.
+
+## OpenSSL: corregir antes de filtrar
+
+Los avisos oficiales del [10/11](https://openssl-library.org/news/secadv/20261110.txt),
+[17/11](https://openssl-library.org/news/secadv/20261117.txt) y
+[24/11](https://openssl-library.org/news/secadv/20261124.txt) publican los
+arreglos upstream; la próxima publicación 3.5.10 aún no está disponible en los
+paquetes de Debian 13 revisados. Se reconstruye el paquete Debian 3.5.9 con
+los doce commits de la rama 3.5 que enlaza el [índice oficial de vulnerabilidades](https://openssl-library.org/news/vulnerabilities/).
+
+`config/openssl-backports/manifest.json` identifica cada CVE, commit y SHA-256.
+Incluye los diez CVE del log y los otros dos del mismo conjunto de avisos:
+CVE-2026-88822 y CVE-2026-35190. Las fuentes Debian también se fijan por SHA-256.
+`scripts/build-patched-openssl.sh` registra los parches en la serie quilt,
+reconstruye paquetes binarios nativos y ejecuta las suites upstream relevantes
+antes de exportarlos. La versión local es **3.5.9-1~deb13u1+cermed20261125**;
+no se presenta como una publicación oficial de Debian ni como OpenSSL 3.5.10.
+
+Los tres Dockerfile instalan los paquetes runtime parcheados; mysqlclient se
+compila con el paquete libssl-dev de la misma reconstrucción. El builder es
+idéntico entre web/proxy para reutilizar caché. No se instalan compiladores,
+fuentes ni FIPS provider en el runtime. APT instala los paquetes locales sin
+permitir downgrades ni eliminación de dependencias.
+
+El filtro del escáner cubre solo esos doce CVE, namespace Debian 13, los tres
+nombres de paquete y la versión local exacta. La versión stock permanece
+bloqueada. CI comprueba las versiones dpkg y que Python carga OpenSSL 3.5.9 y
+crea un contexto TLS. Al estar disponible la actualización oficial, sustituir
+este backport temporal, retirar sus filtros y repetir build/escaneo/pruebas.
+
+## shadow: helper vulnerable ausente
+
+El [aviso del mantenedor de shadow](https://www.openwall.com/lists/oss-security/2026/11/22/12)
+identifica `newgidmap` como el ejecutable afectado por CVE-2026-135901.
+En Debian pertenece a uidmap; el escáner también lo atribuye a passwd/login.defs
+por compartir el source package. Se excluyen newgidmap/newuidmap del unpack de
+dpkg, se eliminan si venían en la base y CI comprueba su ausencia. El filtro
+solo cubre passwd/login.defs 1:4.17.4-2; no cubre uidmap ni otras versiones o CVE.
+No se acepta genéricamente la severidad Unknown.
+
+## glibc: revisión de la aceptación existente
+
+[Debian sigue marcando CVE-2026-84243 como vulnerable y no-dsa](https://security-tracker.debian.org/tracker/CVE-2026-84243)
+en 2.41-12+deb13u5. Se actualiza solo la versión exacta de la aceptación previa
+para ese CVE y sus roles. Las restricciones comprobadas de LANGUAGE/LANG/LC_ALL
+siguen vigentes. **glibc no queda parcheada** por este cambio. Las pruebas
+siguen bloqueando versiones distintas, explotación conocida y cualquier fix.
+
+## MySQL / Oracle: canal FIPS incorrecto
+
+Se revisaron los RPM oficiales openssl y openssl-libs
+1:3.5.9-1.0.1.el9_9 del repositorio Oracle Linux 9. Su changelog registra el
+rebase a OpenSSL 3.5.9, que incluye los arreglos anteriores de 3.5.1 y 3.5.8.
+[ELSA-2026-50075](https://linux.oracle.com/errata/ELSA-2026-50075.html) y
+[ELSA-2026-500448](https://linux.oracle.com/errata/ELSA-2026-500448.html) son
+avisos del canal separado de validación FIPS, con epoch 10. Se agregan solo
+las cuatro combinaciones de esos avisos, nombres, namespace Oracle 9, tipo RPM
+y versión exacta nueva. No se acepta riesgo sin parche ni se habilita FIPS.
+
+## Validación y límites
+
+- Los doce parches se aplican con dpkg-source sobre las fuentes Debian y se
+  verifican por SHA-256. La compilación nativa de OpenSSL termina correctamente.
+- Python carga la biblioteca compilada y crea un contexto TLS con comprobación
+  de hostname habilitada.
+- Las suites upstream de EC, EVP, PEM/X.509, CMS, DANE, TLS y QUIC se ejecutan
+  contra esa compilación. Los tests QUIC requieren sockets locales; el sandbox
+  los bloqueó, por lo que se repitieron fuera del sandbox.
+- Grype 0.121.0 con base válida v6.1.10 del 2026-11-25T06:22:21Z verifica un
+  inventario mínimo de los paquetes Debian afectados: tras los filtros exactos,
+  solo quedan los cuatro matches previamente aceptados de glibc, sin blockers.
+  Un control con OpenSSL stock confirma los diez CVE High/Unknown del log sin
+  filtrar. Cada uno de los dos RPM Oracle reales tiene cero blockers y conserva
+  sus dos matches FIPS en ignoredMatches.
+- Las 15 pruebas del gate, sintaxis de scripts y git diff --check pasan.
+- El empaquetado binario Debian dentro de Docker, el build de las imágenes y
+  las comprobaciones funcionales completas permanecen pendientes de CI: el
+  usuario local no tiene permisos sobre el daemon Docker, aun fuera del sandbox.
+
+Evidencia local: `/tmp/cermed-openssl-prepare.log`,
+`/tmp/cermed-openssl-final-tests.log`, `/tmp/cermed-security-inventory-scan.json`,
+`/tmp/cermed-security-unpatched-scan.json`, `/tmp/cermed-oracle-openssl-scan.json`
+y `/tmp/cermed-oracle-openssl-libs-scan.json`. No son escaneos de las imágenes
+completas ni evidencia de un deploy.
+
 # Revisión de nuevos bloqueos — 2026-11-10
 
 El nuevo CI confirma que Expat pasa sin excepciones en web y Nginx. Los

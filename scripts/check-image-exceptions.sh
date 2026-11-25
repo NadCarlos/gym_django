@@ -7,7 +7,10 @@ proxy=${2:?Missing NGINX_IMAGE}
 for image in "$web" "$proxy"; do
     docker run --rm --read-only --network none --entrypoint sh "$image" -ec '
         test "$(dpkg-query -W -f='"'"'${Version}'"'"' libsqlite3-0)" = "3.54.1-2"
-        for tool in getfacl setfacl chacl nsenter infocmp; do
+        for package in libssl3t64 openssl openssl-provider-legacy; do
+            test "$(dpkg-query -W -f='"'"'${Version}'"'"' "$package")" = "3.5.9-1~deb13u1+cermed20261125"
+        done
+        for tool in getfacl setfacl chacl nsenter infocmp newgidmap newuidmap; do
             if command -v "$tool" >/dev/null 2>&1; then
                 echo "Reevaluate component-absence filters: $tool is installed" >&2
                 exit 1
@@ -16,12 +19,15 @@ for image in "$web" "$proxy"; do
     '
     docker run --rm --read-only --network none --entrypoint python3 "$image" -c '
 import sqlite3
+import ssl
+assert ssl.OPENSSL_VERSION.startswith("OpenSSL 3.5.9 "), ssl.OPENSSL_VERSION
+ssl.create_default_context()
 assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version
 with sqlite3.connect(":memory:") as connection:
     connection.execute("CREATE VIRTUAL TABLE probe USING fts5(value, detail=none, prefix=2)")
     connection.executemany("INSERT INTO probe(rowid, value) VALUES (?, ?)", [(-1, "patched"), (1, "parser")])
     assert connection.execute("SELECT count(*) FROM probe WHERE probe MATCH ?", ("pa*",)).fetchone() == (2,)
-print("PASS: loaded SQLite 3.54.1 and FTS5 query with negative rowids.")
+print("PASS: patched OpenSSL package versions, Python TLS, SQLite 3.54.1 and FTS5 query.")
 '
 done
 docker run --rm --read-only --network none --entrypoint sh "$proxy" -ec '

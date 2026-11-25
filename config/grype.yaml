@@ -3,6 +3,118 @@
 # cross-channel matches. Retain ignoredMatches in JSON; never suppress aliases,
 # other versions, packages, distributions, or unrelated advisories.
 ignore:
+  # Published upstream 3.5 security fixes are applied and regression-tested by
+  # build-patched-openssl.sh. These are locally rebuilt Debian packages, not
+  # the vulnerable stock 3.5.9-1~deb13u1 packages. Keep all other versions visible.
+  - vulnerability: CVE-2026-88822
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 1a73dc590cbad62d6f0329ea4779eadaa8d8fd75 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-88823
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 159e1de0c448d7b9f09ad768c8e141def4aa1eb4 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-95691
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix f6244675833e097c2429a40d1b206d95385bd42f backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-95692
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 257a3427aa0ef8d9dd2ef5b3e2d1c021a221b116 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-107496
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix a0051cfe699bf5a047bc1c4faef65f80f7987366 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-35190
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 9491b0d9cc7950af1f3dc89499bd5433b9cd4f43 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-107493
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix c8f6d04f8e6d40b1bf83334e4a2ec9daf5943a3d backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-124709
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix f3acb0a3328046741479482c51cec815839e1b05 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-84786
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 1ad851363d5b8588b0d40edcc045fd633e93f0c2 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-107494
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 734c6cd7444bdbf589bfec917e47598c1b21ddd3 backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-121482
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 468c287cf451a834b370b69ab321b8ffdfac23aa backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  - vulnerability: CVE-2026-84785
+    namespace: debian:distro:debian:13
+    reason: "Upstream OpenSSL 3.5 fix 7a14b6e410c881365881596231ea6f88e7d27c6e backported; checksummed source/patches and upstream regression suites enforced in build."
+    package:
+      name: "^(libssl3t64|openssl|openssl-provider-legacy)$"
+      version: "3.5.9-1~deb13u1+cermed20261125"
+      type: deb
+  # CVE-2026-135901 affects only the optional newgidmap helper in uidmap.
+  # CI checks its absence; dpkg excludes it from future package unpacking.
+  - vulnerability: CVE-2026-135901
+    namespace: debian:distro:debian:13
+    reason: "Upstream shadow advisory 2026-11-22 identifies newgidmap; helper absent, dpkg-excluded and checked in CI."
+    package:
+      name: "^(passwd|login.defs)$"
+      version: "1:4.17.4-2"
+      type: deb
+  # Non-FIPS Oracle 3.5.9 rebases contain the fixes in the older FIPS advisories.
+  # ELSA's epoch 10 belongs to the separate FIPS validation channel.
+  - vulnerability: ELSA-2026-50075
+    namespace: oracle:distro:oraclelinux:9
+    reason: "Oracle non-FIPS 1:3.5.9-1.0.1.el9_9 rebases to OpenSSL 3.5.9, including the 3.5.1/3.5.8 fixes; FIPS epoch mismatch."
+    package:
+      name: "^(openssl|openssl-libs)$"
+      version: "1:3.5.9-1.0.1.el9_9"
+      type: rpm
+  - vulnerability: ELSA-2026-500448
+    namespace: oracle:distro:oraclelinux:9
+    reason: "Oracle non-FIPS 1:3.5.9-1.0.1.el9_9 rebases to OpenSSL 3.5.9, including the 3.5.1/3.5.8 fixes; FIPS epoch mismatch."
+    package:
+      name: "^(openssl|openssl-libs)$"
+      version: "1:3.5.9-1.0.1.el9_9"
+      type: rpm
   # Debian 13 marks all SQLite versions affected; these pinned Debian sid
   # binaries include the fixes recorded as fixed in Debian sid (3.54.1-1).
   - vulnerability: CVE-2026-119373
