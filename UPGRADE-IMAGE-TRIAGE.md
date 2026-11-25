@@ -1,3 +1,24 @@
+# shadow Debian security — revisión 2026-11-25
+
+El CI pasó a instalar passwd/login.defs **1:4.17.4-2+deb13u1**. El filtro
+anterior cubría únicamente 1:4.17.4-2, por ausencia de newgidmap. El
+[Security Tracker de Debian](https://security-tracker.debian.org/tracker/CVE-2026-135901)
+registra **DSA-6661-1** y marca la nueva versión como corregida para trixie.
+La base de Grype usada en el ensayo todavía la reporta como Unknown.
+
+Se agrega un filtro separado, limitado al CVE, namespace Debian 13, tipo deb,
+passwd/login.defs y versión exacta 1:4.17.4-2+deb13u1. No incluye uidmap ni
+versiones futuras. Se mantiene la exclusión dpkg y comprobación en CI de
+newgidmap/newuidmap. No se cambia el tratamiento general de Unknown/Critical.
+Se actualiza el hash de grype.yaml en la política vinculada.
+
+Validación con Grype 0.121.0 y la misma base del 25/11: el inventario de
+los dos paquetes pasa de 2 blockers Unknown a 0; los matches se conservan
+en ignoredMatches. Controles negativos confirman que uidmap 1:4.17.4-2 y
+una versión no revisada de passwd/login.defs continúan reportándose sin
+filtrar. Las 15 pruebas del gate y git diff --check pasan. No se recompilaron
+ni escanearon las imágenes completas localmente.
+
 # OpenSSL, shadow y glibc — revisión 2026-11-25
 
 El nuevo CI usa Debian OpenSSL 3.5.9-1~deb13u1 y glibc 2.41-12+deb13u5;

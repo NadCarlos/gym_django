@@ -99,6 +99,14 @@ ignore:
       name: "^(passwd|login.defs)$"
       version: "1:4.17.4-2"
       type: deb
+  # DSA-6661-1 fixes this CVE in Debian 13 security; Grype's catalog may lag.
+  - vulnerability: CVE-2026-135901
+    namespace: debian:distro:debian:13
+    reason: "Debian DSA-6661-1 and Security Tracker mark 1:4.17.4-2+deb13u1 fixed; exact updated passwd/login.defs packages only."
+    package:
+      name: "^(passwd|login.defs)$"
+      version: "1:4.17.4-2+deb13u1"
+      type: deb
   # Non-FIPS Oracle 3.5.9 rebases contain the fixes in the older FIPS advisories.
   # ELSA's epoch 10 belongs to the separate FIPS validation channel.
   - vulnerability: ELSA-2026-50075

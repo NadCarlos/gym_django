@@ -24,7 +24,7 @@
     "scripts/check_image_risk.py": "e33dae30cc67454903951c66a082a12506ea841b5ad90b2f815eec201826276e",
     "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5",
     "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49",
-    "config/grype.yaml": "cb25125693e7dbcdf3803f5bf06fa3943844e753282f6538faa653de0a486dee",
+    "config/grype.yaml": "299cbb5f9751b7263e76ab386e64d68d29c845d4f96a3e14ab623674298ae7cd",
     "scripts/build-patched-openssl.sh": "d419d3eea39159b738b4f6bc9ea4d041b4ce8c95047a8632cfb93e96188532aa",
     "config/openssl-backports/CVE-2026-95691.patch": "93d8e82fdc995172a6d5cc6952491658106191bd5ac221d34596adbddfcd1afe",
     "config/openssl-backports/CVE-2026-95692.patch": "0e328604c0038de6629a29322ae5f02d2f5f5128c2625b57ca64262efab99e05",
