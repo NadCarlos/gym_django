@@ -16,14 +16,14 @@ from datetime import datetime, date
 from administracion.filters import PacienteFilter
 from rehabilitacion.filters import PacienteRehabFilter
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 
 from administracion.forms import (
     PacienteCreateForm,
     PacienteUpdateForm,
     )
 
-from rehabilitacion.forms import PacienteRehabilitacionSituacionForm
+from rehabilitacion.forms import PacienteRehabilitacionSituacionForm, HistorialAsistenciasRehabForm
 
 
 from administracion.repositories.paciente import PacienteRepository
@@ -459,6 +459,33 @@ class PacienteRehabDetail(View):
                 situaciones=situaciones,
             )
         )
+
+
+@method_decorator(login_required(login_url='login'), name='dispatch')
+@method_decorator(requiere_areas("Rehabilitacion", "Profesional"), name="dispatch")
+class PacienteRehabHistorialAsistencias(View):
+    http_method_names = ["get"]
+
+    def get(self, request, id):
+        paciente = pacienteRepo.get_by_id(id=id)
+        if paciente is None:
+            raise Http404("Paciente no encontrado")
+        hoy = date.today()
+        asistencias_form = HistorialAsistenciasRehabForm(data={
+            "fecha_desde": request.GET.get("fecha_desde", hoy.isoformat()),
+            "fecha_hasta": request.GET.get("fecha_hasta", hoy.isoformat()),
+        })
+        asistencias = []
+        if asistencias_form.is_valid():
+            asistencias = asistenciaRehabRepo.historial_paciente(
+                id_paciente=paciente.id,
+                **asistencias_form.cleaned_data,
+            )
+        return render(request, "pacientes_rehab/historial_asistencias.html", {
+            "paciente": paciente,
+            "asistencias": asistencias,
+            "asistencias_form": asistencias_form,
+        })
 
 
 @method_decorator(login_required(login_url='login'), name='dispatch')

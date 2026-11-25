@@ -6,6 +6,15 @@ from rehabilitacion.models import AsistenciaRehab, AgendaRehab
 
 class AsistenciaRehabRepository:
 
+    def historial_paciente(self, id_paciente, fecha_desde, fecha_hasta):
+        return AsistenciaRehab.objects.filter(
+            id_agenda_rehab__id_paciente_area__id_paciente_id=id_paciente,
+            fecha__range=(fecha_desde, fecha_hasta),
+        ).select_related(
+            "id_agenda_rehab__id_profesional_area__id_profesional",
+            "id_agenda_rehab__id_tratamiento_rehab",
+        ).order_by("-fecha", "hora", "pk")
+
     def get_all(self) -> List[AsistenciaRehab]:
         return AsistenciaRehab.objects.all().order_by('fecha')
     

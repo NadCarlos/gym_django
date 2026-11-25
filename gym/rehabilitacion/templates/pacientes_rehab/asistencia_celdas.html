@@ -1,0 +1,5 @@
+<td>{{ asistencia.fecha|date:"d/m/Y" }}</td>
+<td>{{ asistencia.hora|time:"H:i" }}</td>
+<td>{{ asistencia.id_agenda_rehab.hora_inicio|time:"H:i" }}</td>
+<td>{{ asistencia.id_agenda_rehab.id_profesional_area.id_profesional.apellido }}, {{ asistencia.id_agenda_rehab.id_profesional_area.id_profesional.nombre }}</td>
+<td>{{ asistencia.id_agenda_rehab.id_tratamiento_rehab.nombre }}</td>

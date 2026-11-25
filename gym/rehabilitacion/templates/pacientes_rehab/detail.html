@@ -407,6 +407,9 @@
                             <i class="bi bi-book"></i> Alta activa existente
                         </button>
                     {% endif %}
+                    <a href="{% url 'paciente_rehab_historial_asistencias' paciente.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-clock-history me-2"></i> Historial de Asistencias
+                    </a>
                     <a href="{% url 'agenda_paciente_rehab' paciente.id %}" class="btn btn-primary">
                         <i class="bi bi-calendar"></i> Ver Agenda
                     </a>

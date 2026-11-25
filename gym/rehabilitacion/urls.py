@@ -8,6 +8,7 @@ from rehabilitacion.views.inicio.index import(
 from rehabilitacion.views.pacientes_rehab import(
     PacientesRehabList,
     PacienteRehabDetail,
+    PacienteRehabHistorialAsistencias,
     PacienteRehabFichaPDF,
     PacienteRehabCreate,
     PacienteRehabCreateFromExistent,
@@ -157,6 +158,7 @@ inicio = [
 pacientes = [
     path(route='pacientes/list/<state>',view=PacientesRehabList.as_view(), name='pacientes_rehab_list'),
     path(route='pacientes/detail/<int:id>',view=PacienteRehabDetail.as_view(), name='paciente_rehab_detail'),
+    path("pacientes/<int:id>/asistencias/", PacienteRehabHistorialAsistencias.as_view(), name="paciente_rehab_historial_asistencias"),
     path(route='pacientes/<int:id>/ficha.pdf',view=PacienteRehabFichaPDF.as_view(), name='paciente_rehab_ficha_pdf'),
     path(route='pacientes/create',view=PacienteRehabCreate.as_view(), name='paciente_rehab_create'),
     path(route='pacientes/create_from_existent',view=PacienteRehabCreateFromExistent.as_view(), name='paciente_rehab_create_from_existent'),

@@ -29,6 +29,24 @@ from utils.validators import validate_date_not_before_1900
 profesionalRepo = ProfesionalRepository()
 
 
+class HistorialAsistenciasRehabForm(forms.Form):
+    fecha_desde = forms.DateField(
+        label="Fecha desde",
+        widget=forms.DateInput(format="%Y-%m-%d", attrs={"type": "date", "class": "form-control"}),
+    )
+    fecha_hasta = forms.DateField(
+        label="Fecha hasta",
+        widget=forms.DateInput(format="%Y-%m-%d", attrs={"type": "date", "class": "form-control"}),
+    )
+
+    def clean(self):
+        datos = super().clean()
+        desde, hasta = datos.get("fecha_desde"), datos.get("fecha_hasta")
+        if desde and hasta and desde > hasta:
+            raise forms.ValidationError("La fecha desde debe ser anterior o igual a la fecha hasta.")
+        return datos
+
+
 class PacienteRehabilitacionCreateForm(forms.ModelForm):
 
     SI_NO_EMPTY_CHOICES = [

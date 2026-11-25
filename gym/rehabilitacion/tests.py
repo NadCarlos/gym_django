@@ -50,7 +50,7 @@ from rehabilitacion.models import (
     AgendaRehab,
     DisponibilidadProfesionalRehab,
 )
-from rehabilitacion.forms import AltaCreateForm
+from rehabilitacion.forms import AltaCreateForm, HistorialAsistenciasRehabForm
 from rehabilitacion.repositories.disponibilidad_profesional_rehab import DisponibilidadProfesionalRehabRepository
 from rehabilitacion.repositories.rehabilitacion import PacienteRehabilitacionRepository
 from rehabilitacion.repositories.alta import AltaRepository
@@ -79,6 +79,29 @@ from rehabilitacion.services.ficha_ingreso_pdf import (
     build_ficha_fields,
     render_ficha_ingreso_pdf,
 )
+
+
+class HistorialAsistenciasRehabFormTests(SimpleTestCase):
+    def test_accepts_same_day_and_multiple_day_ranges(self):
+        for hasta in ("2026-11-01", "2026-11-25"):
+            with self.subTest(hasta=hasta):
+                form = HistorialAsistenciasRehabForm(data={
+                    "fecha_desde": "2026-11-01", "fecha_hasta": hasta,
+                })
+                self.assertTrue(form.is_valid(), form.errors)
+                self.assertEqual(form.cleaned_data["fecha_desde"], date(2026, 11, 1))
+
+    def test_rejects_reversed_invalid_and_empty_dates(self):
+        for desde, hasta in (
+            ("2026-11-25", "2026-11-01"),
+            ("2026-02-30", "2026-11-25"),
+            ("", "2026-11-25"),
+        ):
+            with self.subTest(desde=desde, hasta=hasta):
+                form = HistorialAsistenciasRehabForm(data={
+                    "fecha_desde": desde, "fecha_hasta": hasta,
+                })
+                self.assertFalse(form.is_valid())
 
 
 class AsistenciasPacientesRehabExportTests(SimpleTestCase):

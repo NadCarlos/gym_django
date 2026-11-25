@@ -1,0 +1,83 @@
+{% extends 'inicio/base.html' %}
+
+{% block content %}
+<div class="container mt-3 mb-3">
+    <a href="{% url 'paciente_rehab_detail' paciente.id %}" class="btn btn-secondary mb-3">
+        <i class="bi bi-arrow-left-circle me-2"></i> Volver al paciente
+    </a>
+    <h2>{{ paciente.apellido }}, {{ paciente.nombre }}</h2>
+</div>
+<div class="container mb-4" id="historial-asistencias">
+    <div class="card shadow-sm border-0">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Historial de Asistencias</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Por defecto se muestran las asistencias de hoy. Seleccione un rango para consultar días anteriores.</p>
+            <form method="get" action="" class="row g-3 mb-3">
+                {% for field in asistencias_form %}
+                    <div class="col-md-4">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<div class="text-danger">{{ error }}</div>{% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="col-md-4 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a href="{% url 'paciente_rehab_historial_asistencias' paciente.id %}" class="btn btn-outline-secondary">Hoy</a>
+                </div>
+                {% for error in asistencias_form.non_field_errors %}
+                    <div class="col-12 text-danger" role="alert">{{ error }}</div>
+                {% endfor %}
+            </form>
+            {% if not asistencias_form.errors %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle">
+                        <thead><tr><th scope="col">Fecha</th><th scope="col">Hora de asistencia</th><th scope="col">Hora del turno</th><th scope="col">Profesional</th><th scope="col">Tratamiento</th><th scope="col">Más asistencias</th></tr></thead>
+                        <tbody>
+                            {% regroup asistencias by fecha as dias %}
+                            {% for dia in dias %}
+                                <tr>
+                                    {% include 'pacientes_rehab/asistencia_celdas.html' with asistencia=dia.list.0 %}
+                                    <td>
+                                        {% if dia.list|length > 1 %}
+                                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                                    data-asistencias-toggle="asistencias-dia-{{ forloop.counter }}"
+                                                    aria-expanded="false"
+                                                    aria-controls="{% for asistencia in dia.list|slice:'1:' %}asistencia-{{ asistencia.pk }}{% if not forloop.last %} {% endif %}{% endfor %}">
+                                                Ver/ocultar {{ dia.list|length|add:"-1" }} más
+                                                <span class="visually-hidden">del {{ dia.grouper|date:"d/m/Y" }}</span>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if dia.list|length > 1 %}
+                                    {% for asistencia in dia.list|slice:"1:" %}
+                                        <tr id="asistencia-{{ asistencia.pk }}" data-asistencias-grupo="asistencias-dia-{{ forloop.parentloop.counter }}" hidden>
+                                            {% include 'pacientes_rehab/asistencia_celdas.html' %}
+                                            <td></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endif %}
+                            {% empty %}
+                                <tr><td colspan="6" class="text-center text-muted">No hay asistencias registradas en el período seleccionado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll("[data-asistencias-toggle]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const expanded = button.getAttribute("aria-expanded") === "true";
+            document.querySelectorAll('[data-asistencias-grupo="' + button.dataset.asistenciasToggle + '"]').forEach(function (row) {
+                row.hidden = expanded;
+            });
+            button.setAttribute("aria-expanded", String(!expanded));
+        });
+    });
+</script>
+{% endblock %}
