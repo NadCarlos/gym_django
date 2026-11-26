@@ -56,6 +56,8 @@ RUN --mount=type=bind,from=patched-sqlite,source=/libsqlite3-0.deb,target=/tmp/l
     && apt-get install -y --no-install-recommends --no-remove /tmp/openssl-debs/libssl3t64_*.deb /tmp/openssl-debs/openssl_*.deb /tmp/openssl-debs/openssl-provider-legacy_*.deb \
     && python3 -c 'import sqlite3; assert sqlite3.sqlite_version_info == (3, 54, 1), sqlite3.sqlite_version' \
     && rm -f /usr/bin/nsenter /usr/bin/infocmp /usr/bin/newgidmap /usr/bin/newuidmap \
+    && perl -e 'for (@INC) { my $file = "$_/Net/FTP.pm"; if (-e $file) { unlink $file or die "Cannot remove $file: $!\n"; } }' \
+    && perl -e 'for (@INC) { die "Net::FTP remains installed\n" if -e "$_/Net/FTP.pm"; }' \
     && rm -rf /var/lib/apt/lists/*
 ENV LANG=es_AR.UTF-8 LANGUAGE=es_AR:es LC_ALL=es_AR.UTF-8
 RUN python -m pip install --no-cache-dir pip==26.2.2

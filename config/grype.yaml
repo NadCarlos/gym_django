@@ -3,6 +3,15 @@
 # cross-channel matches. Retain ignoredMatches in JSON; never suppress aliases,
 # other versions, packages, distributions, or unrelated advisories.
 ignore:
+  # The vulnerable Net::FTP entrypoint is removed and dpkg-excluded; CI checks
+  # every Perl module search directory in both runtimes before the scan.
+  - vulnerability: CVE-2026-40558
+    namespace: debian:distro:debian:13
+    reason: "Debian identifies Net::FTP as affected; FTP.pm removed, dpkg-excluded and absence checked over Perl @INC in CI."
+    package:
+      name: "^(libperl5.40|perl|perl-base|perl-modules-5.40)$"
+      version: "5.40.1-6+deb13u1"
+      type: deb
   # Published upstream 3.5 security fixes are applied and regression-tested by
   # build-patched-openssl.sh. These are locally rebuilt Debian packages, not
   # the vulnerable stock 3.5.9-1~deb13u1 packages. Keep all other versions visible.

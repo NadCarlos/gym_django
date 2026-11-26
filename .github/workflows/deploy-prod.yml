@@ -93,12 +93,38 @@ jobs:
           python gym/manage.py collectstatic --dry-run --noinput
           python gym/manage.py check --deploy
 
+      - name: Set up Docker build cache
+        uses: docker/setup-buildx-action@v4
+
       - name: Build production image
-        run: docker build -t cermed-ci:runtime -f Dockerfile.prod .
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.prod
+          load: true
+          tags: cermed-ci:runtime
+          platforms: linux/amd64
+          # Cache expensive source builds, but refresh runtime OS fixes every run.
+          no-cache-filters: base
+          cache-from: type=gha,scope=cermed-web
+          cache-to: type=gha,scope=cermed-web,mode=max,ignore-error=true
+
+      - name: Build proxy image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Dockerfile.nginx
+          load: true
+          tags: cermed-ci:nginx
+          platforms: linux/amd64
+          no-cache-filters: base
+          cache-from: |
+            type=gha,scope=cermed-nginx
+            type=gha,scope=cermed-web
+          cache-to: type=gha,scope=cermed-nginx,mode=max,ignore-error=true
 
       - name: Scan runtime, proxy and database images
         run: |
-          docker build -t cermed-ci:nginx -f Dockerfile.nginx .
           docker build -t cermed-ci:mysql -f Dockerfile.mysql .
           bash scripts/check-mysql-client.sh cermed-ci:runtime cermed-ci:mysql
           bash scripts/check-nginx-image.sh cermed-ci:nginx

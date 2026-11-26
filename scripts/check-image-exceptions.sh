@@ -17,6 +17,12 @@ for image in "$web" "$proxy"; do
             fi
         done
     '
+    docker run --rm --read-only --network none --entrypoint perl "$image" -e '
+        for my $directory (@INC) {
+            die "Reevaluate CVE-2026-40558: Net::FTP is installed in $directory\n"
+                if -e "$directory/Net/FTP.pm";
+        }
+    '
     docker run --rm --read-only --network none --entrypoint python3 "$image" -c '
 import sqlite3
 import ssl

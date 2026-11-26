@@ -5,3 +5,5 @@ path-exclude=/usr/bin/infocmp
 # CVE-2026-135901 is in the optional uidmap helper, not passwd/login.defs.
 path-exclude=/usr/bin/newgidmap
 path-exclude=/usr/bin/newuidmap
+# CVE-2026-40558 is in Net::FTP; CERMED does not use Perl FTP clients.
+path-exclude=/usr/share/perl/*/Net/FTP.pm

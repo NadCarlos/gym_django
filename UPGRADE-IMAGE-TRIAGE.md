@@ -1,3 +1,46 @@
+# Perl Net::FTP y caché del CI — 2026-11-26
+
+El [tracker Debian de CVE-2026-40558](https://security-tracker.debian.org/tracker/CVE-2026-40558)
+identifica el módulo Net::FTP de libnet, incluido en el source package perl.
+El [arreglo upstream](https://github.com/steve-m-hay/perl-libnet/commit/4e5ce1cfa901a9bc2aad2b635b5434154983ff12)
+corrige el tratamiento de la dirección IP recibida en PASV. Debian 13 aún
+marca 5.40.1-6+deb13u1 como vulnerable. No se encontró uso de Net::FTP en CERMED.
+
+Se retira FTP.pm de todos los directorios de búsqueda de Perl en los tres
+Dockerfile. Esto funciona también con perl-base mínimo, donde el módulo ya
+está ausente, sin asumir que existe /usr/share/perl. La exclusión dpkg evita
+que reaparezca al actualizar el paquete. CI comprueba todos los directorios
+@INC antes de escanear. El filtro queda limitado al CVE, namespace Debian 13,
+tipo deb, los cuatro nombres del log y versión exacta 5.40.1-6+deb13u1. No se
+acepta Unknown genéricamente ni se presenta Perl como totalmente parcheado.
+
+La demora del CI se reduce persistiendo caché BuildKit en GitHub Actions para
+web y Nginx (`mode=max` conserva las etapas intermedias de OpenSSL y Expat).
+Nginx también importa la caché de web para compartir la compilación OpenSSL.
+Se usa el contexto local del checkout y se cargan las mismas etiquetas locales
+que consumen las pruebas y el escáner; no se publica ninguna imagen.
+`no-cache-filters: base` obliga a actualizar los paquetes runtime en cada
+corrida. MySQL conserva su build normal con microdnf update y todos los
+escaneos y pruebas se mantienen. Un fallo al exportar caché no bloquea el job.
+
+La primera corrida debe poblar la caché; los beneficios dependen de que la
+caché siga disponible y las entradas de la compilación permanezcan iguales.
+No se midieron tiempos en GitHub Actions desde este entorno. El deploy sigue
+por SSH/git/Compose y el servidor conserva su caché Docker local: la caché de
+Actions no se transfiere al servidor ni evita su primera compilación.
+
+Validación local: 18 pruebas del gate/build runner pasan. YAML del workflow,
+configuración de caché y sintaxis Bash verificados. El comando real de CI
+rechaza un FTP.pm instalado y acepta su ausencia; la eliminación se probó
+con el módulo presente y ya ausente. Grype 0.121.0 con base válida del
+2026-11-26T06:22:34Z reproduce los cuatro Unknown sobre un inventario mínimo;
+con el filtro exacto quedan cero matches de ese CVE pendientes y cuatro en
+ignoredMatches. Un control con otra versión de Perl mantiene los cuatro
+matches visibles. Son ensayos de inventario/filtros, no escaneos de imágenes
+completas. Build y funcionamiento de la caché quedan por confirmar en CI.
+Evidencia: /tmp/cermed-perl-before.json, /tmp/cermed-perl-after.json y
+/tmp/cermed-perl-other-version.json.
+
 # Fallo durante compilación en producción — 2026-11-26
 
 El deploy falló en `build-patched-openssl.sh` después de aproximadamente 993 s.
