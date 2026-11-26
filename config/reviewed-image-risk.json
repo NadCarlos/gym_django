@@ -4,9 +4,9 @@
   "acceptance": "User authorized proceeding to production after review of the 14 remaining High CVEs, including the newly disclosed CVE-2026-84243. This accepts residual risk, not absence of vulnerabilities. Re-review on any bound runtime change, new High/Critical, fix availability or known exploitation. No calendar-based bypass.",
   "evidence": "UPGRADE-IMAGE-TRIAGE.md",
   "reviewed_files": {
-    "Dockerfile": "b39c2dd2cd5708448eca63a89fe0bec21233f96b391ecb14d51860ed0d4d43d6",
-    "Dockerfile.prod": "13ec39ab6c60f018de142eb34023cf5931395ce1dadf76593f7fbe63e0e1f093",
-    "Dockerfile.nginx": "fe3ccf09de2fe090925589f2cc02d67806dcbdf7a55a8027538edfbeac8edcea",
+    "Dockerfile": "8691c65a7f52d22f4ef9df4033b45e1ff8663886ff48edc2785adef851c8a7fd",
+    "Dockerfile.prod": "05809bab5b647c77fd3274b5e88d524f94ff782dab79be33064d49c0e43d16f6",
+    "Dockerfile.nginx": "7ec7e3bf6f6d25ec031354f0709e6b55e66c130e84484c250288ec9081e3d8bc",
     "Dockerfile.mysql": "a8653216e38389cbf65b5d3412795c85dc807970e4104a96a0dee4066143ea73",
     "docker-compose-prod.yaml": "6329d4069250dcfcee4174d837f654d6ed0f23fd38f21b8dd0ed4ea9bab995a4",
     "requirements-prod.txt": "edb8613f52762ec5ca99a35c4057512e09a9511944e009f37c596cf2880b2180",
@@ -25,7 +25,7 @@
     "scripts/scan-upgrade-images.sh": "0560331e25bc523b3f09b0e77b6863177a75495f532291efc793867ae18c0ed5",
     "scripts/build-patched-pyexpat.sh": "c607736fa1e4923b99cff30c9e0ba6b125e39f3d06da4d13fe354391574bee49",
     "config/grype.yaml": "299cbb5f9751b7263e76ab386e64d68d29c845d4f96a3e14ab623674298ae7cd",
-    "scripts/build-patched-openssl.sh": "d419d3eea39159b738b4f6bc9ea4d041b4ce8c95047a8632cfb93e96188532aa",
+    "scripts/build-patched-openssl.sh": "230daac7e82ce414d20e71a5848d7a469219be2793bdd93bf52bd382011425ba",
     "config/openssl-backports/CVE-2026-95691.patch": "93d8e82fdc995172a6d5cc6952491658106191bd5ac221d34596adbddfcd1afe",
     "config/openssl-backports/CVE-2026-95692.patch": "0e328604c0038de6629a29322ae5f02d2f5f5128c2625b57ca64262efab99e05",
     "config/openssl-backports/CVE-2026-84786.patch": "ba6d7ad89dc2bb79a236cfc3ce3168f40b97b687f4ae2c8838ec116987ad30b9",
@@ -38,7 +38,8 @@
     "config/openssl-backports/CVE-2026-84785.patch": "a0020eba9a1584da9ddc71a026fb85a9560a4e407fd4b3d0ef41c32027f1cb18",
     "config/openssl-backports/CVE-2026-121482.patch": "6bdbb111a7ce640e42c558aaf912fe19b3770aa9afc7c8c5a0d36d20dcb2d5e9",
     "config/openssl-backports/CVE-2026-88823.patch": "a945077c0a978dbfe5af5e4f7174a2151466547f8fb94562f395baa7b6b7c147",
-    "config/openssl-backports/CVE-2026-107493.patch": "6176d694ac38251bfa4e11198d002d8720f9efb05deffb35703adb93be6173e1"
+    "config/openssl-backports/CVE-2026-107493.patch": "6176d694ac38251bfa4e11198d002d8720f9efb05deffb35703adb93be6173e1",
+    "scripts/run-openssl-build.py": "f6e2a467db286375e669ee423728eec5d0f21952e9dc7fab572f77d414717ccc"
   },
   "rules": [
     {

@@ -1,3 +1,28 @@
+# Fallo durante compilación en producción — 2026-11-26
+
+El deploy falló en `build-patched-openssl.sh` después de aproximadamente 993 s.
+El extracto termina durante la compilación/enlace de binarios de test y no
+incluye el error originario. `exit code: 2` es el resultado propagado por make,
+no un diagnóstico. No hay evidencia suficiente para atribuirlo a memoria,
+un fallo del compilador o un problema del empaquetado. No se considera resuelto.
+
+Se limita la compilación de OpenSSL a dos workers, o uno si solo hay una CPU
+disponible. `scripts/run-openssl-build.py` captura stdout/stderr completos en
+`/tmp/openssl-build.log` dentro del builder. Emite progreso cada 30 segundos y,
+si falla, muestra los primeros y últimos errores con contexto y las últimas
+60 líneas, conservando el código de salida. La salida resumida evita que el
+volumen de comandos GCC desplace el diagnóstico del log de BuildKit. El log
+completo pertenece al builder; no se promete que sea recuperable después de
+un build fallido. Las pruebas upstream siguen ejecutándose dentro de
+`dpkg-buildpackage`; no se utiliza nocheck ni se modifican filtros de CVE.
+
+Validación: una prueba ejecuta un proceso real que emite un error temprano,
+40.000 líneas de ruido y exit 2; el resumen conserva el error y el status.
+Otros controles comprueban el tail cuando no se reconoce un patrón de error y
+el camino exitoso con paralelismo acotado. Las pruebas locales no reproducen
+el fallo del servidor; el próximo build debe confirmar si continúa y mostrar
+el error originario si lo hace.
+
 # shadow Debian security — revisión 2026-11-25
 
 El CI pasó a instalar passwd/login.defs **1:4.17.4-2+deb13u1**. El filtro

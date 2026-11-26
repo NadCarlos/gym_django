@@ -18,6 +18,7 @@ ADD --checksum=sha256:603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1
 ADD --checksum=sha256:7d5158a87cd24641316b050de419be4ebddb1f180afd7ebaa3bc990036c38ec6 https://deb.debian.org/debian/pool/main/o/openssl/openssl_3.5.9-1~deb13u1.debian.tar.xz /tmp/openssl-debian.tar.xz
 COPY config/openssl-backports/ /tmp/openssl-backports/
 COPY scripts/build-patched-openssl.sh /tmp/build-patched-openssl.sh
+COPY scripts/run-openssl-build.py /tmp/run-openssl-build.py
 RUN sh /tmp/build-patched-openssl.sh
 
 # Official CPython currently bundles Expat 2.9.0; replace its extension with 2.10.0.

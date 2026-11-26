@@ -43,6 +43,6 @@ PY
 dpkg-source --before-build .
 # Fail on rejects/fuzz; these are exact upstream 3.5 backports, not guessed fixes.
 test -z "$(find . -name '*.rej' -print -quit)"
-DEB_BUILD_OPTIONS="parallel=$(nproc)" dpkg-buildpackage -B -us -uc -Pnoudeb
+python3 /tmp/run-openssl-build.py
 cp /tmp/libssl3t64_*.deb /tmp/libssl-dev_*.deb /tmp/openssl_*.deb \
     /tmp/openssl-provider-legacy_*.deb /out/
